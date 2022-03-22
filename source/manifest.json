@@ -2,19 +2,19 @@
 	"name": "Gecko",
 	"version": "0.0.0",
 	"description": "Extension that allows you to interact with webpages using your voice and talon",
-	"homepage_url": "https://github.com/david-tejada/gecko",
+	"homepage_url": "https://github.com/david-tejada/rango",
 	"manifest_version": 2,
 	"minimum_chrome_version": "80",
 	"applications": {
 		"gecko": {
-			"id": "gecko@david-tejada",
+			"id": "rango@david-tejada",
 			"strict_min_version": "80.0"
 		}
 	},
 	"icons": {
 		"128": "icon.png"
 	},
-	"permissions": [],
+	"permissions": ["nativeMessaging"],
 	"content_scripts": [
 		{
 			"matches": ["<all_urls>"],
