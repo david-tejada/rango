@@ -1,28 +1,25 @@
 {
-	"name": "Awesome Extension",
+	"name": "Gecko",
 	"version": "0.0.0",
-	"description": "An awesome new browser extension",
-	"homepage_url": "https://github.com/fregante/browser-extension-template",
+	"description": "Extension that allows you to interact with webpages using your voice and talon",
+	"homepage_url": "https://github.com/david-tejada/gecko",
 	"manifest_version": 2,
 	"minimum_chrome_version": "80",
 	"applications": {
 		"gecko": {
-			"id": "awesome-extension@notlmn.github.io",
+			"id": "gecko@david-tejada",
 			"strict_min_version": "80.0"
 		}
 	},
 	"icons": {
 		"128": "icon.png"
 	},
-	"permissions": [
-		"https://github.com/fregante/browser-extension-template/*",
-		"storage"
-	],
+	"permissions": [],
 	"content_scripts": [
 		{
-			"matches": [ "https://github.com/fregante/browser-extension-template/*" ],
-			"js": [ "content.js" ],
-			"css": [ "content.css" ],
+			"matches": ["<all_urls>"],
+			"js": ["content.ts"],
+			"css": ["content.css"],
 			"run_at": "document_end"
 		}
 	],
@@ -32,8 +29,17 @@
 	},
 	"background": {
 		"persistent": false,
-		"scripts": [
-			"background.js"
-		]
+		"scripts": ["background.ts"]
+	},
+	"commands": {
+		"_execute_action": {
+			"suggested_key": {
+				"windows": "Ctrl+Shift+Y",
+				"mac": "Command+Shift+Y",
+				"chromeos": "Ctrl+Shift+U",
+				"linux": "Ctrl+Shift+9"
+			},
+			"description": "Just testing that commands work"
+		}
 	}
 }
