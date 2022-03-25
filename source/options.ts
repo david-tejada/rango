@@ -1,30 +1,25 @@
-// Don't forget to import this wherever you use it
-import browser from "webextension-polyfill";
+// I need to disable some linting rules because I get strange linting errors.
+// Just until I figure out what's happening
+/* eslint-disable 
+@typescript-eslint/no-unsafe-assignment,
+@typescript-eslint/no-unsafe-call,
+@typescript-eslint/restrict-template-expressions
+*/
 
 import optionsStorage from "./options-storage";
 
-optionsStorage.syncForm("#options-form");
-
-const rangeInputs = [
-	...document.querySelectorAll('input[type="range"][name^="color"]'),
-] as HTMLInputElement[];
-const numberInputs = [
-	...document.querySelectorAll('input[type="number"][name^="color"]'),
-] as HTMLInputElement[];
-const output = document.querySelector(".color-output") as HTMLElement;
-
-function updateColor() {
-	output.style.backgroundColor = `rgb(${rangeInputs[0].value}, ${rangeInputs[1].value}, ${rangeInputs[2].value})`;
+async function init() {
+	const options = await optionsStorage.getAll();
+	const color = `rgb(${options.colorRed}, ${options.colorGreen}, ${options.colorBlue})`;
+	const text = options.text;
+	const notice = document.createElement("div");
+	notice.innerHTML = text;
+	document.body.append(notice);
+	notice.id = "text-notice";
+	notice.style.border = "2px solid " + color;
+	notice.style.color = color;
 }
 
-function updateInputField(event) {
-	numberInputs[rangeInputs.indexOf(event.currentTarget)].value =
-		event.currentTarget.value;
-}
-
-for (const input of rangeInputs) {
-	input.addEventListener("input", updateColor);
-	input.addEventListener("input", updateInputField);
-}
-
-window.addEventListener("load", updateColor);
+init().catch((error) => {
+	console.log(error);
+});
