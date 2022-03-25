@@ -1,22 +1,13 @@
-import optionsStorage from "./options-storage";
+import * as browser from "webextension-polyfill";
 
-async function init() {
-	const options = await optionsStorage.getAll();
-	const color =
-		"rgb(" +
-		options.colorRed +
-		", " +
-		options.colorGreen +
-		"," +
-		options.colorBlue +
-		")";
-	const text = options.text;
-	const notice = document.createElement("div");
-	notice.innerHTML = text;
-	document.body.append(notice);
-	notice.id = "text-notice";
-	notice.style.border = "2px solid " + color;
-	notice.style.color = color;
-}
-
-init();
+// Sending a message is always done to your extension or to a different extension.
+// So we send a message to an event listener on a background script.
+browser.runtime
+	.sendMessage("** Message from content **")
+	.then((response) => {
+		console.log("Response");
+		console.log(response);
+	})
+	.catch((error) => {
+		console.log(error);
+	});
