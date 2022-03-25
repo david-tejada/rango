@@ -1,11 +1,3 @@
-// I need to disable some linting rules because I get strange linting errors.
-// Just until I figure out what's happening
-/* eslint-disable 
-@typescript-eslint/no-unsafe-assignment,
-@typescript-eslint/no-unsafe-call,
-@typescript-eslint/restrict-template-expressions
-*/
-
 import optionsStorage from "./options-storage";
 
 async function init() {

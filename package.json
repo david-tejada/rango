@@ -56,6 +56,7 @@
 		"parcel": "^2.3.2",
 		"stylelint": "^14.6.0",
 		"stylelint-config-xo": "^0.21.0",
+		"typescript": "^4.6.3",
 		"xo": "^0.48.0"
 	},
 	"webExt": {
