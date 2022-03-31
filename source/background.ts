@@ -19,20 +19,29 @@ browser.runtime.onMessage.addListener(async (data, sender): Promise<string> => {
 	return "Background: Message from 'content' received";
 });
 
-const port = browser.runtime.connectNative("rango");
-console.log(port);
-
-port.onMessage.addListener((response) => {
-	console.log(response);
-	// browser.tabs.executeScript({
-	//   code: getClickScript(response.target),
-	// });
-});
-
 browser.commands.onCommand.addListener((command) => {
 	if (command === "get-talon-request") {
-		console.log("Sending:  ping");
-		port.postMessage("ping");
+		navigator.clipboard
+			.readText()
+			.then((clipText) => {
+				console.log(clipText);
+				const responseObject = {
+					type: "response",
+					clickables: ["test"],
+				};
+				const response = JSON.stringify(responseObject);
+				navigator.clipboard
+					.writeText(response)
+					.then(() => {
+						console.log("Clipboard updated with response");
+					})
+					.catch((error) => {
+						console.log(error);
+					});
+			})
+			.catch((error) => {
+				console.log(error);
+			});
 	}
 
 	if (command == "insert-viewport-mark") {

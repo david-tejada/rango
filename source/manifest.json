@@ -1,11 +1,11 @@
 {
-	"name": "rango",
-	"version": "0.0.0",
+	"name": "Rango",
+	"version": "0.0.1",
 	"description": "Extension that allows you to interact with webpages using your voice and talon",
 	"homepage_url": "https://github.com/david-tejada/rango",
 	"manifest_version": 2,
 	"minimum_chrome_version": "80",
-	"applications": {
+	"browser_specific_settings": {
 		"gecko": {
 			"id": "rango@david-tejada",
 			"strict_min_version": "80.0"
@@ -14,7 +14,7 @@
 	"icons": {
 		"128": "icon.png"
 	},
-	"permissions": ["nativeMessaging", "storage", "activeTab"],
+	"permissions": ["storage", "activeTab", "clipboardRead", "clipboardWrite"],
 	"content_scripts": [
 		{
 			"matches": ["<all_urls>"],
@@ -37,24 +37,15 @@
 		"scripts": ["background.ts"]
 	},
 	"commands": {
-		"_execute_action": {
-			"suggested_key": {
-				"windows": "Ctrl+Shift+Y",
-				"mac": "Command+Shift+Y",
-				"chromeos": "Ctrl+Shift+U",
-				"linux": "Ctrl+Shift+9"
-			},
-			"description": "Just testing that commands work"
-		},
 		"get-talon-request": {
 			"suggested_key": {
-				"default": "Ctrl+Alt+P"
+				"default": "Alt+Shift+P"
 			},
 			"description": "Give the signal to the native app to get the request"
 		},
 		"insert-viewport-mark": {
 			"suggested_key": {
-				"default": "Ctrl+Alt+U"
+				"default": "Alt+Shift+U"
 			},
 			"description": "Draw the dots"
 		}
