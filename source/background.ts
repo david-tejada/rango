@@ -20,21 +20,25 @@ browser.runtime.onMessage.addListener(async (data, sender): Promise<string> => {
 });
 
 browser.commands.onCommand.addListener(async (command) => {
-	if (command === "get-talon-request") {
-		const clipText = await navigator.clipboard.readText();
-		console.log(clipText);
-		const responseObject = {
-			type: "response",
-			clickables: ["test"],
-		};
-		const response = JSON.stringify(responseObject);
-		await navigator.clipboard.writeText(response);
-		console.log("Clipboard updated with response");
-	}
+	try {
+		if (command === "get-talon-request") {
+			const clipText = await navigator.clipboard.readText();
+			console.log(clipText);
+			const responseObject = {
+				type: "response",
+				clickables: ["test"],
+			};
+			const response = JSON.stringify(responseObject);
+			await navigator.clipboard.writeText(response);
+			console.log("Clipboard updated with response");
+		}
 
-	if (command == "insert-viewport-mark") {
-		await browser.tabs.executeScript({
-			file: "insert-viewport-mark.js",
-		});
+		if (command == "insert-viewport-mark") {
+			await browser.tabs.executeScript({
+				file: "insert-viewport-mark.js",
+			});
+		}
+	} catch (error: unknown) {
+		console.log(error);
 	}
 });
