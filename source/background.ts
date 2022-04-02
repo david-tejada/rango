@@ -2,6 +2,14 @@
 import "./options-storage";
 import * as browser from "webextension-polyfill";
 
+interface Request {
+	type: string;
+	action: {
+		type: string;
+		target: string | number;
+	};
+}
+
 // 	This gets triggered whenever a command is executed, it has to be on a background
 // script.
 browser.commands.onCommand.addListener((command) => {
@@ -24,6 +32,19 @@ browser.commands.onCommand.addListener(async (command) => {
 		if (command === "get-talon-request") {
 			const clipText = await navigator.clipboard.readText();
 			console.log(clipText);
+			const activeTabs = await browser.tabs.query({
+				currentWindow: true,
+				active: true,
+			});
+			const request = JSON.parse(clipText) as Request;
+			// Send the request to the active tab
+			const activeTab = activeTabs[0];
+			console.log(activeTab);
+			const contentResponse = (await browser.tabs.sendMessage(
+				activeTab!.id!,
+				request
+			)) as { response: string };
+			console.log(contentResponse);
 			const responseObject = {
 				type: "response",
 				clickables: ["test"],
