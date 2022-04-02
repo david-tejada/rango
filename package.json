@@ -63,7 +63,7 @@
 		"sourceDir": "distribution",
 		"run": {
 			"startUrl": [
-				"https://github.com/fregante/browser-extension-template"
+				"https://en.wikipedia.org/wiki/Main_Page"
 			]
 		}
 	}
