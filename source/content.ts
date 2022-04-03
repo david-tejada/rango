@@ -54,7 +54,7 @@ function main() {
 					const hint = document.createElement("div");
 					const styles = {
 						zIndex: "99999",
-						position: "absolute",
+						position: "fixed",
 						background: "#333",
 						borderRadius: "10%",
 						color: "#fff",
