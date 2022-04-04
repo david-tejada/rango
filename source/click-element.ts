@@ -1,7 +1,10 @@
 import { displayHints, clearHints, setHints, getHints } from "./hints";
-import getVisibleClickableElements from "./clickable-elements";
+import {
+	observeClickableElements,
+	visibleClickableElements,
+} from "./clickable-elements";
 
-const visibleClickableElements = getVisibleClickableElements();
+observeClickableElements();
 
 export function clickElementByText(text: string): void {
 	clearHints();

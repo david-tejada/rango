@@ -9,4 +9,8 @@ browser.runtime.onMessage.addListener(async (request) => {
 	if (request.action.type === "clickElementByHint") {
 		clickElementByHint(request.action.target);
 	}
+
+	if (request.action.type === "showAllHints") {
+		clickElementByText("");
+	}
 });
