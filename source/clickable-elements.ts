@@ -24,7 +24,7 @@ export default function getVisibleClickableElements() {
 	const options = {
 		root: null,
 		rootMargin: "0px",
-		threshold: 1,
+		threshold: 0,
 	};
 
 	const intersectionObserver = new IntersectionObserver((entries) => {
@@ -58,14 +58,18 @@ export default function getVisibleClickableElements() {
 		console.log(
 			`Rango: ${millisecondsSinceLastUpdate} milliseconds since last update`
 		);
-		if (millisecondsSinceLastUpdate > 250) {
-			console.log("Rango: Updating clickable elements");
-			const additionalClickableElements = document.querySelectorAll(
-				clickableSelectors.join(", ")
-			);
-			for (const element of additionalClickableElements) {
-				intersectionObserver.observe(element);
-			}
+		if (millisecondsSinceLastUpdate > 500) {
+			// We need to wrap this in a timeout to make sure we update the elements after the last
+			// mutation events
+			setTimeout(() => {
+				console.log("Rango: Updating clickable elements");
+				const additionalClickableElements = document.querySelectorAll(
+					clickableSelectors.join(", ")
+				);
+				for (const element of additionalClickableElements) {
+					intersectionObserver.observe(element);
+				}
+			}, 500);
 
 			timeLastUpdate = Date.now();
 		}
@@ -80,4 +84,5 @@ export default function getVisibleClickableElements() {
 	return visibleClickableElements;
 }
 
-function addClickableElements() {}
+// Maybe I need to be able to return the mutation observer so I can disconnect it whenever
+// tab becomes inactive to free resources. I'll have to watch the extension performance
