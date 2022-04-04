@@ -1,65 +1,43 @@
 // eslint-disable-next-line import/no-unassigned-import
 import "./options-storage";
 import * as browser from "webextension-polyfill";
+import { Message } from "./types";
 
-interface Request {
-	type: string;
-	action: {
-		type: string;
-		target: string | number;
-	};
-}
+browser.commands.onCommand.addListener(async (command: string) => {
+	if (command === "get-talon-request") {
+		try {
+			const request = await getMessageFromClipboard();
+			await sendMessageToActiveTab(request);
+		} catch (error: unknown) {
+			let errorMessage = "Error: There was an error";
+			if (error instanceof Error) {
+				errorMessage = error.message;
+			}
 
-// 	This gets triggered whenever a command is executed, it has to be on a background
-// script.
-browser.commands.onCommand.addListener((command) => {
-	console.log(command);
-	console.log("Command executed");
-});
-
-// This is the listener that gets triggered whenever a sendMessage function is
-// called from the content script
-browser.runtime.onMessage.addListener(async (data, sender): Promise<string> => {
-	console.log("Data:\n");
-	console.log(data);
-	console.log("Sender:\n");
-	console.log(sender);
-	return "Background: Message from 'content' received";
-});
-
-browser.commands.onCommand.addListener(async (command) => {
-	try {
-		if (command === "get-talon-request") {
-			const clipText = await navigator.clipboard.readText();
-			console.log(clipText);
-			const activeTabs = await browser.tabs.query({
-				currentWindow: true,
-				active: true,
-			});
-			const request = JSON.parse(clipText) as Request;
-			// Send the request to the active tab
-			const activeTab = activeTabs[0];
-			console.log(activeTab);
-			const contentResponse = (await browser.tabs.sendMessage(
-				activeTab!.id!,
-				request
-			)) as { response: string };
-			console.log(contentResponse);
-			const responseObject = {
-				type: "response",
-				clickables: ["test"],
-			};
-			const response = JSON.stringify(responseObject);
-			await navigator.clipboard.writeText(response);
-			console.log("Clipboard updated with response");
+			console.log(errorMessage);
 		}
-
-		if (command == "insert-viewport-mark") {
-			await browser.tabs.executeScript({
-				file: "insert-viewport-mark.js",
-			});
-		}
-	} catch (error: unknown) {
-		console.log(error);
 	}
 });
+
+async function getMessageFromClipboard(): Promise<Message> {
+	const clipText = await navigator.clipboard.readText();
+	const request = JSON.parse(clipText) as Message;
+	if (request.type !== "request") {
+		throw new Error("Error: No request message present in the clipboard");
+	}
+
+	// We send the response so that talon can make sure the request was received
+	const response = JSON.stringify({ type: "response" } as Message);
+	await navigator.clipboard.writeText(response);
+
+	return request;
+}
+
+async function sendMessageToActiveTab(message: Message) {
+	const activeTabs = await browser.tabs.query({
+		currentWindow: true,
+		active: true,
+	});
+	const activeTab = activeTabs[0];
+	await browser.tabs.sendMessage(activeTab!.id!, message);
+}
