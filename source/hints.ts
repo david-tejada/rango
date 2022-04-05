@@ -19,7 +19,7 @@ export function displayHints() {
 		const top = rect.top;
 		const styles = {
 			zIndex: "99999",
-			position: "fixed",
+			position: "absolute",
 			background: "#333",
 			borderRadius: "10%",
 			color: "#fff",
@@ -28,8 +28,8 @@ export function displayHints() {
 			height: "auto",
 			lineHeight: "14px",
 			fontFamily: "monospace",
-			left: `${left}px`,
-			top: `${top}px`,
+			left: `${left + window.scrollX}px`,
+			top: `${top + window.scrollY}px`,
 		};
 		Object.assign(hint.style, styles);
 		hint.textContent = `${index}`;
