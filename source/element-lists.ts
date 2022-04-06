@@ -49,6 +49,9 @@ const mutationObserver = new MutationObserver(() => {
 				document.querySelectorAll("*");
 			for (const element of allElements) {
 				intersectionObserver.observe(element);
+				// We also need to update here in case some previously existing element
+				// updates its state. For example, when it becomes visible
+				updateElementLists(element, intersectingElements.has(element));
 			}
 		}, 500);
 
@@ -92,6 +95,8 @@ function updateElementLists(
 
 	if (isVisible(element)) {
 		visibleElements.add(element);
+	} else {
+		visibleElements.delete(element);
 	}
 
 	if (
