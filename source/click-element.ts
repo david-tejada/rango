@@ -1,16 +1,15 @@
 import { displayHints, clearHints, setHints, getHints } from "./hints";
-import {
-	observeClickableElements,
-	visibleClickableElements,
-} from "./clickable-elements";
-
-observeClickableElements();
+import { intersectingVisibleClickableElements } from "./element-lists";
 
 export function clickElementByText(text: string): void {
 	clearHints();
-	const choices = Array.from(visibleClickableElements).filter((a) => {
-		return a.textContent!.toLowerCase().includes(text.toLowerCase());
-	}) as HTMLElement[];
+	const choices = Array.from(intersectingVisibleClickableElements).filter(
+		(element) => {
+			const textToSearch = text.toLowerCase().replace(" ", "");
+			const textSearched = element.textContent!.toLowerCase().replace(" ", "");
+			return textSearched.includes(textToSearch);
+		}
+	);
 
 	if (choices.length > 1) {
 		setHints(choices);
