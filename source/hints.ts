@@ -1,20 +1,25 @@
-let hintElements: HTMLElement[];
+import { Hint } from "./types";
+
+let hints: Hint[];
 
 export function setHints(elements: HTMLElement[]) {
-	hintElements = elements;
+	hints = elements.map((element, index) => ({
+		element,
+		hintNode: document.createElement("div"),
+		text: index,
+	}));
 }
 
-export function getHints(): HTMLElement[] {
-	return hintElements;
+export function getHints(): Hint[] {
+	return hints;
 }
 
 export function displayHints() {
 	const hintsContainer = document.createElement("div");
 	hintsContainer.id = "hints-container";
 
-	for (const [index, element] of hintElements.entries()) {
-		const hint = document.createElement("div");
-		const rect = element.getBoundingClientRect();
+	for (const hint of hints) {
+		const rect = hint.element.getBoundingClientRect();
 		const left = rect.left;
 		const top = rect.top;
 		const styles = {
@@ -23,7 +28,7 @@ export function displayHints() {
 			background: "#333",
 			borderRadius: "10%",
 			color: "#fff",
-			padding: "6px",
+			padding: "2px",
 			width: "auto",
 			height: "auto",
 			lineHeight: "14px",
@@ -31,9 +36,9 @@ export function displayHints() {
 			left: `${left + window.scrollX}px`,
 			top: `${top + window.scrollY}px`,
 		};
-		Object.assign(hint.style, styles);
-		hint.textContent = `${index}`;
-		hintsContainer.append(hint);
+		Object.assign(hint.hintNode.style, styles);
+		hint.hintNode.textContent = `${hint.text}`;
+		hintsContainer.append(hint.hintNode);
 	}
 
 	document.body.append(hintsContainer);

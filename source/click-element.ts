@@ -19,11 +19,11 @@ export function clickElementByText(text: string): void {
 	}
 }
 
-export function clickElementByHint(hint: number) {
-	const choices = getHints();
-	const target = choices[hint];
-	if (target) {
-		clickElement(target);
+export function clickElementByHint(hintNumber: number) {
+	const hints = getHints();
+	const hint = hints[hintNumber];
+	if (hint) {
+		clickElement(hint.element);
 	}
 }
 
