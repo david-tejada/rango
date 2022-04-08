@@ -7,7 +7,9 @@ export interface Message {
 }
 
 export interface Hint {
+	type: string | undefined;
 	element: HTMLElement;
+	elementTextContent: string | undefined;
 	hintNode: HTMLElement;
 	text: number;
 }

@@ -1,17 +1,21 @@
 import { Hint } from "./types";
 
-let hints: Hint[];
+const hints: Set<Hint> = new Set();
 
 export function setHints(elements: HTMLElement[]) {
-	hints = elements.map((element, index) => ({
-		element,
-		hintNode: document.createElement("div"),
-		text: index,
-	}));
+	for (const [index, element] of elements.entries()) {
+		hints.add({
+			type: getElementType(element),
+			element,
+			elementTextContent: element.textContent ?? "",
+			hintNode: document.createElement("div"),
+			text: index,
+		});
+	}
 }
 
 export function getHints(): Hint[] {
-	return hints;
+	return Array.from(hints);
 }
 
 export function displayHints() {
@@ -45,8 +49,18 @@ export function displayHints() {
 }
 
 export function clearHints() {
+	hints.clear();
 	const hintsContainer = document.querySelector("div#hints-container");
 	if (hintsContainer) {
 		hintsContainer.remove();
 	}
+}
+
+function getElementType(element: HTMLElement) {
+	if (element.tagName === "BUTTON") return "button";
+	if (element.tagName === "A") return "a";
+	if (element.tagName === "INPUT") return "input";
+	if (element.getAttribute("role") === "treeitem") return "treeitem";
+	if (element.onclick !== null) return "onclick";
+	return undefined;
 }
