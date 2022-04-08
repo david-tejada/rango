@@ -65,8 +65,12 @@ function isClickable(element: HTMLElement): boolean {
 	return (
 		element.tagName === "BUTTON" ||
 		element.tagName === "A" ||
+		element.tagName === "INPUT" ||
+		element.getAttribute("role") === "button" ||
+		element.getAttribute("role") === "link" ||
+		element.getAttribute("role") === "treeitem" ||
 		element.onclick !== null ||
-		window.getComputedStyle(element).cursor === "pointer"
+		element.click !== null
 	);
 }
 
