@@ -25,7 +25,7 @@
 		{
 			"matches": ["https://*.no_url.com/*"],
 			"exclude_matches": ["https://*.no_url.com/*"],
-			"js": ["types.ts", "hints.ts", "click-element.ts", "element-lists.ts"]
+			"js": ["types.ts", "hints.ts", "click-element.ts", "observed-elements.ts"]
 		}
 	],
 	"options_ui": {
