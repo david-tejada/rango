@@ -6,25 +6,35 @@ export interface Message {
 	};
 }
 
-export interface Hint {
-	type: string | undefined;
-	element: HTMLElement;
-	elementTextContent: string | undefined;
-	hintNode: HTMLElement;
-	text: number;
+export interface HintConfig {
+	text: string;
+	clickableType?: ClickableType;
 }
 
+export type ClickableType =
+	| "button"
+	| "a"
+	| "input"
+	| "summary"
+	| "role:button"
+	| "role:link"
+	| "role:treeitem"
+	| "role:tab"
+	| "onclick"
+	| undefined;
+
 export interface ObservedElement {
-	node: Element;
-	hintNode: Element | undefined;
+	element: Element;
+	hintElement?: Element;
+	hintText?: string;
 	isIntersecting: boolean | undefined;
 	isVisible: boolean;
-	isClickable: boolean;
+	clickableType: ClickableType;
 }
 
 export interface ObservedElementConfig {
-	hintNode?: Element | undefined;
+	hintElement?: Element | undefined;
 	isIntersecting?: boolean;
-	isVisible?: boolean;
-	isClickable?: boolean;
+	updateVisible?: boolean;
+	updateClickable?: boolean;
 }

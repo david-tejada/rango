@@ -1,4 +1,4 @@
-import { ObservedElement, ObservedElementConfig } from "./types";
+import { ObservedElement, ClickableType } from "./types";
 
 export const observedElements: ObservedElement[] = [];
 
@@ -8,134 +8,123 @@ const options = {
 	rootMargin: "0px",
 	threshold: 0,
 };
+
 export const intersectionObserver = new IntersectionObserver((entries) => {
-	performance.mark("intersectionObserver");
 	for (const entry of entries) {
 		if (entry.isIntersecting) {
-			updateObservedElement(entry.target, { isIntersecting: true });
+			onIntersection(entry.target, true);
 		} else {
-			updateObservedElement(entry.target, { isIntersecting: false });
+			onIntersection(entry.target, false);
 		}
 	}
-
-	performance.measure("Intersection to update", "intersectionObserver");
 }, options);
 
-// We observe all the initial elements to see if they enter or exit the viewport
-performance.mark("allElements");
-const allElements = document.querySelectorAll("*");
-addObservedElements([...allElements]);
-performance.measure("Initial load of all elements", "allElements");
+// We observe all the initial elements before any mutation
+if (document.readyState === "complete") {
+	addObservedElement(document.body);
+} else {
+	window.addEventListener("load", () => {
+		addObservedElement(document.body);
+	});
+}
 
 // *** MUTATION OBSERVER ***
 
 const config = { attributes: true, childList: true, subtree: true };
-
 const mutationObserver = new MutationObserver((mutationList) => {
-	performance.mark("mutationObserver");
-	const addedElements: Element[] = [];
-	const removedElements: Element[] = [];
 	for (const mutationRecord of mutationList) {
 		if (mutationRecord.type === "childList") {
-			if (mutationRecord.addedNodes.length > 0) {
-				for (const node of mutationRecord.addedNodes as NodeListOf<Element>) {
-					addedElements.push(node);
-					const newNodes = node.querySelectorAll("*");
-					addedElements.concat([...newNodes]);
+			for (const node of mutationRecord.addedNodes as NodeListOf<Node>) {
+				if (node.nodeType === 1) {
+					addObservedElement(node as Element);
 				}
 			}
-
-			if (mutationRecord.removedNodes.length > 0) {
-				for (const node of mutationRecord.removedNodes as NodeListOf<Element>) {
-					removedElements.push(node);
-				}
-			}
+			// We don't care too much about removed nodes. I think it's going to be more expensive
+			// to remove them from our list of our observed elements than to do nothing
 		}
 
 		if (mutationRecord.type === "attributes") {
-			updateObservedElementAndChildren(mutationRecord.target);
+			onAttributeMutation(mutationRecord.target as Element);
 		}
 	}
-
-	addObservedElements(addedElements);
-	removeObservedElements(removedElements);
-	performance.measure("Mutation to update", "mutationObserver");
 });
 
+// We observe document instead of document.body in case the body gets replaced
 mutationObserver.observe(document, config);
 
-function isClickable(element: Element): boolean {
-	return (
-		element.tagName === "BUTTON" ||
-		element.tagName === "A" ||
-		element.tagName === "INPUT" ||
-		element.getAttribute("role") === "button" ||
-		element.getAttribute("role") === "link" ||
-		element.getAttribute("role") === "treeitem" ||
-		(element as HTMLElement).onclick !== null ||
-		(element as HTMLElement).click !== null
-	);
+// This function is here mostly for debugging purposes
+function getClickableType(element: Element): ClickableType {
+	const clickableTags = ["BUTTON", "A", "INPUT", "SUMMARY"];
+	const clickableRoles = ["button", "link", "treeitem", "tab"];
+	const elementTag = element.tagName;
+	const elementRole = element.getAttribute("role");
+
+	if (clickableTags.includes(elementTag)) {
+		return elementTag.toLowerCase() as ClickableType;
+	}
+
+	if (elementRole && clickableRoles.includes(elementRole)) {
+		return elementRole as ClickableType;
+	}
+
+	if ((element as HTMLElement).onclick !== null) {
+		return "onclick";
+	}
+
+	return undefined;
 }
 
-// We need to check for visibility whenever the node or one of its ancestors changes attributes
 function isVisible(element: Element): boolean {
+	const rect = element.getBoundingClientRect();
 	return (
 		window.getComputedStyle(element).visibility !== "hidden" &&
 		window.getComputedStyle(element).display !== "none" &&
-		Number.parseFloat(window.getComputedStyle(element).opacity) > 0.1
+		Number.parseFloat(window.getComputedStyle(element).opacity) > 0.1 &&
+		rect.width + rect.height > 10
 	);
 }
 
-function updateObservedElement(
-	element: Element,
-	config: ObservedElementConfig
-): void {
-	const match = observedElements.find(
-		(observedElement) => observedElement.node === element
-	);
-
-	if (match) {
-		match.hintNode = config.hintNode ?? match.hintNode;
-		match.isIntersecting = config.isIntersecting ?? match.isIntersecting;
-		match.isVisible = isVisible(element);
-		match.isClickable = isClickable(element);
-	}
-}
-
-function updateObservedElementAndChildren(element: Element) {
-	updateObservedElement(element, {});
-	const descendants = element.querySelectorAll("*");
-	for (const descendant of descendants) {
-		updateObservedElement(descendant, {});
-	}
-}
-
-function addObservedElements(elements: Element[]) {
-	for (const element of elements) {
-		intersectionObserver.observe(element);
+function addObservedElement(element: Element) {
+	// For now we observe all the elements, in the future we might want to select which ones we observe
+	const elementAndDescendants = [element, ...element.querySelectorAll("*")];
+	for (const elementToAdd of elementAndDescendants) {
+		intersectionObserver.observe(elementToAdd);
 		observedElements.push({
-			node: element,
-			hintNode: undefined,
+			element: elementToAdd,
 			isIntersecting: undefined,
-			isVisible: isVisible(element),
-			isClickable: isClickable(element),
+			isVisible: isVisible(elementToAdd),
+			clickableType: getClickableType(elementToAdd),
 		});
 	}
 }
 
-function removeObservedElements(elements: Element[]) {
-	function removeObservedElement(element: Element) {
-		const matchIndex = observedElements.findIndex(
-			(observedElement) => observedElement.node === element
-		);
-		observedElements.splice(matchIndex, 1);
+function getObservedElement(element: Element): ObservedElement | undefined {
+	return observedElements.find(
+		(ObservedElement) => ObservedElement.element === element
+	);
+}
+
+function onIntersection(element: Element, isIntersecting: boolean): void {
+	const observedElement = getObservedElement(element);
+
+	// We should always have a match but just to be extra sure we check it
+	if (observedElement) {
+		observedElement.isIntersecting = isIntersecting;
+		observedElement.isVisible = isVisible(element);
+	}
+}
+
+function onAttributeMutation(element: Element) {
+	const observedElement = getObservedElement(element);
+	if (observedElement) {
+		observedElement.isVisible = isVisible(element);
+		observedElement.clickableType = getClickableType(element);
 	}
 
-	for (const element of elements) {
-		removeObservedElement(element);
-		const descendants = element.querySelectorAll("*");
-		for (const descendant of descendants) {
-			removeObservedElement(descendant);
+	for (const descendant of element.querySelectorAll("*")) {
+		const observedDescendantElement = getObservedElement(descendant);
+		if (observedDescendantElement) {
+			observedDescendantElement.isVisible = isVisible(descendant);
 		}
 	}
 }

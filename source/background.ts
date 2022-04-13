@@ -1,6 +1,6 @@
 // eslint-disable-next-line import/no-unassigned-import
 import "./options-storage";
-import * as browser from "webextension-polyfill";
+import browser from "webextension-polyfill";
 import { Message } from "./types";
 
 browser.commands.onCommand.addListener(async (command: string) => {

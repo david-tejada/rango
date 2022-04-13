@@ -1,7 +1,6 @@
-import * as browser from "webextension-polyfill";
+import browser from "webextension-polyfill";
 import { clickElementByText, clickElementByHint } from "./click-element";
-import { setHints, displayHints } from "./hints";
-import { intersectingVisibleClickableElements } from "./element-lists";
+import { displayHints } from "./hints";
 
 browser.runtime.onMessage.addListener(async (request) => {
 	if (request.action.type === "clickElementByText") {
@@ -13,7 +12,6 @@ browser.runtime.onMessage.addListener(async (request) => {
 	}
 
 	if (request.action.type === "showAllHints") {
-		setHints(Array.from(intersectingVisibleClickableElements));
 		displayHints();
 	}
 });

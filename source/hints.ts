@@ -1,28 +1,35 @@
-import { Hint } from "./types";
+import { HintConfig } from "./types";
+import { observedElements } from "./observed-elements";
 
-const hints: Set<Hint> = new Set();
+const hintsContainer = document.createElement("div");
+hintsContainer.id = "hints-container";
 
-export function setHints(elements: HTMLElement[]) {
-	for (const [index, element] of elements.entries()) {
-		hints.add({
-			type: getElementType(element),
-			element,
-			elementTextContent: element.textContent ?? "",
-			hintNode: document.createElement("div"),
-			text: index,
-		});
-	}
-}
+export function displayHints(config?: HintConfig) {
+	performance.mark("start displayHints");
+	console.log(observedElements);
 
-export function getHints(): Hint[] {
-	return Array.from(hints);
-}
+	const hints = observedElements.filter((ObservedElement) => {
+		if (config?.text) {
+			return (
+				ObservedElement.clickableType &&
+				ObservedElement.isIntersecting &&
+				ObservedElement.isVisible &&
+				ObservedElement.element.textContent?.toLowerCase().includes(config.text)
+			);
+		}
 
-export function displayHints() {
-	const hintsContainer = document.createElement("div");
-	hintsContainer.id = "hints-container";
+		return (
+			ObservedElement.clickableType &&
+			ObservedElement.isIntersecting &&
+			ObservedElement.isVisible
+		);
+	});
 
-	for (const hint of hints) {
+	for (const [index, hint] of hints.entries()) {
+		if (!hint.hintElement) {
+			hint.hintElement = document.createElement("div");
+		}
+
 		const rect = hint.element.getBoundingClientRect();
 		const left = rect.left;
 		const top = rect.top;
@@ -35,32 +42,23 @@ export function displayHints() {
 			padding: "2px",
 			width: "auto",
 			height: "auto",
-			lineHeight: "14px",
+			lineHeight: "10px",
 			fontFamily: "monospace",
-			left: `${left + window.scrollX}px`,
-			top: `${top + window.scrollY}px`,
+			fontSize: "10px",
+			left: `${left + window.scrollX - 10}px`,
+			top: `${top + window.scrollY - 10}px`,
 		};
-		Object.assign(hint.hintNode.style, styles);
-		hint.hintNode.textContent = `${hint.text}`;
-		hintsContainer.append(hint.hintNode);
+		Object.assign((hint.hintElement as HTMLElement).style, styles);
+		hint.hintElement.textContent = `${index}`;
+		hint.hintText = `${index}`;
+		hintsContainer.append(hint.hintElement);
 	}
 
+	console.log(hints);
 	document.body.append(hintsContainer);
+	performance.measure("Hints", "start displayHints");
 }
 
 export function clearHints() {
-	hints.clear();
-	const hintsContainer = document.querySelector("div#hints-container");
-	if (hintsContainer) {
-		hintsContainer.remove();
-	}
-}
-
-function getElementType(element: HTMLElement) {
-	if (element.tagName === "BUTTON") return "button";
-	if (element.tagName === "A") return "a";
-	if (element.tagName === "INPUT") return "input";
-	if (element.getAttribute("role") === "treeitem") return "treeitem";
-	if (element.onclick !== null) return "onclick";
-	return undefined;
+	hintsContainer.innerHTML = "";
 }
