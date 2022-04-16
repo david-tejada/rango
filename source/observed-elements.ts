@@ -84,17 +84,25 @@ function isVisible(element: Element): boolean {
 	);
 }
 
+function hasTextNodesChildren(element: Element) {
+	return [...element.childNodes].some(
+		(node) => node.nodeType === 3 && /\S/.test(node.textContent!)
+	);
+}
+
 function addObservedElement(element: Element) {
-	// For now we observe all the elements, in the future we might want to select which ones we observe
 	const elementAndDescendants = [element, ...element.querySelectorAll("*")];
 	for (const elementToAdd of elementAndDescendants) {
-		intersectionObserver.observe(elementToAdd);
-		observedElements.push({
-			element: elementToAdd,
-			isIntersecting: undefined,
-			isVisible: isVisible(elementToAdd),
-			clickableType: getClickableType(elementToAdd),
-		});
+		const clickableType = getClickableType(elementToAdd);
+		if (clickableType || hasTextNodesChildren(elementToAdd)) {
+			intersectionObserver.observe(elementToAdd);
+			observedElements.push({
+				element: elementToAdd,
+				isIntersecting: undefined,
+				isVisible: isVisible(elementToAdd),
+				clickableType: getClickableType(elementToAdd),
+			});
+		}
 	}
 }
 
