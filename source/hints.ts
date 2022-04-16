@@ -1,11 +1,9 @@
 import { HintConfig } from "./types";
 import { observedElements } from "./observed-elements";
 
-const hintsContainer = document.createElement("div");
-hintsContainer.id = "hints-container";
-
 export function displayHints(config?: HintConfig) {
-	performance.mark("start displayHints");
+	const hintsContainer = document.createElement("div");
+	hintsContainer.id = "rango-hints-container";
 	console.log(observedElements);
 
 	const hints = observedElements.filter((ObservedElement) => {
@@ -56,9 +54,8 @@ export function displayHints(config?: HintConfig) {
 
 	console.log(hints);
 	document.body.append(hintsContainer);
-	performance.measure("Hints", "start displayHints");
 }
 
 export function clearHints() {
-	hintsContainer.innerHTML = "";
+	document.querySelector("#rango-hints-container")?.remove();
 }
