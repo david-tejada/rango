@@ -58,7 +58,10 @@ export function displayHints(observedElements: ObservedElement[]) {
 				};
 				Object.assign((hint.hintElement as HTMLElement).style, styles);
 				hint.hintElement.textContent = `${index}`;
-				hint.hintElement.className = "hint";
+				hint.hintElement.className = "rango-hint";
+				hint.hintElement.classList.add(
+					isPageDark() ? "rango-hint-dark" : "rango-hint-light"
+				);
 				hint.hintText = `${index}`;
 				hintsContainer.append(hint.hintElement);
 			}
@@ -68,4 +71,16 @@ export function displayHints(observedElements: ObservedElement[]) {
 			document.body.append(hintsContainer);
 		}, 300);
 	}
+}
+
+function isPageDark() {
+	const backgroundColor = window.getComputedStyle(
+		document.body
+	).backgroundColor;
+	const [red, green, blue] = backgroundColor
+		.replace(/[^\d,]/g, "")
+		.split(",")
+		.map((v) => Number(v));
+	const luma = 0.2126 * red! + 0.7152 * green! + 0.0722 * blue!;
+	return luma < 40;
 }
