@@ -1,0 +1,13 @@
+.hint {
+	z-index: 99999;
+	position: absolute;
+	background: #333;
+	border-radius: 10%;
+	color: #fff;
+	padding: 2px;
+	width: auto;
+	height: auto;
+	line-height: 10px;
+	font-family: "monospace";
+	font-size: 10px;
+}

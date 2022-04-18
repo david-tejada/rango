@@ -54,22 +54,12 @@ export function displayHints(observedElements: ObservedElement[]) {
 				}
 
 				const styles = {
-					zIndex: "99999",
-					position: "absolute",
-					background: "#333",
-					borderRadius: "10%",
-					color: "#fff",
-					padding: "2px",
-					width: "auto",
-					height: "auto",
-					lineHeight: "10px",
-					fontFamily: "monospace",
-					fontSize: "10px",
 					left: `${hintLeft}px`,
 					top: `${hintTop}px`,
 				};
 				Object.assign((hint.hintElement as HTMLElement).style, styles);
 				hint.hintElement.textContent = `${index}`;
+				hint.hintElement.className = "hint";
 				hint.hintText = `${index}`;
 				hintsContainer.append(hint.hintElement);
 			}
