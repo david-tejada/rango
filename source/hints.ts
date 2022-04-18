@@ -29,8 +29,30 @@ export function displayHints(observedElements: ObservedElement[]) {
 				}
 
 				const rect = hint.element.getBoundingClientRect();
-				const left = rect.left;
-				const top = rect.top;
+				let hintLeft =
+					rect.left +
+					window.scrollX +
+					Number.parseInt(
+						window.getComputedStyle(hint.element).paddingLeft,
+						10
+					) -
+					10;
+				if (hintLeft < 0) {
+					hintLeft = 0;
+				}
+
+				let hintTop =
+					rect.top +
+					window.scrollY +
+					Number.parseInt(
+						window.getComputedStyle(hint.element).paddingTop,
+						10
+					) -
+					10;
+				if (hintTop < 0) {
+					hintTop = 0;
+				}
+
 				const styles = {
 					zIndex: "99999",
 					position: "absolute",
@@ -43,8 +65,8 @@ export function displayHints(observedElements: ObservedElement[]) {
 					lineHeight: "10px",
 					fontFamily: "monospace",
 					fontSize: "10px",
-					left: `${left + window.scrollX - 10}px`,
-					top: `${top + window.scrollY - 10}px`,
+					left: `${hintLeft}px`,
+					top: `${hintTop}px`,
 				};
 				Object.assign((hint.hintElement as HTMLElement).style, styles);
 				hint.hintElement.textContent = `${index}`;
