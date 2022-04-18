@@ -1,14 +1,14 @@
 .rango-hint {
-	z-index: 99999;
+	z-index: 101;
 	position: absolute;
 	border-radius: 30%;
-	box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
+	box-shadow: rgba(0 0 0 / 24%) 0 3px 8px;
 	padding: 2px;
 	width: auto;
 	/* height: 18px; */
 	/* line-height: 18px; */
 	text-align: center;
-	font-family: "monospace";
+	font-family: monospace;
 	font-size: 10px;
 }
 
