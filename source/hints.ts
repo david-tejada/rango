@@ -7,9 +7,9 @@ export function displayHints(observedElements: ObservedElement[]) {
 	// when there are multiple mutations or intersections happening
 	if (!hintsUpdateTriggered) {
 		hintsUpdateTriggered = true;
+		document.querySelector("#rango-hints-container")?.remove();
 		setTimeout(() => {
 			hintsUpdateTriggered = false;
-			document.querySelector("#rango-hints-container")?.remove();
 
 			const hintsContainer = document.createElement("div");
 			hintsContainer.id = "rango-hints-container";
