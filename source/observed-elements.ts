@@ -1,4 +1,5 @@
 import { ObservedElement, ClickableType } from "./types";
+import { displayHints } from "./hints";
 
 export const observedElements: ObservedElement[] = [];
 
@@ -10,6 +11,7 @@ const options = {
 };
 
 export const intersectionObserver = new IntersectionObserver((entries) => {
+	displayHints(observedElements);
 	for (const entry of entries) {
 		if (entry.isIntersecting) {
 			onIntersection(entry.target, true);
@@ -22,9 +24,11 @@ export const intersectionObserver = new IntersectionObserver((entries) => {
 // We observe all the initial elements before any mutation
 if (document.readyState === "complete") {
 	addObservedElement(document.body);
+	displayHints(observedElements);
 } else {
 	window.addEventListener("load", () => {
 		addObservedElement(document.body);
+		displayHints(observedElements);
 	});
 }
 
@@ -35,7 +39,11 @@ const mutationObserver = new MutationObserver((mutationList) => {
 	for (const mutationRecord of mutationList) {
 		if (mutationRecord.type === "childList") {
 			for (const node of mutationRecord.addedNodes as NodeListOf<Node>) {
-				if (node.nodeType === 1) {
+				if (
+					node.nodeType === 1 &&
+					(node as Element).id !== "rango-hints-container"
+				) {
+					displayHints(observedElements);
 					addObservedElement(node as Element);
 				}
 			}
@@ -136,3 +144,11 @@ function onAttributeMutation(element: Element) {
 		}
 	}
 }
+
+document.addEventListener("scroll", () => {
+	displayHints(observedElements);
+});
+
+visualViewport.addEventListener("resize", () => {
+	displayHints(observedElements);
+});
