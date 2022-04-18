@@ -7,7 +7,6 @@ export function displayHints(observedElements: ObservedElement[]) {
 	// when there are multiple mutations or intersections happening
 	if (!hintsUpdateTriggered) {
 		hintsUpdateTriggered = true;
-		document.querySelector("#rango-hints-container")?.remove();
 		setTimeout(() => {
 			hintsUpdateTriggered = false;
 
@@ -65,7 +64,8 @@ export function displayHints(observedElements: ObservedElement[]) {
 			}
 
 			console.log(hints);
+			document.querySelector("#rango-hints-container")?.remove();
 			document.body.append(hintsContainer);
-		}, 300);
+		}, 50);
 	}
 }
