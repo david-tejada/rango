@@ -66,6 +66,6 @@ export function displayHints(observedElements: ObservedElement[]) {
 			console.log(hints);
 			document.querySelector("#rango-hints-container")?.remove();
 			document.body.append(hintsContainer);
-		}, 50);
+		}, 300);
 	}
 }
