@@ -6,11 +6,6 @@ export interface Message {
 	};
 }
 
-export interface HintConfig {
-	text: string;
-	clickableType?: ClickableType;
-}
-
 export type ClickableType =
 	| "button"
 	| "a"
