@@ -9,7 +9,7 @@ export function displayHints(observedElements: ObservedElement[]) {
 		hintsUpdateTriggered = true;
 		setTimeout(() => {
 			hintsUpdateTriggered = false;
-
+			document.querySelector("#rango-hints-container")?.remove();
 			const hintsContainer = document.createElement("div");
 			hintsContainer.id = "rango-hints-container";
 			console.log(observedElements);
@@ -67,7 +67,6 @@ export function displayHints(observedElements: ObservedElement[]) {
 			}
 
 			console.log(hints);
-			document.querySelector("#rango-hints-container")?.remove();
 			document.body.append(hintsContainer);
 		}, 300);
 	}

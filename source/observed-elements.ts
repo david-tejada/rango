@@ -11,7 +11,6 @@ const options = {
 };
 
 export const intersectionObserver = new IntersectionObserver((entries) => {
-	displayHints(observedElements);
 	for (const entry of entries) {
 		if (entry.isIntersecting) {
 			onIntersection(entry.target, true);
@@ -19,6 +18,8 @@ export const intersectionObserver = new IntersectionObserver((entries) => {
 			onIntersection(entry.target, false);
 		}
 	}
+
+	displayHints(observedElements);
 }, options);
 
 // We observe all the initial elements before any mutation
@@ -41,10 +42,10 @@ const mutationObserver = new MutationObserver((mutationList) => {
 			for (const node of mutationRecord.addedNodes as NodeListOf<Node>) {
 				if (
 					node.nodeType === 1 &&
-					(node as Element).id !== "rango-hints-container"
+					!(node as Element).id.includes("rango-hints-container")
 				) {
-					displayHints(observedElements);
 					addObservedElement(node as Element);
+					displayHints(observedElements);
 				}
 			}
 			// We don't care too much about removed nodes. I think it's going to be more expensive
@@ -125,6 +126,8 @@ function onIntersection(element: Element, isIntersecting: boolean): void {
 
 	// We should always have a match but just to be extra sure we check it
 	if (observedElement) {
+		observedElement.hintElement = undefined;
+		observedElement.hintText = undefined;
 		observedElement.isIntersecting = isIntersecting;
 		observedElement.isVisible = isVisible(element);
 	}
@@ -133,6 +136,8 @@ function onIntersection(element: Element, isIntersecting: boolean): void {
 function onAttributeMutation(element: Element) {
 	const observedElement = getObservedElement(element);
 	if (observedElement) {
+		observedElement.hintElement = undefined;
+		observedElement.hintText = undefined;
 		observedElement.isVisible = isVisible(element);
 		observedElement.clickableType = getClickableType(element);
 	}
@@ -140,6 +145,8 @@ function onAttributeMutation(element: Element) {
 	for (const descendant of element.querySelectorAll("*")) {
 		const observedDescendantElement = getObservedElement(descendant);
 		if (observedDescendantElement) {
+			observedDescendantElement.hintElement = undefined;
+			observedDescendantElement.hintText = undefined;
 			observedDescendantElement.isVisible = isVisible(descendant);
 		}
 	}
@@ -149,6 +156,6 @@ document.addEventListener("scroll", () => {
 	displayHints(observedElements);
 });
 
-visualViewport.addEventListener("resize", () => {
+window.addEventListener("resize", () => {
 	displayHints(observedElements);
 });
