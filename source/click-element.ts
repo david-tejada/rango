@@ -4,7 +4,9 @@ export function clickElementByHint(hintNumber: number) {
 	const target = intersectingElements.find(
 		(intersectingElement) => intersectingElement.hintText === String(hintNumber)
 	);
-	if (target) {
+	if (target && target.element.tagName === "INPUT") {
+		(target.element as HTMLInputElement).focus();
+	} else if (target) {
 		clickElement(target.element as HTMLElement);
 	}
 }
