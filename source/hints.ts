@@ -12,6 +12,11 @@ export function displayHints(observedElements: ObservedElement[]) {
 			document.querySelector("#rango-hints-container")?.remove();
 			const hintsContainer = document.createElement("div");
 			hintsContainer.id = "rango-hints-container";
+			for (const observedElement of observedElements) {
+				observedElement.hintElement = undefined;
+				observedElement.hintText = undefined;
+			}
+
 			console.log(observedElements);
 
 			const hints = observedElements.filter((ObservedElement) => {

@@ -126,8 +126,6 @@ function onIntersection(element: Element, isIntersecting: boolean): void {
 
 	// We should always have a match but just to be extra sure we check it
 	if (observedElement) {
-		observedElement.hintElement = undefined;
-		observedElement.hintText = undefined;
 		observedElement.isIntersecting = isIntersecting;
 		observedElement.isVisible = isVisible(element);
 	}
@@ -136,8 +134,6 @@ function onIntersection(element: Element, isIntersecting: boolean): void {
 function onAttributeMutation(element: Element) {
 	const observedElement = getObservedElement(element);
 	if (observedElement) {
-		observedElement.hintElement = undefined;
-		observedElement.hintText = undefined;
 		observedElement.isVisible = isVisible(element);
 		observedElement.clickableType = getClickableType(element);
 	}
@@ -145,8 +141,6 @@ function onAttributeMutation(element: Element) {
 	for (const descendant of element.querySelectorAll("*")) {
 		const observedDescendantElement = getObservedElement(descendant);
 		if (observedDescendantElement) {
-			observedDescendantElement.hintElement = undefined;
-			observedDescendantElement.hintText = undefined;
 			observedDescendantElement.isVisible = isVisible(descendant);
 		}
 	}
