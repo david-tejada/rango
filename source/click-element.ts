@@ -1,4 +1,5 @@
 import { intersectingElements } from "./intersecting-elements";
+import { displayHints } from "./hints";
 
 export function clickElementByHint(hintNumber: number) {
 	const target = intersectingElements.find(
@@ -17,5 +18,8 @@ function clickElement(element: HTMLElement) {
 	setTimeout(() => {
 		element?.click();
 		element.style.outline = previousOutline;
+		// On some pages like codepen there are hints remaining after closing a popup panel.
+		// This is not a perfect solution but as long as the user clicks with voice I think we're safe
+		displayHints(intersectingElements);
 	}, 200);
 }
