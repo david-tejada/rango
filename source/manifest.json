@@ -25,7 +25,12 @@
 		{
 			"matches": ["https://*.no_url.com/*"],
 			"exclude_matches": ["https://*.no_url.com/*"],
-			"js": ["types.ts", "hints.ts", "click-element.ts", "observed-elements.ts"]
+			"js": [
+				"types.ts",
+				"hints.ts",
+				"click-element.ts",
+				"intersecting-elements.ts"
+			]
 		}
 	],
 	"options_ui": {

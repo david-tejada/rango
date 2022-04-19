@@ -1,8 +1,8 @@
-import { ObservedElement } from "./types";
+import { IntersectingElement } from "./types";
 
 let hintsUpdateTriggered = false;
 
-export function displayHints(observedElements: ObservedElement[]) {
+export function displayHints(intersectingElements: IntersectingElement[]) {
 	// We set a timeout in order to avoid updating the hints too often, for example,
 	// when there are multiple mutations or intersections happening
 	if (!hintsUpdateTriggered) {
@@ -12,18 +12,16 @@ export function displayHints(observedElements: ObservedElement[]) {
 			document.querySelector("#rango-hints-container")?.remove();
 			const hintsContainer = document.createElement("div");
 			hintsContainer.id = "rango-hints-container";
-			for (const observedElement of observedElements) {
-				observedElement.hintElement = undefined;
-				observedElement.hintText = undefined;
+			for (const intersectingElement of intersectingElements) {
+				intersectingElement.hintElement = undefined;
+				intersectingElement.hintText = undefined;
 			}
 
-			console.log(observedElements);
+			console.log(intersectingElements);
 
-			const hints = observedElements.filter((ObservedElement) => {
+			const hints = intersectingElements.filter((IntersectingElement) => {
 				return (
-					ObservedElement.clickableType &&
-					ObservedElement.isIntersecting &&
-					ObservedElement.isVisible
+					IntersectingElement.clickableType && IntersectingElement.isVisible
 				);
 			});
 

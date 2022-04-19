@@ -1,8 +1,8 @@
-import { observedElements } from "./observed-elements";
+import { intersectingElements } from "./intersecting-elements";
 
 export function clickElementByHint(hintNumber: number) {
-	const target = observedElements.find(
-		(observedElement) => observedElement.hintText === String(hintNumber)
+	const target = intersectingElements.find(
+		(intersectingElement) => intersectingElement.hintText === String(hintNumber)
 	);
 	if (target) {
 		clickElement(target.element as HTMLElement);

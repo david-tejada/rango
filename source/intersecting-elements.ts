@@ -1,7 +1,7 @@
-import { ObservedElement, ClickableType } from "./types";
+import { IntersectingElement, ClickableType } from "./types";
 import { displayHints } from "./hints";
 
-export const observedElements: ObservedElement[] = [];
+export const intersectingElements: IntersectingElement[] = [];
 
 // *** INTERSECTION OBSERVER ***
 const options = {
@@ -19,17 +19,17 @@ export const intersectionObserver = new IntersectionObserver((entries) => {
 		}
 	}
 
-	displayHints(observedElements);
+	displayHints(intersectingElements);
 }, options);
 
 // We observe all the initial elements before any mutation
 if (document.readyState === "complete") {
-	addObservedElement(document.body);
-	displayHints(observedElements);
+	addIntersectingElement(document.body);
+	displayHints(intersectingElements);
 } else {
 	window.addEventListener("load", () => {
-		addObservedElement(document.body);
-		displayHints(observedElements);
+		addIntersectingElement(document.body);
+		displayHints(intersectingElements);
 	});
 }
 
@@ -44,8 +44,8 @@ const mutationObserver = new MutationObserver((mutationList) => {
 					node.nodeType === 1 &&
 					!(node as Element).id.includes("rango-hints-container")
 				) {
-					addObservedElement(node as Element);
-					displayHints(observedElements);
+					addIntersectingElement(node as Element);
+					displayHints(intersectingElements);
 				}
 			}
 			// We don't care too much about removed nodes. I think it's going to be more expensive
@@ -99,47 +99,54 @@ function hasTextNodesChildren(element: Element) {
 	);
 }
 
-function addObservedElement(element: Element) {
+function addIntersectingElement(element: Element) {
 	const elementAndDescendants = [element, ...element.querySelectorAll("*")];
 	for (const elementToAdd of elementAndDescendants) {
 		const clickableType = getClickableType(elementToAdd);
 		if (clickableType || hasTextNodesChildren(elementToAdd)) {
 			intersectionObserver.observe(elementToAdd);
-			observedElements.push({
-				element: elementToAdd,
-				isIntersecting: undefined,
-				isVisible: isVisible(elementToAdd),
-				clickableType: getClickableType(elementToAdd),
-			});
 		}
 	}
 }
 
-function getObservedElement(element: Element): ObservedElement | undefined {
-	return observedElements.find(
-		(ObservedElement) => ObservedElement.element === element
+function getIntersectingElement(
+	element: Element
+): IntersectingElement | undefined {
+	return intersectingElements.find(
+		(IntersectingElement) => IntersectingElement.element === element
 	);
 }
 
-function onIntersection(element: Element, isIntersecting: boolean): void {
-	const observedElement = getObservedElement(element);
+function removeIntersectingElement(element: Element) {
+	const intersectingElementIndex = intersectingElements.findIndex(
+		(IntersectingElement) => IntersectingElement.element === element
+	);
+	if (intersectingElementIndex > -1) {
+		intersectingElements.splice(intersectingElementIndex, 1);
+	}
+}
 
-	// We should always have a match but just to be extra sure we check it
-	if (observedElement) {
-		observedElement.isIntersecting = isIntersecting;
-		observedElement.isVisible = isVisible(element);
+function onIntersection(element: Element, isIntersecting: boolean): void {
+	if (isIntersecting) {
+		intersectingElements.push({
+			element,
+			isVisible: isVisible(element),
+			clickableType: getClickableType(element),
+		});
+	} else {
+		removeIntersectingElement(element);
 	}
 }
 
 function onAttributeMutation(element: Element) {
-	const observedElement = getObservedElement(element);
-	if (observedElement) {
-		observedElement.isVisible = isVisible(element);
-		observedElement.clickableType = getClickableType(element);
+	const intersectingElement = getIntersectingElement(element);
+	if (intersectingElement) {
+		intersectingElement.isVisible = isVisible(element);
+		intersectingElement.clickableType = getClickableType(element);
 	}
 
 	for (const descendant of element.querySelectorAll("*")) {
-		const observedDescendantElement = getObservedElement(descendant);
+		const observedDescendantElement = getIntersectingElement(descendant);
 		if (observedDescendantElement) {
 			observedDescendantElement.isVisible = isVisible(descendant);
 		}
@@ -147,9 +154,9 @@ function onAttributeMutation(element: Element) {
 }
 
 document.addEventListener("scroll", () => {
-	displayHints(observedElements);
+	displayHints(intersectingElements);
 });
 
 window.addEventListener("resize", () => {
-	displayHints(observedElements);
+	displayHints(intersectingElements);
 });

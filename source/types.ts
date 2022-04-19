@@ -18,16 +18,15 @@ export type ClickableType =
 	| "onclick"
 	| undefined;
 
-export interface ObservedElement {
+export interface IntersectingElement {
 	element: Element;
 	hintElement?: Element;
 	hintText?: string;
-	isIntersecting: boolean | undefined;
 	isVisible: boolean;
 	clickableType: ClickableType;
 }
 
-export interface ObservedElementConfig {
+export interface IntersectingElementConfig {
 	hintElement?: Element | undefined;
 	isIntersecting?: boolean;
 	updateVisible?: boolean;
