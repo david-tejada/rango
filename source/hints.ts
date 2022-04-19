@@ -1,11 +1,12 @@
 import { IntersectingElement } from "./types";
 
 let hintsUpdateTriggered = false;
+let showHints = true;
 
 export function displayHints(intersectingElements: IntersectingElement[]) {
 	// We set a timeout in order to avoid updating the hints too often, for example,
 	// when there are multiple mutations or intersections happening
-	if (!hintsUpdateTriggered) {
+	if (showHints && !hintsUpdateTriggered) {
 		hintsUpdateTriggered = true;
 		setTimeout(() => {
 			hintsUpdateTriggered = false;
@@ -95,4 +96,15 @@ function isPageDark() {
 		.map((v) => Number(v));
 	const luma = 0.2126 * red! + 0.7152 * green! + 0.0722 * blue!;
 	return luma < 40;
+}
+
+export function toggleHints() {
+	const hintsContainer = document.querySelector("#rango-hints-container");
+	if (showHints) {
+		(hintsContainer as HTMLDivElement)!.style.display = "none";
+	} else {
+		(hintsContainer as HTMLDivElement)!.style.display = "block";
+	}
+
+	showHints = !showHints;
 }
