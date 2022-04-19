@@ -1,5 +1,5 @@
 .rango-hint {
-	z-index: 101;
+	z-index: 99999;
 	position: absolute;
 	border-radius: 30%;
 	box-shadow: rgba(0 0 0 / 24%) 0 3px 8px;
