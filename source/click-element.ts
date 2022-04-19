@@ -2,7 +2,7 @@ import { observedElements } from "./observed-elements";
 
 export function clickElementByHint(hintNumber: number) {
 	const target = observedElements.find(
-		(ObservedElement) => ObservedElement.hintText === String(hintNumber)
+		(observedElement) => observedElement.hintText === String(hintNumber)
 	);
 	if (target) {
 		clickElement(target.element as HTMLElement);
