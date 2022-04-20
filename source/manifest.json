@@ -19,7 +19,7 @@
 		{
 			"matches": ["<all_urls>"],
 			"js": ["content.ts"],
-			"css": ["content.css", "hints.css"],
+			"css": ["hints.css"],
 			"run_at": "document_idle"
 		},
 		{
@@ -33,10 +33,6 @@
 			]
 		}
 	],
-	"options_ui": {
-		"chrome_style": true,
-		"page": "options.html"
-	},
 	"background": {
 		"persistent": false,
 		"scripts": ["background.ts"]
