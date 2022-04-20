@@ -4,7 +4,7 @@
 
 .rango-hint {
 	all: unset;
-	z-index: 99999;
+	z-index: 2147483647;
 	position: absolute;
 	border-radius: 30%;
 	box-shadow: rgba(0 0 0 / 24%) 0 3px 8px;
