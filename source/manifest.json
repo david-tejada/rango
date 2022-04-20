@@ -29,7 +29,8 @@
 				"types.ts",
 				"hints.ts",
 				"click-element.ts",
-				"intersecting-elements.ts"
+				"intersecting-elements.ts",
+				"hover.ts"
 			]
 		}
 	],
