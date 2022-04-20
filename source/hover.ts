@@ -18,12 +18,7 @@ export function hoverElementByHint(hintNumber: number, fixed: boolean) {
 
 		if (!fixed) {
 			setTimeout(() => {
-				const event = new MouseEvent("mouseout", {
-					view: window,
-					bubbles: true,
-					cancelable: true,
-				});
-				targetElement.dispatchEvent(event);
+				unhoverElement(targetElement);
 			}, 10_000);
 		}
 	}
@@ -31,12 +26,21 @@ export function hoverElementByHint(hintNumber: number, fixed: boolean) {
 
 export function unhoverAll() {
 	for (const intersectingElement of intersectingElements) {
-		const targetElement = intersectingElement.element;
-		const event = new MouseEvent("mouseout", {
-			view: window,
-			bubbles: true,
-			cancelable: true,
-		});
-		targetElement.dispatchEvent(event);
+		unhoverElement(intersectingElement.element);
 	}
+}
+
+function unhoverElement(element: Element) {
+	const mouseoutEvent = new MouseEvent("mouseout", {
+		view: window,
+		bubbles: true,
+		cancelable: true,
+	});
+	const mouseleaveEvent = new MouseEvent("mouseleave", {
+		view: window,
+		bubbles: true,
+		cancelable: true,
+	});
+	element.dispatchEvent(mouseoutEvent);
+	element.dispatchEvent(mouseleaveEvent);
 }
