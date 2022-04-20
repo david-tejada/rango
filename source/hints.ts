@@ -20,9 +20,11 @@ export function displayHints(intersectingElements: IntersectingElement[]) {
 
 			console.log(intersectingElements);
 
-			const hints = intersectingElements.filter((IntersectingElement) => {
+			const hints = intersectingElements.filter((intersectingElement) => {
 				return (
-					IntersectingElement.clickableType && IntersectingElement.isVisible
+					intersectingElement.clickableType &&
+					intersectingElement.isVisible &&
+					!isObscured(intersectingElement.element)
 				);
 			});
 
@@ -32,52 +34,42 @@ export function displayHints(intersectingElements: IntersectingElement[]) {
 				}
 
 				const rect = hint.element.getBoundingClientRect();
-				const elementFromPoint = document.elementFromPoint(
-					rect.x + 5,
-					rect.y + 5
-				);
-				if (
-					elementFromPoint &&
-					(hint.element.contains(elementFromPoint) ||
-						elementFromPoint.contains(hint.element))
-				) {
-					let hintLeft =
-						rect.left +
-						window.scrollX +
-						Number.parseInt(
-							window.getComputedStyle(hint.element).paddingLeft,
-							10
-						) -
-						10;
-					if (hintLeft < 0) {
-						hintLeft = 0;
-					}
-
-					let hintTop =
-						rect.top +
-						window.scrollY +
-						Number.parseInt(
-							window.getComputedStyle(hint.element).paddingTop,
-							10
-						) -
-						10;
-					if (hintTop < 0) {
-						hintTop = 0;
-					}
-
-					const styles = {
-						left: `${hintLeft}px`,
-						top: `${hintTop}px`,
-					};
-					Object.assign((hint.hintElement as HTMLElement).style, styles);
-					hint.hintElement.textContent = `${index}`;
-					hint.hintElement.className = "rango-hint";
-					hint.hintElement.classList.add(
-						isPageDark() ? "rango-hint-dark" : "rango-hint-light"
-					);
-					hint.hintText = `${index}`;
-					hintsContainer.append(hint.hintElement);
+				let hintLeft =
+					rect.left +
+					window.scrollX +
+					Number.parseInt(
+						window.getComputedStyle(hint.element).paddingLeft,
+						10
+					) -
+					10;
+				if (hintLeft < 0) {
+					hintLeft = 0;
 				}
+
+				let hintTop =
+					rect.top +
+					window.scrollY +
+					Number.parseInt(
+						window.getComputedStyle(hint.element).paddingTop,
+						10
+					) -
+					10;
+				if (hintTop < 0) {
+					hintTop = 0;
+				}
+
+				const styles = {
+					left: `${hintLeft}px`,
+					top: `${hintTop}px`,
+				};
+				Object.assign((hint.hintElement as HTMLElement).style, styles);
+				hint.hintElement.textContent = `${index}`;
+				hint.hintElement.className = "rango-hint";
+				hint.hintElement.classList.add(
+					isPageDark() ? "rango-hint-dark" : "rango-hint-light"
+				);
+				hint.hintText = `${index}`;
+				hintsContainer.append(hint.hintElement);
 			}
 
 			console.log(hints);
@@ -107,4 +99,17 @@ export function toggleHints() {
 	}
 
 	showHints = !showHints;
+}
+
+function isObscured(element: Element) {
+	const rect = element.getBoundingClientRect();
+	const elementFromPoint = document.elementFromPoint(rect.x + 5, rect.y + 5);
+	if (
+		elementFromPoint &&
+		(element.contains(elementFromPoint) || elementFromPoint.contains(element))
+	) {
+		return false;
+	}
+
+	return true;
 }
