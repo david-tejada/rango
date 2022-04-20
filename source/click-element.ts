@@ -8,7 +8,8 @@ export function clickElementByHint(hintNumber: number) {
 	if (
 		target &&
 		target.element.tagName === "INPUT" &&
-		target.element.getAttribute("type") === "text"
+		(target.element.getAttribute("type") === "text" ||
+			target.element.getAttribute("type") === "search")
 	) {
 		(target.element as HTMLInputElement).focus();
 	} else if (target) {
