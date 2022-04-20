@@ -1,6 +1,7 @@
 import { intersectingElements } from "./intersecting-elements";
+import { displayHints } from "./hints";
 
-export function hoverElementByHint(hintNumber: number) {
+export function hoverElementByHint(hintNumber: number, fixed: boolean) {
 	const target = intersectingElements.find(
 		(intersectingElement) => intersectingElement.hintText === String(hintNumber)
 	);
@@ -13,19 +14,29 @@ export function hoverElementByHint(hintNumber: number) {
 		});
 
 		targetElement.dispatchEvent(event);
+		displayHints(intersectingElements);
+
+		if (!fixed) {
+			setTimeout(() => {
+				const event = new MouseEvent("mouseout", {
+					view: window,
+					bubbles: true,
+					cancelable: true,
+				});
+				targetElement.dispatchEvent(event);
+			}, 10_000);
+		}
 	}
 }
 
 export function unhoverAll() {
 	for (const intersectingElement of intersectingElements) {
 		const targetElement = intersectingElement.element;
-		if (typeof (targetElement as HTMLElement).onmouseout === "object") {
-			const event = new MouseEvent("mouseout", {
-				view: window,
-				bubbles: true,
-				cancelable: true,
-			});
-			targetElement.dispatchEvent(event);
-		}
+		const event = new MouseEvent("mouseout", {
+			view: window,
+			bubbles: true,
+			cancelable: true,
+		});
+		targetElement.dispatchEvent(event);
 	}
 }

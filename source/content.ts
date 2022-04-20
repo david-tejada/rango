@@ -9,7 +9,11 @@ browser.runtime.onMessage.addListener(async (request) => {
 	}
 
 	if (request.action.type === "hoverElementByHint") {
-		hoverElementByHint(request.action.target);
+		hoverElementByHint(request.action.target, false);
+	}
+
+	if (request.action.type === "fixedHoverElementByHint") {
+		hoverElementByHint(request.action.target, true);
 	}
 
 	if (request.action.type === "unhoverAll") {
