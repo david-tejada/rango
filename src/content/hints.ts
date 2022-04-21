@@ -1,6 +1,10 @@
 import { IntersectingElement } from "../types/types";
 import { getLettersFromNumber } from "../lib/utils";
-import { elementIsObscured, isPageDark } from "../lib/dom-utils";
+import {
+	elementIsObscured,
+	isPageDark,
+	calculateHintPosition,
+} from "../lib/dom-utils";
 
 let hintsUpdateTriggered = false;
 let showHints = true;
@@ -35,34 +39,11 @@ export function displayHints(intersectingElements: IntersectingElement[]) {
 					hint.hintElement = document.createElement("div");
 				}
 
-				const rect = hint.element.getBoundingClientRect();
-				let hintLeft =
-					rect.left +
-					window.scrollX +
-					Number.parseInt(
-						window.getComputedStyle(hint.element).paddingLeft,
-						10
-					) -
-					10;
-				if (hintLeft < 0) {
-					hintLeft = 0;
-				}
-
-				let hintTop =
-					rect.top +
-					window.scrollY +
-					Number.parseInt(
-						window.getComputedStyle(hint.element).paddingTop,
-						10
-					) -
-					10;
-				if (hintTop < 0) {
-					hintTop = 0;
-				}
+				const [hintX, hintY] = calculateHintPosition(hint.element);
 
 				const styles = {
-					left: `${hintLeft}px`,
-					top: `${hintTop}px`,
+					left: `${hintX}px`,
+					top: `${hintY}px`,
 				};
 				Object.assign((hint.hintElement as HTMLElement).style, styles);
 				hint.hintElement.textContent = `${getLettersFromNumber(index)}`;

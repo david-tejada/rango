@@ -59,3 +59,26 @@ export function isPageDark() {
 	const luma = 0.2126 * red! + 0.7152 * green! + 0.0722 * blue!;
 	return luma < 40;
 }
+
+export function calculateHintPosition(element: Element): [number, number] {
+	const rect = element.getBoundingClientRect();
+	let x =
+		rect.left +
+		window.scrollX +
+		Number.parseInt(window.getComputedStyle(element).paddingLeft, 10) -
+		10;
+	if (x < 0) {
+		x = 0;
+	}
+
+	let y =
+		rect.top +
+		window.scrollY +
+		Number.parseInt(window.getComputedStyle(element).paddingTop, 10) -
+		10;
+	if (y < 0) {
+		y = 0;
+	}
+
+	return [x, y];
+}
