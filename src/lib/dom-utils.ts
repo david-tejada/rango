@@ -105,16 +105,14 @@ export function calculateHintPosition(
 	element: Element,
 	chars: number
 ): [number, number] {
-	const rect =
-		getFirstCharacterRect(element) ?? element.getBoundingClientRect();
-	const paddingLeft = Number.parseInt(
-		window.getComputedStyle(element).paddingLeft,
-		10
-	);
-	const paddingTop = Number.parseInt(
-		window.getComputedStyle(element).paddingTop,
-		10
-	);
+	const firstCharacterRect = getFirstCharacterRect(element);
+	const rect = firstCharacterRect ?? element.getBoundingClientRect();
+	const paddingLeft = firstCharacterRect
+		? 0
+		: Number.parseInt(window.getComputedStyle(element).paddingLeft, 10);
+	const paddingTop = firstCharacterRect
+		? 0
+		: Number.parseInt(window.getComputedStyle(element).paddingTop, 10);
 
 	// I probably need to have these numbers depend on the font size
 	let x = rect.left + window.scrollX + paddingLeft - 10 - (chars - 1) * 7;
