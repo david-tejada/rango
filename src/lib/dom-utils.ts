@@ -32,6 +32,12 @@ export function isVisible(element: Element): boolean {
 	);
 }
 
+export function hasTextNodesChildren(element: Element) {
+	return [...element.childNodes].some(
+		(node) => node.nodeType === 3 && /\S/.test(node.textContent!)
+	);
+}
+
 export function elementIsObscured(element: Element): boolean {
 	const rect = element.getBoundingClientRect();
 	const elementFromPoint = document.elementFromPoint(rect.x + 5, rect.y + 5);

@@ -1,5 +1,9 @@
 import { IntersectingElement } from "../types/types";
-import { getClickableType, isVisible } from "../lib/dom-utils";
+import {
+	getClickableType,
+	isVisible,
+	hasTextNodesChildren,
+} from "../lib/dom-utils";
 import { displayHints } from "./hints";
 
 export const intersectingElements: IntersectingElement[] = [];
@@ -61,12 +65,6 @@ const mutationObserver = new MutationObserver((mutationList) => {
 
 // We observe document instead of document.body in case the body gets replaced
 mutationObserver.observe(document, config);
-
-function hasTextNodesChildren(element: Element) {
-	return [...element.childNodes].some(
-		(node) => node.nodeType === 3 && /\S/.test(node.textContent!)
-	);
-}
 
 function addIntersectingElement(element: Element) {
 	const elementAndDescendants = [element, ...element.querySelectorAll("*")];
