@@ -36,20 +36,21 @@ export function displayHints(intersectingElements: IntersectingElement[]) {
 
 			for (const [index, hint] of hints.entries()) {
 				hint.hintElement = document.createElement("div");
+				hint.hintText = `${getLettersFromNumber(index)}`;
+				hint.hintElement.textContent = `${hint.hintText}`;
 
+				// Styles
 				const [hintX, hintY] = calculateHintPosition(hint.element);
-
 				const styles = {
 					left: `${hintX}px`,
 					top: `${hintY}px`,
 				};
 				Object.assign((hint.hintElement as HTMLElement).style, styles);
-				hint.hintElement.textContent = `${getLettersFromNumber(index)}`;
 				hint.hintElement.className = "rango-hint";
 				hint.hintElement.classList.add(
 					isPageDark() ? "rango-hint-dark" : "rango-hint-light"
 				);
-				hint.hintText = `${getLettersFromNumber(index)}`;
+
 				hintsContainer.append(hint.hintElement);
 			}
 
