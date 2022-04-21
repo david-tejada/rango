@@ -38,8 +38,38 @@ export function hasTextNodesChildren(element: Element) {
 	);
 }
 
+function getFirstTextNode(element: Node): Node | undefined {
+	if (element) {
+		for (const childNode of element.childNodes) {
+			if (childNode.nodeType === 3 && /\S/.test(childNode.textContent!)) {
+				return childNode;
+			}
+
+			if (childNode.nodeType === 1) {
+				return getFirstTextNode(childNode as Node);
+			}
+		}
+	}
+
+	return undefined;
+}
+
+function getFirstCharacterRect(element: Element): DOMRect | undefined {
+	const firstTextNodeDescendant = getFirstTextNode(element);
+	if (firstTextNodeDescendant) {
+		const range = document.createRange();
+		range.setStart(firstTextNodeDescendant, 0);
+		range.setEnd(firstTextNodeDescendant, 1);
+		return range.getBoundingClientRect();
+	}
+
+	return undefined;
+}
+
 export function elementIsObscured(element: Element): boolean {
-	const rect = element.getBoundingClientRect();
+	const rect =
+		getFirstCharacterRect(element) ?? element.getBoundingClientRect();
+
 	const elementFromPoint = document.elementFromPoint(rect.x + 5, rect.y + 5);
 	if (
 		elementFromPoint &&
@@ -67,21 +97,23 @@ export function isPageDark() {
 }
 
 export function calculateHintPosition(element: Element): [number, number] {
-	const rect = element.getBoundingClientRect();
-	let x =
-		rect.left +
-		window.scrollX +
-		Number.parseInt(window.getComputedStyle(element).paddingLeft, 10) -
-		10;
+	const rect =
+		getFirstCharacterRect(element) ?? element.getBoundingClientRect();
+	const paddingLeft = Number.parseInt(
+		window.getComputedStyle(element).paddingLeft,
+		10
+	);
+	const paddingTop = Number.parseInt(
+		window.getComputedStyle(element).paddingTop,
+		10
+	);
+
+	let x = rect.left + window.scrollX + paddingLeft - 10;
 	if (x < 0) {
 		x = 0;
 	}
 
-	let y =
-		rect.top +
-		window.scrollY +
-		Number.parseInt(window.getComputedStyle(element).paddingTop, 10) -
-		10;
+	let y = rect.top + window.scrollY + paddingTop - 10;
 	if (y < 0) {
 		y = 0;
 	}
