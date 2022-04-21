@@ -115,7 +115,7 @@ export function calculateHintPosition(
 		: Number.parseInt(window.getComputedStyle(element).paddingTop, 10);
 
 	// I probably need to have these numbers depend on the font size
-	let x = rect.left + window.scrollX + paddingLeft - 10 - (chars - 1) * 7;
+	let x = rect.left + window.scrollX + paddingLeft - 8 - (chars - 1) * 5;
 	if (x < 0) {
 		x = 0;
 	}
