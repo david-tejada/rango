@@ -1,9 +1,9 @@
 import { intersectingElements } from "./intersecting-elements";
 import { displayHints } from "./hints";
 
-export function clickElementByHint(hintNumber: number) {
+export function clickElementByHint(hintText: string) {
 	const target = intersectingElements.find(
-		(intersectingElement) => intersectingElement.hintText === String(hintNumber)
+		(intersectingElement) => intersectingElement.hintText === String(hintText)
 	);
 	if (
 		target &&

@@ -63,12 +63,12 @@ export function displayHints(intersectingElements: IntersectingElement[]) {
 					top: `${hintTop}px`,
 				};
 				Object.assign((hint.hintElement as HTMLElement).style, styles);
-				hint.hintElement.textContent = `${index}`;
+				hint.hintElement.textContent = `${getHintLetters(index)}`;
 				hint.hintElement.className = "rango-hint";
 				hint.hintElement.classList.add(
 					isPageDark() ? "rango-hint-dark" : "rango-hint-light"
 				);
-				hint.hintText = `${index}`;
+				hint.hintText = `${getHintLetters(index)}`;
 				hintsContainer.append(hint.hintElement);
 			}
 
@@ -101,7 +101,7 @@ export function toggleHints() {
 	showHints = !showHints;
 }
 
-function isObscured(element: Element) {
+function isObscured(element: Element): boolean {
 	const rect = element.getBoundingClientRect();
 	const elementFromPoint = document.elementFromPoint(rect.x + 5, rect.y + 5);
 	if (
@@ -112,4 +112,30 @@ function isObscured(element: Element) {
 	}
 
 	return true;
+}
+
+function getHintLetters(hintNumber: number): string {
+	const codePointLowerA = 97;
+	const lettersNumbers: number[] = [hintNumber];
+	let result = "";
+	let div: number;
+	let sp = 0;
+
+	// At the end of this while loop we will have an array with the numbers of the letters
+	// from 0 (a) to 25 (z) in reversed order, for example: 35 -> [9, 0] -> ["j", "a"] -> "aj"
+	while (sp < lettersNumbers.length) {
+		if (lettersNumbers[sp]! > 25) {
+			div = Math.floor(lettersNumbers[sp]! / 26);
+			lettersNumbers[sp + 1] = div - 1;
+			lettersNumbers[sp] %= 26;
+		}
+
+		sp += 1;
+	}
+
+	for (const letterNumber of lettersNumbers) {
+		result = String.fromCodePoint(codePointLowerA + letterNumber) + result;
+	}
+
+	return result;
 }
