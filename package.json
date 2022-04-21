@@ -59,7 +59,7 @@
 		"xo": "^0.48.0"
 	},
 	"webExt": {
-		"sourceDir": "distribution",
+		"sourceDir": "dist",
 		"run": {
 			"startUrl": [
 				"https://en.wikipedia.org/wiki/Main_Page"
