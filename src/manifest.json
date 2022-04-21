@@ -45,12 +45,6 @@
 				"default": "Alt+Shift+A"
 			},
 			"description": "Give the signal to the native app to get the request"
-		},
-		"insert-viewport-mark": {
-			"suggested_key": {
-				"default": "Alt+Shift+U"
-			},
-			"description": "Draw the dots"
 		}
 	}
 }
