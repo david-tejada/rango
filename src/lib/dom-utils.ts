@@ -39,6 +39,10 @@ export function hasTextNodesChildren(element: Element) {
 }
 
 function getFirstTextNode(element: Node): Node | undefined {
+	if (/\S/.test(element.textContent!)) {
+		return undefined;
+	}
+
 	if (element) {
 		for (const childNode of element.childNodes) {
 			if (childNode.nodeType === 3 && /\S/.test(childNode.textContent!)) {
