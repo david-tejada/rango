@@ -1,5 +1,5 @@
 import { IntersectingElement } from "../types/types";
-import { getClickableType } from "../lib/dom-utils";
+import { getClickableType, isVisible } from "../lib/dom-utils";
 import { displayHints } from "./hints";
 
 export const intersectingElements: IntersectingElement[] = [];
@@ -61,16 +61,6 @@ const mutationObserver = new MutationObserver((mutationList) => {
 
 // We observe document instead of document.body in case the body gets replaced
 mutationObserver.observe(document, config);
-
-function isVisible(element: Element): boolean {
-	const rect = element.getBoundingClientRect();
-	return (
-		window.getComputedStyle(element).visibility !== "hidden" &&
-		window.getComputedStyle(element).display !== "none" &&
-		Number.parseFloat(window.getComputedStyle(element).opacity) > 0.1 &&
-		rect.width + rect.height > 10
-	);
-}
 
 function hasTextNodesChildren(element: Element) {
 	return [...element.childNodes].some(
