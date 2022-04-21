@@ -30,7 +30,8 @@
 				"./content/hints.ts",
 				"./content/click-element.ts",
 				"./content/intersecting-elements.ts",
-				"./content/hover.ts"
+				"./content/hover.ts",
+				"./lib/dom-utils.ts"
 			]
 		}
 	],
