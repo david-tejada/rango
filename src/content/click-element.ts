@@ -1,3 +1,4 @@
+import { focusesOnclick } from "../lib/dom-utils";
 import { intersectingElements } from "./intersecting-elements";
 import { displayHints } from "./hints";
 
@@ -5,12 +6,7 @@ export function clickElementByHint(hintText: string) {
 	const target = intersectingElements.find(
 		(intersectingElement) => intersectingElement.hintText === String(hintText)
 	);
-	if (
-		target &&
-		target.element.tagName === "INPUT" &&
-		(target.element.getAttribute("type") === "text" ||
-			target.element.getAttribute("type") === "search")
-	) {
+	if (target && focusesOnclick(target.element)) {
 		(target.element as HTMLInputElement).focus();
 	} else if (target) {
 		target.hintElement?.classList.add("rango-clicked-hint");

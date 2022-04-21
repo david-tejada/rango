@@ -2,7 +2,7 @@ import { ClickableType } from "../types/types";
 
 // This function is here mostly for debugging purposes
 export function getClickableType(element: Element): ClickableType {
-	const clickableTags = ["BUTTON", "A", "INPUT", "SUMMARY"];
+	const clickableTags = ["BUTTON", "A", "INPUT", "SUMMARY", "TEXTAREA"];
 	const clickableRoles = ["button", "link", "treeitem", "tab"];
 	const elementTag = element.tagName;
 	const elementRole = element.getAttribute("role");
@@ -20,6 +20,22 @@ export function getClickableType(element: Element): ClickableType {
 	}
 
 	return undefined;
+}
+
+export function focusesOnclick(element: Element): boolean {
+	if (
+		element.tagName === "INPUT" &&
+		(element.getAttribute("type") === "text" ||
+			element.getAttribute("type") === "search")
+	) {
+		return true;
+	}
+
+	if (element.tagName === "TEXTAREA") {
+		return true;
+	}
+
+	return false;
 }
 
 export function isVisible(element: Element): boolean {

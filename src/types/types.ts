@@ -10,6 +10,7 @@ export type ClickableType =
 	| "button"
 	| "a"
 	| "input"
+	| "textarea"
 	| "summary"
 	| "role:button"
 	| "role:link"
