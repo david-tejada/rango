@@ -121,11 +121,3 @@ function onAttributeMutation(element: Element) {
 		}
 	}
 }
-
-document.addEventListener("scroll", () => {
-	displayHints(intersectingElements);
-});
-
-window.addEventListener("resize", () => {
-	displayHints(intersectingElements);
-});
