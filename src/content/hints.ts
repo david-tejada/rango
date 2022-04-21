@@ -35,9 +35,7 @@ export function displayHints(intersectingElements: IntersectingElement[]) {
 			});
 
 			for (const [index, hint] of hints.entries()) {
-				if (!hint.hintElement) {
-					hint.hintElement = document.createElement("div");
-				}
+				hint.hintElement = document.createElement("div");
 
 				const [hintX, hintY] = calculateHintPosition(hint.element);
 
