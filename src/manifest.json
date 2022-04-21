@@ -31,7 +31,8 @@
 				"./content/click-element.ts",
 				"./content/intersecting-elements.ts",
 				"./content/hover.ts",
-				"./lib/dom-utils.ts"
+				"./lib/dom-utils.ts",
+				"./lib/utils.ts"
 			]
 		}
 	],
