@@ -1,5 +1,6 @@
 import { IntersectingElement } from "../types/types";
 import { getLettersFromNumber } from "../lib/utils";
+import { elementIsObscured, isPageDark } from "../lib/dom-utils";
 
 let hintsUpdateTriggered = false;
 let showHints = true;
@@ -25,7 +26,7 @@ export function displayHints(intersectingElements: IntersectingElement[]) {
 				return (
 					intersectingElement.clickableType &&
 					intersectingElement.isVisible &&
-					!isObscured(intersectingElement.element)
+					!elementIsObscured(intersectingElement.element)
 				);
 			});
 
@@ -79,18 +80,6 @@ export function displayHints(intersectingElements: IntersectingElement[]) {
 	}
 }
 
-function isPageDark() {
-	const backgroundColor = window.getComputedStyle(
-		document.body
-	).backgroundColor;
-	const [red, green, blue] = backgroundColor
-		.replace(/[^\d,]/g, "")
-		.split(",")
-		.map((v) => Number(v));
-	const luma = 0.2126 * red! + 0.7152 * green! + 0.0722 * blue!;
-	return luma < 40;
-}
-
 export function toggleHints() {
 	const hintsContainer = document.querySelector("#rango-hints-container");
 	if (showHints) {
@@ -100,17 +89,4 @@ export function toggleHints() {
 	}
 
 	showHints = !showHints;
-}
-
-function isObscured(element: Element): boolean {
-	const rect = element.getBoundingClientRect();
-	const elementFromPoint = document.elementFromPoint(rect.x + 5, rect.y + 5);
-	if (
-		elementFromPoint &&
-		(element.contains(elementFromPoint) || elementFromPoint.contains(element))
-	) {
-		return false;
-	}
-
-	return true;
 }
