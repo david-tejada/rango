@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { Message } from "./types";
+import { Message } from "../types/types";
 
 browser.commands.onCommand.addListener(async (command: string) => {
 	if (command === "get-talon-request") {

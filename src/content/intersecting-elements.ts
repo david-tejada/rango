@@ -1,4 +1,4 @@
-import { IntersectingElement, ClickableType } from "./types";
+import { IntersectingElement, ClickableType } from "../types/types";
 import { displayHints } from "./hints";
 
 export const intersectingElements: IntersectingElement[] = [];

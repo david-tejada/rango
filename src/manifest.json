@@ -12,31 +12,31 @@
 		}
 	},
 	"icons": {
-		"128": "icon.png"
+		"128": "./assets/icon.png"
 	},
 	"permissions": ["storage", "activeTab", "clipboardRead", "clipboardWrite"],
 	"content_scripts": [
 		{
 			"matches": ["<all_urls>"],
-			"js": ["content.ts"],
-			"css": ["hints.css"],
+			"js": ["./content/content.ts"],
+			"css": ["./styles/hints.css"],
 			"run_at": "document_idle"
 		},
 		{
 			"matches": ["https://*.no_url.com/*"],
 			"exclude_matches": ["https://*.no_url.com/*"],
 			"js": [
-				"types.ts",
-				"hints.ts",
-				"click-element.ts",
-				"intersecting-elements.ts",
-				"hover.ts"
+				"./types/types.ts",
+				"./content/hints.ts",
+				"./content/click-element.ts",
+				"./content/intersecting-elements.ts",
+				"./content/hover.ts"
 			]
 		}
 	],
 	"background": {
 		"persistent": false,
-		"scripts": ["background.ts"]
+		"scripts": ["./background/background.ts"]
 	},
 	"commands": {
 		"get-talon-request": {

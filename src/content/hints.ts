@@ -1,4 +1,4 @@
-import { IntersectingElement } from "./types";
+import { IntersectingElement } from "../types/types";
 
 let hintsUpdateTriggered = false;
 let showHints = true;
