@@ -40,10 +40,13 @@ export function displayHints(intersectingElements: IntersectingElement[]) {
 				hint.hintElement.textContent = `${hint.hintText}`;
 
 				// Styles
-				const [hintX, hintY] = calculateHintPosition(hint.element);
+				const [x, y] = calculateHintPosition(
+					hint.element,
+					hint.hintText.length
+				);
 				const styles = {
-					left: `${hintX}px`,
-					top: `${hintY}px`,
+					left: `${x}px`,
+					top: `${y}px`,
 				};
 				Object.assign((hint.hintElement as HTMLElement).style, styles);
 				hint.hintElement.className = "rango-hint";

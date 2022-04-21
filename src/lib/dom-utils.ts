@@ -38,8 +38,9 @@ export function hasTextNodesChildren(element: Element) {
 	);
 }
 
-function getFirstTextNode(element: Node): Node | undefined {
-	if (/\S/.test(element.textContent!)) {
+function getFirstTextNodeDescendant(element: Node): Node | undefined {
+	// Check to see if the element has any text content that is not white space
+	if (!/\S/.test(element.textContent!)) {
 		return undefined;
 	}
 
@@ -50,7 +51,7 @@ function getFirstTextNode(element: Node): Node | undefined {
 			}
 
 			if (childNode.nodeType === 1) {
-				return getFirstTextNode(childNode as Node);
+				return getFirstTextNodeDescendant(childNode as Node);
 			}
 		}
 	}
@@ -59,7 +60,7 @@ function getFirstTextNode(element: Node): Node | undefined {
 }
 
 function getFirstCharacterRect(element: Element): DOMRect | undefined {
-	const firstTextNodeDescendant = getFirstTextNode(element);
+	const firstTextNodeDescendant = getFirstTextNodeDescendant(element);
 	if (firstTextNodeDescendant) {
 		const range = document.createRange();
 		range.setStart(firstTextNodeDescendant, 0);
@@ -100,7 +101,10 @@ export function isPageDark() {
 	return luma < 40;
 }
 
-export function calculateHintPosition(element: Element): [number, number] {
+export function calculateHintPosition(
+	element: Element,
+	chars: number
+): [number, number] {
 	const rect =
 		getFirstCharacterRect(element) ?? element.getBoundingClientRect();
 	const paddingLeft = Number.parseInt(
@@ -112,7 +116,8 @@ export function calculateHintPosition(element: Element): [number, number] {
 		10
 	);
 
-	let x = rect.left + window.scrollX + paddingLeft - 10;
+	// I probably need to have these numbers depend on the font size
+	let x = rect.left + window.scrollX + paddingLeft - 10 - (chars - 1) * 7;
 	if (x < 0) {
 		x = 0;
 	}
