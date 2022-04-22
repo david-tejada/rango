@@ -66,3 +66,13 @@ export function parseColor(color: string): RGBA | RGB | undefined {
 
 	return undefined;
 }
+
+// We assume colorString is in the format "rbg(r, g, b)" or "rbg(r, g, b, a)"
+export function isRgb(colorString: string): boolean {
+	const color = parseColor(colorString);
+	if ("a" in color!) {
+		return color.a === 1;
+	}
+
+	return true;
+}
