@@ -1,4 +1,4 @@
-import { RGBA, RGB } from "../types/types";
+import { Rgba } from "../types/types";
 
 export function getLettersFromNumber(hintNumber: number): string {
 	const codePointLowerA = 97;
@@ -26,53 +26,49 @@ export function getLettersFromNumber(hintNumber: number): string {
 	return result;
 }
 
-export function getColorLuma(color: RGB): number {
+export function getColorLuma(color: Rgba): number {
 	// The resulting luma value range is 0..255, where 0 is the darkest and 255
 	// is the lightest. Values greater than 128 are considered light.
 	return 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;
 }
 
-export function rgbaToRgb(rgba: RGBA, backgroundRgb: RGB): RGB {
-	const rgb: RGB = {
+export function rgbaToRgb(
+	rgbaString: string,
+	backgroundRgbString: string
+): string {
+	const rgba = parseColor(rgbaString);
+	const backgroundRgb = parseColor(backgroundRgbString);
+	const rgb: Rgba = {
 		r: Math.round((1 - rgba.a) * backgroundRgb.r + rgba.a * rgba.r),
 		g: Math.round((1 - rgba.a) * backgroundRgb.g + rgba.a * rgba.g),
 		b: Math.round((1 - rgba.a) * backgroundRgb.b + rgba.a * rgba.b),
+		a: 1,
 	};
-	return rgb;
+	return stringFromRgba(rgb);
 }
 
-export function parseColor(color: string): RGBA | RGB | undefined {
+export function parseColor(color: string): Rgba {
 	const [r, g, b, a] = color
 		.replace(/[^\d.\s,]/g, "")
 		.split(",")
 		.map((v) => Number.parseFloat(v));
 
-	if (r && g && b && a) {
-		return {
-			r,
-			g,
-			b,
-			a,
-		};
-	}
+	return {
+		r: r ?? 0,
+		g: g ?? 0,
+		b: b ?? 0,
+		a: typeof a === "number" ? a : 1,
+	};
+}
 
-	if (r && g && b) {
-		return {
-			r,
-			g,
-			b,
-		};
-	}
-
-	return undefined;
+function stringFromRgba(rgba: Rgba) {
+	const colorType = rgba.a === 1 ? "rgb" : "rgba";
+	return `${colorType}(${rgba.r}, ${rgba.g}, ${rgba.b}${
+		rgba.a === 1 ? "" : ", rgba.a"
+	})`;
 }
 
 // We assume colorString is in the format "rbg(r, g, b)" or "rbg(r, g, b, a)"
 export function isRgb(colorString: string): boolean {
-	const color = parseColor(colorString);
-	if ("a" in color!) {
-		return color.a === 1;
-	}
-
-	return true;
+	return parseColor(colorString).a === 1;
 }
