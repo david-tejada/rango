@@ -33,3 +33,18 @@ export interface IntersectingElementConfig {
 	updateVisible?: boolean;
 	updateClickable?: boolean;
 }
+
+/* eslint-disable @typescript-eslint/naming-convention */
+export interface RGBA {
+	r: number;
+	g: number;
+	b: number;
+	a: number;
+}
+
+export interface RGB {
+	r: number;
+	g: number;
+	b: number;
+}
+/* eslint-enable @typescript-eslint/naming-convention */
