@@ -7,7 +7,7 @@
 		"lint:css": "stylelint src/**/*.css",
 		"lint:js": "xo",
 		"lintAndBuild": "run-p lint:* build",
-		"test": "jest",
+		"test": "jest --watch",
 		"watch": "parcel watch src/manifest.json --dist-dir dist --no-cache --no-hmr"
 	},
 	"browserslist": [
