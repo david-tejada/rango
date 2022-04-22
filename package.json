@@ -6,7 +6,8 @@
 		"lint-fix": "run-p 'lint:* -- --fix'",
 		"lint:css": "stylelint src/**/*.css",
 		"lint:js": "xo",
-		"test": "run-p lint:* build jest",
+		"test": "run-p lint:* build test:jest",
+		"test:jest": "jest",
 		"watch": "parcel watch src/manifest.json --dist-dir dist --no-cache --no-hmr"
 	},
 	"browserslist": [
