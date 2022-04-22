@@ -47,6 +47,7 @@
 		"@parcel/config-webextension": "^2.3.2",
 		"@parcel/transformer-image": "^2.3.2",
 		"@sindresorhus/tsconfig": "^2.0.0",
+		"@types/jest": "^27.4.1",
 		"@types/webextension-polyfill": "^0.8.2",
 		"@typescript-eslint/eslint-plugin": "^5.16.0",
 		"@typescript-eslint/parser": "^5.16.0",
@@ -57,6 +58,7 @@
 		"parcel": "^2.3.2",
 		"stylelint": "^14.6.0",
 		"stylelint-config-xo": "^0.21.0",
+		"ts-jest": "^27.1.4",
 		"typescript": "^4.6.3",
 		"xo": "^0.48.0"
 	},
@@ -67,5 +69,15 @@
 				"https://en.wikipedia.org/wiki/Main_Page"
 			]
 		}
+	},
+	"jest": {
+		"preset": "ts-jest",
+		"testEnvironment": "node",
+		"transform": {
+			"node_modules/variables/.+\\.(j|t)sx?$": "ts-jest"
+		},
+		"transformIgnorePatterns": [
+			"node_modules/(?!variables/.*)"
+		]
 	}
 }
