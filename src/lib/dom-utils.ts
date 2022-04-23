@@ -1,4 +1,5 @@
 import { ClickableType } from "../types/types";
+import { isRgb, rgbaToRgb } from "./utils";
 
 // This function is here mostly for debugging purposes
 export function getClickableType(element: Element): ClickableType {
@@ -102,21 +103,6 @@ export function elementIsObscured(element: Element): boolean {
 	return true;
 }
 
-// This is very rudimentary and does not work all the time. A better approach would
-// be to get the background color of the element being hinted and change the color
-// of the hints individually
-export function isPageDark() {
-	const backgroundColor = window.getComputedStyle(
-		document.body
-	).backgroundColor;
-	const [red, green, blue] = backgroundColor
-		.replace(/[^\d,]/g, "")
-		.split(",")
-		.map((v) => Number(v));
-	const luma = 0.2126 * red! + 0.7152 * green! + 0.0722 * blue!;
-	return luma < 40;
-}
-
 export function calculateHintPosition(
 	element: Element,
 	chars: number
@@ -142,4 +128,50 @@ export function calculateHintPosition(
 	}
 
 	return [x, y];
+}
+
+export function getInheritedBackgroundColor(
+	element: Element,
+	defaultBackgroundColor: string
+): string {
+	const backgroundColor = window.getComputedStyle(element).backgroundColor;
+
+	if (backgroundColor !== defaultBackgroundColor) {
+		if (isRgb(backgroundColor)) {
+			return backgroundColor;
+		}
+
+		if (element.parentElement) {
+			return rgbaToRgb(backgroundColor, getAscendantRgb(element.parentElement));
+		}
+	}
+
+	if (!element.parentElement) return defaultBackgroundColor;
+
+	return getInheritedBackgroundColor(
+		element.parentElement,
+		defaultBackgroundColor
+	);
+}
+
+export function getDefaultBackgroundColor(): string {
+	// Have to add to the document in order to use getComputedStyle
+	const div = document.createElement("div");
+	document.head.append(div);
+	const backgroundColor = window.getComputedStyle(div).backgroundColor;
+	div.remove();
+	return backgroundColor;
+}
+
+function getAscendantRgb(parent: HTMLElement): string {
+	if (parent === null) {
+		return "rgb(255, 255, 255)";
+	}
+
+	const parentBackgroundColor = window.getComputedStyle(parent).backgroundColor;
+	if (!isRgb(parentBackgroundColor) && parent.parentElement) {
+		return getAscendantRgb(parent.parentElement);
+	}
+
+	return "rgb(255, 255, 255)";
 }

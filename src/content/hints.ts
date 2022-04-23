@@ -1,13 +1,20 @@
 import { IntersectingElement } from "../types/types";
-import { getLettersFromNumber } from "../lib/utils";
+import {
+	getLettersFromNumber,
+	getContrast,
+	getLuminance,
+	parseColor,
+} from "../lib/utils";
 import {
 	elementIsObscured,
-	isPageDark,
 	calculateHintPosition,
+	getDefaultBackgroundColor,
+	getInheritedBackgroundColor,
 } from "../lib/dom-utils";
 
 let hintsUpdateTriggered = false;
 let showHints = true;
+const defaultBackgroundColor = getDefaultBackgroundColor();
 
 export function displayHints(intersectingElements: IntersectingElement[]) {
 	// We set a timeout in order to avoid updating the hints too often, for example,
@@ -44,15 +51,25 @@ export function displayHints(intersectingElements: IntersectingElement[]) {
 					hint.element,
 					hint.hintText.length
 				);
+				const backgroundColor = getInheritedBackgroundColor(
+					hint.element,
+					defaultBackgroundColor || "rgba(0, 0, 0, 0)"
+				);
+				let color = window.getComputedStyle(hint.element).color;
+				const contrast = getContrast(backgroundColor, color);
+				if (contrast < 4 || parseColor(color).a < 0.5) {
+					color =
+						getLuminance(parseColor(backgroundColor)) < 0.5 ? "#fff" : "#000";
+				}
+
 				const styles = {
 					left: `${x}px`,
 					top: `${y}px`,
+					backgroundColor,
+					color,
 				};
 				Object.assign((hint.hintElement as HTMLElement).style, styles);
 				hint.hintElement.className = "rango-hint";
-				hint.hintElement.classList.add(
-					isPageDark() ? "rango-hint-dark" : "rango-hint-light"
-				);
 
 				hintsContainer.append(hint.hintElement);
 			}
