@@ -7,7 +7,6 @@
 	z-index: 2147483647;
 	position: absolute;
 	border-radius: 30%;
-	outline: 1px solid #faf5e4;
 	box-shadow: rgba(0 0 0 / 24%) 0 3px 8px;
 	padding: 0.2em;
 	width: auto;
@@ -15,11 +14,4 @@
 	text-align: center;
 	font-family: monospace;
 	font-size: 10px;
-}
-
-.rango-clicked-hint {
-	padding: 0.4em;
-	font-size: 12px;
-	background: #42c2ff;
-	color: #fff;
 }
