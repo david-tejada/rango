@@ -17,7 +17,8 @@ export function getClickableType(element: Element): ClickableType {
 		(location.host === "www.youtube.com" &&
 			element.className ===
 				"yt-simple-endpoint style-scope ytd-toggle-button-renderer") || // Duplicate
-		element.className === "style-scope ytd-guide-entry-renderer" // Duplicate
+		element.className === "style-scope ytd-guide-entry-renderer" ||
+		element.className === "yt-simple-endpoint style-scope ytd-button-renderer" // Duplicate
 	) {
 		return undefined;
 	}
