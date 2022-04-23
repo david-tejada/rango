@@ -95,7 +95,7 @@ function getFirstTextNodeDescendant(element: Node): Node | undefined {
 			}
 
 			if (childNode.nodeType === 1) {
-				if (getClickableType(childNode)) {
+				if (getClickableType(childNode as HTMLElement)) {
 					continue;
 				}
 
