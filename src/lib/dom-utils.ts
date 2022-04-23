@@ -146,7 +146,7 @@ export function getInheritedBackgroundColor(
 		}
 	}
 
-	if (!element.parentElement) return defaultBackgroundColor;
+	if (!element.parentElement) return "rgb(255, 255, 255)";
 
 	return getInheritedBackgroundColor(
 		element.parentElement,
