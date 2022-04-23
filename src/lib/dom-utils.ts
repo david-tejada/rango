@@ -4,10 +4,20 @@ import { isRgb, rgbaToRgb } from "./utils";
 // This function is here mostly for debugging purposes
 export function getClickableType(element: Element): ClickableType {
 	// Ignoring some items that even though they have onclick event they don't do anything
+	// or are redundant
 	if (
 		// SLACK
-		element.className ===
-		"p-channel_sidebar__static_list__item p-channel_sidebar__static_list__item--contain c-virtual_list__item"
+		(location.host === "app.slack.com" &&
+			(element.className ===
+				"p-channel_sidebar__static_list__item p-channel_sidebar__static_list__item--contain c-virtual_list__item" || // Does nothing
+				element.getAttribute("role") === "toolbar")) || // Duplicate
+		(element.tagName === "DIV" &&
+			(element as HTMLElement).dataset["sk"] === "tooltip_parent") || // Duplicate
+		// YOUTUBE
+		(location.host === "www.youtube.com" &&
+			element.className ===
+				"yt-simple-endpoint style-scope ytd-toggle-button-renderer") || // Duplicate
+		element.className === "style-scope ytd-guide-entry-renderer" // Duplicate
 	) {
 		return undefined;
 	}
@@ -84,6 +94,10 @@ function getFirstTextNodeDescendant(element: Node): Node | undefined {
 			}
 
 			if (childNode.nodeType === 1) {
+				if (getClickableType(childNode)) {
+					continue;
+				}
+
 				return getFirstTextNodeDescendant(childNode as Node);
 			}
 		}
