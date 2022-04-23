@@ -34,7 +34,24 @@ export function applyInitialStyles(intersectingElement: IntersectingElement) {
 		backgroundColor,
 		color,
 		outline: `1px solid ${outlineColor}`,
+		fontSize: "10px",
+		padding: "0.2em",
 	};
 	Object.assign((intersectingElement.hintElement as HTMLElement).style, styles);
 	intersectingElement.hintElement!.className = "rango-hint";
+}
+
+export function applyEmphasisStyles(intersectingElement: IntersectingElement) {
+	// We invert the colors for a visual clue
+	const color = (intersectingElement.hintElement as HTMLInputElement).style
+		.backgroundColor;
+	const background = (intersectingElement.hintElement as HTMLInputElement).style
+		.color;
+	const styles = {
+		padding: "0.4em",
+		fontSize: "12px",
+		background,
+		color,
+	};
+	Object.assign((intersectingElement.hintElement as HTMLElement).style, styles);
 }
