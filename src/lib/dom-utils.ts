@@ -3,6 +3,15 @@ import { isRgb, rgbaToRgb } from "./utils";
 
 // This function is here mostly for debugging purposes
 export function getClickableType(element: Element): ClickableType {
+	// Ignoring some items that even though they have onclick event they don't do anything
+	if (
+		// SLACK
+		element.className ===
+		"p-channel_sidebar__static_list__item p-channel_sidebar__static_list__item--contain c-virtual_list__item"
+	) {
+		return undefined;
+	}
+
 	const clickableTags = ["BUTTON", "A", "INPUT", "SUMMARY", "TEXTAREA"];
 	const clickableRoles = ["button", "link", "treeitem", "tab"];
 	const elementTag = element.tagName;
