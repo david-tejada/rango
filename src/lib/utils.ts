@@ -82,3 +82,22 @@ export function getContrast(color1: string, color2: string) {
 	const darkest = Math.min(lum1, lum2);
 	return (brightest + 0.05) / (darkest + 0.05);
 }
+
+export function getTintOrShade(color: string, factor: number): string {
+	const c = parseColor(color);
+	let red;
+	let green;
+	let blue;
+
+	if (factor < 0) {
+		red = c.r * (1 - factor);
+		green = c.g * (1 - factor);
+		blue = c.b * (1 - factor);
+	} else {
+		red = c.r + (255 - c.r) * factor;
+		green = c.g + (255 - c.g) * factor;
+		blue = c.b + (255 - c.b) * factor;
+	}
+
+	return `rgb(${red}, ${green},${blue})`;
+}
