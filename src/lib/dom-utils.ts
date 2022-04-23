@@ -13,7 +13,14 @@ export function getClickableType(element: Element): ClickableType {
 	}
 
 	const clickableTags = ["BUTTON", "A", "INPUT", "SUMMARY", "TEXTAREA"];
-	const clickableRoles = ["button", "link", "treeitem", "tab"];
+	const clickableRoles = [
+		"button",
+		"link",
+		"treeitem",
+		"tab",
+		"option",
+		"radio",
+	];
 	const elementTag = element.tagName;
 	const elementRole = element.getAttribute("role");
 
