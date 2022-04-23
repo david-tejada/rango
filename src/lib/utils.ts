@@ -26,10 +26,12 @@ export function getLettersFromNumber(hintNumber: number): string {
 	return result;
 }
 
-export function getColorLuma(color: Rgba): number {
-	// The resulting luma value range is 0..255, where 0 is the darkest and 255
-	// is the lightest. Values greater than 128 are considered light.
-	return 0.2126 * color.r + 0.7152 * color.g + 0.0722 * color.b;
+export function getLuminance(color: Rgba): number {
+	const [r, g, b] = [color.r, color.g, color.b].map(function (v) {
+		v /= 255;
+		return v <= 0.039_28 ? v / 12.92 : ((v + 0.055) / 1.055) ** 2.4;
+	});
+	return r! * 0.2126 + g! * 0.7152 + b! * 0.0722;
 }
 
 export function rgbaToRgb(
@@ -71,4 +73,12 @@ function stringFromRgba(rgba: Rgba) {
 // We assume colorString is in the format "rbg(r, g, b)" or "rbg(r, g, b, a)"
 export function isRgb(colorString: string): boolean {
 	return parseColor(colorString).a === 1;
+}
+
+export function getContrast(color1: string, color2: string) {
+	const lum1 = getLuminance(parseColor(color1));
+	const lum2 = getLuminance(parseColor(color2));
+	const brightest = Math.max(lum1, lum2);
+	const darkest = Math.min(lum1, lum2);
+	return (brightest + 0.05) / (darkest + 0.05);
 }
