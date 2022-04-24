@@ -23,7 +23,15 @@ export function getClickableType(element: Element): ClickableType {
 		return undefined;
 	}
 
-	const clickableTags = ["BUTTON", "A", "INPUT", "SUMMARY", "TEXTAREA"];
+	const clickableTags = [
+		"BUTTON",
+		"A",
+		"INPUT",
+		"SUMMARY",
+		"TEXTAREA",
+		"SELECT",
+		"OPTION",
+	];
 	const clickableRoles = [
 		"button",
 		"link",

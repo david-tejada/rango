@@ -11,11 +11,15 @@ export type ClickableType =
 	| "a"
 	| "input"
 	| "textarea"
+	| "select"
+	| "option"
 	| "summary"
 	| "role:button"
 	| "role:link"
 	| "role:treeitem"
 	| "role:tab"
+	| "role:option"
+	| "role:radio"
 	| "onclick"
 	| undefined;
 
