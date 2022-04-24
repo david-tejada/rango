@@ -54,6 +54,7 @@ export function focusesOnclick(element: Element): boolean {
 	if (
 		element.tagName === "INPUT" &&
 		(element.getAttribute("type") === "text" ||
+			element.getAttribute("type") === "txt" || // I found this type on a website, probably a typo
 			element.getAttribute("type") === "search")
 	) {
 		return true;
