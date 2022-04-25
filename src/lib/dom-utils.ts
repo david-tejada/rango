@@ -39,6 +39,7 @@ export function getClickableType(element: Element): ClickableType {
 		"tab",
 		"option",
 		"radio",
+		"menuitem",
 	];
 	const elementTag = element.tagName;
 	const elementRole = element.getAttribute("role");
