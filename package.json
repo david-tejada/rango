@@ -1,15 +1,14 @@
 {
 	"private": true,
 	"scripts": {
-		"build": "parcel build src/manifest.json --no-content-hash --no-source-maps --dist-dir dist --no-cache --detailed-report 0",
+		"dev": "webextension-toolbox dev",
+		"build": "webextension-toolbox build",
 		"lint": "run-p lint:*",
 		"lint-fix": "run-p 'lint:* -- --fix'",
 		"lint:css": "stylelint src/**/*.css",
 		"lint:js": "xo",
-		"test": "run-p lint:* build test:jest",
 		"test:jest": "jest",
-		"watch:jest": "jest --watch",
-		"watch": "parcel watch src/manifest.json --dist-dir dist --no-cache --no-hmr"
+		"watch:jest": "jest --watch"
 	},
 	"browserslist": [
 		"last 1 Chrome version",
