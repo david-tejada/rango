@@ -1,6 +1,6 @@
 export interface Message {
 	type: "request" | "response";
-	action?: {
+	action: {
 		type: string;
 		target?: string | number;
 	};
