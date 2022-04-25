@@ -4,7 +4,7 @@ import { displayHints } from "./hints";
 const hoveredElements: Set<Element> = new Set();
 const timeoutIds: Set<NodeJS.Timeout> = new Set();
 
-export function hoverElementByHint(hintNumber: number, fixed: boolean) {
+export function hoverElementByHint(hintText: string, fixed: boolean) {
 	hoveredElements.clear();
 	for (const timeoutId of timeoutIds) {
 		clearTimeout(timeoutId);
@@ -15,7 +15,7 @@ export function hoverElementByHint(hintNumber: number, fixed: boolean) {
 	}
 
 	const target = intersectingElements.find(
-		(intersectingElement) => intersectingElement.hintText === String(hintNumber)
+		(intersectingElement) => intersectingElement.hintText === String(hintText)
 	);
 	if (target) {
 		const targetElement = target.element;
