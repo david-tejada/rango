@@ -68,7 +68,7 @@ export function focusesOnclick(element: Element): boolean {
 		return true;
 	}
 
-	if (element.tagName === "TEXTAREA") {
+	if (element.tagName === "TEXTAREA" || element.tagName === "SELECT") {
 		return true;
 	}
 
@@ -91,6 +91,17 @@ export function hasTextNodesChildren(element: Element) {
 	);
 }
 
+function rangeGivesCoordinates(element: Element): boolean {
+	if (
+		element.parentElement?.tagName === "INPUT" ||
+		element.parentElement?.tagName === "TEXTAREA"
+	) {
+		return false;
+	}
+
+	return true;
+}
+
 function getFirstTextNodeDescendant(element: Node): Node | undefined {
 	// Check to see if the element has any text content that is not white space
 	if (!/\S/.test(element.textContent!)) {
@@ -99,7 +110,11 @@ function getFirstTextNodeDescendant(element: Node): Node | undefined {
 
 	if (element) {
 		for (const childNode of element.childNodes) {
-			if (childNode.nodeType === 3 && /\S/.test(childNode.textContent!)) {
+			if (
+				childNode.nodeType === 3 &&
+				rangeGivesCoordinates(childNode as HTMLElement) &&
+				/\S/.test(childNode.textContent!)
+			) {
 				return childNode;
 			}
 
