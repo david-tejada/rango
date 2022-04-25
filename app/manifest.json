@@ -18,27 +18,14 @@
 	"content_scripts": [
 		{
 			"matches": ["<all_urls>"],
-			"js": ["./content/content.ts"],
+			"js": ["./content.js"],
 			"css": ["./styles/hints.css"],
 			"run_at": "document_idle"
-		},
-		{
-			"matches": ["https://*.no_url.com/*"],
-			"exclude_matches": ["https://*.no_url.com/*"],
-			"js": [
-				"./types/types.ts",
-				"./content/hints.ts",
-				"./content/click-element.ts",
-				"./content/intersecting-elements.ts",
-				"./content/hover.ts",
-				"./lib/dom-utils.ts",
-				"./lib/utils.ts"
-			]
 		}
 	],
 	"background": {
 		"persistent": false,
-		"scripts": ["./background/background.ts"]
+		"scripts": ["./background.js"]
 	},
 	"commands": {
 		"get-talon-request": {
