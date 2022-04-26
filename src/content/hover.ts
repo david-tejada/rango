@@ -15,7 +15,7 @@ export function hoverElementByHint(hintText: string, fixed: boolean) {
 	}
 
 	const target = intersectors.find(
-		(intersector) => intersector.hintText === String(hintText)
+		(intersector) => intersector.hintText === hintText
 	);
 	if (target) {
 		const targetElement = target.element;
