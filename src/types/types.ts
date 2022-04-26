@@ -23,7 +23,7 @@ export type ClickableType =
 	| "onclick"
 	| undefined;
 
-export interface IntersectingElement {
+export interface Intersector {
 	element: Element;
 	hintElement?: Element;
 	hintText?: string;
@@ -31,7 +31,7 @@ export interface IntersectingElement {
 	clickableType: ClickableType;
 }
 
-export interface IntersectingElementConfig {
+export interface IntersectorConfig {
 	hintElement?: Element | undefined;
 	isIntersecting?: boolean;
 	updateVisible?: boolean;
