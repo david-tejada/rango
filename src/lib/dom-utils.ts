@@ -159,15 +159,6 @@ export function elementIsObscured(element: Element): boolean {
 	return true;
 }
 
-function getAscendantsScroll(element: Element): [number, number] {
-	if (element.parentElement === null) {
-		return [element.scrollLeft, element.scrollTop];
-	}
-
-	const [parentX, parentY] = getAscendantsScroll(element.parentElement);
-	return [element.scrollLeft + parentX, element.scrollTop + parentY];
-}
-
 export function calculateHintPosition(
 	element: Element,
 	chars: number
@@ -181,13 +172,11 @@ export function calculateHintPosition(
 		? 0
 		: Number.parseInt(window.getComputedStyle(element).paddingTop, 10);
 
-	const [ascendantsScrollX, ascendantsScrollY] = getAscendantsScroll(element);
-
 	// I probably need to have these numbers depend on the font size
 	let x =
 		rect.left +
 		window.scrollX +
-		ascendantsScrollX +
+		document.body.scrollLeft +
 		paddingLeft -
 		8 -
 		(chars - 1) * 5;
@@ -195,7 +184,7 @@ export function calculateHintPosition(
 		x = 0;
 	}
 
-	let y = rect.top + window.scrollY + ascendantsScrollY + paddingTop - 10;
+	let y = rect.top + window.scrollY + document.body.scrollTop + paddingTop - 10;
 	if (y < 0) {
 		y = 0;
 	}
