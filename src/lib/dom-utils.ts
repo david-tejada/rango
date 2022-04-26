@@ -94,7 +94,8 @@ export function hasTextNodesChildren(element: Element) {
 function rangeGivesCoordinates(element: Element): boolean {
 	if (
 		element.parentElement?.tagName === "INPUT" ||
-		element.parentElement?.tagName === "TEXTAREA"
+		element.parentElement?.tagName === "TEXTAREA" ||
+		element.parentElement?.tagName === "title"
 	) {
 		return false;
 	}
