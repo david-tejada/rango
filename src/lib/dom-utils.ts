@@ -30,6 +30,7 @@ export function getClickableType(element: Element): string | undefined {
 		"TEXTAREA",
 		"SELECT",
 		"OPTION",
+		"LABEL",
 	];
 	const clickableRoles = [
 		"button",
