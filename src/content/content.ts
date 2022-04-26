@@ -2,7 +2,7 @@ import browser from "webextension-polyfill";
 import { clickElementByHint } from "./click-element";
 import { hoverElementByHint, unhoverAll } from "./hover";
 import { toggleHints, displayHints } from "./hints";
-import { intersectingElements } from "./intersecting-elements";
+import { intersectors } from "./intersectors";
 
 browser.runtime.onMessage.addListener(async (request) => {
 	if (request.action.type === "clickElementByHint") {
@@ -27,9 +27,9 @@ browser.runtime.onMessage.addListener(async (request) => {
 });
 
 document.addEventListener("scroll", () => {
-	displayHints(intersectingElements);
+	displayHints(intersectors);
 });
 
 window.addEventListener("resize", () => {
-	displayHints(intersectingElements);
+	displayHints(intersectors);
 });

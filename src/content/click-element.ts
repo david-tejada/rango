@@ -1,11 +1,11 @@
 import { focusesOnclick } from "../lib/dom-utils";
 import { applyEmphasisStyles, applyInitialStyles } from "../lib/styles";
-import { intersectingElements } from "./intersecting-elements";
+import { intersectors } from "./intersectors";
 import { displayHints } from "./hints";
 
 export function clickElementByHint(hintText: string) {
-	const target = intersectingElements.find(
-		(intersectingElement) => intersectingElement.hintText === String(hintText)
+	const target = intersectors.find(
+		(intersector) => intersector.hintText === String(hintText)
 	);
 
 	if (target) {
@@ -19,7 +19,7 @@ export function clickElementByHint(hintText: string) {
 			(target.element as HTMLElement).click();
 			// On some pages like codepen there are hints remaining after closing a popup panel.
 			// This is not a perfect solution but as long as the user clicks with voice I think we're safe
-			displayHints(intersectingElements);
+			displayHints(intersectors);
 		}
 	}
 }

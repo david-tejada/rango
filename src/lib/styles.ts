@@ -1,4 +1,4 @@
-import { IntersectingElement } from "../types/types";
+import { Intersector } from "../types/types";
 import { getContrast, getLuminance, parseColor, getTintOrShade } from "./utils";
 import {
 	calculateHintPosition,
@@ -8,21 +8,21 @@ import {
 
 const defaultBackgroundColor = getDefaultBackgroundColor();
 
-export function applyInitialStyles(intersectingElement: IntersectingElement) {
+export function applyInitialStyles(intersector: Intersector) {
 	// Styles
 	const [x, y] = calculateHintPosition(
-		intersectingElement.element,
-		intersectingElement.hintText!.length
+		intersector.element,
+		intersector.hintText!.length
 	);
 	const backgroundColor = getInheritedBackgroundColor(
-		intersectingElement.element,
+		intersector.element,
 		defaultBackgroundColor || "rgba(0, 0, 0, 0)"
 	);
 	const outlineColor =
 		getLuminance(parseColor(backgroundColor)) < 0.5
 			? getTintOrShade(backgroundColor, 0.2)
 			: getTintOrShade(backgroundColor, -0.2);
-	let color = window.getComputedStyle(intersectingElement.element).color;
+	let color = window.getComputedStyle(intersector.element).color;
 	const contrast = getContrast(backgroundColor, color);
 	if (contrast < 4 || parseColor(color).a < 0.5) {
 		color = getLuminance(parseColor(backgroundColor)) < 0.5 ? "#fff" : "#000";
@@ -37,21 +37,20 @@ export function applyInitialStyles(intersectingElement: IntersectingElement) {
 		fontSize: "10px",
 		padding: "0.2em",
 	};
-	Object.assign((intersectingElement.hintElement as HTMLElement).style, styles);
-	intersectingElement.hintElement!.className = "rango-hint";
+	Object.assign((intersector.hintElement as HTMLElement).style, styles);
+	intersector.hintElement!.className = "rango-hint";
 }
 
-export function applyEmphasisStyles(intersectingElement: IntersectingElement) {
+export function applyEmphasisStyles(intersector: Intersector) {
 	// We invert the colors for a visual clue
-	const color = (intersectingElement.hintElement as HTMLInputElement).style
+	const color = (intersector.hintElement as HTMLInputElement).style
 		.backgroundColor;
-	const background = (intersectingElement.hintElement as HTMLInputElement).style
-		.color;
+	const background = (intersector.hintElement as HTMLInputElement).style.color;
 	const styles = {
 		padding: "0.4em",
 		fontSize: "12px",
 		background,
 		color,
 	};
-	Object.assign((intersectingElement.hintElement as HTMLElement).style, styles);
+	Object.assign((intersector.hintElement as HTMLElement).style, styles);
 }

@@ -1,4 +1,4 @@
-import { intersectingElements } from "./intersecting-elements";
+import { intersectors } from "./intersectors";
 import { displayHints } from "./hints";
 
 const hoveredElements: Set<Element> = new Set();
@@ -14,8 +14,8 @@ export function hoverElementByHint(hintText: string, fixed: boolean) {
 		unhoverElement(hoveredElement);
 	}
 
-	const target = intersectingElements.find(
-		(intersectingElement) => intersectingElement.hintText === String(hintText)
+	const target = intersectors.find(
+		(intersector) => intersector.hintText === String(hintText)
 	);
 	if (target) {
 		const targetElement = target.element;
@@ -27,7 +27,7 @@ export function hoverElementByHint(hintText: string, fixed: boolean) {
 
 		targetElement.dispatchEvent(event);
 		hoveredElements.add(targetElement);
-		displayHints(intersectingElements);
+		displayHints(intersectors);
 
 		if (!fixed) {
 			const timeoutId = setTimeout(() => {

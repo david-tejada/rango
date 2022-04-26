@@ -29,7 +29,7 @@
 				"./types/types.ts",
 				"./content/hints.ts",
 				"./content/click-element.ts",
-				"./content/intersecting-elements.ts",
+				"./content/intersectors.ts",
 				"./content/hover.ts",
 				"./lib/dom-utils.ts",
 				"./lib/utils.ts"

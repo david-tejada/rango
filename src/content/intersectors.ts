@@ -1,4 +1,4 @@
-import { IntersectingElement } from "../types/types";
+import { Intersector } from "../types/types";
 import {
 	getClickableType,
 	isVisible,
@@ -6,7 +6,7 @@ import {
 } from "../lib/dom-utils";
 import { displayHints } from "./hints";
 
-export const intersectingElements: IntersectingElement[] = [];
+export const intersectors: Intersector[] = [];
 
 // *** INTERSECTION OBSERVER ***
 const options = {
@@ -24,17 +24,17 @@ export const intersectionObserver = new IntersectionObserver((entries) => {
 		}
 	}
 
-	displayHints(intersectingElements);
+	displayHints(intersectors);
 }, options);
 
 // We observe all the initial elements before any mutation
 if (document.readyState === "complete") {
-	addIntersectingElement(document.body);
-	displayHints(intersectingElements);
+	addIntersector(document.body);
+	displayHints(intersectors);
 } else {
 	window.addEventListener("load", () => {
-		addIntersectingElement(document.body);
-		displayHints(intersectingElements);
+		addIntersector(document.body);
+		displayHints(intersectors);
 	});
 }
 
@@ -49,8 +49,8 @@ const mutationObserver = new MutationObserver((mutationList) => {
 					node.nodeType === 1 &&
 					!(node as Element).id.includes("rango-hints-container")
 				) {
-					addIntersectingElement(node as Element);
-					displayHints(intersectingElements);
+					addIntersector(node as Element);
+					displayHints(intersectors);
 				}
 			}
 			// We don't care too much about removed nodes. I think it's going to be more expensive
@@ -66,7 +66,7 @@ const mutationObserver = new MutationObserver((mutationList) => {
 // We observe document instead of document.body in case the body gets replaced
 mutationObserver.observe(document, config);
 
-function addIntersectingElement(element: Element) {
+function addIntersector(element: Element) {
 	const elementAndDescendants = [element, ...element.querySelectorAll("*")];
 	for (const elementToAdd of elementAndDescendants) {
 		const clickableType = getClickableType(elementToAdd);
@@ -76,44 +76,40 @@ function addIntersectingElement(element: Element) {
 	}
 }
 
-function getIntersectingElement(
-	element: Element
-): IntersectingElement | undefined {
-	return intersectingElements.find(
-		(IntersectingElement) => IntersectingElement.element === element
-	);
+function getIntersector(element: Element): Intersector | undefined {
+	return intersectors.find((Intersector) => Intersector.element === element);
 }
 
-function removeIntersectingElement(element: Element) {
-	const intersectingElementIndex = intersectingElements.findIndex(
-		(IntersectingElement) => IntersectingElement.element === element
+function removeIntersector(element: Element) {
+	const intersectorIndex = intersectors.findIndex(
+		(Intersector) => Intersector.element === element
 	);
-	if (intersectingElementIndex > -1) {
-		intersectingElements.splice(intersectingElementIndex, 1);
+	if (intersectorIndex > -1) {
+		intersectors.splice(intersectorIndex, 1);
 	}
 }
 
 function onIntersection(element: Element, isIntersecting: boolean): void {
 	if (isIntersecting) {
-		intersectingElements.push({
+		intersectors.push({
 			element,
 			isVisible: isVisible(element),
 			clickableType: getClickableType(element),
 		});
 	} else {
-		removeIntersectingElement(element);
+		removeIntersector(element);
 	}
 }
 
 function onAttributeMutation(element: Element) {
-	const intersectingElement = getIntersectingElement(element);
-	if (intersectingElement) {
-		intersectingElement.isVisible = isVisible(element);
-		intersectingElement.clickableType = getClickableType(element);
+	const intersector = getIntersector(element);
+	if (intersector) {
+		intersector.isVisible = isVisible(element);
+		intersector.clickableType = getClickableType(element);
 	}
 
 	for (const descendant of element.querySelectorAll("*")) {
-		const observedDescendantElement = getIntersectingElement(descendant);
+		const observedDescendantElement = getIntersector(descendant);
 		if (observedDescendantElement) {
 			observedDescendantElement.isVisible = isVisible(descendant);
 		}

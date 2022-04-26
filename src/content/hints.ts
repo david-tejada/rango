@@ -1,4 +1,4 @@
-import { IntersectingElement } from "../types/types";
+import { Intersector } from "../types/types";
 import { getLettersFromNumber } from "../lib/utils";
 import { elementIsObscured } from "../lib/dom-utils";
 import { applyInitialStyles } from "../lib/styles";
@@ -6,7 +6,7 @@ import { applyInitialStyles } from "../lib/styles";
 let hintsUpdateTriggered = false;
 let showHints = true;
 
-export function displayHints(intersectingElements: IntersectingElement[]) {
+export function displayHints(intersectors: Intersector[]) {
 	// We set a timeout in order to avoid updating the hints too often, for example,
 	// when there are multiple mutations or intersections happening
 	if (showHints && !hintsUpdateTriggered) {
@@ -16,18 +16,18 @@ export function displayHints(intersectingElements: IntersectingElement[]) {
 			document.querySelector("#rango-hints-container")?.remove();
 			const hintsContainer = document.createElement("div");
 			hintsContainer.id = "rango-hints-container";
-			for (const intersectingElement of intersectingElements) {
-				intersectingElement.hintElement = undefined;
-				intersectingElement.hintText = undefined;
+			for (const intersector of intersectors) {
+				intersector.hintElement = undefined;
+				intersector.hintText = undefined;
 			}
 
-			console.log(intersectingElements);
+			console.log(intersectors);
 
-			const hints = intersectingElements.filter((intersectingElement) => {
+			const hints = intersectors.filter((intersector) => {
 				return (
-					intersectingElement.clickableType &&
-					intersectingElement.isVisible &&
-					!elementIsObscured(intersectingElement.element)
+					intersector.clickableType &&
+					intersector.isVisible &&
+					!elementIsObscured(intersector.element)
 				);
 			});
 
