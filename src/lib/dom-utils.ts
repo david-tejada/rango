@@ -1,8 +1,7 @@
-import { ClickableType } from "../types/types";
 import { isRgb, rgbaToRgb } from "./utils";
 
 // This function is here mostly for debugging purposes
-export function getClickableType(element: Element): ClickableType {
+export function getClickableType(element: Element): string | undefined {
 	// Ignoring some items that even though they have onclick event they don't do anything
 	// or are redundant
 	if (
@@ -45,11 +44,11 @@ export function getClickableType(element: Element): ClickableType {
 	const elementRole = element.getAttribute("role");
 
 	if (clickableTags.includes(elementTag)) {
-		return elementTag.toLowerCase() as ClickableType;
+		return elementTag.toLowerCase();
 	}
 
 	if (elementRole && clickableRoles.includes(elementRole)) {
-		return elementRole as ClickableType;
+		return elementRole;
 	}
 
 	if ((element as HTMLElement).onclick !== null) {

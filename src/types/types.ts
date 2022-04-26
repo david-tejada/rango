@@ -6,29 +6,12 @@ export interface Message {
 	};
 }
 
-export type ClickableType =
-	| "button"
-	| "a"
-	| "input"
-	| "textarea"
-	| "select"
-	| "option"
-	| "summary"
-	| "role:button"
-	| "role:link"
-	| "role:treeitem"
-	| "role:tab"
-	| "role:option"
-	| "role:radio"
-	| "onclick"
-	| undefined;
-
 export interface Intersector {
 	element: Element;
 	hintElement?: Element;
 	hintText?: string;
 	isVisible: boolean;
-	clickableType: ClickableType;
+	clickableType: string | undefined;
 }
 
 export interface IntersectorConfig {
