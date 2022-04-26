@@ -3,12 +3,12 @@
 	"version": "0.0.0",
 	"description": "Extension that allows you to interact with webpages using your voice and talon",
 	"homepage_url": "https://github.com/david-tejada/rango",
-	"manifest_version": 2,
-	"minimum_chrome_version": "80",
+	"manifest_version": 3,
+	"minimum_chrome_version": "100",
 	"browser_specific_settings": {
 		"gecko": {
 			"id": "rango@david-tejada",
-			"strict_min_version": "80.0"
+			"strict_min_version": "100.0"
 		}
 	},
 	"icons": {
@@ -37,8 +37,8 @@
 		}
 	],
 	"background": {
-		"persistent": false,
-		"scripts": ["./background/background.ts"]
+		"service_worker": "./background/background.ts",
+		"type": "module"
 	},
 	"commands": {
 		"get-talon-request": {
