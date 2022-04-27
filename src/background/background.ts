@@ -39,3 +39,9 @@ async function sendMessageToActiveTab(message: Message) {
 	const activeTab = activeTabs[0];
 	await browser.tabs.sendMessage(activeTab!.id!, message);
 }
+
+browser.runtime.onMessage.addListener(async (data) => {
+	await browser.tabs.create({
+		url: data.url as string,
+	});
+});
