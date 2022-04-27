@@ -4,7 +4,7 @@ import { displayHints } from "./hints";
 const hoveredElements: Set<Element> = new Set();
 const timeoutIds: Set<NodeJS.Timeout> = new Set();
 
-export function hoverElementByHint(hintText: string, fixed: boolean) {
+export function hoverElement(hintText: string, fixed: boolean) {
 	hoveredElements.clear();
 	for (const timeoutId of timeoutIds) {
 		clearTimeout(timeoutId);

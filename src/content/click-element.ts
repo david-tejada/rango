@@ -4,7 +4,7 @@ import { applyEmphasisStyles, applyInitialStyles } from "../lib/styles";
 import { intersectors } from "./intersectors";
 import { displayHints } from "./hints";
 
-export function clickElementByHint(
+export function clickElement(
 	hintText: string,
 	newTab: boolean,
 	mouseEventInit?: MouseEventInit
