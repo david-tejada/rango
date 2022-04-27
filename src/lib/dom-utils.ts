@@ -115,7 +115,9 @@ function getFirstTextNodeDescendant(element: Node): Node | undefined {
 			if (
 				childNode.nodeType === 3 &&
 				rangeGivesCoordinates(childNode as HTMLElement) &&
-				/\S/.test(childNode.textContent!)
+				/\S/.test(childNode.textContent!) &&
+				childNode.parentElement!.getBoundingClientRect().left > 0 &&
+				childNode.parentElement!.getBoundingClientRect().top > 0
 			) {
 				return childNode;
 			}
