@@ -49,7 +49,16 @@ export function getClickableType(element: Element): string | undefined {
 	}
 
 	if (elementRole && clickableRoles.includes(elementRole)) {
-		return elementRole;
+		let isRedundant = false;
+		for (const child of element.children) {
+			if (clickableTags.includes(child.tagName)) {
+				isRedundant = true;
+			}
+		}
+
+		if (!isRedundant) {
+			return elementRole;
+		}
 	}
 
 	if ((element as HTMLElement).onclick !== null) {
