@@ -22,7 +22,7 @@ export function getClickableType(element: Element): string | undefined {
 		return undefined;
 	}
 
-	const clickableTags = [
+	const clickableTags = new Set([
 		"BUTTON",
 		"A",
 		"INPUT",
@@ -31,8 +31,8 @@ export function getClickableType(element: Element): string | undefined {
 		"SELECT",
 		"OPTION",
 		"LABEL",
-	];
-	const clickableRoles = [
+	]);
+	const clickableRoles = new Set([
 		"button",
 		"link",
 		"treeitem",
@@ -40,18 +40,18 @@ export function getClickableType(element: Element): string | undefined {
 		"option",
 		"radio",
 		"menuitem",
-	];
+	]);
 	const elementTag = element.tagName;
 	const elementRole = element.getAttribute("role");
 
-	if (clickableTags.includes(elementTag)) {
+	if (clickableTags.has(elementTag)) {
 		return elementTag.toLowerCase();
 	}
 
-	if (elementRole && clickableRoles.includes(elementRole)) {
+	if (elementRole && clickableRoles.has(elementRole)) {
 		let isRedundant = false;
 		for (const child of element.children) {
-			if (clickableTags.includes(child.tagName)) {
+			if (clickableTags.has(child.tagName)) {
 				isRedundant = true;
 			}
 		}
