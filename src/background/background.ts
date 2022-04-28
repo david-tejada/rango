@@ -5,7 +5,8 @@ browser.commands.onCommand.addListener(async (command: string) => {
 	if (command === "get-talon-request") {
 		try {
 			const request = await getMessageFromClipboard();
-			await sendMessageToActiveTab(request);
+			const response = await sendMessageToActiveTab(request);
+			await writeResponseToClipboard(response);
 		} catch (error: unknown) {
 			let errorMessage = "Error: There was an error";
 			if (error instanceof Error) {
@@ -24,20 +25,27 @@ async function getMessageFromClipboard(): Promise<Message> {
 		throw new Error("Error: No request message present in the clipboard");
 	}
 
-	// We send the response so that talon can make sure the request was received
-	const response = JSON.stringify({ type: "response" } as Message);
-	await navigator.clipboard.writeText(response);
-
 	return request;
 }
 
-async function sendMessageToActiveTab(message: Message) {
+async function writeResponseToClipboard(responseObject: Message) {
+	// We send the response so that talon can make sure the request was received
+	// and to tell talon to execute any actions
+	const response = JSON.stringify(responseObject);
+	await navigator.clipboard.writeText(response);
+}
+
+async function sendMessageToActiveTab(message: Message): Promise<Message> {
 	const activeTabs = await browser.tabs.query({
 		currentWindow: true,
 		active: true,
 	});
 	const activeTab = activeTabs[0];
-	await browser.tabs.sendMessage(activeTab!.id!, message);
+	const response = (await browser.tabs.sendMessage(
+		activeTab!.id!,
+		message
+	)) as Message;
+	return response;
 }
 
 browser.runtime.onMessage.addListener(async (data) => {
