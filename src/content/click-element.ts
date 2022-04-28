@@ -23,7 +23,10 @@ export function clickElement(
 		} else {
 			if (
 				target.element.tagName === "A" &&
-				(newTab || target.element.getAttribute("target") === "_blank")
+				(newTab ||
+					(target.element.getAttribute("target") === "_blank" &&
+						(target.element as HTMLLinkElement).href &&
+						(target.element as HTMLLinkElement).href !== location.href))
 			) {
 				browser.runtime
 					.sendMessage({
