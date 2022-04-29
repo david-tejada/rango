@@ -19,7 +19,7 @@
 		{
 			"matches": ["<all_urls>"],
 			"js": ["./content/content.ts"],
-			"css": ["./styles/hints.css"],
+			"css": ["./styles/hints.css", "./styles/tippy.css"],
 			"run_at": "document_idle"
 		},
 		{

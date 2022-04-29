@@ -47,7 +47,8 @@ const mutationObserver = new MutationObserver((mutationList) => {
 			for (const node of mutationRecord.addedNodes as NodeListOf<Node>) {
 				if (
 					node.nodeType === 1 &&
-					!(node as Element).id.includes("rango-hints-container")
+					!(node as Element).id.includes("rango-hints-container") &&
+					!(node as Element).parentElement!.id.includes("rango-hints-container")
 				) {
 					addIntersector(node as Element);
 					displayHints(intersectors);
@@ -57,7 +58,10 @@ const mutationObserver = new MutationObserver((mutationList) => {
 			// to remove them from our list of our observed elements than to do nothing
 		}
 
-		if (mutationRecord.type === "attributes") {
+		if (
+			mutationRecord.type === "attributes" &&
+			(mutationRecord.target as Element).className !== "rango-hint"
+		) {
 			onAttributeMutation(mutationRecord.target as Element);
 		}
 	}

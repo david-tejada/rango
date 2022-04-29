@@ -41,14 +41,17 @@ export function applyInitialStyles(intersector: Intersector) {
 	intersector.hintElement!.className = "rango-hint";
 }
 
-export function applyEmphasisStyles(intersector: Intersector) {
+export function applyEmphasisStyles(
+	intersector: Intersector,
+	dynamic: boolean
+) {
 	// We invert the colors for a visual clue
 	const color = (intersector.hintElement as HTMLInputElement).style
 		.backgroundColor;
 	const background = (intersector.hintElement as HTMLInputElement).style.color;
+	const transform = dynamic ? "scale(1.3, 1.3) translate(20%, 20%)" : "";
 	const styles = {
-		padding: "0.4em",
-		fontSize: "12px",
+		transform,
 		background,
 		color,
 	};

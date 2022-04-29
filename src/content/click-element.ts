@@ -14,7 +14,7 @@ export function clickElement(
 	);
 
 	if (target) {
-		applyEmphasisStyles(target);
+		applyEmphasisStyles(target, true);
 		if (focusesOnclick(target.element)) {
 			setTimeout(() => {
 				applyInitialStyles(target);
