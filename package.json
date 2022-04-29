@@ -39,7 +39,10 @@
 		"bracketSpacing": true
 	},
 	"stylelint": {
-		"extends": "stylelint-config-xo"
+		"extends": "stylelint-config-xo",
+		"rules": {
+			"string-quotes": "double"
+		}
 	},
 	"dependencies": {
 		"tippy.js": "^6.3.7",
