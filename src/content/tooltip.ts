@@ -13,6 +13,7 @@ export function showTooltip(
 	const instance = tippy(hintElement, {
 		zIndex: 2_147_483_647,
 		appendTo: hintElement.parentElement!,
+		maxWidth: "none",
 	});
 	instance.show();
 	applyEmphasisStyles(target, false);
