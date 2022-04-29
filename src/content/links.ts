@@ -6,7 +6,7 @@ export function copyLink(hintText: string) {
 		(intersector) => intersector.hintText === String(hintText)
 	);
 	if (target && (target?.element as HTMLLinkElement).href) {
-		showTooltip(target, "Copied!");
+		showTooltip(target, "Copied!", 1500);
 		return (target?.element as HTMLLinkElement).href;
 	}
 
@@ -19,6 +19,6 @@ export function showLink(hintText: string) {
 	);
 	if (target) {
 		const href = (target.element as HTMLLinkElement).href;
-		showTooltip(target, href);
+		showTooltip(target, href, 5000);
 	}
 }

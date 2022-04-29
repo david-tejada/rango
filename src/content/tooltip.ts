@@ -2,7 +2,11 @@ import tippy from "tippy.js";
 import { applyEmphasisStyles, applyInitialStyles } from "../lib/styles";
 import { Intersector } from "../types/types";
 
-export function showTooltip(target: Intersector, text: string) {
+export function showTooltip(
+	target: Intersector,
+	text: string,
+	duration: number
+) {
 	const hintElement = target.hintElement as HTMLElement;
 	hintElement.id = "rango-tooltip";
 	hintElement.dataset["tippyContent"] = text;
@@ -16,5 +20,5 @@ export function showTooltip(target: Intersector, text: string) {
 		applyInitialStyles(target);
 		instance.hide();
 		hintElement.removeAttribute("id");
-	}, 1500);
+	}, duration);
 }
