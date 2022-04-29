@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { clickElement } from "./click-element";
-import { copyLink } from "./copy-link";
+import { copyLink, showLink } from "./links";
 import { hoverElement, unhoverAll } from "./hover";
 import { toggleHints, displayHints } from "./hints";
 import { intersectors } from "./intersectors";
@@ -25,6 +25,10 @@ browser.runtime.onMessage.addListener(async (request) => {
 				},
 			};
 		}
+	}
+
+	if (request.action.type === "showLink") {
+		showLink(request.action.target);
 	}
 
 	if (request.action.type === "openInNewTab") {

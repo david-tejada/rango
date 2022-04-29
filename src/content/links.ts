@@ -12,3 +12,13 @@ export function copyLink(hintText: string) {
 
 	return undefined;
 }
+
+export function showLink(hintText: string) {
+	const target = intersectors.find(
+		(intersector) => intersector.hintText === String(hintText)
+	);
+	if (target) {
+		const href = (target.element as HTMLLinkElement).href;
+		showTooltip(target, href);
+	}
+}
