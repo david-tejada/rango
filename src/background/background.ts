@@ -48,8 +48,10 @@ async function sendMessageToActiveTab(message: Message): Promise<Message> {
 	return response;
 }
 
-browser.runtime.onMessage.addListener(async (data) => {
-	await browser.tabs.create({
-		url: data.url as string,
-	});
+browser.runtime.onMessage.addListener(async (message) => {
+	if (message.action.type === "openInNewTab") {
+		await browser.tabs.create({
+			url: message.action.target as string,
+		});
+	}
 });

@@ -30,8 +30,11 @@ export function clickElement(
 			) {
 				browser.runtime
 					.sendMessage({
-						action: "openInNewTab",
-						url: (target.element as HTMLLinkElement).href,
+						type: "request",
+						action: {
+							type: "openInNewTab",
+							target: (target.element as HTMLLinkElement).href,
+						},
 					})
 					.catch((error) => {
 						console.log(error);
