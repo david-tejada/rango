@@ -37,11 +37,11 @@ browser.runtime.onMessage.addListener(async (request) => {
 	}
 
 	if (request.action.type === "hoverElement") {
-		hoverElement(request.action.target, false);
+		await hoverElement(request.action.target, false);
 	}
 
 	if (request.action.type === "fixedHoverElement") {
-		hoverElement(request.action.target, true);
+		await hoverElement(request.action.target, true);
 	}
 
 	if (request.action.type === "unhoverAll") {

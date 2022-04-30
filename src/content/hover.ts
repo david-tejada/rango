@@ -4,7 +4,7 @@ import { displayHints } from "./hints";
 const hoveredElements: Set<Element> = new Set();
 const timeoutIds: Set<NodeJS.Timeout> = new Set();
 
-export function hoverElement(hintText: string, fixed: boolean) {
+export async function hoverElement(hintText: string, fixed: boolean) {
 	hoveredElements.clear();
 	for (const timeoutId of timeoutIds) {
 		clearTimeout(timeoutId);
@@ -27,7 +27,7 @@ export function hoverElement(hintText: string, fixed: boolean) {
 
 		targetElement.dispatchEvent(event);
 		hoveredElements.add(targetElement);
-		displayHints(intersectors);
+		await displayHints(intersectors);
 
 		if (!fixed) {
 			const timeoutId = setTimeout(() => {
