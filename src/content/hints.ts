@@ -10,7 +10,7 @@ export async function displayHints(intersectors: Intersector[]) {
 	// We set a timeout in order to avoid updating the hints too often, for example,
 	// when there are multiple mutations or intersections happening
 	const localStorage = await browser.storage.local.get(["showHints"]);
-	const showHints = localStorage["showHints"] as boolean;
+	const showHints = (localStorage["showHints"] as boolean) ?? true;
 	if (showHints && !hintsUpdateTriggered) {
 		hintsUpdateTriggered = true;
 		setTimeout(() => {
