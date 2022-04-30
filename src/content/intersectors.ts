@@ -66,12 +66,12 @@ const mutationObserver = new MutationObserver(async (mutationList) => {
 			// to remove them from our list of our observed elements than to do nothing
 		}
 
-		if (
-			mutationRecord.type === "attributes" &&
-			(mutationRecord.target as Element).className !== "rango-hint"
-		) {
-			onAttributeMutation(mutationRecord.target as Element);
-			updateHints = true;
+		if (mutationRecord.type === "attributes") {
+			const hintsContainer = document.querySelector("#rango-hints-container");
+			if (!hintsContainer?.contains(mutationRecord.target)) {
+				onAttributeMutation(mutationRecord.target as Element);
+				updateHints = true;
+			}
 		}
 	}
 
