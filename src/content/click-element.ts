@@ -4,7 +4,7 @@ import { applyEmphasisStyles, applyInitialStyles } from "../lib/styles";
 import { intersectors } from "./intersectors";
 import { displayHints } from "./hints";
 
-export function clickElement(
+export async function clickElement(
 	hintText: string,
 	newTab: boolean,
 	mouseEventInit?: MouseEventInit
@@ -46,7 +46,7 @@ export function clickElement(
 
 			// On some pages like codepen there are hints remaining after closing a popup panel.
 			// This is not a perfect solution but as long as the user clicks with voice I think we're safe
-			displayHints(intersectors);
+			await displayHints(intersectors);
 		}
 	}
 }

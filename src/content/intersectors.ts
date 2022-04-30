@@ -15,43 +15,51 @@ const options = {
 	threshold: 0,
 };
 
-export const intersectionObserver = new IntersectionObserver((entries) => {
-	for (const entry of entries) {
-		if (entry.isIntersecting) {
-			onIntersection(entry.target, true);
-		} else {
-			onIntersection(entry.target, false);
+export const intersectionObserver = new IntersectionObserver(
+	async (entries) => {
+		for (const entry of entries) {
+			if (entry.isIntersecting) {
+				onIntersection(entry.target, true);
+			} else {
+				onIntersection(entry.target, false);
+			}
 		}
-	}
 
-	displayHints(intersectors);
-}, options);
+		await displayHints(intersectors);
+	},
+	options
+);
 
 // We observe all the initial elements before any mutation
 if (document.readyState === "complete") {
 	addIntersector(document.body);
-	displayHints(intersectors);
+	displayHints(intersectors).catch((error) => {
+		console.log(error);
+	});
 } else {
 	window.addEventListener("load", () => {
 		addIntersector(document.body);
-		displayHints(intersectors);
+		displayHints(intersectors).catch((error) => {
+			console.log(error);
+		});
 	});
 }
 
 // *** MUTATION OBSERVER ***
 
 const config = { attributes: true, childList: true, subtree: true };
-const mutationObserver = new MutationObserver((mutationList) => {
+const mutationObserver = new MutationObserver(async (mutationList) => {
+	let updateHints = false;
 	for (const mutationRecord of mutationList) {
 		if (mutationRecord.type === "childList") {
 			for (const node of mutationRecord.addedNodes as NodeListOf<Node>) {
 				if (
 					node.nodeType === 1 &&
 					!(node as Element).id.includes("rango-hints-container") &&
-					!(node as Element).parentElement!.id.includes("rango-hints-container")
+					!(node as Element).parentElement?.id.includes("rango-hints-container")
 				) {
 					addIntersector(node as Element);
-					displayHints(intersectors);
+					updateHints = true;
 				}
 			}
 			// We don't care too much about removed nodes. I think it's going to be more expensive
@@ -63,7 +71,12 @@ const mutationObserver = new MutationObserver((mutationList) => {
 			(mutationRecord.target as Element).className !== "rango-hint"
 		) {
 			onAttributeMutation(mutationRecord.target as Element);
+			updateHints = true;
 		}
+	}
+
+	if (updateHints) {
+		await displayHints(intersectors);
 	}
 });
 

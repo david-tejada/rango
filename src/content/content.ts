@@ -2,12 +2,13 @@ import browser from "webextension-polyfill";
 import { clickElement } from "./click-element";
 import { copyLink, showLink } from "./links";
 import { hoverElement, unhoverAll } from "./hover";
-import { toggleHints, displayHints } from "./hints";
+import { displayHints } from "./hints";
+import { toggleHints } from "./toggle";
 import { intersectors } from "./intersectors";
 
 browser.runtime.onMessage.addListener(async (request) => {
 	if (request.action.type === "clickElement") {
-		clickElement(request.action.target, false, {
+		await clickElement(request.action.target, false, {
 			bubbles: true,
 			cancelable: true,
 			view: window,
@@ -32,7 +33,7 @@ browser.runtime.onMessage.addListener(async (request) => {
 	}
 
 	if (request.action.type === "openInNewTab") {
-		clickElement(request.action.target, true);
+		await clickElement(request.action.target, true);
 	}
 
 	if (request.action.type === "hoverElement") {
@@ -48,16 +49,16 @@ browser.runtime.onMessage.addListener(async (request) => {
 	}
 
 	if (request.action.type === "toggleHints") {
-		toggleHints();
+		await toggleHints();
 	}
 
 	return { type: "response" };
 });
 
-document.addEventListener("scroll", () => {
-	displayHints(intersectors);
+document.addEventListener("scroll", async () => {
+	await displayHints(intersectors);
 });
 
-window.addEventListener("resize", () => {
-	displayHints(intersectors);
+window.addEventListener("resize", async () => {
+	await displayHints(intersectors);
 });
