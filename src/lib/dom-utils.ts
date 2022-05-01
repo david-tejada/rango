@@ -243,7 +243,11 @@ function getAscendantRgb(parent: HTMLElement): string {
 	}
 
 	const parentBackgroundColor = window.getComputedStyle(parent).backgroundColor;
-	if (!isRgb(parentBackgroundColor) && parent.parentElement) {
+	if (isRgb(parentBackgroundColor)) {
+		return parentBackgroundColor;
+	}
+
+	if (parent.parentElement) {
 		return getAscendantRgb(parent.parentElement);
 	}
 
