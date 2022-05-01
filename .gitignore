@@ -6,3 +6,5 @@ workspace.code-workspace
 # Packaged chrome extension and keys
 *.crx
 *.pem
+# macos metadata file
+.DS_Store
