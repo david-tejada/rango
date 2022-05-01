@@ -52,7 +52,7 @@ browser.runtime.onMessage.addListener(async (request) => {
 		await toggleHints();
 	}
 
-	return { type: "response" };
+	return { type: "response", action: { type: "ok" } };
 });
 
 document.addEventListener("scroll", async () => {
