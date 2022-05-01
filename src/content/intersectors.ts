@@ -4,6 +4,7 @@ import {
 	isVisible,
 	hasTextNodesChildren,
 } from "../lib/dom-utils";
+import { releaseHintText } from "../lib/utils";
 import { displayHints } from "./hints";
 
 export const intersectors: Intersector[] = [];
@@ -18,11 +19,7 @@ const options = {
 export const intersectionObserver = new IntersectionObserver(
 	async (entries) => {
 		for (const entry of entries) {
-			if (entry.isIntersecting) {
-				onIntersection(entry.target, true);
-			} else {
-				onIntersection(entry.target, false);
-			}
+			onIntersection(entry.target, entry.isIntersecting);
 		}
 
 		await displayHints(intersectors);
@@ -32,13 +29,13 @@ export const intersectionObserver = new IntersectionObserver(
 
 // We observe all the initial elements before any mutation
 if (document.readyState === "complete") {
-	addIntersector(document.body);
+	maybeObserveIntersection(document.body);
 	displayHints(intersectors).catch((error) => {
 		console.log(error);
 	});
 } else {
 	window.addEventListener("load", () => {
-		addIntersector(document.body);
+		maybeObserveIntersection(document.body);
 		displayHints(intersectors).catch((error) => {
 			console.log(error);
 		});
@@ -58,7 +55,7 @@ const mutationObserver = new MutationObserver(async (mutationList) => {
 					!(node as Element).id.includes("rango-hints-container") &&
 					!(node as Element).parentElement?.id.includes("rango-hints-container")
 				) {
-					addIntersector(node as Element);
+					maybeObserveIntersection(node as Element);
 					updateHints = true;
 				}
 			}
@@ -84,7 +81,7 @@ const mutationObserver = new MutationObserver(async (mutationList) => {
 // We observe document instead of document.body in case the body gets replaced
 mutationObserver.observe(document, config);
 
-function addIntersector(element: Element) {
+function maybeObserveIntersection(element: Element) {
 	const elementAndDescendants = [element, ...element.querySelectorAll("*")];
 	for (const elementToAdd of elementAndDescendants) {
 		const clickableType = getClickableType(elementToAdd);
@@ -103,6 +100,12 @@ function removeIntersector(element: Element) {
 		(Intersector) => Intersector.element === element
 	);
 	if (intersectorIndex > -1) {
+		const intersector = intersectors[intersectorIndex];
+		if (intersector?.hintText) {
+			intersector.hintElement?.remove();
+			releaseHintText(intersector.hintText);
+		}
+
 		intersectors.splice(intersectorIndex, 1);
 	}
 }

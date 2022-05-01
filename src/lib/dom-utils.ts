@@ -162,6 +162,11 @@ export function elementIsObscured(element: Element): boolean {
 		getFirstCharacterRect(element) ?? element.getBoundingClientRect();
 
 	const elementFromPoint = document.elementFromPoint(rect.x + 5, rect.y + 5);
+
+	if (elementFromPoint?.className === "rango-hint") {
+		return false;
+	}
+
 	if (
 		elementFromPoint &&
 		(element.contains(elementFromPoint) || elementFromPoint.contains(element))
