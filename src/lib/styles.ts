@@ -4,12 +4,12 @@ import {
 	calculateHintPosition,
 	getInheritedBackgroundColor,
 	getDefaultBackgroundColor,
+	getFirstTextNodeDescendant,
 } from "./dom-utils";
 
 const defaultBackgroundColor = getDefaultBackgroundColor();
 
 export function applyInitialStyles(intersector: Intersector) {
-	// Styles
 	const [x, y] = calculateHintPosition(
 		intersector.element,
 		intersector.hintText!.length
@@ -22,7 +22,10 @@ export function applyInitialStyles(intersector: Intersector) {
 		getLuminance(parseColor(backgroundColor)) < 0.5
 			? getTintOrShade(backgroundColor, 0.2)
 			: getTintOrShade(backgroundColor, -0.2);
-	let color = window.getComputedStyle(intersector.element).color;
+	const elementToGetColorFrom =
+		(getFirstTextNodeDescendant(intersector.element) as Element)
+			?.parentElement ?? intersector.element;
+	let color = window.getComputedStyle(elementToGetColorFrom).color;
 	const contrast = getContrast(backgroundColor, color);
 	if (contrast < 4 || parseColor(color).a < 0.5) {
 		color = getLuminance(parseColor(backgroundColor)) < 0.5 ? "#fff" : "#000";

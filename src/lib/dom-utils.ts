@@ -113,7 +113,7 @@ function rangeGivesCoordinates(element: Element): boolean {
 	return true;
 }
 
-function getFirstTextNodeDescendant(element: Node): Node | undefined {
+export function getFirstTextNodeDescendant(element: Node): Node | undefined {
 	// Check to see if the element has any text content that is not white space
 	if (!/\S/.test(element.textContent!)) {
 		return undefined;
