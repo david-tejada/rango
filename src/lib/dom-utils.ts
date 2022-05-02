@@ -39,6 +39,7 @@ export function getClickableType(element: Element): string | undefined {
 		"tab",
 		"option",
 		"radio",
+		"checkbox",
 		"menuitem",
 	]);
 	const elementTag = element.tagName;
