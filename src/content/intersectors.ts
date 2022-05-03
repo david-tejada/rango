@@ -69,8 +69,9 @@ const mutationObserver = new MutationObserver(async (mutationList) => {
 		if (mutationRecord.type === "attributes") {
 			const hintsContainer = document.querySelector("#rango-hints-container");
 			if (!hintsContainer?.contains(mutationRecord.target)) {
-				onAttributeMutation(mutationRecord.target as Element);
-				updateHints = true;
+				// The function onAttributeMutation returns true if there is a change to
+				// the visibility or clickability of elements
+				updateHints = onAttributeMutation(mutationRecord.target as Element);
 			}
 		}
 	}
@@ -118,17 +119,35 @@ function onIntersection(element: Element, isIntersecting: boolean): void {
 	}
 }
 
-function onAttributeMutation(element: Element) {
+function onAttributeMutation(element: Element): boolean {
 	const intersector = getIntersector(element);
+	let updateHints = false;
 	if (intersector) {
-		intersector.isVisible = isVisible(element);
-		intersector.clickableType = getClickableType(element);
+		const visible = isVisible(element);
+		const clickableType = getClickableType(element);
+
+		if (
+			visible !== intersector.isVisible ||
+			clickableType !== intersector.clickableType
+		) {
+			updateHints = true;
+		}
+
+		intersector.isVisible = visible;
+		intersector.clickableType = clickableType;
 	}
 
 	for (const descendant of element.querySelectorAll("*")) {
 		const observedDescendantElement = getIntersector(descendant);
 		if (observedDescendantElement) {
-			observedDescendantElement.isVisible = isVisible(descendant);
+			const visible = isVisible(descendant);
+			if (visible !== observedDescendantElement.isVisible) {
+				updateHints = true;
+			}
+
+			observedDescendantElement.isVisible = visible;
 		}
 	}
+
+	return updateHints;
 }
