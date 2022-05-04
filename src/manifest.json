@@ -43,8 +43,8 @@
 	"commands": {
 		"get-talon-request": {
 			"suggested_key": {
-				"default": "Alt+Shift+A",
-				"mac": "Alt+Command+A"
+				"default": "Ctrl+Shift+F",
+				"mac": "MacCtrl+Shift+F"
 			},
 			"description": "Give the signal to the native app to get the request"
 		}
