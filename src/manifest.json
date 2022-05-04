@@ -44,8 +44,8 @@
 	"commands": {
 		"get-talon-request": {
 			"suggested_key": {
-				"default": "Ctrl+Shift+F",
-				"mac": "MacCtrl+Shift+F"
+				"default": "Ctrl+Shift+Insert",
+				"mac": "MacCtrl+Shift+Insert"
 			},
 			"description": "Give the signal to the native app to get the request"
 		}
