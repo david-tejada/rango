@@ -12,7 +12,8 @@
 		}
 	},
 	"icons": {
-		"128": "./assets/icon.png"
+		"48": "./assets/icon128.png",
+		"128": "./assets/icon128.png"
 	},
 	"permissions": ["storage", "activeTab", "clipboardRead", "clipboardWrite"],
 	"content_scripts": [
@@ -48,5 +49,9 @@
 			},
 			"description": "Give the signal to the native app to get the request"
 		}
+	},
+	"browser_action": {
+		"default_icon": "./assets/icon48.png",
+		"default_title": "Rango"
 	}
 }
