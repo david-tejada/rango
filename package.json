@@ -30,7 +30,8 @@
 			"import/extensions": [
 				2,
 				"never"
-			]
+			],
+			"node/prefer-global/process": "off"
 		}
 	},
 	"prettier": {

@@ -23,8 +23,6 @@ export async function displayHints(intersectors: Intersector[]) {
 				intersector.hintText = undefined;
 			}
 
-			console.log(intersectors);
-
 			const hints = intersectors.filter((intersector) => {
 				return (
 					intersector.clickableType &&
@@ -43,8 +41,12 @@ export async function displayHints(intersectors: Intersector[]) {
 				hintsContainer.append(hint.hintElement);
 			}
 
-			console.log(hints);
 			document.body.append(hintsContainer);
+
+			if (process.env["NODE_ENV"] !== "production") {
+				console.log("intersectors:", intersectors);
+				console.log("hints", hints);
+			}
 		}, 300);
 	}
 }
