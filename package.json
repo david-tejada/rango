@@ -45,6 +45,7 @@
 		}
 	},
 	"dependencies": {
+		"parse-domain": "^7.0.0",
 		"tippy.js": "^6.3.7",
 		"webextension-polyfill": "^0.8.0"
 	},
