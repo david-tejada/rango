@@ -40,7 +40,7 @@ The downside of this method is that you have to do that every time you want to u
 - Build: `npm run build`
 - Go to [chrome://extensions/](chrome://extensions/), enable `developer mode`, click `load unpacked`, go into the `dist` folder that you just build and click open.
 
-Once you have done this in order to update you just have to:
+Once you have done this, in order to update, you just have to:
 
 - Update your repo: `git pull`
 - Install with npm: `npm install`
@@ -52,7 +52,7 @@ It's possible that you see some errors after adding the extension manually, just
 
 ## Usage
 
-There are two modes: direct and explicit clicking. To switch between them you have to used the command `rango direct` or `rango explicit`.
+There are two modes: direct and explicit clicking. To switch between them you have to use the command `rango direct` or `rango explicit`.
 
 ### Direct Clicking
 
