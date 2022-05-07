@@ -14,13 +14,6 @@ export interface Intersector {
 	clickableType: string | undefined;
 }
 
-export interface IntersectorConfig {
-	hintElement?: Element | undefined;
-	isIntersecting?: boolean;
-	updateVisible?: boolean;
-	updateClickable?: boolean;
-}
-
 export interface Rgba {
 	r: number;
 	g: number;
