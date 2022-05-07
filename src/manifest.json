@@ -12,7 +12,7 @@
 		}
 	},
 	"icons": {
-		"48": "./assets/icon128.png",
+		"48": "./assets/icon48.png",
 		"128": "./assets/icon128.png"
 	},
 	"permissions": ["storage", "activeTab", "clipboardRead", "clipboardWrite"],
