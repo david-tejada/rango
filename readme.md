@@ -67,7 +67,7 @@ This is the default mode. With it enabled you just have to say the characters to
 
 ### Explicit Clicking
 
-With explicit clicking you have to precede every hint with word `click`. This mode prevents any misclicks at the expense of being a bit more tedious.
+With explicit clicking you have to precede every hint with the word `click`. This mode prevents any misclicks at the expense of being a bit more tedious.
 
 ### Other Commands
 
