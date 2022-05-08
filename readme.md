@@ -18,7 +18,7 @@ You can download the talon files from [here](https://github.com/david-tejada/ran
 
 ### Firefox
 
-You can install the extension through Firefox Add-ons (available soon)
+You can install the extension through Firefox Add-ons [here](https://addons.mozilla.org/en-US/firefox/addon/rango/)
 
 ### Chrome and Chromium Browsers
 
