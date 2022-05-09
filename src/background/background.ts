@@ -70,8 +70,14 @@ async function sendMessageToActiveTab(
 	message: Message
 ): Promise<Message | undefined> {
 	const activeTab = await getActiveTab();
+	const hintText = message.action?.target;
+	const frameId = hintText
+		? hintsStacks[activeTab!.id!]?.assigned.get(hintText)
+		: 0;
 	if (activeTab?.id) {
-		return (await browser.tabs.sendMessage(activeTab.id, message)) as Message;
+		return (await browser.tabs.sendMessage(activeTab.id, message, {
+			frameId,
+		})) as Message;
 	}
 
 	return undefined;
