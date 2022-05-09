@@ -71,6 +71,7 @@ async function sendMessageToActiveTab(
 ): Promise<Message | undefined> {
 	const activeTab = await getActiveTab();
 	const hintText = message.action?.target;
+	// We only want to send the message to the frame with the target hint
 	const frameId = hintText
 		? hintsStacks[activeTab!.id!]?.assigned.get(hintText)
 		: 0;
@@ -107,11 +108,7 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
 		}
 	}
 
-	if (
-		tabId &&
-		hintsStacks[tabId] &&
-		message.action.type === "releaseHintText"
-	) {
+	if (tabId && message.action.type === "releaseHintText") {
 		const hintText = message.action.target as string;
 		if (hintText) {
 			hintsStacks[tabId]!.free.push(hintText)!;
