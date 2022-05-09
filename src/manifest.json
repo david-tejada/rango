@@ -22,19 +22,6 @@
 			"js": ["./content/content.ts"],
 			"css": ["./styles/hints.css", "./styles/tippy.css"],
 			"run_at": "document_idle"
-		},
-		{
-			"matches": ["https://*.no_url.com/*"],
-			"exclude_matches": ["https://*.no_url.com/*"],
-			"js": [
-				"./types/types.ts",
-				"./content/hints.ts",
-				"./content/click-element.ts",
-				"./content/intersectors.ts",
-				"./content/hover.ts",
-				"./lib/dom-utils.ts",
-				"./lib/utils.ts"
-			]
 		}
 	],
 	"background": {
