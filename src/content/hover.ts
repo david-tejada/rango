@@ -27,7 +27,7 @@ export async function hoverElement(hintText: string, fixed: boolean) {
 
 		targetElement.dispatchEvent(event);
 		hoveredElements.add(targetElement);
-		await displayHints(intersectors);
+		await displayHints();
 
 		if (!fixed) {
 			const timeoutId = setTimeout(() => {

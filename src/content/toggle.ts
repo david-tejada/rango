@@ -1,5 +1,4 @@
 import browser from "webextension-polyfill";
-import { intersectors } from "./intersectors";
 import { displayHints } from "./hints";
 
 export async function toggleHints() {
@@ -10,7 +9,7 @@ export async function toggleHints() {
 	await browser.storage.local.set({ showHints });
 
 	if (showHints) {
-		await displayHints(intersectors);
+		await displayHints();
 	} else {
 		await displayHints([]);
 		document.querySelector("#rango-hints-container")?.remove();

@@ -4,7 +4,9 @@ import { copyLink, showLink } from "./links";
 import { hoverElement, unhoverAll } from "./hover";
 import { displayHints } from "./hints";
 import { toggleHints } from "./toggle";
-import { intersectors } from "./intersectors";
+import observe from "./observers";
+
+observe();
 
 browser.runtime.onMessage.addListener(async (request) => {
 	if (request.action.type === "clickElement") {
@@ -56,9 +58,9 @@ browser.runtime.onMessage.addListener(async (request) => {
 });
 
 document.addEventListener("scroll", async () => {
-	await displayHints(intersectors);
+	await displayHints();
 });
 
 window.addEventListener("resize", async () => {
-	await displayHints(intersectors);
+	await displayHints();
 });

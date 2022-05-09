@@ -56,7 +56,7 @@ export async function clickElement(
 
 			// On some pages like codepen there are hints remaining after closing a popup panel.
 			// This is not a perfect solution but as long as the user clicks with voice I think we're safe
-			await displayHints(intersectors);
+			await displayHints();
 		}
 	}
 }

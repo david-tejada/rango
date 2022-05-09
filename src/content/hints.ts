@@ -3,6 +3,7 @@ import { Intersector } from "../types/types";
 import { claimHintText, releaseHintText } from "../lib/hint-utils";
 import { elementIsObscured } from "../lib/dom-utils";
 import { applyInitialStyles } from "../lib/styles";
+import { intersectors } from "./intersectors";
 
 let hintsUpdateTriggered = false;
 
@@ -43,7 +44,7 @@ function getHintsContainer(): HTMLElement {
 	return container as HTMLElement;
 }
 
-export async function displayHints(intersectors: Intersector[]) {
+export async function displayHints() {
 	// We set a timeout in order to avoid updating the hints too often, for example,
 	// when there are multiple mutations or intersections happening
 	const localStorage = await browser.storage.local.get(["showHints"]);
