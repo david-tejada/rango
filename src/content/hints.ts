@@ -60,19 +60,27 @@ export async function displayHints(intersectors: Intersector[]) {
 				if (hiddenClickableNeedsRemoved(intersector)) {
 					intersector.hintElement?.remove();
 					intersector.hintElement = undefined;
-					releaseHintText(intersector.hintText);
+					releaseHintText(intersector.hintText).catch((error) => {
+						console.error(error);
+					});
 					intersector.hintText = undefined;
 				} else if (inViewClickableMissingHint(intersector)) {
 					intersector.hintElement = document.createElement("div");
-					intersector.hintText = claimHintText();
-					intersector.hintElement.textContent = intersector.hintText ?? "";
+					claimHintText()
+						.then((hintText) => {
+							intersector.hintText = hintText;
+							intersector.hintElement!.textContent = intersector.hintText ?? "";
 
-					// If there are no more available hints to markup the page, don't
-					// append the element.
-					if (intersector.hintText) {
-						applyInitialStyles(intersector);
-						hintsContainer.append(intersector.hintElement);
-					}
+							// If there are no more available hints to markup the page, don't
+							// append the element.
+							if (intersector.hintText) {
+								applyInitialStyles(intersector);
+								hintsContainer.append(intersector.hintElement as Node);
+							}
+						})
+						.catch((error) => {
+							console.error(error);
+						});
 				} else if (inViewClickablePossessesHint(intersector)) {
 					applyInitialStyles(intersector);
 				}

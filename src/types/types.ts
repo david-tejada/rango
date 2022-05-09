@@ -20,3 +20,11 @@ export interface Rgba {
 	b: number;
 	a: number;
 }
+
+export type HintsStacks = Record<
+	number,
+	{
+		free: string[];
+		assigned: Map<string, number>;
+	}
+>;

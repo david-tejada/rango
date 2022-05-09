@@ -1,15 +1,20 @@
-import browser, { Tabs } from "webextension-polyfill";
-import { Message } from "../types/types";
+import browser from "webextension-polyfill";
+import { Message, HintsStacks } from "../types/types";
+import { hintStack } from "../lib/hint-stack";
 
 const sandbox = document.createElement("textarea");
 document.body.append(sandbox);
+
+const hintsStacks: HintsStacks = {};
 
 browser.commands.onCommand.addListener(async (command: string) => {
 	if (command === "get-talon-request") {
 		try {
 			const request = await getMessageFromClipboard();
 			const response = await sendMessageToActiveTab(request);
-			await writeResponseToClipboard(response);
+			if (response) {
+				await writeResponseToClipboard(response);
+			}
 		} catch (error: unknown) {
 			let errorMessage = "Error: There was an error";
 			if (error instanceof Error) {
@@ -72,12 +77,43 @@ async function sendMessageToActiveTab(
 	return undefined;
 }
 
-browser.runtime.onMessage.addListener(async (message) => {
+browser.runtime.onMessage.addListener(async (message, sender) => {
+	const tabId = sender.tab?.id;
+	const frameId = sender.frameId;
 	if (message.action.type === "openInNewTab") {
 		await browser.tabs.create({
 			url: message.action.target as string,
 		});
 	}
+
+	if (tabId && message.action.type === "initTabHintsStack") {
+		hintsStacks[tabId] = {
+			free: [...hintStack],
+			assigned: new Map<string, number>(),
+		};
+	}
+
+	if (tabId && hintsStacks[tabId] && message.action.type === "claimHintText") {
+		const hintText = hintsStacks[tabId]!.free.pop()!;
+		if (hintText) {
+			hintsStacks[tabId]!.assigned.set(hintText, frameId!);
+			return hintText as string;
+		}
+	}
+
+	if (
+		tabId &&
+		hintsStacks[tabId] &&
+		message.action.type === "releaseHintText"
+	) {
+		const hintText = message.action.target as string;
+		if (hintText) {
+			hintsStacks[tabId]!.free.push(hintText)!;
+			hintsStacks[tabId]!.assigned.delete(hintText);
+		}
+	}
+
+	return undefined;
 });
 
 function getClipboard() {

@@ -1,13 +1,24 @@
+import browser from "webextension-polyfill";
 import { Rgba } from "../types/types";
-import { hintStack } from "./hint-stack";
 
-export function claimHintText(): string | undefined {
-	return hintStack.pop();
+export async function claimHintText(): Promise<string | undefined> {
+	return browser.runtime.sendMessage({
+		type: "request",
+		action: {
+			type: "claimHintText",
+		},
+	}) as Promise<string | undefined>;
 }
 
-export function releaseHintText(letters: string | undefined) {
+export async function releaseHintText(letters: string | undefined) {
 	if (letters) {
-		hintStack.push(letters);
+		await browser.runtime.sendMessage({
+			type: "request",
+			action: {
+				type: "releaseHintText",
+				target: letters,
+			},
+		});
 	}
 }
 
