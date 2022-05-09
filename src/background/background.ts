@@ -1,4 +1,4 @@
-import browser from "webextension-polyfill";
+import browser, { Tabs } from "webextension-polyfill";
 import { Message } from "../types/types";
 
 const sandbox = document.createElement("textarea");
@@ -52,17 +52,24 @@ async function writeResponseToClipboard(responseObject: Message) {
 	}
 }
 
-async function sendMessageToActiveTab(message: Message): Promise<Message> {
+async function getActiveTab(): Promise<browser.Tabs.Tab | undefined> {
 	const activeTabs = await browser.tabs.query({
 		currentWindow: true,
 		active: true,
 	});
-	const activeTab = activeTabs[0];
-	const response = (await browser.tabs.sendMessage(
-		activeTab!.id!,
-		message
-	)) as Message;
-	return response;
+
+	return activeTabs[0];
+}
+
+async function sendMessageToActiveTab(
+	message: Message
+): Promise<Message | undefined> {
+	const activeTab = await getActiveTab();
+	if (activeTab?.id) {
+		return (await browser.tabs.sendMessage(activeTab.id, message)) as Message;
+	}
+
+	return undefined;
 }
 
 browser.runtime.onMessage.addListener(async (message) => {
