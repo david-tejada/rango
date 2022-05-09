@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { Intersector } from "../types/types";
-import { claimHintText, releaseHintText } from "../lib/utils";
+import { claimHintText, releaseHintText } from "../lib/hint-utils";
 import { elementIsObscured } from "../lib/dom-utils";
 import { applyInitialStyles } from "../lib/styles";
 

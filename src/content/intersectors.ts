@@ -4,7 +4,7 @@ import {
 	isVisible,
 	hasTextNodesChildren,
 } from "../lib/dom-utils";
-import { releaseHintText } from "../lib/utils";
+import { releaseHintText } from "../lib/hint-utils";
 import { displayHints } from "./hints";
 
 export const intersectors: Intersector[] = [];
@@ -103,7 +103,9 @@ function removeIntersector(element: Element) {
 		const intersector = intersectors[intersectorIndex];
 		if (intersector?.hintText) {
 			intersector.hintElement?.remove();
-			releaseHintText(intersector.hintText);
+			releaseHintText(intersector.hintText).catch((error) => {
+				console.error(error);
+			});
 		}
 
 		intersectors.splice(intersectorIndex, 1);
