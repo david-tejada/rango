@@ -1,8 +1,8 @@
-import browser from "webextension-polyfill";
 import { Intersector } from "../types/types";
 import { claimHintText, releaseHintText } from "../lib/hint-utils";
 import { elementIsObscured } from "../lib/dom-utils";
 import { applyInitialStyles } from "../lib/styles";
+import { getOption } from "../lib/options";
 import { intersectors } from "./intersectors";
 
 let hintsUpdateTriggered = false;
@@ -47,8 +47,7 @@ function getHintsContainer(): HTMLElement {
 export async function displayHints() {
 	// We set a timeout in order to avoid updating the hints too often, for example,
 	// when there are multiple mutations or intersections happening
-	const localStorage = await browser.storage.local.get(["showHints"]);
-	const showHints = (localStorage["showHints"] as boolean) ?? true;
+	const showHints = await getOption("showHints");
 	if (showHints && !hintsUpdateTriggered) {
 		hintsUpdateTriggered = true;
 
@@ -75,7 +74,9 @@ export async function displayHints() {
 							// If there are no more available hints to markup the page, don't
 							// append the element.
 							if (intersector.hintText) {
-								applyInitialStyles(intersector);
+								applyInitialStyles(intersector).catch((error) => {
+									console.error(error);
+								});
 								hintsContainer.append(intersector.hintElement as Node);
 							}
 						})
@@ -83,7 +84,9 @@ export async function displayHints() {
 							console.error(error);
 						});
 				} else if (inViewClickablePossessesHint(intersector)) {
-					applyInitialStyles(intersector);
+					applyInitialStyles(intersector).catch((error) => {
+						console.error(error);
+					});
 				}
 			}
 

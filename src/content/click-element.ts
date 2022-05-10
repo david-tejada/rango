@@ -18,7 +18,9 @@ export async function clickElement(
 		applyEmphasisStyles(target, true);
 		if (focusesOnclick(target.element)) {
 			setTimeout(() => {
-				applyInitialStyles(target);
+				applyInitialStyles(target).catch((error) => {
+					console.error(error);
+				});
 			}, 300);
 			(target.element as HTMLInputElement).focus();
 		} else {

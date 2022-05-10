@@ -1,4 +1,5 @@
 import { Intersector } from "../types/types";
+import { getOption } from "./options";
 import { getContrast, getLuminance, parseColor, getTintOrShade } from "./utils";
 import {
 	calculateHintPosition,
@@ -9,7 +10,7 @@ import {
 
 const defaultBackgroundColor = getDefaultBackgroundColor();
 
-export function applyInitialStyles(intersector: Intersector) {
+export async function applyInitialStyles(intersector: Intersector) {
 	const [x, y] = calculateHintPosition(
 		intersector.element,
 		intersector.hintText!.length
@@ -31,13 +32,15 @@ export function applyInitialStyles(intersector: Intersector) {
 		color = getLuminance(parseColor(backgroundColor)) < 0.5 ? "#fff" : "#000";
 	}
 
+	const hintFontSize = await getOption("hintFontSize");
+
 	const styles = {
 		left: `${x}px`,
 		top: `${y}px`,
 		backgroundColor,
 		color,
 		outline: `1px solid ${outlineColor}`,
-		fontSize: "10px",
+		fontSize: `${hintFontSize}px`,
 		padding: "0.2em",
 	};
 	Object.assign((intersector.hintElement as HTMLElement).style, styles);

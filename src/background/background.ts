@@ -1,11 +1,17 @@
 import browser from "webextension-polyfill";
 import { Message, HintsStacks } from "../types/types";
 import { hintStack } from "../lib/hint-stack";
+import { initOptions } from "../lib/options";
 
 const sandbox = document.createElement("textarea");
 document.body.append(sandbox);
 
 const hintsStacks: HintsStacks = {};
+
+// Initialize options
+initOptions().catch((error) => {
+	console.error(error);
+});
 
 browser.commands.onCommand.addListener(async (command: string) => {
 	if (command === "get-talon-request") {

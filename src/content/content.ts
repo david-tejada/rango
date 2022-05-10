@@ -1,9 +1,13 @@
 import browser from "webextension-polyfill";
+import {
+	increaseHintSize,
+	decreaseHintSize,
+	toggleHints,
+} from "./options-utils";
 import { clickElement } from "./click-element";
 import { copyLink, showLink } from "./links";
 import { hoverElement, unhoverAll } from "./hover";
 import { displayHints } from "./hints";
-import { toggleHints } from "./toggle";
 import observe from "./observers";
 
 observe();
@@ -52,6 +56,14 @@ browser.runtime.onMessage.addListener(async (request) => {
 
 	if (request.action.type === "toggleHints") {
 		await toggleHints();
+	}
+
+	if (request.action.type === "increaseHintSize") {
+		await increaseHintSize();
+	}
+
+	if (request.action.type === "decreaseHintSize") {
+		await decreaseHintSize();
 	}
 
 	return { type: "response", action: { type: "ok" } };
