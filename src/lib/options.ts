@@ -1,4 +1,4 @@
-import browser from "webextension-polyfill";
+import browser, { Storage } from "webextension-polyfill";
 
 const options: Record<string, unknown> = {
 	hintFontSize: 10,
@@ -30,7 +30,7 @@ function onStorageChange(changes: Record<string, unknown>) {
 	let key: keyof typeof changes;
 	for (key in changes) {
 		if (Object.prototype.hasOwnProperty.call(changes, key)) {
-			options[key] = changes[key];
+			options[key] = (changes[key] as Storage.StorageChange).newValue;
 		}
 	}
 }
