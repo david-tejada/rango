@@ -182,38 +182,28 @@ export function calculateHintPosition(
 	element: Element,
 	chars: number
 ): [number, number] {
+	// If the element has text, we situate the hint next to the first character
 	const firstCharacterRect = getFirstCharacterRect(element);
 	const rect = firstCharacterRect ?? element.getBoundingClientRect();
-	const paddingLeft = firstCharacterRect
-		? 0
-		: Number.parseInt(window.getComputedStyle(element).paddingLeft, 10);
-	const paddingTop = firstCharacterRect
-		? 0
-		: Number.parseInt(window.getComputedStyle(element).paddingTop, 10);
 
-	// I probably need to have these numbers depend on the font size
+	const scrollLeft =
+		window.pageXOffset ||
+		document.documentElement.scrollLeft ||
+		document.body.scrollLeft;
+
+	const scrollTop =
+		window.pageYOffset ||
+		document.documentElement.scrollTop ||
+		document.body.scrollTop;
+
 	const hintFontSize = getOption("hintFontSize") as number;
-	let x =
-		rect.left +
-		window.scrollX +
-		document.body.scrollLeft +
-		paddingLeft -
-		hintFontSize +
-		2 -
-		(chars - 1) * 5;
-	if (x < 0) {
-		x = 0;
-	}
 
-	let y =
-		rect.top +
-		window.scrollY +
-		document.body.scrollTop +
-		paddingTop -
-		hintFontSize;
-	if (y < 0) {
-		y = 0;
-	}
+	// This is not very scientific. Adjusted through trial and error
+	let x = rect.left + scrollLeft - hintFontSize + 2 - (chars - 1) * 5;
+	x = x > 0 ? x : 0;
+
+	let y = rect.top + scrollTop - hintFontSize;
+	y = y > 0 ? y : 0;
 
 	return [x, y];
 }
