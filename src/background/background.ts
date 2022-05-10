@@ -13,6 +13,25 @@ initOptions().catch((error) => {
 	console.error(error);
 });
 
+browser.browserAction.onClicked.addListener(async () => {
+	try {
+		const request: Message = {
+			type: "request",
+			action: {
+				type: "toggleHints",
+			},
+		};
+		await sendMessageToActiveTab(request);
+	} catch (error: unknown) {
+		let errorMessage = "Error: There was an error";
+		if (error instanceof Error) {
+			errorMessage = error.message;
+		}
+
+		console.error(errorMessage);
+	}
+});
+
 browser.commands.onCommand.addListener(async (command: string) => {
 	if (command === "get-talon-request") {
 		try {
@@ -27,7 +46,26 @@ browser.commands.onCommand.addListener(async (command: string) => {
 				errorMessage = error.message;
 			}
 
-			console.log(errorMessage);
+			console.error(errorMessage);
+		}
+	}
+
+	if (command === "toggle-hints") {
+		try {
+			const request: Message = {
+				type: "request",
+				action: {
+					type: "toggleHints",
+				},
+			};
+			await sendMessageToActiveTab(request);
+		} catch (error: unknown) {
+			let errorMessage = "Error: There was an error";
+			if (error instanceof Error) {
+				errorMessage = error.message;
+			}
+
+			console.error(errorMessage);
 		}
 	}
 });

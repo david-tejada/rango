@@ -40,7 +40,14 @@
 				"default": "Ctrl+Shift+Insert",
 				"mac": "MacCtrl+Shift+Insert"
 			},
-			"description": "Give the signal to the native app to get the request"
+			"description": "Get the talon request"
+		},
+		"toggle-hints": {
+			"suggested_key": {
+				"default": "Ctrl+Shift+Space",
+				"mac": "MacCtrl+Shift+Space"
+			},
+			"description": "Toggle hints"
 		}
 	},
 	"browser_action": {
