@@ -55,9 +55,10 @@ export function applyEmphasisStyles(
 	const color = (intersector.hintElement as HTMLInputElement).style
 		.backgroundColor;
 	const background = (intersector.hintElement as HTMLInputElement).style.color;
-	const transform = dynamic ? "scale(1.3, 1.3) translate(20%, 20%)" : "";
+	const hintFontSize = getOption("hintFontSize") as number;
+	const fontSize = dynamic ? `${hintFontSize * 1.2}px` : `${hintFontSize}px`;
 	const styles = {
-		transform,
+		fontSize,
 		background,
 		color,
 	};
