@@ -93,6 +93,6 @@ export async function displayHints() {
 			if (process.env["NODE_ENV"] !== "production") {
 				console.log("intersectors:", intersectors);
 			}
-		}, 300);
+		}, 50);
 	}
 }
