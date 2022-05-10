@@ -2,19 +2,19 @@ import { getOption, setOption } from "../lib/options";
 import { displayHints } from "./hints";
 
 export async function increaseHintSize() {
-	const hintFontSize = ((await getOption("hintFontSize")) as number) + 1;
+	const hintFontSize = (getOption("hintFontSize") as number) + 1;
 	await setOption({ hintFontSize });
 	await displayHints();
 }
 
 export async function decreaseHintSize() {
-	const hintFontSize = ((await getOption("hintFontSize")) as number) - 1;
+	const hintFontSize = (getOption("hintFontSize") as number) - 1;
 	await setOption({ hintFontSize });
 	await displayHints();
 }
 
 export async function toggleHints() {
-	const showHints = !(await getOption("showHints"));
+	const showHints = !getOption("showHints");
 	await setOption({ showHints });
 
 	const hintsContainer = document.querySelector("#rango-hints-container");

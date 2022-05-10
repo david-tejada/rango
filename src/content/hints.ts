@@ -47,7 +47,7 @@ function getHintsContainer(): HTMLElement {
 export async function displayHints() {
 	// We set a timeout in order to avoid updating the hints too often, for example,
 	// when there are multiple mutations or intersections happening
-	const showHints = await getOption("showHints");
+	const showHints = getOption("showHints");
 	if (showHints && !hintsUpdateTriggered) {
 		hintsUpdateTriggered = true;
 

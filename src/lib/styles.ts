@@ -32,7 +32,7 @@ export async function applyInitialStyles(intersector: Intersector) {
 		color = getLuminance(parseColor(backgroundColor)) < 0.5 ? "#fff" : "#000";
 	}
 
-	const hintFontSize = await getOption("hintFontSize");
+	const hintFontSize = getOption("hintFontSize") as number;
 
 	const styles = {
 		left: `${x}px`,
