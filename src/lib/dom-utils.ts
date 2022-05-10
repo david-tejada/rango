@@ -1,4 +1,5 @@
 import { isRgb, rgbaToRgb } from "./utils";
+import { getOption } from "./options";
 
 // This function is here mostly for debugging purposes
 export function getClickableType(element: Element): string | undefined {
@@ -191,18 +192,25 @@ export function calculateHintPosition(
 		: Number.parseInt(window.getComputedStyle(element).paddingTop, 10);
 
 	// I probably need to have these numbers depend on the font size
+	const hintFontSize = getOption("hintFontSize") as number;
 	let x =
 		rect.left +
 		window.scrollX +
 		document.body.scrollLeft +
 		paddingLeft -
-		8 -
+		hintFontSize +
+		2 -
 		(chars - 1) * 5;
 	if (x < 0) {
 		x = 0;
 	}
 
-	let y = rect.top + window.scrollY + document.body.scrollTop + paddingTop - 10;
+	let y =
+		rect.top +
+		window.scrollY +
+		document.body.scrollTop +
+		paddingTop -
+		hintFontSize;
 	if (y < 0) {
 		y = 0;
 	}
