@@ -1,8 +1,9 @@
 import browser, { Storage } from "webextension-polyfill";
 
+// Default options. Will be overridden by initOptions with the options in local storage
 const options: Record<string, unknown> = {
 	hintFontSize: 10,
-	showHints: false,
+	showHints: true,
 };
 
 export async function initOptions() {
