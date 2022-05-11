@@ -1,4 +1,5 @@
 import browser from "webextension-polyfill";
+import { initOptions } from "../lib/options";
 import {
 	increaseHintSize,
 	decreaseHintSize,
@@ -11,6 +12,11 @@ import { displayHints } from "./hints";
 import observe from "./observers";
 
 observe();
+
+// Initialize options
+initOptions().catch((error) => {
+	console.error(error);
+});
 
 browser.runtime.onMessage.addListener(async (request) => {
 	if (request.action.type === "clickElement") {

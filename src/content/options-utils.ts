@@ -17,12 +17,5 @@ export async function toggleHints() {
 	const showHints = !getOption("showHints");
 	await setOption({ showHints });
 
-	const hintsContainer = document.querySelector("#rango-hints-container");
-	if (hintsContainer && !showHints) {
-		(hintsContainer as HTMLDivElement).style.display = "none";
-	} else {
-		(hintsContainer as HTMLDivElement).style.display = "block";
-	}
-
-	await displayHints();
+	await displayHints(true);
 }

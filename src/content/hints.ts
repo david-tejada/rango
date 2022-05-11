@@ -44,7 +44,19 @@ function getHintsContainer(): HTMLElement {
 	return container as HTMLElement;
 }
 
-export async function displayHints() {
+export async function displayHints(fullRefresh = false) {
+	if (fullRefresh) {
+		document.querySelector("#rango-hints-container")?.remove();
+		for (const intersector of intersectors) {
+			intersector.hintElement?.remove();
+			intersector.hintElement = undefined;
+			releaseHintText(intersector.hintText).catch((error) => {
+				console.error(error);
+			});
+			intersector.hintText = undefined;
+		}
+	}
+
 	// We set a timeout in order to avoid updating the hints too often, for example,
 	// when there are multiple mutations or intersections happening
 	const showHints = getOption("showHints");

@@ -2,7 +2,7 @@ import browser, { Storage } from "webextension-polyfill";
 
 const options: Record<string, unknown> = {
 	hintFontSize: 10,
-	showHints: true,
+	showHints: false,
 };
 
 export async function initOptions() {
@@ -10,7 +10,7 @@ export async function initOptions() {
 	console.log(savedOptions);
 	let key: keyof typeof options;
 	for (key in options) {
-		if (savedOptions[key]) {
+		if (savedOptions[key] !== undefined) {
 			options[key] = savedOptions[key];
 		}
 	}
@@ -24,8 +24,17 @@ export function getOption(option: string): unknown {
 
 export async function setOption(option: Record<string, unknown>) {
 	await browser.storage.local.set(option);
+
+	// Even though onStorageChange does this I need to do it here too to avoid race conditions
+	let key: keyof typeof option;
+	for (key in option) {
+		if (Object.prototype.hasOwnProperty.call(option, key)) {
+			options[key] = option[key];
+		}
+	}
 }
 
+// It seems that I have to have this listener here to have local storage updated
 function onStorageChange(changes: Record<string, unknown>) {
 	let key: keyof typeof changes;
 	for (key in changes) {
