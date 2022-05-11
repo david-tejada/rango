@@ -7,30 +7,20 @@ document.body.append(sandbox);
 
 const hintsStacks: HintsStacks = {};
 
-browser.browserAction.onClicked.addListener(async () => {
-	try {
-		const request: Message = {
-			type: "request",
-			action: {
-				type: "toggleHints",
-			},
-		};
-		await sendMessageToActiveTab(request);
-	} catch (error: unknown) {
-		let errorMessage = "Error: There was an error";
-		if (error instanceof Error) {
-			errorMessage = error.message;
-		}
-
-		console.error(errorMessage);
-	}
-});
+browser.browserAction.onClicked.addListener(toggleHintsInAllTabs);
 
 browser.commands.onCommand.addListener(async (command: string) => {
 	if (command === "get-talon-request") {
+		let response: Message | undefined;
 		try {
 			const request = await getMessageFromClipboard();
-			const response = await sendMessageToActiveTab(request);
+			if (request.action?.type === "toggleHints") {
+				await toggleHintsInAllTabs();
+				response = { type: "response", action: { type: "ok" } };
+			} else {
+				response = await sendMessageToActiveTab(request);
+			}
+
 			if (response) {
 				await writeResponseToClipboard(response);
 			}
@@ -45,22 +35,7 @@ browser.commands.onCommand.addListener(async (command: string) => {
 	}
 
 	if (command === "toggle-hints") {
-		try {
-			const request: Message = {
-				type: "request",
-				action: {
-					type: "toggleHints",
-				},
-			};
-			await sendMessageToActiveTab(request);
-		} catch (error: unknown) {
-			let errorMessage = "Error: There was an error";
-			if (error instanceof Error) {
-				errorMessage = error.message;
-			}
-
-			console.error(errorMessage);
-		}
+		await toggleHintsInAllTabs();
 	}
 });
 
@@ -122,6 +97,16 @@ async function sendMessageToActiveTab(
 	return undefined;
 }
 
+async function sendMessageToAllTabs(message: Message) {
+	const results = [];
+	const allTabs = await browser.tabs.query({});
+	for (const tab of allTabs) {
+		results.push(browser.tabs.sendMessage(tab.id!, message));
+	}
+
+	await Promise.all(results);
+}
+
 browser.runtime.onMessage.addListener(async (message, sender) => {
 	const tabId = sender.tab?.id;
 	const frameId = sender.frameId;
@@ -173,4 +158,23 @@ function copyTextToClipboard(text: string) {
 	sandbox.select();
 	document.execCommand("copy");
 	sandbox.value = "";
+}
+
+async function toggleHintsInAllTabs() {
+	try {
+		const request: Message = {
+			type: "request",
+			action: {
+				type: "toggleHints",
+			},
+		};
+		await sendMessageToAllTabs(request);
+	} catch (error: unknown) {
+		let errorMessage = "Error: There was an error";
+		if (error instanceof Error) {
+			errorMessage = error.message;
+		}
+
+		console.error(errorMessage);
+	}
 }
