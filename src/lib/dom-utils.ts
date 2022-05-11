@@ -73,7 +73,8 @@ export function getClickableType(element: Element): string | undefined {
 export function focusesOnclick(element: Element): boolean {
 	if (
 		element.tagName === "INPUT" &&
-		(element.getAttribute("type") === "text" ||
+		(!element.getAttribute("type") ||
+			element.getAttribute("type") === "text" ||
 			element.getAttribute("type") === "txt" || // I found this type on a website, probably a typo
 			element.getAttribute("type") === "search")
 	) {
