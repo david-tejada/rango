@@ -71,12 +71,27 @@ export function getClickableType(element: Element): string | undefined {
 }
 
 export function focusesOnclick(element: Element): boolean {
+	const focusableInputTypes = [
+		"text",
+		"search",
+		"email",
+		"week",
+		"month",
+		"password",
+		"number",
+		"range",
+		"tel",
+		"date",
+		"time",
+		"datetime",
+		"datetime-local",
+		"url",
+	];
+
 	if (
 		element.tagName === "INPUT" &&
 		(!element.getAttribute("type") ||
-			element.getAttribute("type") === "text" ||
-			element.getAttribute("type") === "txt" || // I found this type on a website, probably a typo
-			element.getAttribute("type") === "search")
+			focusableInputTypes.includes(element.getAttribute("type")!))
 	) {
 		return true;
 	}
