@@ -78,6 +78,8 @@ With explicit clicking you have to precede every hint with the word `click`. Thi
 - `copy link <hint>`: It copies the url address to the clipboard.
 - `blank <hint>`: It opens the link in a new tab.
 - `hints toggle`: It shows and hides the hints.
+- `hint bigger`: It increases the size of the hints
+- `hint smaller`: It decreases the size of the hints
 
 ### Customizing Hints Font
 
