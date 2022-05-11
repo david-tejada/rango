@@ -11,12 +11,12 @@ import { hoverElement, unhoverAll } from "./hover";
 import { displayHints } from "./hints";
 import observe from "./observers";
 
-observe();
-
 // Initialize options
-initOptions().catch((error) => {
-	console.error(error);
-});
+initOptions()
+	.then(observe)
+	.catch((error) => {
+		console.error(error);
+	});
 
 browser.runtime.onMessage.addListener(async (request) => {
 	if (request.action.type === "clickElement") {
@@ -62,6 +62,10 @@ browser.runtime.onMessage.addListener(async (request) => {
 
 	if (request.action.type === "toggleHints") {
 		await toggleHints();
+	}
+
+	if (request.action.type === "refreshHints") {
+		await displayHints(true);
 	}
 
 	if (request.action.type === "increaseHintSize") {
