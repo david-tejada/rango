@@ -2,6 +2,16 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.1.6](https://github.com/david-tejada/rango/releases/tag/v0.1.6) - 2022-05-11
+
+### Changed
+
+- Now `hints toggle` works in already opened tabs
+
+### Fixed
+
+- Fix regression with `hints toggle` not working globally
+
 ## [0.1.5](https://github.com/david-tejada/rango/releases/tag/v0.1.5) - 2022-05-10
 
 If you update to this version remember to update [rango-talon](https://github.com/david-tejada/rango-talon)
