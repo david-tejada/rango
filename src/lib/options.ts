@@ -8,7 +8,6 @@ const options: Record<string, unknown> = {
 
 export async function initOptions() {
 	const savedOptions = await browser.storage.local.get(null);
-	console.log(savedOptions);
 	let key: keyof typeof options;
 	for (key in options) {
 		if (savedOptions[key] !== undefined) {

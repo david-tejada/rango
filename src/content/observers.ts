@@ -94,13 +94,13 @@ export default function observe() {
 	if (document.readyState === "complete") {
 		maybeObserveIntersection(document.body);
 		displayHints().catch((error) => {
-			console.log(error);
+			.console.error(error);
 		});
 	} else {
 		window.addEventListener("load", () => {
 			maybeObserveIntersection(document.body);
 			displayHints().catch((error) => {
-				console.log(error);
+				.console.error(error);
 			});
 		});
 	}
