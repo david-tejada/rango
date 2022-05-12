@@ -103,7 +103,15 @@ export async function displayHints(fullRefresh = false) {
 			}
 
 			if (process.env["NODE_ENV"] !== "production") {
+				const hints = intersectors
+					.filter((intersector) => intersector.hintText)
+					.sort(
+						(a, b) =>
+							a.hintText!.length - b.hintText!.length ||
+							a.hintText!.localeCompare(b.hintText!)
+					);
 				console.log("intersectors:", intersectors);
+				console.log("hints:", hints);
 			}
 		}, 50);
 	}
