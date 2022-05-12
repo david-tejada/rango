@@ -23,8 +23,7 @@ export const intersectionObserver = new IntersectionObserver(
 
 // *** MUTATION OBSERVER ***
 
-const config = { attributes: true, childList: true, subtree: true };
-const mutationObserver = new MutationObserver(async (mutationList) => {
+const mutationCallback: MutationCallback = async (mutationList) => {
 	let updateHints = false;
 	for (const mutationRecord of mutationList) {
 		if (mutationRecord.type === "childList") {
@@ -55,17 +54,37 @@ const mutationObserver = new MutationObserver(async (mutationList) => {
 	if (updateHints) {
 		await displayHints();
 	}
-});
+};
+
+const config = { attributes: true, childList: true, subtree: true };
+const mutationObserver = new MutationObserver(mutationCallback);
 
 // We observe document instead of document.body in case the body gets replaced
 mutationObserver.observe(document, config);
 
 function maybeObserveIntersection(element: Element) {
-	const elementAndDescendants = [element, ...element.querySelectorAll("*")];
-	for (const elementToAdd of elementAndDescendants) {
-		const clickableType = getClickableType(elementToAdd);
-		if (clickableType || hasTextNodesChildren(elementToAdd)) {
-			intersectionObserver.observe(elementToAdd);
+	let descendants = element.querySelectorAll("*");
+	if (element.shadowRoot) {
+		// We need to create a new mutation observer for each shadow root because
+		// the main mutation observer doesn't register changes in those
+		const mutationObserver = new MutationObserver(mutationCallback);
+		mutationObserver.observe(element.shadowRoot, config);
+		descendants = element.shadowRoot.querySelectorAll("*");
+	}
+
+	const elements = [element, ...descendants];
+
+	const shadowOutputs = [...descendants].filter(
+		(element) => element.shadowRoot
+	);
+	for (const shadowOutput of shadowOutputs) {
+		maybeObserveIntersection(shadowOutput);
+	}
+
+	for (const element of elements) {
+		const clickableType = getClickableType(element);
+		if (clickableType || hasTextNodesChildren(element)) {
+			intersectionObserver.observe(element);
 		}
 	}
 }

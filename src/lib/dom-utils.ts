@@ -184,6 +184,12 @@ export function elementIsObscured(element: Element): boolean {
 		return false;
 	}
 
+	// For the time being if elementFromPoint is a shadow output we'll assume it's not obscured.
+	// In the future we could use shadowRoot.elementFromPoint if it's necessary
+	if (elementFromPoint?.shadowRoot) {
+		return false;
+	}
+
 	if (
 		elementFromPoint &&
 		(element.contains(elementFromPoint) || elementFromPoint.contains(element))
