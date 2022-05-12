@@ -6,7 +6,7 @@ All notable changes to the Rango extension will be documented in this file.
 
 ### Added
 
-- Web Components/Shadow Dom support
+- Web Components/Shadow DOM support
 - Add missing input types that focus on click
 
 ### Fixed
