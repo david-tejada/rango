@@ -2,6 +2,17 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.1.7](https://github.com/david-tejada/rango/releases/tag/v0.1.7) - 2022-05-12
+
+### Added
+
+- Web Components/Shadow Dom support
+- Add missing input types that focus on click
+
+### Fixed
+
+- Fix extension starting with the hints off after new install
+
 ## [0.1.6](https://github.com/david-tejada/rango/releases/tag/v0.1.6) - 2022-05-11
 
 ### Changed
