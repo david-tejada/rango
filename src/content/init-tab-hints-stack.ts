@@ -8,5 +8,5 @@ browser.runtime
 		},
 	})
 	.catch((error) => {
-		.console.error(error);
+		console.error(error);
 	});

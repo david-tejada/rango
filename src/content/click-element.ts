@@ -49,7 +49,7 @@ export async function clickElement(
 						},
 					})
 					.catch((error) => {
-						.console.error(error);
+						console.error(error);
 					});
 			} else {
 				const event = new MouseEvent("click", mouseEventInit);
