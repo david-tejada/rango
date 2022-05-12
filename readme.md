@@ -81,6 +81,6 @@ With explicit clicking you have to precede every hint with the word `click`. Thi
 - `hint bigger`: It increases the size of the hints
 - `hint smaller`: It decreases the size of the hints
 
-### Customizing Hints Font
+### Changing Hints Font Type
 
-At the moment there are no options to customize the way hints appear. Options for that will be added in the future. In the meantime if you find hints font difficult to read you can change the monospace font in the browser settings and the hints will show with that font.
+At the moment there is no option to customize the hints font type. Options for that will be added in the future. In the meantime if you find hints text difficult to read, apart from using the commands for changing the hints size, you can change the monospace font in the browser settings and the hints will render with that font.
