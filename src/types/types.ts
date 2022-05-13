@@ -21,10 +21,8 @@ export interface Rgba {
 	a: number;
 }
 
-export type HintsStacks = Record<
-	number,
-	{
-		free: string[];
-		assigned: Map<string, number>;
-	}
->;
+export type HintsStack = {
+	tabId: number;
+	free: string[];
+	assigned: Map<string, number>;
+};
