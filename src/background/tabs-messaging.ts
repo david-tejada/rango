@@ -2,7 +2,7 @@ import browser from "webextension-polyfill";
 import { Message } from "../types/types";
 import {
 	getHintFrameId,
-	addNewHintsStack,
+	initTabHintsStack,
 	claimHintText,
 	releaseHintText,
 } from "./hints-dispatcher";
@@ -44,25 +44,30 @@ export async function sendMessageToAllTabs(message: Message) {
 }
 
 browser.runtime.onMessage.addListener(async (message, sender) => {
-	const tabId = sender.tab?.id;
+	const tabId = sender.tab!.id!;
 	const frameId = sender.frameId ?? 0;
-	if (message.action.type === "openInNewTab") {
-		await browser.tabs.create({
-			url: message.action.target as string,
-		});
-	}
+	const hintText = message.action.target as string;
 
-	if (tabId && message.action.type === "initTabHintsStack") {
-		addNewHintsStack(tabId);
-	}
+	switch (message.action.type) {
+		case "openInNewTab":
+			await browser.tabs.create({
+				url: message.action.target as string,
+			});
+			break;
 
-	if (tabId && message.action.type === "claimHintText") {
-		return claimHintText(tabId, frameId);
-	}
+		case "initTabHintsStack":
+			initTabHintsStack(tabId);
+			break;
 
-	if (tabId && message.action.type === "releaseHintText") {
-		const hintText = message.action.target as string;
-		releaseHintText(tabId, hintText);
+		case "claimHintText":
+			return claimHintText(tabId, frameId);
+
+		case "releaseHintText":
+			releaseHintText(tabId, hintText);
+			break;
+
+		default:
+			break;
 	}
 
 	return undefined;

@@ -1,5 +1,5 @@
 import { HintsStack } from "../types/types";
-import { hintStack } from "../lib/hint-stack";
+import { fullHintsStack } from "../lib/hint-stack";
 
 const hintsStacks: HintsStack[] = [];
 
@@ -16,10 +16,10 @@ export function getHintFrameId(tabId: number, hintText: string): number {
 	return 0;
 }
 
-export function addNewHintsStack(tabId: number) {
+export function initTabHintsStack(tabId: number) {
 	hintsStacks.push({
 		tabId,
-		free: [...hintStack],
+		free: [...fullHintsStack],
 		assigned: new Map<string, number>(),
 	});
 }
