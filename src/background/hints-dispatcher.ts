@@ -8,12 +8,7 @@ function getHintsStack(tabId: number): HintsStack | undefined {
 }
 
 export function getHintFrameId(tabId: number, hintText: string): number {
-	const hintsStack = getHintsStack(tabId);
-	if (hintsStack) {
-		return hintsStack.assigned.get(hintText) ?? 0;
-	}
-
-	return 0;
+	return getHintsStack(tabId)?.assigned.get(hintText) ?? 0;
 }
 
 export function initTabHintsStack(tabId: number) {
