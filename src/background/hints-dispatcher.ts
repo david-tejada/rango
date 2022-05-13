@@ -17,11 +17,17 @@ export function getHintFrameId(tabId: number, hintText: string): number {
 }
 
 export function initTabHintsStack(tabId: number) {
-	hintsStacks.push({
-		tabId,
-		free: [...fullHintsStack],
-		assigned: new Map<string, number>(),
-	});
+	const hintsStack = getHintsStack(tabId);
+	if (hintsStack) {
+		hintsStack.free = [...fullHintsStack];
+		hintsStack.assigned = new Map<string, number>();
+	} else {
+		hintsStacks.push({
+			tabId,
+			free: [...fullHintsStack],
+			assigned: new Map<string, number>(),
+		});
+	}
 }
 
 export function claimHintText(
