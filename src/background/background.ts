@@ -1,9 +1,7 @@
 import browser from "webextension-polyfill";
 import { Message, HintsStacks } from "../types/types";
 import { hintStack } from "../lib/hint-stack";
-
-const sandbox = document.createElement("textarea");
-document.body.append(sandbox);
+import { getMessageFromClipboard, writeResponseToClipboard } from "./clipboard";
 
 const hintsStacks: HintsStacks = {};
 
@@ -38,37 +36,6 @@ browser.commands.onCommand.addListener(async (command: string) => {
 		await toggleHintsInAllTabs();
 	}
 });
-
-async function getMessageFromClipboard(): Promise<Message> {
-	let clipText: string;
-	try {
-		clipText = await navigator.clipboard.readText();
-	} catch (error: unknown) {
-		if (error instanceof DOMException) {
-			clipText = getClipboard();
-		}
-	}
-
-	const request = JSON.parse(clipText!) as Message;
-	if (request.type !== "request") {
-		throw new Error("Error: No request message present in the clipboard");
-	}
-
-	return request;
-}
-
-async function writeResponseToClipboard(responseObject: Message) {
-	// We send the response so that talon can make sure the request was received
-	// and to tell talon to execute any actions
-	const response = JSON.stringify(responseObject);
-	try {
-		await navigator.clipboard.writeText(response);
-	} catch (error: unknown) {
-		if (error instanceof DOMException) {
-			copyTextToClipboard(response);
-		}
-	}
-}
 
 async function getActiveTab(): Promise<browser.Tabs.Tab | undefined> {
 	const activeTabs = await browser.tabs.query({
@@ -141,24 +108,6 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
 
 	return undefined;
 });
-
-function getClipboard() {
-	let result = "";
-	sandbox.focus();
-	if (document.execCommand("paste")) {
-		result = sandbox.value;
-	}
-
-	sandbox.value = "";
-	return result;
-}
-
-function copyTextToClipboard(text: string) {
-	sandbox.value = text;
-	sandbox.select();
-	document.execCommand("copy");
-	sandbox.value = "";
-}
 
 async function toggleHintsInAllTabs() {
 	try {
