@@ -1,21 +1,16 @@
 import browser from "webextension-polyfill";
-import { Message } from "../types/types";
 import { getMessageFromClipboard, writeResponseToClipboard } from "./clipboard";
-import { sendMessageToActiveTab, sendMessageToAllTabs } from "./tabs-messaging";
+import { dispatchCommand } from "./command-dispatcher";
 
-browser.browserAction.onClicked.addListener(toggleHintsInAllTabs);
+browser.browserAction.onClicked.addListener(async () => {
+	await dispatchCommand({ type: "toggleHints" });
+});
 
 browser.commands.onCommand.addListener(async (internalCommand: string) => {
 	if (internalCommand === "get-talon-request") {
-		let response: Message | undefined;
 		try {
 			const request = await getMessageFromClipboard();
-			if (request.action?.type === "toggleHints") {
-				await toggleHintsInAllTabs();
-				response = { type: "response", action: { type: "ok" } };
-			} else {
-				response = await sendMessageToActiveTab(request);
-			}
+			const response = await dispatchCommand(request.action);
 
 			if (response) {
 				await writeResponseToClipboard(response);
@@ -31,25 +26,6 @@ browser.commands.onCommand.addListener(async (internalCommand: string) => {
 	}
 
 	if (internalCommand === "toggle-hints") {
-		await toggleHintsInAllTabs();
+		await dispatchCommand({ type: "toggleHints" });
 	}
 });
-
-async function toggleHintsInAllTabs() {
-	try {
-		const request: Message = {
-			type: "request",
-			action: {
-				type: "toggleHints",
-			},
-		};
-		await sendMessageToAllTabs(request);
-	} catch (error: unknown) {
-		let errorMessage = "Error: There was an error";
-		if (error instanceof Error) {
-			errorMessage = error.message;
-		}
-
-		console.error(errorMessage);
-	}
-}

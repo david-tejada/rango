@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { Message } from "../types/types";
+import { Message, Command } from "../types/types";
 import {
 	getHintFrameId,
 	initTabHintsStack,
@@ -16,16 +16,16 @@ async function getActiveTab(): Promise<browser.Tabs.Tab | undefined> {
 	return activeTabs[0];
 }
 
-export async function sendMessageToActiveTab(
-	message: Message
+export async function sendCommandToActiveTab(
+	command: Command
 ): Promise<Message | undefined> {
 	const activeTab = await getActiveTab();
-	const hintText = message.action?.target;
-	// We only want to send the message to the frame with the target hint or to the main
+	const hintText = command.target;
+	// We only want to send the command to the frame with the target hint or to the main
 	// frame in case that the command doesn't have a hint
 	if (activeTab?.id) {
 		const frameId = hintText ? getHintFrameId(activeTab.id, hintText) : 0;
-		return (await browser.tabs.sendMessage(activeTab.id, message, {
+		return (await browser.tabs.sendMessage(activeTab.id, command, {
 			frameId,
 		})) as Message;
 	}
@@ -33,11 +33,11 @@ export async function sendMessageToActiveTab(
 	return undefined;
 }
 
-export async function sendMessageToAllTabs(message: Message) {
+export async function sendCommandToAllTabs(command: Command) {
 	const results = [];
 	const allTabs = await browser.tabs.query({});
 	for (const tab of allTabs) {
-		results.push(browser.tabs.sendMessage(tab.id!, message));
+		results.push(browser.tabs.sendMessage(tab.id!, command));
 	}
 
 	await Promise.all(results);

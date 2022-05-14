@@ -1,9 +1,11 @@
+export interface Command {
+	type: string;
+	target?: string;
+}
+
 export interface Message {
 	type: "request" | "response";
-	action?: {
-		type: string;
-		target?: string;
-	};
+	action: Command;
 }
 
 export interface Intersector {

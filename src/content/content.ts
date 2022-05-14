@@ -18,17 +18,17 @@ initOptions()
 		console.error(error);
 	});
 
-browser.runtime.onMessage.addListener(async (request) => {
-	if (request.action.type === "clickElement") {
-		await clickElement(request.action.target, false, {
+browser.runtime.onMessage.addListener(async (command) => {
+	if (command.type === "clickElement") {
+		await clickElement(command.target, false, {
 			bubbles: true,
 			cancelable: true,
 			view: window,
 		});
 	}
 
-	if (request.action.type === "copyLink") {
-		const url = copyLink(request.action.target);
+	if (command.type === "copyLink") {
+		const url = copyLink(command.target);
 		if (url) {
 			return {
 				type: "response",
@@ -40,39 +40,39 @@ browser.runtime.onMessage.addListener(async (request) => {
 		}
 	}
 
-	if (request.action.type === "showLink") {
-		showLink(request.action.target);
+	if (command.type === "showLink") {
+		showLink(command.target);
 	}
 
-	if (request.action.type === "openInNewTab") {
-		await clickElement(request.action.target, true);
+	if (command.type === "openInNewTab") {
+		await clickElement(command.target, true);
 	}
 
-	if (request.action.type === "hoverElement") {
-		await hoverElement(request.action.target, false);
+	if (command.type === "hoverElement") {
+		await hoverElement(command.target, false);
 	}
 
-	if (request.action.type === "fixedHoverElement") {
-		await hoverElement(request.action.target, true);
+	if (command.type === "fixedHoverElement") {
+		await hoverElement(command.target, true);
 	}
 
-	if (request.action.type === "unhoverAll") {
+	if (command.type === "unhoverAll") {
 		unhoverAll();
 	}
 
-	if (request.action.type === "toggleHints") {
+	if (command.type === "toggleHints") {
 		await toggleHints();
 	}
 
-	if (request.action.type === "refreshHints") {
+	if (command.type === "refreshHints") {
 		await displayHints(true);
 	}
 
-	if (request.action.type === "increaseHintSize") {
+	if (command.type === "increaseHintSize") {
 		await increaseHintSize();
 	}
 
-	if (request.action.type === "decreaseHintSize") {
+	if (command.type === "decreaseHintSize") {
 		await decreaseHintSize();
 	}
 

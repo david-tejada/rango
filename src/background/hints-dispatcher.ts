@@ -42,6 +42,5 @@ export function releaseHintText(tabId: number, hintText: string) {
 	const hintsStack = getHintsStack(tabId);
 	hintsStack?.free.push(hintText);
 	hintsStack?.free.sort((a, b) => b.length - a.length || b.localeCompare(a));
-	console.log(hintsStack?.free);
 	hintsStack?.assigned.delete(hintText);
 }
