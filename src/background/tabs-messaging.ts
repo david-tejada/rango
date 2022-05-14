@@ -18,7 +18,7 @@ async function getActiveTab(): Promise<browser.Tabs.Tab | undefined> {
 
 export async function sendCommandToActiveTab(
 	command: Command
-): Promise<Message | undefined> {
+): Promise<Message> {
 	const activeTab = await getActiveTab();
 	const hintText = command.target;
 	// We only want to send the command to the frame with the target hint or to the main
@@ -30,7 +30,10 @@ export async function sendCommandToActiveTab(
 		})) as Message;
 	}
 
-	return undefined;
+	return {
+		type: "response",
+		action: { type: "commandFailed" },
+	};
 }
 
 export async function sendCommandToAllTabs(command: Command): Promise<any> {

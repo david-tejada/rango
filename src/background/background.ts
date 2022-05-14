@@ -11,10 +11,7 @@ browser.commands.onCommand.addListener(async (internalCommand: string) => {
 		try {
 			const request = await getMessageFromClipboard();
 			const response = await dispatchCommand(request.action);
-
-			if (response) {
-				await writeResponseToClipboard(response);
-			}
+			await writeResponseToClipboard(response);
 		} catch (error: unknown) {
 			let errorMessage = "Error: There was an error";
 			if (error instanceof Error) {
