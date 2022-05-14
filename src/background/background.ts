@@ -5,8 +5,8 @@ import { sendMessageToActiveTab, sendMessageToAllTabs } from "./tabs-messaging";
 
 browser.browserAction.onClicked.addListener(toggleHintsInAllTabs);
 
-browser.commands.onCommand.addListener(async (command: string) => {
-	if (command === "get-talon-request") {
+browser.commands.onCommand.addListener(async (internalCommand: string) => {
+	if (internalCommand === "get-talon-request") {
 		let response: Message | undefined;
 		try {
 			const request = await getMessageFromClipboard();
@@ -30,7 +30,7 @@ browser.commands.onCommand.addListener(async (command: string) => {
 		}
 	}
 
-	if (command === "toggle-hints") {
+	if (internalCommand === "toggle-hints") {
 		await toggleHintsInAllTabs();
 	}
 });
