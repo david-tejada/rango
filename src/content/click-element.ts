@@ -5,11 +5,7 @@ import { applyEmphasisStyles, applyInitialStyles } from "../lib/styles";
 import { intersectors } from "./intersectors";
 import { displayHints } from "./hints";
 
-export async function clickElement(
-	hintText: string,
-	newTab: boolean,
-	mouseEventInit?: MouseEventInit
-) {
+export async function clickElement(hintText: string, newTab: boolean) {
 	const target = intersectors.find(
 		(intersector) => intersector.hintText === String(hintText)
 	);
@@ -52,7 +48,11 @@ export async function clickElement(
 						console.error(error);
 					});
 			} else {
-				const event = new MouseEvent("click", mouseEventInit);
+				const event = new MouseEvent("click", {
+					bubbles: true,
+					cancelable: true,
+					view: window,
+				});
 				target.element.dispatchEvent(event);
 			}
 

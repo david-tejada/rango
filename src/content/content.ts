@@ -21,11 +21,7 @@ initOptions()
 browser.runtime.onMessage.addListener(async (command) => {
 	switch (command.type) {
 		case "clickElement":
-			await clickElement(command.target, false, {
-				bubbles: true,
-				cancelable: true,
-				view: window,
-			});
+			await clickElement(command.target, false);
 			break;
 
 		case "copyLink": {
