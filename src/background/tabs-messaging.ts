@@ -33,14 +33,17 @@ export async function sendCommandToActiveTab(
 	return undefined;
 }
 
-export async function sendCommandToAllTabs(command: Command) {
+export async function sendCommandToAllTabs(command: Command): Promise<any> {
 	const results = [];
 	const allTabs = await browser.tabs.query({});
 	for (const tab of allTabs) {
 		results.push(browser.tabs.sendMessage(tab.id!, command));
 	}
 
-	await Promise.all(results);
+	// We use allSettled here because we know some promises will fail, as the extension
+	// is not able to run on all tabs, for example, in pages like "about:debugging".
+	// So we just care that the promise either resolves or rejects
+	return Promise.allSettled(results);
 }
 
 browser.runtime.onMessage.addListener(async (message, sender) => {
