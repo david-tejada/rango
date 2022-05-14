@@ -1,5 +1,9 @@
 import browser from "webextension-polyfill";
-import { getMessageFromClipboard, writeResponseToClipboard } from "./clipboard";
+import {
+	getMessageFromClipboard,
+	writeResponseToClipboard,
+	getClipboardIfChanged,
+} from "./clipboard";
 import { dispatchCommand } from "./command-dispatcher";
 import { adaptResponse } from "./adapt-response";
 
@@ -11,11 +15,20 @@ browser.commands.onCommand.addListener(async (internalCommand: string) => {
 	if (internalCommand === "get-talon-request") {
 		try {
 			const request = await getMessageFromClipboard();
-			const response = adaptResponse(
-				await dispatchCommand(request.action),
-				request.version ?? 0
-			);
-			await writeResponseToClipboard(response);
+			let response = await dispatchCommand(request.action);
+			const changedClipboard = await getClipboardIfChanged();
+			if (changedClipboard) {
+				response = {
+					type: "response",
+					action: {
+						type: "copyToClipboard",
+						textToCopy: changedClipboard,
+					},
+				};
+			}
+
+			const adaptedResponse = adaptResponse(response, request.version ?? 0);
+			await writeResponseToClipboard(adaptedResponse);
 		} catch (error: unknown) {
 			let errorMessage = "Error: There was an error";
 			if (error instanceof Error) {

@@ -1,19 +1,26 @@
 import { Message } from "../types/types";
 
+let lastRequestText: string | undefined;
+
 const sandbox = document.createElement("textarea");
 document.body.append(sandbox);
 
-export async function getMessageFromClipboard(): Promise<Message> {
-	let clipText: string;
+async function getTextFromClipboard(): Promise<string | undefined> {
 	try {
-		clipText = await navigator.clipboard.readText();
+		return await navigator.clipboard.readText();
 	} catch (error: unknown) {
 		if (error instanceof DOMException) {
-			clipText = getChromiumClipboard();
+			return getChromiumClipboard();
 		}
-	}
 
-	const request = JSON.parse(clipText!) as Message;
+		return undefined;
+	}
+}
+
+export async function getMessageFromClipboard(): Promise<Message> {
+	const clipText = await getTextFromClipboard();
+	lastRequestText = clipText;
+	const request = JSON.parse(clipText) as Message;
 	if (request.type !== "request") {
 		throw new Error("Error: No request message present in the clipboard");
 	}
@@ -50,4 +57,9 @@ function copyToChromiumClipboard(text: string) {
 	sandbox.select();
 	document.execCommand("copy");
 	sandbox.value = "";
+}
+
+export async function getClipboardIfChanged(): Promise<string | undefined> {
+	const clipboardText = await getTextFromClipboard();
+	return lastRequestText === clipboardText ? undefined : clipboardText;
 }
