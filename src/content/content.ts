@@ -19,61 +19,68 @@ initOptions()
 	});
 
 browser.runtime.onMessage.addListener(async (command) => {
-	if (command.type === "clickElement") {
-		await clickElement(command.target, false, {
-			bubbles: true,
-			cancelable: true,
-			view: window,
-		});
-	}
+	switch (command.type) {
+		case "clickElement":
+			await clickElement(command.target, false, {
+				bubbles: true,
+				cancelable: true,
+				view: window,
+			});
+			break;
 
-	if (command.type === "copyLink") {
-		const url = copyLink(command.target);
-		if (url) {
-			return {
-				type: "response",
-				action: {
-					type: "copyLink",
-					target: url,
-				},
-			};
+		case "copyLink": {
+			const url = copyLink(command.target);
+			if (url) {
+				return {
+					type: "response",
+					action: {
+						type: "copyLink",
+						target: url,
+					},
+				};
+			}
+
+			break;
 		}
-	}
 
-	if (command.type === "showLink") {
-		showLink(command.target);
-	}
+		case "showLink":
+			showLink(command.target);
+			break;
 
-	if (command.type === "openInNewTab") {
-		await clickElement(command.target, true);
-	}
+		case "openInNewTab":
+			await clickElement(command.target, true);
+			break;
 
-	if (command.type === "hoverElement") {
-		await hoverElement(command.target, false);
-	}
+		case "hoverElement":
+			await hoverElement(command.target, false);
+			break;
 
-	if (command.type === "fixedHoverElement") {
-		await hoverElement(command.target, true);
-	}
+		case "fixedHoverElement":
+			await hoverElement(command.target, true);
+			break;
 
-	if (command.type === "unhoverAll") {
-		unhoverAll();
-	}
+		case "unhoverAll":
+			unhoverAll();
+			break;
 
-	if (command.type === "toggleHints") {
-		await toggleHints();
-	}
+		case "toggleHints":
+			await toggleHints();
+			break;
 
-	if (command.type === "refreshHints") {
-		await displayHints(true);
-	}
+		case "refreshHints":
+			await displayHints(true);
+			break;
 
-	if (command.type === "increaseHintSize") {
-		await increaseHintSize();
-	}
+		case "increaseHintSize":
+			await increaseHintSize();
+			break;
 
-	if (command.type === "decreaseHintSize") {
-		await decreaseHintSize();
+		case "decreaseHintSize":
+			await decreaseHintSize();
+			break;
+
+		default:
+			break;
 	}
 
 	return { type: "response", action: { type: "ok" } };
