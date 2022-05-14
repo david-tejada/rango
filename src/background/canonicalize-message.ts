@@ -1,4 +1,20 @@
+import browser from "webextension-polyfill";
 import { Message } from "../types/types";
+
+function notifyToUpdate() {
+	// Notify the user to update their extension
+	browser.notifications
+		.create("rango-notification", {
+			type: "basic",
+			iconUrl: browser.runtime.getURL("assets/icon128.png"),
+			title: "Update your Rango extension!",
+			message:
+				"Your Rango extension version is behind your rango-talon. Please update your extension",
+		})
+		.catch((error) => {
+			console.error(error);
+		});
+}
 
 export function canonicalizeResponse(
 	message: Message,
@@ -6,7 +22,7 @@ export function canonicalizeResponse(
 ): Message {
 	const currentVersion = 1;
 	if (requestVersion > currentVersion) {
-		// Notify the user to update their extension
+		notifyToUpdate();
 	}
 
 	let {

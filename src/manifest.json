@@ -15,7 +15,13 @@
 		"48": "./assets/icon48.png",
 		"128": "./assets/icon128.png"
 	},
-	"permissions": ["storage", "activeTab", "clipboardRead", "clipboardWrite"],
+	"permissions": [
+		"storage",
+		"activeTab",
+		"clipboardRead",
+		"clipboardWrite",
+		"notifications"
+	],
 	"content_scripts": [
 		{
 			"matches": ["<all_urls>"],
