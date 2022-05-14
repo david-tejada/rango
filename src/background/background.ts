@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
 import { getMessageFromClipboard, writeResponseToClipboard } from "./clipboard";
 import { dispatchCommand } from "./command-dispatcher";
-import { canonicalizeResponse } from "./canonicalize-message";
+import { adaptResponse } from "./adapt-response";
 
 browser.browserAction.onClicked.addListener(async () => {
 	await dispatchCommand({ type: "toggleHints" });
@@ -11,7 +11,7 @@ browser.commands.onCommand.addListener(async (internalCommand: string) => {
 	if (internalCommand === "get-talon-request") {
 		try {
 			const request = await getMessageFromClipboard();
-			const response = canonicalizeResponse(
+			const response = adaptResponse(
 				await dispatchCommand(request.action),
 				request.version ?? 0
 			);

@@ -16,7 +16,7 @@ function notifyToUpdate() {
 		});
 }
 
-export function canonicalizeResponse(
+export function adaptResponse(
 	message: Message,
 	requestVersion: number
 ): Message {
