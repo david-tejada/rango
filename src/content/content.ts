@@ -1,4 +1,5 @@
 import browser from "webextension-polyfill";
+import { Command } from "../types/types";
 import { initOptions } from "../lib/options";
 import {
 	increaseHintSize,
@@ -19,6 +20,7 @@ initOptions()
 	});
 
 browser.runtime.onMessage.addListener(async (command) => {
+	let action: Command = { type: "ok" };
 	switch (command.type) {
 		case "clickElement":
 			await clickElement(command.target, false);
@@ -27,12 +29,9 @@ browser.runtime.onMessage.addListener(async (command) => {
 		case "copyLink": {
 			const url = copyLink(command.target);
 			if (url) {
-				return {
-					type: "response",
-					action: {
-						type: "copyLink",
-						target: url,
-					},
+				action = {
+					type: "copyToClipboard",
+					textToCopy: url,
 				};
 			}
 
@@ -79,7 +78,7 @@ browser.runtime.onMessage.addListener(async (command) => {
 			break;
 	}
 
-	return { type: "response", action: { type: "ok" } };
+	return { type: "response", action };
 });
 
 document.addEventListener("scroll", async () => {

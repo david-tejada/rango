@@ -1,9 +1,11 @@
 export interface Command {
 	type: string;
 	target?: string;
+	textToCopy?: string;
 }
 
 export interface Message {
+	version?: number;
 	type: "request" | "response";
 	action: Command;
 }
