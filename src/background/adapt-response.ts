@@ -6,7 +6,7 @@ function notifyToUpdate() {
 	browser.notifications
 		.create("rango-notification", {
 			type: "basic",
-			iconUrl: browser.runtime.getURL("assets/icon128.png"),
+			iconUrl: browser.runtime.getURL("../assets/icon128.png"),
 			title: "Update your Rango extension!",
 			message:
 				"Your Rango extension version is behind your rango-talon. Please update your extension",
