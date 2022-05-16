@@ -3,7 +3,7 @@
 	"scripts": {
 		"build:mv2": "rimraf dist-mv2 && parcel build src/mv2/manifest.json --no-content-hash --no-source-maps --dist-dir dist-mv2 --no-cache --detailed-report 0",
 		"build:mv3": "rimraf dist-mv3 && parcel build src/mv3/manifest.json --no-content-hash --no-source-maps --dist-dir dist-mv3 --no-cache --detailed-report 0",
-		"build": "run-p build:*",
+		"build": "run-s build:*",
 		"lint": "run-p lint:*",
 		"lint-fix": "run-p 'lint:* -- --fix'",
 		"lint:css": "stylelint src/**/*.css",
@@ -11,7 +11,8 @@
 		"test": "run-p lint:* build test:jest",
 		"test:jest": "jest",
 		"watch:jest": "jest --watch",
-		"watch": "parcel watch src/mv2/manifest.json --dist-dir dist-mv2 --no-cache --no-hmr"
+		"watch": "parcel watch src/mv2/manifest.json --dist-dir dist-mv2 --no-cache --no-hmr",
+		"watch:mv3": "parcel watch src/mv3/manifest.json --dist-dir dist-mv3 --no-cache --no-hmr"
 	},
 	"browserslist": [
 		"last 1 Chrome version",
@@ -53,8 +54,8 @@
 		"webextension-polyfill": "^0.8.0"
 	},
 	"devDependencies": {
-		"@parcel/config-webextension": "^2.3.2",
-		"@parcel/transformer-image": "^2.3.2",
+		"@parcel/config-webextension": "^2.5.0",
+		"@parcel/transformer-image": "^2.5.0",
 		"@sindresorhus/tsconfig": "^2.0.0",
 		"@types/jest": "^27.4.1",
 		"@types/webextension-polyfill": "^0.8.2",

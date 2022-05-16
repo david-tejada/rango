@@ -1,15 +1,13 @@
 import { Message } from "../types/types";
+import { sendCommandToActiveTab } from "./tabs-messaging";
 
 let lastRequestText: string | undefined;
-
-const sandbox = document.createElement("textarea");
-document.body.append(sandbox);
 
 async function getTextFromClipboard(): Promise<string | undefined> {
 	try {
 		return await navigator.clipboard.readText();
 	} catch (error: unknown) {
-		if (error instanceof DOMException) {
+		if (error instanceof TypeError) {
 			return getChromiumClipboard();
 		}
 
@@ -20,7 +18,7 @@ async function getTextFromClipboard(): Promise<string | undefined> {
 export async function getMessageFromClipboard(): Promise<Message> {
 	const clipText = await getTextFromClipboard();
 	lastRequestText = clipText;
-	const request = JSON.parse(clipText) as Message;
+	const request = JSON.parse(clipText!) as Message;
 	if (request.type !== "request") {
 		throw new Error("Error: No request message present in the clipboard");
 	}
@@ -35,28 +33,24 @@ export async function writeResponseToClipboard(responseObject: Message) {
 	try {
 		await navigator.clipboard.writeText(response);
 	} catch (error: unknown) {
-		if (error instanceof DOMException) {
-			copyToChromiumClipboard(response);
+		if (error instanceof TypeError) {
+			await copyToChromiumClipboard(response);
 		}
 	}
 }
 
-function getChromiumClipboard() {
-	let result = "";
-	sandbox.focus();
-	if (document.execCommand("paste")) {
-		result = sandbox.value;
-	}
-
-	sandbox.value = "";
-	return result;
+async function getChromiumClipboard(): Promise<string> {
+	const response = await sendCommandToActiveTab({
+		type: "getChromiumClipboard",
+	});
+	return response.action.textCopied!;
 }
 
-function copyToChromiumClipboard(text: string) {
-	sandbox.value = text;
-	sandbox.select();
-	document.execCommand("copy");
-	sandbox.value = "";
+async function copyToChromiumClipboard(text: string): Promise<Message> {
+	return sendCommandToActiveTab({
+		type: "copyToChromiumClipboard",
+		textToCopy: text,
+	});
 }
 
 export async function getClipboardIfChanged(): Promise<string | undefined> {

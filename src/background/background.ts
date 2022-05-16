@@ -7,9 +7,15 @@ import {
 import { dispatchCommand } from "./command-dispatcher";
 import { adaptResponse } from "./adapt-response";
 
-browser.browserAction.onClicked.addListener(async () => {
-	await dispatchCommand({ type: "toggleHints" });
-});
+if (browser.action) {
+	browser.action.onClicked.addListener(async () => {
+		await dispatchCommand({ type: "toggleHints" });
+	});
+} else {
+	browser.browserAction.onClicked.addListener(async () => {
+		await dispatchCommand({ type: "toggleHints" });
+	});
+}
 
 browser.commands.onCommand.addListener(async (internalCommand: string) => {
 	if (internalCommand === "get-talon-request") {

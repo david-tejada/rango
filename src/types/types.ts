@@ -2,6 +2,7 @@ export interface Command {
 	type: string;
 	target?: string;
 	textToCopy?: string;
+	textCopied?: string;
 }
 
 export interface Message {

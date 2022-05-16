@@ -2,6 +2,10 @@ import browser from "webextension-polyfill";
 import { Command } from "../types/types";
 import { initOptions } from "../lib/options";
 import {
+	getChromiumClipboard,
+	copyToChromiumClipboard,
+} from "./chromium-clipboard";
+import {
 	increaseHintSize,
 	decreaseHintSize,
 	toggleHints,
@@ -19,15 +23,30 @@ initOptions()
 		console.error(error);
 	});
 
-browser.runtime.onMessage.addListener(async (command) => {
+browser.runtime.onMessage.addListener(async (command: Command) => {
 	let action: Command = { type: "ok" };
 	switch (command.type) {
+		case "getChromiumClipboard": {
+			const text = getChromiumClipboard();
+			action = {
+				type: "clipboardText",
+				textCopied: text,
+			};
+			break;
+		}
+
+		case "copyToChromiumClipboard": {
+			const text = command.textToCopy;
+			copyToChromiumClipboard(text!);
+			break;
+		}
+
 		case "clickElement":
-			await clickElement(command.target, false);
+			await clickElement(command.target!, false);
 			break;
 
 		case "copyLink": {
-			const url = copyLink(command.target);
+			const url = copyLink(command.target!);
 			if (url) {
 				action = {
 					type: "copyToClipboard",
@@ -39,19 +58,19 @@ browser.runtime.onMessage.addListener(async (command) => {
 		}
 
 		case "showLink":
-			showLink(command.target);
+			showLink(command.target!);
 			break;
 
 		case "openInNewTab":
-			await clickElement(command.target, true);
+			await clickElement(command.target!, true);
 			break;
 
 		case "hoverElement":
-			await hoverElement(command.target, false);
+			await hoverElement(command.target!, false);
 			break;
 
 		case "fixedHoverElement":
-			await hoverElement(command.target, true);
+			await hoverElement(command.target!, true);
 			break;
 
 		case "unhoverAll":
