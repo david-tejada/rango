@@ -3,17 +3,11 @@
 	"version": "0.1.7",
 	"description": "Extension that allows you to interact with webpages using your voice and talon",
 	"homepage_url": "https://github.com/david-tejada/rango",
-	"manifest_version": 2,
+	"manifest_version": 3,
 	"minimum_chrome_version": "80",
-	"browser_specific_settings": {
-		"gecko": {
-			"id": "rango@david-tejada",
-			"strict_min_version": "80.0"
-		}
-	},
 	"icons": {
-		"48": "./assets/icon48.png",
-		"128": "./assets/icon128.png"
+		"48": "../assets/icon48.png",
+		"128": "../assets/icon128.png"
 	},
 	"permissions": [
 		"storage",
@@ -25,20 +19,20 @@
 	"content_scripts": [
 		{
 			"matches": ["<all_urls>"],
-			"js": ["./content/content.ts"],
-			"css": ["./styles/hints.css", "./styles/tippy.css"],
+			"js": ["../content/content.ts"],
+			"css": ["../styles/hints.css", "../styles/tippy.css"],
 			"all_frames": true,
 			"run_at": "document_idle"
 		},
 		{
 			"matches": ["<all_urls>"],
-			"js": ["./content/init-tab-hints-stack.ts"],
+			"js": ["../content/init-tab-hints-stack.ts"],
 			"run_at": "document_idle"
 		}
 	],
 	"background": {
-		"persistent": false,
-		"scripts": ["./background/background.ts"]
+		"service_worker": ["../background/background.ts"],
+		"type": "module"
 	},
 	"commands": {
 		"get-talon-request": {
@@ -56,8 +50,8 @@
 			"description": "Toggle hints"
 		}
 	},
-	"browser_action": {
-		"default_icon": "./assets/icon48.png",
+	"action": {
+		"default_icon": "../assets/icon48.png",
 		"default_title": "Rango"
 	}
 }
