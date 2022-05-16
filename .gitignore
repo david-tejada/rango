@@ -1,5 +1,6 @@
 node_modules
-dist
+dist-mv2
+dist-mv3
 web-ext-artifacts
 .parcel-cache
 workspace.code-workspace

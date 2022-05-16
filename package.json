@@ -1,7 +1,9 @@
 {
 	"private": true,
 	"scripts": {
-		"build": "rimraf dist && parcel build src/manifest.json --no-content-hash --no-source-maps --dist-dir dist --no-cache --detailed-report 0",
+		"build:mv2": "rimraf dist-mv2 && parcel build src/mv2/manifest.json --no-content-hash --no-source-maps --dist-dir dist-mv2 --no-cache --detailed-report 0",
+		"build:mv3": "rimraf dist-mv3 && parcel build src/mv3/manifest.json --no-content-hash --no-source-maps --dist-dir dist-mv3 --no-cache --detailed-report 0",
+		"build": "run-p build:*",
 		"lint": "run-p lint:*",
 		"lint-fix": "run-p 'lint:* -- --fix'",
 		"lint:css": "stylelint src/**/*.css",
@@ -72,7 +74,7 @@
 		"xo": "^0.48.0"
 	},
 	"webExt": {
-		"sourceDir": "dist",
+		"sourceDir": "dist-mv2",
 		"run": {
 			"startUrl": [
 				"https://en.wikipedia.org/wiki/Main_Page"
