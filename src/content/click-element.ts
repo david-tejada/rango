@@ -48,12 +48,7 @@ export async function clickElement(hintText: string, newTab: boolean) {
 						console.error(error);
 					});
 			} else {
-				const event = new MouseEvent("click", {
-					bubbles: true,
-					cancelable: true,
-					view: window,
-				});
-				target.element.dispatchEvent(event);
+				(target.element as HTMLElement).click();
 			}
 
 			// On some pages like codepen there are hints remaining after closing a popup panel.
