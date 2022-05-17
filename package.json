@@ -48,6 +48,11 @@
 			"string-quotes": "double"
 		}
 	},
+	"@parcel/bundler-default": {
+		"minBundles": 10000000,
+		"minBundleSize": 3000,
+		"maxParallelRequests": 20
+	},
 	"dependencies": {
 		"parse-domain": "^7.0.0",
 		"tippy.js": "^6.3.7",
