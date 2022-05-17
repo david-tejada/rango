@@ -1,12 +1,19 @@
+import browser from "webextension-polyfill";
 import { Intersector } from "../types/types";
 import { claimHintText, releaseHintText } from "../lib/hint-utils";
 import { elementIsObscured } from "../lib/dom-utils";
 import { applyInitialStyles } from "../lib/styles";
 import { getOption } from "../lib/options";
 import { intersectors } from "./intersectors";
+import { initTabHintsStack } from "./init-tab-hints-stack";
 
-let hintsUpdateTriggered = false;
+let displayHintsTimeout: NodeJS.Timeout | undefined;
 
+browser.storage.onChanged.addListener(async (changes) => {
+	if ("showHints" in changes) {
+		await displayHints(true);
+	}
+});
 function hiddenClickableNeedsRemoved(intersector: Intersector) {
 	return (
 		(!intersector.isVisible || elementIsObscured(intersector.element)) &&
@@ -33,9 +40,11 @@ function inViewClickablePossessesHint(intersector: Intersector) {
 	);
 }
 
-function getHintsContainer(): HTMLElement {
+async function getHintsContainer(): Promise<HTMLElement> {
 	let container = document.querySelector("#rango-hints-container");
 	if (!container) {
+		// This next line will only get executed for frameId === 0
+		await initTabHintsStack();
 		container = document.createElement("div");
 		container.id = "rango-hints-container";
 		document.body.append(container);
@@ -46,13 +55,15 @@ function getHintsContainer(): HTMLElement {
 
 export async function displayHints(fullRefresh = false) {
 	if (fullRefresh) {
+		if (displayHintsTimeout) {
+			clearTimeout(displayHintsTimeout);
+		}
+
+		displayHintsTimeout = undefined;
 		document.querySelector("#rango-hints-container")?.remove();
 		for (const intersector of intersectors) {
 			intersector.hintElement?.remove();
 			intersector.hintElement = undefined;
-			releaseHintText(intersector.hintText).catch((error) => {
-				console.error(error);
-			});
 			intersector.hintText = undefined;
 		}
 	}
@@ -60,13 +71,10 @@ export async function displayHints(fullRefresh = false) {
 	// We set a timeout in order to avoid updating the hints too often, for example,
 	// when there are multiple mutations or intersections happening
 	const showHints = getOption("showHints");
-	if (showHints && !hintsUpdateTriggered) {
-		hintsUpdateTriggered = true;
-
-		setTimeout(() => {
-			hintsUpdateTriggered = false;
-
-			const hintsContainer = getHintsContainer();
+	if (showHints && !displayHintsTimeout) {
+		displayHintsTimeout = setTimeout(async () => {
+			displayHintsTimeout = undefined;
+			const hintsContainer = await getHintsContainer();
 
 			for (const intersector of intersectors) {
 				if (hiddenClickableNeedsRemoved(intersector)) {

@@ -1,12 +1,14 @@
 import browser from "webextension-polyfill";
 
-browser.runtime
-	.sendMessage({
-		type: "request",
-		action: {
-			type: "initTabHintsStack",
-		},
-	})
-	.catch((error) => {
-		console.error(error);
-	});
+export async function initTabHintsStack() {
+	browser.runtime
+		.sendMessage({
+			type: "request",
+			action: {
+				type: "initTabHintsStack",
+			},
+		})
+		.catch((error) => {
+			console.error(error);
+		});
+}

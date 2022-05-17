@@ -62,7 +62,7 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
 			break;
 
 		case "initTabHintsStack":
-			initTabHintsStack(tabId);
+			initTabHintsStack(tabId, frameId);
 			break;
 
 		case "claimHintText":

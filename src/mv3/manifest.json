@@ -23,11 +23,6 @@
 			"css": ["../styles/hints.css", "../styles/tippy.css"],
 			"all_frames": true,
 			"run_at": "document_idle"
-		},
-		{
-			"matches": ["<all_urls>"],
-			"js": ["../content/init-tab-hints-stack.ts"],
-			"run_at": "document_idle"
 		}
 	],
 	"background": {
