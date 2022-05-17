@@ -4,15 +4,11 @@ import { sendCommandToActiveTab } from "./tabs-messaging";
 let lastRequestText: string | undefined;
 
 async function getTextFromClipboard(): Promise<string | undefined> {
-	try {
-		return await navigator.clipboard.readText();
-	} catch (error: unknown) {
-		if (error instanceof TypeError) {
-			return getChromiumClipboard();
-		}
-
-		return undefined;
+	if (navigator.clipboard) {
+		return navigator.clipboard.readText();
 	}
+
+	return getChromiumClipboard();
 }
 
 export async function getMessageFromClipboard(): Promise<Message> {
@@ -30,13 +26,11 @@ export async function writeResponseToClipboard(responseObject: Message) {
 	// We send the response so that talon can make sure the request was received
 	// and to tell talon to execute any actions
 	const response = JSON.stringify(responseObject);
-	try {
-		await navigator.clipboard.writeText(response);
-	} catch (error: unknown) {
-		if (error instanceof TypeError) {
-			await copyToChromiumClipboard(response);
-		}
+	if (navigator.clipboard) {
+		return navigator.clipboard.writeText(response);
 	}
+
+	return copyToChromiumClipboard(response);
 }
 
 async function getChromiumClipboard(): Promise<string> {
