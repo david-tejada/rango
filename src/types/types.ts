@@ -1,3 +1,8 @@
+export interface ScriptContext {
+	tabId: number;
+	frameId: number;
+}
+
 export interface Command {
 	type: string;
 	target?: string;
@@ -27,7 +32,11 @@ export interface Rgba {
 }
 
 export type HintsStack = {
-	tabId: number;
 	free: string[];
 	assigned: Map<string, number>;
+};
+
+export type StorableHintsStack = {
+	free: string[];
+	assigned: Array<[string, number]>;
 };

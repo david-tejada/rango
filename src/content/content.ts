@@ -15,10 +15,24 @@ import { copyLink, showLink } from "./links";
 import { hoverElement, unhoverAll } from "./hover";
 import { displayHints } from "./hints";
 import observe from "./observers";
+import { getScriptContext, initStack } from "./hints-allocator";
 
 // Initialize options
 initOptions()
-	.then(observe)
+	.then(() => {
+		observe();
+		getScriptContext()
+			.then((context) => {
+				if (context.frameId === 0) {
+					initStack().catch((error) => {
+						console.error(error);
+					});
+				}
+			})
+			.catch((error) => {
+				console.error(error);
+			});
+	})
 	.catch((error) => {
 		console.error(error);
 	});

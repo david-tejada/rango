@@ -1,11 +1,10 @@
 import browser from "webextension-polyfill";
-import { Message, Command } from "../types/types";
 import {
-	getHintFrameId,
-	initTabHintsStack,
-	claimHintText,
-	releaseHintText,
-} from "./hints-dispatcher";
+	Message,
+	Command,
+	ScriptContext,
+	StorableHintsStack,
+} from "../types/types";
 
 async function getActiveTab(): Promise<browser.Tabs.Tab | undefined> {
 	const activeTabs = await browser.tabs.query({
@@ -16,6 +15,20 @@ async function getActiveTab(): Promise<browser.Tabs.Tab | undefined> {
 	return activeTabs[0];
 }
 
+async function getHintFrameId(
+	tabId: number,
+	hintText?: string
+): Promise<number> {
+	const stackName = `hints-stack-${tabId}`;
+	const storage = await browser.storage.local.get(stackName);
+	const storableStack = storage[stackName] as StorableHintsStack;
+	const stack = {
+		free: storableStack.free,
+		assigned: new Map(storableStack.assigned),
+	};
+	return hintText ? stack.assigned.get(hintText)! : 0;
+}
+
 export async function sendCommandToActiveTab(
 	command: Command
 ): Promise<Message> {
@@ -24,7 +37,7 @@ export async function sendCommandToActiveTab(
 	// We only want to send the command to the frame with the target hint or to the main
 	// frame in case that the command doesn't have a hint
 	if (activeTab?.id) {
-		const frameId = hintText ? getHintFrameId(activeTab.id, hintText) : 0;
+		const frameId = await getHintFrameId(activeTab.id, hintText);
 		return (await browser.tabs.sendMessage(activeTab.id, command, {
 			frameId,
 		})) as Message;
@@ -52,7 +65,10 @@ export async function sendCommandToAllTabs(command: Command): Promise<any> {
 browser.runtime.onMessage.addListener(async (message, sender) => {
 	const tabId = sender.tab!.id!;
 	const frameId = sender.frameId ?? 0;
-	const hintText = message.action.target as string;
+	const scriptContext: ScriptContext = {
+		tabId,
+		frameId,
+	};
 
 	switch (message.action.type) {
 		case "openInNewTab":
@@ -61,16 +77,8 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
 			});
 			break;
 
-		case "initTabHintsStack":
-			initTabHintsStack(tabId, frameId);
-			break;
-
-		case "claimHintText":
-			return claimHintText(tabId, frameId);
-
-		case "releaseHintText":
-			releaseHintText(tabId, hintText);
-			break;
+		case "getScriptContext":
+			return scriptContext;
 
 		default:
 			break;

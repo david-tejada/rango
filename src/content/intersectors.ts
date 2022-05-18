@@ -1,6 +1,6 @@
 import { Intersector } from "../types/types";
 import { getClickableType, isVisible } from "../lib/dom-utils";
-import { releaseHintText } from "../lib/hint-utils";
+import { getStack, saveStack, releaseHintText } from "./hints-allocator";
 
 export const intersectors: Intersector[] = [];
 
@@ -8,7 +8,7 @@ function getIntersector(element: Element): Intersector | undefined {
 	return intersectors.find((Intersector) => Intersector.element === element);
 }
 
-function removeIntersector(element: Element) {
+async function removeIntersector(element: Element) {
 	const intersectorIndex = intersectors.findIndex(
 		(Intersector) => Intersector.element === element
 	);
@@ -16,9 +16,9 @@ function removeIntersector(element: Element) {
 		const intersector = intersectors[intersectorIndex];
 		if (intersector?.hintText) {
 			intersector.hintElement?.remove();
-			releaseHintText(intersector.hintText).catch((error) => {
-				console.error(error);
-			});
+			const stack = await getStack();
+			releaseHintText(stack, intersector.hintText);
+			await saveStack(stack);
 		}
 
 		intersectors.splice(intersectorIndex, 1);
@@ -36,7 +36,9 @@ export function onIntersection(
 			clickableType: getClickableType(element),
 		});
 	} else {
-		removeIntersector(element);
+		removeIntersector(element).catch((error) => {
+			console.error(error);
+		});
 	}
 }
 
