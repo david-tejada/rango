@@ -1,5 +1,5 @@
 import { intersectors } from "./intersectors";
-import { displayHints } from "./hints";
+import { triggerHintsUpdate } from "./hints";
 
 const hoveredElements: Set<Element> = new Set();
 const timeoutIds: Set<NodeJS.Timeout> = new Set();
@@ -27,7 +27,7 @@ export async function hoverElement(hintText: string, fixed: boolean) {
 
 		targetElement.dispatchEvent(event);
 		hoveredElements.add(targetElement);
-		await displayHints();
+		await triggerHintsUpdate();
 
 		if (!fixed) {
 			const timeoutId = setTimeout(() => {

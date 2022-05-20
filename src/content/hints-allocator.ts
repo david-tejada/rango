@@ -1,85 +1,103 @@
-import browser from "webextension-polyfill";
-import { HintsStack, StorableHintsStack, ScriptContext } from "../types/types";
+import { HintsStack, StorableHintsStack } from "../types/types";
 import { getStored, saveToStorage } from "../lib/storage";
+import { getScriptEnvironment } from "./environment";
 import { allHints } from "./all-hints";
 
-let tabId: number;
-let frameId: number;
-
-async function setScriptContext() {
-	if (!tabId) {
-		const context = await getScriptContext();
-		tabId = context.tabId;
-		frameId = context.frameId;
-	}
+function stackToStorable(stack: HintsStack): StorableHintsStack {
+	return {
+		free: stack.free,
+		assigned: Array.from(stack.assigned),
+	};
 }
 
-export async function getScriptContext(): Promise<ScriptContext> {
-	const context = (await browser.runtime.sendMessage({
-		type: "request",
-		action: {
-			type: "getScriptContext",
-		},
-	})) as ScriptContext;
-
-	return context;
+function stackFromStorable(storableStack: StorableHintsStack): HintsStack {
+	return {
+		free: storableStack.free,
+		assigned: new Map(storableStack.assigned),
+	};
 }
 
 export async function getStack(): Promise<HintsStack> {
-	await setScriptContext();
-	const newStack = {
-		free: [...allHints],
-		assigned: new Map(),
-	};
+	const { tabId } = await getScriptEnvironment();
 
 	const storableStack = (await getStored(`hints-stack-${tabId}`)) as
 		| StorableHintsStack
 		| undefined;
 
-	const stack = storableStack
-		? {
-				free: storableStack.free,
-				assigned: new Map(storableStack.assigned),
-		  }
-		: newStack;
+	if (!storableStack) {
+		const newStack = {
+			free: [...allHints],
+			assigned: new Map(),
+		};
+		await saveStack(newStack);
+		return newStack;
+	}
 
-	return stack;
+	return stackFromStorable(storableStack);
 }
 
-export async function saveStack(stack: HintsStack) {
-	// console.log("Saving stack:", stack);
-	// I cannot store a map directly in local storage, so I have to convert first
-	// to something that is storable, like array
-	const storableStack = {
-		free: stack.free,
-		assigned: Array.from(stack.assigned),
-	};
-	await saveToStorage({
-		[`hints-stack-${tabId}`]: storableStack,
-	});
+async function saveStack(stack: HintsStack) {
+	console.log("saveStack called");
+	const { tabId } = await getScriptEnvironment();
+	console.log(`Saving stack hints-stack-${tabId}`);
+	try {
+		await saveToStorage({
+			[`hints-stack-${tabId}`]: stackToStorable(stack),
+		});
+	} catch (error: unknown) {
+		console.error(error);
+	}
+
+	console.log("Stack saved");
 }
 
 export async function initStack() {
-	console.log("Initiating stack");
-	await saveStack({
-		free: [...allHints],
-		assigned: new Map(),
-	});
+	const { frameId } = await getScriptEnvironment();
+	console.log("initStack called");
+	console.trace();
+
+	if (frameId === 0) {
+		await saveStack({
+			free: [...allHints],
+			assigned: new Map(),
+		});
+	}
 }
 
-export function claimHintText(stack: HintsStack): string | undefined {
-	const hintText = stack.free.pop();
-	if (hintText) {
-		stack.assigned.set(hintText, frameId);
-		console.log(`${hintText} claimed`);
+export async function claimHints(amount: number): Promise<string[]> {
+	const { frameId } = await getScriptEnvironment();
+	const stack = await getStack();
+
+	const hints = stack.free.splice(-amount, amount);
+
+	console.log("Claimed hints:", hints.join(", "));
+
+	for (const hint of hints) {
+		stack.assigned.set(hint, frameId);
 	}
 
-	return hintText ?? undefined;
+	console.log(
+		"stack:\n",
+		"free:",
+		stack.free.join(", "),
+		"\nassigned:",
+		JSON.stringify(stack.assigned)
+	);
+
+	await saveStack(stack);
+
+	return hints;
 }
 
-export function releaseHintText(stack: HintsStack, hintText: string) {
-	stack.free.push(hintText);
+export async function releaseHints(hints: string[]) {
+	console.log("Released:", hints);
+	const stack = await getStack();
+	stack.free.push(...hints);
 	stack.free.sort((a, b) => b.length - a.length || b.localeCompare(a));
-	stack.assigned.delete(hintText);
-	console.log(`${hintText} released`);
+
+	for (const hint of hints) {
+		stack.assigned.delete(hint);
+	}
+
+	await saveStack(stack);
 }

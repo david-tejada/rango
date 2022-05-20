@@ -3,7 +3,7 @@ import { parseDomain, ParseResultType, fromUrl } from "parse-domain";
 import { focusesOnclick } from "../lib/dom-utils";
 import { applyEmphasisStyles, applyInitialStyles } from "../lib/styles";
 import { intersectors } from "./intersectors";
-import { displayHints } from "./hints";
+import { triggerHintsUpdate } from "./hints";
 
 export async function clickElement(hintText: string, newTab: boolean) {
 	const target = intersectors.find(
@@ -53,7 +53,7 @@ export async function clickElement(hintText: string, newTab: boolean) {
 
 			// On some pages like codepen there are hints remaining after closing a popup panel.
 			// This is not a perfect solution but as long as the user clicks with voice I think we're safe
-			await displayHints();
+			await triggerHintsUpdate();
 		}
 	}
 }

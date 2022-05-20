@@ -13,26 +13,14 @@ import {
 import { clickElement } from "./click-element";
 import { copyLink, showLink } from "./links";
 import { hoverElement, unhoverAll } from "./hover";
-import { displayHints } from "./hints";
+import { triggerHintsUpdate } from "./hints";
 import observe from "./observers";
-import { getScriptContext, initStack } from "./hints-allocator";
+import { initStack } from "./hints-allocator";
 
 // Initialize options
 initOptions()
-	.then(() => {
-		observe();
-		getScriptContext()
-			.then((context) => {
-				if (context.frameId === 0) {
-					initStack().catch((error) => {
-						console.error(error);
-					});
-				}
-			})
-			.catch((error) => {
-				console.error(error);
-			});
-	})
+	.then(initStack)
+	.then(observe)
 	.catch((error) => {
 		console.error(error);
 	});
@@ -96,7 +84,7 @@ browser.runtime.onMessage.addListener(async (command: Command) => {
 			break;
 
 		case "refreshHints":
-			await displayHints(true);
+			await triggerHintsUpdate(true);
 			break;
 
 		case "increaseHintSize":
@@ -114,10 +102,12 @@ browser.runtime.onMessage.addListener(async (command: Command) => {
 	return { type: "response", action };
 });
 
+let scrollTimeoutId: NodeJS.Timeout;
+
 document.addEventListener("scroll", async () => {
-	await displayHints();
+	await triggerHintsUpdate();
 });
 
 window.addEventListener("resize", async () => {
-	await displayHints();
+	await triggerHintsUpdate();
 });

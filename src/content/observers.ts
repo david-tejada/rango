@@ -1,5 +1,5 @@
 import { getClickableType, hasTextNodesChildren } from "../lib/dom-utils";
-import { displayHints } from "./hints";
+import { triggerHintsUpdate } from "./hints";
 import { onIntersection, onAttributeMutation } from "./intersectors";
 
 // *** INTERSECTION OBSERVER ***
@@ -16,7 +16,7 @@ export const intersectionObserver = new IntersectionObserver(
 			onIntersection(entry.target, entry.isIntersecting);
 		}
 
-		await displayHints();
+		await triggerHintsUpdate();
 	},
 	options
 );
@@ -52,7 +52,7 @@ const mutationCallback: MutationCallback = async (mutationList) => {
 	}
 
 	if (updateHints) {
-		await displayHints();
+		await triggerHintsUpdate();
 	}
 };
 
@@ -90,13 +90,13 @@ export default function observe() {
 	// We observe all the initial elements before any mutation
 	if (document.readyState === "complete") {
 		maybeObserveIntersection(document.body);
-		displayHints().catch((error) => {
+		triggerHintsUpdate().catch((error) => {
 			console.error(error);
 		});
 	} else {
 		window.addEventListener("load", () => {
 			maybeObserveIntersection(document.body);
-			displayHints().catch((error) => {
+			triggerHintsUpdate().catch((error) => {
 				console.error(error);
 			});
 		});
