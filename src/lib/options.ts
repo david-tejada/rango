@@ -1,47 +1,39 @@
-import browser, { Storage } from "webextension-polyfill";
+import browser from "webextension-polyfill";
 
-// Default options. Will be overridden by initOptions with the options in local storage
-const options: Record<string, unknown> = {
+const defaultOptions: Record<string, unknown> = {
 	hintFontSize: 10,
 	showHints: true,
 };
+const cachedOptions: Record<string, unknown> = {};
 
 export async function initOptions() {
-	const savedOptions = await browser.storage.local.get(null);
-	let key: keyof typeof options;
-	for (key in options) {
-		if (savedOptions[key] !== undefined) {
-			options[key] = savedOptions[key];
+	const optionNames = Object.keys(defaultOptions);
+	const savedOptions = await browser.storage.local.get(optionNames);
+	const optionsToStore: Record<string, unknown> = {};
+
+	for (const key of optionNames) {
+		if (savedOptions[key] === undefined) {
+			cachedOptions[key] = defaultOptions[key];
+			optionsToStore[key] = defaultOptions[key];
+		} else {
+			cachedOptions[key] = savedOptions[key];
 		}
 	}
 
-	await browser.storage.local.set(options);
+	// We only store options if they weren't already initiated to avoid triggering storage.onChanged
+	// since that will trigger every time there's a value stored even if newValue === oldValue
+	await browser.storage.local.set(optionsToStore);
 }
 
 export function getOption(option: string): unknown {
-	return options[option];
+	return cachedOptions[option];
 }
 
 export async function setOption(option: Record<string, unknown>) {
+	const optionNames = Object.keys(option);
+	for (const key of optionNames) {
+		cachedOptions[key] = option[key];
+	}
+
 	await browser.storage.local.set(option);
-
-	// Even though onStorageChange does this I need to do it here too to avoid race conditions
-	let key: keyof typeof option;
-	for (key in option) {
-		if (Object.prototype.hasOwnProperty.call(option, key)) {
-			options[key] = option[key];
-		}
-	}
 }
-
-// It seems that I have to have this listener here to have local storage updated
-function onStorageChange(changes: Record<string, unknown>) {
-	let key: keyof typeof changes;
-	for (key in changes) {
-		if (Object.prototype.hasOwnProperty.call(changes, key)) {
-			options[key] = (changes[key] as Storage.StorageChange).newValue;
-		}
-	}
-}
-
-browser.storage.onChanged.addListener(onStorageChange);
