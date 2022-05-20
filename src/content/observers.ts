@@ -59,9 +59,6 @@ const mutationCallback: MutationCallback = async (mutationList) => {
 const config = { attributes: true, childList: true, subtree: true };
 const mutationObserver = new MutationObserver(mutationCallback);
 
-// We observe document instead of document.body in case the body gets replaced
-mutationObserver.observe(document, config);
-
 function maybeObserveIntersection(element: Element) {
 	let descendants = element.querySelectorAll("*");
 	if (element.shadowRoot) {
@@ -104,4 +101,7 @@ export default function observe() {
 			});
 		});
 	}
+
+	// We observe document instead of document.body in case the body gets replaced
+	mutationObserver.observe(document, config);
 }
