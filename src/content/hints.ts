@@ -3,11 +3,16 @@ import { Intersector } from "../types/types";
 import { elementIsObscured } from "../lib/dom-utils";
 import { applyInitialStyles } from "../lib/styles";
 import { getOption } from "../lib/options";
-import { claimHints, releaseHints, initStack } from "./hints-allocator";
+import {
+	claimHints,
+	releaseHints,
+	releaseOtherHints,
+	initStack,
+} from "./hints-allocator";
 import { intersectors, removedIntersectorsHints } from "./intersectors";
 
+let hintsWillUpdate = false;
 let hintsAreUpdating = false;
-let updateHintsTimeout: NodeJS.Timeout;
 
 browser.storage.onChanged.addListener(async (changes) => {
 	console.log("changes:", changes);
@@ -119,8 +124,23 @@ async function updateHints() {
 		});
 	}
 
+	// Hints cleanup
+	const hintElements = hintsContainer.querySelectorAll(".rango-hint");
+	console.log("hintElements", hintElements);
+	const hints = intersectors
+		.filter((intersector) => intersector.hintText)
+		.map((intersector) => intersector.hintText) as string[];
+	const hintsSet = new Set(hints);
+	for (const hintElement of hintElements) {
+		if (!hintsSet.has(hintElement.textContent!)) {
+			hintElement.remove();
+		}
+	}
+
+	await releaseOtherHints(hints);
+
 	if (process.env["NODE_ENV"] !== "production") {
-		const hints = intersectors
+		const hintedIntersectors = intersectors
 			.filter((intersector) => intersector.hintText)
 			.sort(
 				(a, b) =>
@@ -128,11 +148,13 @@ async function updateHints() {
 					a.hintText!.localeCompare(b.hintText!)
 			);
 		console.log("intersectors:", intersectors);
-		console.log("hints:", hints);
+		console.log("hinted intersectors:", hintedIntersectors);
+		console.log(`${hintedIntersectors.length} hinted intersectors`);
 	}
 
 	console.log("Drawing hints finished");
 	hintsAreUpdating = false;
+	hintsWillUpdate = false;
 }
 
 export async function triggerHintsUpdate(fullRefresh = false) {
@@ -149,8 +171,8 @@ export async function triggerHintsUpdate(fullRefresh = false) {
 	// We set a timeout in order to avoid updating the hints too often, for example,
 	// when there are multiple mutations or intersections happening
 	const showHints = getOption("showHints");
-	if (showHints && !hintsAreUpdating) {
-		clearTimeout(updateHintsTimeout);
-		updateHintsTimeout = setTimeout(updateHints, 200);
+	if (showHints && !hintsWillUpdate && !hintsAreUpdating) {
+		hintsWillUpdate = true;
+		setTimeout(updateHints, 50);
 	}
 }

@@ -102,10 +102,8 @@ browser.runtime.onMessage.addListener(async (command: Command) => {
 	return { type: "response", action };
 });
 
-let scrollTimeoutId: NodeJS.Timeout;
-
 document.addEventListener("scroll", async () => {
-	await triggerHintsUpdate();
+	setTimeout(triggerHintsUpdate, 500);
 });
 
 window.addEventListener("resize", async () => {

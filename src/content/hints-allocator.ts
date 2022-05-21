@@ -92,12 +92,19 @@ export async function claimHints(amount: number): Promise<string[]> {
 export async function releaseHints(hints: string[]) {
 	console.log("Released:", hints);
 	const stack = await getStack();
-	stack.free.push(...hints);
+	// We make sure the hints to release are actually assigned
+	const filteredHints = hints.filter((hint) => stack.assigned.has(hint));
+	stack.free.push(...filteredHints);
 	stack.free.sort((a, b) => b.length - a.length || b.localeCompare(a));
 
-	for (const hint of hints) {
+	for (const hint of filteredHints) {
 		stack.assigned.delete(hint);
 	}
 
 	await saveStack(stack);
+}
+
+export async function releaseOtherHints(hints: string[]) {
+	const otherHints = allHints.filter((hint) => !hints.includes(hint));
+	await releaseHints(otherHints);
 }
