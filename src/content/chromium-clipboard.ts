@@ -1,6 +1,6 @@
 function getCopyPasteArea(): HTMLTextAreaElement {
 	const copyPasteArea: HTMLTextAreaElement =
-		document.querySelector("#rango-copy-paste-area") ||
+		document.querySelector("#rango-copy-paste-area") ??
 		document.createElement("textarea");
 	if (!copyPasteArea.id) {
 		copyPasteArea.id = "rango-copy-paste-area";
