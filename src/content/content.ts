@@ -15,7 +15,7 @@ import { copyLink, showLink } from "./links";
 import { hoverElement, unhoverAll } from "./hover";
 import { triggerHintsUpdate } from "./hints";
 import observe from "./observers";
-import { initStack } from "./hints-allocator";
+import { initStack } from "./hints-requests";
 
 // Initialize options
 initOptions()
@@ -26,6 +26,7 @@ initOptions()
 	});
 
 browser.runtime.onMessage.addListener(async (command: Command) => {
+	console.log("command:", command);
 	let action: Command = { type: "ok" };
 	switch (command.type) {
 		case "getChromiumClipboard": {
@@ -43,9 +44,15 @@ browser.runtime.onMessage.addListener(async (command: Command) => {
 			break;
 		}
 
-		case "clickElement":
-			await clickElement(command.target!, false);
+		case "clickElement": {
+			try {
+				await clickElement(command.target!, false);
+			} catch (error: unknown) {
+				console.error(error);
+			}
+
 			break;
+		}
 
 		case "copyLink": {
 			const url = copyLink(command.target!);
@@ -103,7 +110,7 @@ browser.runtime.onMessage.addListener(async (command: Command) => {
 });
 
 document.addEventListener("scroll", async () => {
-	setTimeout(triggerHintsUpdate, 500);
+	await triggerHintsUpdate();
 });
 
 window.addEventListener("resize", async () => {

@@ -4,20 +4,18 @@ import { elementIsObscured } from "../lib/dom-utils";
 import { applyInitialStyles } from "../lib/styles";
 import { getOption } from "../lib/options";
 import {
+	initStack,
 	claimHints,
 	releaseHints,
-	releaseOtherHints,
-	initStack,
-} from "./hints-allocator";
+	releaseOrphanHints,
+} from "./hints-requests";
 import { intersectors, removedIntersectorsHints } from "./intersectors";
 
 let hintsWillUpdate = false;
 let hintsAreUpdating = false;
 
 browser.storage.onChanged.addListener(async (changes) => {
-	console.log("changes:", changes);
 	if ("showHints" in changes) {
-		console.log("This was called");
 		await triggerHintsUpdate(true);
 	}
 });
@@ -61,8 +59,6 @@ function getHintsContainer(): HTMLElement {
 
 async function updateHints() {
 	hintsAreUpdating = true;
-	console.log("Drawing hints");
-	console.trace();
 	const hintsContainer = getHintsContainer();
 
 	const toBeRemoved: Intersector[] = [];
@@ -79,22 +75,13 @@ async function updateHints() {
 		}
 	}
 
-	console.log("toBeRemoved:", toBeRemoved);
-	console.log("toAddHint:", toAddHint);
-	console.log("toRefresh:", toRefresh);
-
 	const hintsToRelease = toBeRemoved.map((intersector) => intersector.hintText);
-	console.log("hintsToRelease:", [
-		...hintsToRelease,
-		...removedIntersectorsHints,
-	]);
 	await releaseHints([
 		...hintsToRelease,
 		...removedIntersectorsHints,
 	] as string[]);
 	removedIntersectorsHints.clear();
 
-	console.log(`Claiming ${toAddHint.length} hints`);
 	const claimedHints = await claimHints(toAddHint.length);
 
 	for (const intersector of toBeRemoved) {
@@ -126,7 +113,6 @@ async function updateHints() {
 
 	// Hints cleanup
 	const hintElements = hintsContainer.querySelectorAll(".rango-hint");
-	console.log("hintElements", hintElements);
 	const hints = intersectors
 		.filter((intersector) => intersector.hintText)
 		.map((intersector) => intersector.hintText) as string[];
@@ -137,7 +123,7 @@ async function updateHints() {
 		}
 	}
 
-	await releaseOtherHints(hints);
+	await releaseOrphanHints(hints);
 
 	if (process.env["NODE_ENV"] !== "production") {
 		const hintedIntersectors = intersectors
@@ -149,15 +135,14 @@ async function updateHints() {
 			);
 		console.log("intersectors:", intersectors);
 		console.log("hinted intersectors:", hintedIntersectors);
-		console.log(`${hintedIntersectors.length} hinted intersectors`);
 	}
 
-	console.log("Drawing hints finished");
 	hintsAreUpdating = false;
 	hintsWillUpdate = false;
 }
 
 export async function triggerHintsUpdate(fullRefresh = false) {
+	console.trace();
 	if (fullRefresh) {
 		document.querySelector("#rango-hints-container")?.remove();
 		await initStack();
@@ -171,6 +156,10 @@ export async function triggerHintsUpdate(fullRefresh = false) {
 	// We set a timeout in order to avoid updating the hints too often, for example,
 	// when there are multiple mutations or intersections happening
 	const showHints = getOption("showHints");
+	if (showHints && hintsAreUpdating) {
+		setTimeout(triggerHintsUpdate, 300);
+	}
+
 	if (showHints && !hintsWillUpdate && !hintsAreUpdating) {
 		hintsWillUpdate = true;
 		setTimeout(updateHints, 50);

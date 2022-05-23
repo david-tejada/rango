@@ -12,12 +12,12 @@ export async function clickElement(hintText: string, newTab: boolean) {
 
 	if (target) {
 		applyEmphasisStyles(target, true);
+		setTimeout(() => {
+			applyInitialStyles(target).catch((error) => {
+				console.error(error);
+			});
+		}, 300);
 		if (focusesOnclick(target.element)) {
-			setTimeout(() => {
-				applyInitialStyles(target).catch((error) => {
-					console.error(error);
-				});
-			}, 300);
 			(target.element as HTMLInputElement).focus();
 		} else {
 			// Sometimes websites use links with target="_blank" but don't open a new tab.
@@ -48,6 +48,7 @@ export async function clickElement(hintText: string, newTab: boolean) {
 						console.error(error);
 					});
 			} else {
+				console.log("Clicking");
 				(target.element as HTMLElement).click();
 			}
 

@@ -1,10 +1,12 @@
 import browser from "webextension-polyfill";
+import { Mutex } from "async-mutex";
+import { Message, Command, StorableHintsStack } from "../types/types";
 import {
-	Message,
-	Command,
-	ScriptContext,
-	StorableHintsStack,
-} from "../types/types";
+	initStack,
+	claimHints,
+	releaseHints,
+	releaseOrphanHints,
+} from "./hints-allocator";
 
 async function getActiveTab(): Promise<browser.Tabs.Tab | undefined> {
 	const activeTabs = await browser.tabs.query({
@@ -26,7 +28,13 @@ async function getHintFrameId(
 		free: storableStack.free,
 		assigned: new Map(storableStack.assigned),
 	};
-	return hintText ? stack.assigned.get(hintText)! : 0;
+
+	if (hintText) {
+		const hintFrameId = stack.assigned.get(hintText);
+		return hintFrameId ? hintFrameId : 0;
+	}
+
+	return 0;
 }
 
 export async function sendCommandToActiveTab(
@@ -38,6 +46,7 @@ export async function sendCommandToActiveTab(
 	// frame in case that the command doesn't have a hint
 	if (activeTab?.id) {
 		const frameId = await getHintFrameId(activeTab.id, hintText);
+		console.log(`Sending message to frame ${frameId}`);
 		return (await browser.tabs.sendMessage(activeTab.id, command, {
 			frameId,
 		})) as Message;
@@ -62,13 +71,11 @@ export async function sendCommandToAllTabs(command: Command): Promise<any> {
 	return Promise.allSettled(results);
 }
 
+const mutex = new Mutex();
+
 browser.runtime.onMessage.addListener(async (message, sender) => {
 	const tabId = sender.tab!.id!;
 	const frameId = sender.frameId ?? 0;
-	const scriptContext: ScriptContext = {
-		tabId,
-		frameId,
-	};
 
 	switch (message.action.type) {
 		case "openInNewTab":
@@ -77,8 +84,21 @@ browser.runtime.onMessage.addListener(async (message, sender) => {
 			});
 			break;
 
-		case "getScriptContext":
-			return scriptContext;
+		case "initStack":
+			return mutex.runExclusive(async () => {
+				return initStack(tabId, frameId);
+			});
+
+		case "claimHints":
+			return mutex.runExclusive(async () => {
+				return claimHints(message.action.amount, tabId, frameId);
+			});
+
+		case "releaseHints":
+			return releaseHints(message.action.hints, tabId);
+
+		case "releaseOrphanHints":
+			return releaseOrphanHints(message.action.hints, tabId, frameId);
 
 		default:
 			break;

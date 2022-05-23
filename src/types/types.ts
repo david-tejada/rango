@@ -1,13 +1,10 @@
-export interface ScriptContext {
-	tabId: number;
-	frameId: number;
-}
-
 export interface Command {
 	type: string;
 	target?: string;
 	textToCopy?: string;
 	textCopied?: string;
+	amount?: number;
+	hints?: string[];
 }
 
 export interface Message {

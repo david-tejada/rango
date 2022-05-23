@@ -54,6 +54,7 @@
 		"maxParallelRequests": 20
 	},
 	"dependencies": {
+		"async-mutex": "^0.3.2",
 		"parse-domain": "^7.0.0",
 		"tippy.js": "^6.3.7",
 		"webextension-polyfill": "^0.8.0"
