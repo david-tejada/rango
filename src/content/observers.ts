@@ -88,19 +88,10 @@ function maybeObserveIntersection(element: Element) {
 
 export default function observe() {
 	// We observe all the initial elements before any mutation
-	if (document.readyState === "complete") {
-		maybeObserveIntersection(document.body);
-		triggerHintsUpdate().catch((error) => {
-			console.error(error);
-		});
-	} else {
-		window.addEventListener("load", () => {
-			maybeObserveIntersection(document.body);
-			triggerHintsUpdate().catch((error) => {
-				console.error(error);
-			});
-		});
-	}
+	maybeObserveIntersection(document.body);
+	triggerHintsUpdate().catch((error) => {
+		console.error(error);
+	});
 
 	// We observe document instead of document.body in case the body gets replaced
 	mutationObserver.observe(document, config);
