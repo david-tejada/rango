@@ -1,4 +1,5 @@
 import browser from "webextension-polyfill";
+import { Message } from "../types/types";
 import {
 	getMessageFromClipboard,
 	writeResponseToClipboard,
@@ -21,14 +22,12 @@ browser.commands.onCommand.addListener(async (internalCommand: string) => {
 	if (internalCommand === "get-talon-request") {
 		try {
 			const request = await getMessageFromClipboard();
-			let response = await dispatchCommand(request.action);
-			// Because of the way I had to implement copying and pasting to the clipboard in Chromium,
-			// sending a response requires focusing the textarea element dedicated for it, which might
-			// close popup elements or have other unintended consequences, therefore I will only send
-			// a response back when it's absolutely necessary. Even though for firefox this is not a problem,
-			// I will not differentiate for simplicity
-			const commandsThatRequireResponse = ["copyLink"];
-			if (commandsThatRequireResponse.includes(request.action.type)) {
+			const commandsThatChangeTheClipboard = new Set(["copyLink"]);
+			if (
+				navigator.clipboard ||
+				commandsThatChangeTheClipboard.has(request.action.type)
+			) {
+				let response = await dispatchCommand(request.action);
 				const changedClipboard = await getClipboardIfChanged();
 				if (changedClipboard) {
 					response = {
@@ -42,6 +41,20 @@ browser.commands.onCommand.addListener(async (internalCommand: string) => {
 
 				const adaptedResponse = adaptResponse(response, request.version ?? 0);
 				await writeResponseToClipboard(adaptedResponse);
+			} else {
+				const response: Message = {
+					type: "response",
+					action: {
+						type: "ok",
+					},
+				};
+				const adaptedResponse = adaptResponse(response, request.version ?? 0);
+				await writeResponseToClipboard(adaptedResponse);
+				// Because of the way I had to implement copying and pasting to the clipboard in Chromium,
+				// sending a response requires focusing the textarea element dedicated for it, which might
+				// close popup elements or have other unintended consequences, therefore I will first send
+				// the response back and then execute the command
+				await dispatchCommand(request.action);
 			}
 		} catch (error: unknown) {
 			let errorMessage = "Error: There was an error";
