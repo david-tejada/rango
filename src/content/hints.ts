@@ -142,7 +142,6 @@ async function updateHints() {
 }
 
 export async function triggerHintsUpdate(fullRefresh = false) {
-	console.trace();
 	if (fullRefresh) {
 		document.querySelector("#rango-hints-container")?.remove();
 		await initStack();

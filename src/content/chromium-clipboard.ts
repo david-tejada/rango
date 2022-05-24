@@ -19,7 +19,6 @@ function getCopyPasteArea(): HTMLTextAreaElement {
 }
 
 export function getChromiumClipboard(): string {
-	console.log("Getting chromium clipboard");
 	let result = "";
 	const copyPasteArea = getCopyPasteArea();
 	copyPasteArea.disabled = false;

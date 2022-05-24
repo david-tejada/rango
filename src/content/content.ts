@@ -26,7 +26,6 @@ initOptions()
 	});
 
 browser.runtime.onMessage.addListener(async (command: Command) => {
-	console.log("command:", command);
 	let action: Command = { type: "ok" };
 	switch (command.type) {
 		case "getChromiumClipboard": {

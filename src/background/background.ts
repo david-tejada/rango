@@ -29,7 +29,6 @@ browser.commands.onCommand.addListener(async (internalCommand: string) => {
 			// I will not differentiate for simplicity
 			const commandsThatRequireResponse = ["copyLink"];
 			if (commandsThatRequireResponse.includes(request.action.type)) {
-				console.log("Response required");
 				const changedClipboard = await getClipboardIfChanged();
 				if (changedClipboard) {
 					response = {

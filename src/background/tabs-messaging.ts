@@ -46,7 +46,6 @@ export async function sendCommandToActiveTab(
 	// frame in case that the command doesn't have a hint
 	if (activeTab?.id) {
 		const frameId = await getHintFrameId(activeTab.id, hintText);
-		console.log(`Sending message to frame ${frameId}`);
 		return (await browser.tabs.sendMessage(activeTab.id, command, {
 			frameId,
 		})) as Message;
