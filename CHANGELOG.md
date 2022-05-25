@@ -2,6 +2,12 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.1.9](https://github.com/david-tejada/rango/releases/tag/v0.1.9) - 2022-05-25
+
+### Changed
+
+- Go back to sending response with every request but change the order in Chromium to avoid the issue where the clipboard textarea steals focus
+
 ## [0.1.8](https://github.com/david-tejada/rango/releases/tag/v0.1.8) - 2022-05-24
 
 ### Added
