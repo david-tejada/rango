@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="300" height="300" src="./src/assets/icon.svg">
+  <img width="300" height="300" src="images/icon.svg">
 </p>
 
 # Rango
@@ -7,48 +7,16 @@
 Rango is a cross browser extension that helps you interact with web pages using your voice and [talon](https://talonvoice.com/). It does this by drawing hints with letters next to elements that you can use to click, hover, copy or show link adresses and many more features to come.
 
 <p align="center">
-  <img src="src/assets/screenshot.png">
+  <img src="images/screenshot.png">
 </p>
 
 ## Installation
 
 In order to use the extension you need two pieces: the extension and the talon files.
 
+You can install the extension from the respective store: [Firefox](https://addons.mozilla.org/en-US/firefox/addon/rango/), [Chrome](https://chrome.google.com/webstore/detail/rango/lnemjdnjjofijemhdogofbpcedhgcpmb)
+
 You can download the talon files from [here](https://github.com/david-tejada/rango-talon). Clone or download them to your talon user folder.
-
-### Firefox
-
-You can install the extension through Firefox Add-ons [here](https://addons.mozilla.org/en-US/firefox/addon/rango/)
-
-### Chrome and Chromium Browsers
-
-Due to [this issue](https://github.com/david-tejada/rango/issues/5) I am not able to submit the extension to the Chrome Web Store. So it has to be loaded manually. There are two ways to do this:
-
-#### Download the Zip File
-
-- Download the latest release from [here](https://github.com/david-tejada/rango/releases)
-- Extract the contents
-- Go to [chrome://extensions/](chrome://extensions/), enable `developer mode`, click `load unpacked`, go into the folder that you just extracted and click open.
-
-The downside of this method is that you have to do that every time you want to update the extension.
-
-#### Build From Source
-
-- Clone this repository: `git clone https://github.com/david-tejada/rango`
-- cd into it: `cd rango`
-- Install with npm: `npm install`
-- Build: `npm run build`
-- Go to [chrome://extensions/](chrome://extensions/), enable `developer mode`, click `load unpacked`, go into the `dist` folder that you just build and click open.
-
-Once you have done this, in order to update, you just have to:
-
-- Update your repo: `git pull`
-- Install with npm: `npm install`
-- Build: `npm run build`
-
-You can automate the update process with a shell script.
-
-It's possible that you see some errors after adding the extension manually, just ignore them. The extension will work fine.
 
 ## Usage
 
