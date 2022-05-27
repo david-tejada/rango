@@ -108,7 +108,7 @@ browser.runtime.onMessage.addListener(async (command: Command) => {
 	return { type: "response", action };
 });
 
-let hintsUpdateTimeout: NodeJS.Timeout;
+let hintsUpdateTimeout: ReturnType<typeof setTimeout>;
 
 document.addEventListener("scroll", async () => {
 	clearTimeout(hintsUpdateTimeout);
