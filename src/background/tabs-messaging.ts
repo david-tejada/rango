@@ -57,7 +57,7 @@ export async function sendCommandToActiveTab(
 	};
 }
 
-export async function sendCommandToAllTabs(command: Command): Promise<any> {
+export async function sendCommandToAllTabs(command: Command) {
 	const results = [];
 	const allTabs = await browser.tabs.query({});
 	for (const tab of allTabs) {
@@ -67,7 +67,7 @@ export async function sendCommandToAllTabs(command: Command): Promise<any> {
 	// We use allSettled here because we know some promises will fail, as the extension
 	// is not able to run on all tabs, for example, in pages like "about:debugging".
 	// So we just care that the promise either resolves or rejects
-	return Promise.allSettled(results);
+	await Promise.allSettled(results);
 }
 
 const mutex = new Mutex();
