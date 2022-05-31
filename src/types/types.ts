@@ -1,3 +1,14 @@
+export interface RequestFromTalon {
+	version?: number;
+	type: "request";
+	action: Command;
+}
+
+export interface ResponseToTalon {
+	type: "response";
+	action: Command;
+}
+
 export interface Command {
 	type: string;
 	target?: string;

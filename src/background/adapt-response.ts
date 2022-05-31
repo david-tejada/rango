@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { Message } from "../types/types";
+import { Message, ResponseToTalon } from "../types/types";
 
 function notifyToUpdate() {
 	// Notify the user to update their extension
@@ -19,7 +19,7 @@ function notifyToUpdate() {
 export function adaptResponse(
 	message: Message,
 	requestVersion: number
-): Message {
+): ResponseToTalon {
 	const currentVersion = 1;
 	if (requestVersion > currentVersion) {
 		notifyToUpdate();
@@ -39,7 +39,6 @@ export function adaptResponse(
 	}
 
 	return {
-		version: requestVersion,
 		type: "response",
 		action: {
 			type: actionType,

@@ -1,4 +1,4 @@
-import { Message } from "../types/types";
+import { Message, RequestFromTalon, ResponseToTalon } from "../types/types";
 import { sendCommandToActiveTab } from "./tabs-messaging";
 
 let lastRequestText: string | undefined;
@@ -11,26 +11,30 @@ async function getTextFromClipboard(): Promise<string | undefined> {
 	return getChromiumClipboard();
 }
 
-export async function getMessageFromClipboard(): Promise<Message> {
+export async function getMessageFromClipboard(): Promise<RequestFromTalon> {
 	const clipText = await getTextFromClipboard();
 	lastRequestText = clipText;
-	const request = JSON.parse(clipText!) as Message;
-	if (request.type !== "request") {
-		throw new Error("Error: No request message present in the clipboard");
+	if (clipText) {
+		const request = JSON.parse(clipText) as RequestFromTalon;
+		if (request.type !== "request") {
+			throw new Error("Error: No request message present in the clipboard");
+		}
+
+		return request;
 	}
 
-	return request;
+	throw new Error("Error reading from the clipboard");
 }
 
-export async function writeResponseToClipboard(responseObject: Message) {
+export async function writeResponseToClipboard(response: ResponseToTalon) {
 	// We send the response so that talon can make sure the request was received
 	// and to tell talon to execute any actions
-	const response = JSON.stringify(responseObject);
+	const jsonResponse = JSON.stringify(response);
 	if (navigator.clipboard) {
-		return navigator.clipboard.writeText(response);
+		return navigator.clipboard.writeText(jsonResponse);
 	}
 
-	return copyToChromiumClipboard(response);
+	return copyToChromiumClipboard(jsonResponse);
 }
 
 async function getChromiumClipboard(): Promise<string> {
