@@ -1,4 +1,4 @@
-import { Rgba } from "../types/types";
+import { Rgba } from "../typing/types";
 
 export function getLuminance(color: Rgba): number {
 	const [r, g, b] = [color.r, color.g, color.b].map(function (v) {

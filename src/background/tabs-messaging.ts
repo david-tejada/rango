@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { Mutex } from "async-mutex";
-import { Message, Command, StorableHintsStack } from "../types/types";
+import { Message, Command, StorableHintsStack } from "../typing/types";
 import {
 	initStack,
 	claimHints,

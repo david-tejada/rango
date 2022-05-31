@@ -1,4 +1,4 @@
-import { HintsStack, StorableHintsStack } from "../types/types";
+import { HintsStack, StorableHintsStack } from "../typing/types";
 import { getStored, saveToStorage } from "../lib/storage";
 import { allHints } from "./all-hints";
 

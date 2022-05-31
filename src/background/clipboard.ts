@@ -1,4 +1,4 @@
-import { Message, RequestFromTalon, ResponseToTalon } from "../types/types";
+import { Message, RequestFromTalon, ResponseToTalon } from "../typing/types";
 import { sendCommandToActiveTab } from "./tabs-messaging";
 
 let lastRequestText: string | undefined;

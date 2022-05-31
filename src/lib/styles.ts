@@ -1,4 +1,4 @@
-import { Intersector } from "../types/types";
+import { Intersector } from "../typing/types";
 import { getOption } from "./options";
 import { getContrast, getLuminance, parseColor, getTintOrShade } from "./utils";
 import {

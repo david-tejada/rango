@@ -1,4 +1,4 @@
-import { Command } from "../types/types";
+import { Command } from "../typing/types";
 import { sendCommandToAllTabs } from "./tabs-messaging";
 
 export async function executeBackgroundCommand(command: Command) {

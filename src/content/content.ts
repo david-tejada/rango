@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { Command } from "../types/types";
+import { Command } from "../typing/types";
 import { initOptions } from "../lib/options";
 import {
 	getChromiumClipboard,

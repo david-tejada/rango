@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { Message } from "../types/types";
+import { Message } from "../typing/types";
 import {
 	getMessageFromClipboard,
 	writeResponseToClipboard,

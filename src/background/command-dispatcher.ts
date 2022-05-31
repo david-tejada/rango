@@ -1,4 +1,4 @@
-import { Message, Command } from "../types/types";
+import { Message, Command } from "../typing/types";
 import { sendCommandToActiveTab } from "./tabs-messaging";
 import { executeBackgroundCommand } from "./background-commands";
 

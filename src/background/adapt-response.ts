@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { Message, ResponseToTalon } from "../types/types";
+import { Message, ResponseToTalon } from "../typing/types";
 
 function notifyToUpdate() {
 	// Notify the user to update their extension

@@ -1,4 +1,4 @@
-import { Intersector } from "../types/types";
+import { Intersector } from "../typing/types";
 import { getClickableType, isVisible } from "../lib/dom-utils";
 
 export const intersectors: Intersector[] = [];
