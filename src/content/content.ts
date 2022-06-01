@@ -42,13 +42,8 @@ browser.runtime.onMessage.addListener(
 
 			// RANGO ACTIONS
 			case "clickElement": {
-				try {
-					assertDefined(request.target);
-					await clickElement(request.target, false);
-				} catch (error: unknown) {
-					console.error(error);
-				}
-
+				assertDefined(request.target);
+				await clickElement(request.target, false);
 				break;
 			}
 
