@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { Message } from "../typing/types";
+import { ResponseToTalon } from "../typing/types";
 import {
 	getMessageFromClipboard,
 	writeResponseToClipboard,
@@ -42,7 +42,7 @@ browser.commands.onCommand.addListener(async (internalCommand: string) => {
 				const adaptedResponse = adaptResponse(response, request.version ?? 0);
 				await writeResponseToClipboard(adaptedResponse);
 			} else {
-				const response: Message = {
+				const response: ResponseToTalon = {
 					type: "response",
 					action: {
 						type: "ok",

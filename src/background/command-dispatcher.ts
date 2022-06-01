@@ -1,10 +1,12 @@
-import { Message, Command } from "../typing/types";
-import { sendCommandToActiveTab } from "./tabs-messaging";
+import { ResponseToTalon, RangoAction } from "../typing/types";
+import { sendRequestToActiveTab } from "./tabs-messaging";
 import { executeBackgroundCommand } from "./background-commands";
 
 const backgroundCommands = new Set(["toggleHints"]);
 
-export async function dispatchCommand(command: Command): Promise<Message> {
+export async function dispatchCommand(
+	command: RangoAction
+): Promise<ResponseToTalon> {
 	if (backgroundCommands.has(command.type)) {
 		await executeBackgroundCommand(command);
 		return {
@@ -15,5 +17,23 @@ export async function dispatchCommand(command: Command): Promise<Message> {
 		};
 	}
 
-	return sendCommandToActiveTab(command);
+	const commandResult = await sendRequestToActiveTab(command);
+
+	if (
+		commandResult &&
+		"talonAction" in commandResult &&
+		commandResult.talonAction
+	) {
+		return {
+			type: "response",
+			action: commandResult.talonAction,
+		};
+	}
+
+	return {
+		type: "response",
+		action: {
+			type: "ok",
+		},
+	};
 }

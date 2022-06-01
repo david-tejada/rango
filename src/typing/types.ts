@@ -1,27 +1,75 @@
+type RangoActionType =
+	| "clickElement"
+	| "openInNewTab"
+	| "copyLink"
+	| "showLink"
+	| "hoverElement"
+	| "fixedHoverElement"
+	| "unhoverAll"
+	| "toggleHints"
+	| "increaseHintSize"
+	| "decreaseHintSize";
+
+export interface RangoAction {
+	type: RangoActionType;
+	target?: string;
+}
+
 export interface RequestFromTalon {
 	version?: number;
 	type: "request";
-	action: Command;
+	action: RangoAction;
+}
+
+export interface TalonAction {
+	type: "ok" | "copyToClipboard";
+	textToCopy?: string;
 }
 
 export interface ResponseToTalon {
 	type: "response";
-	action: Command;
+	action: TalonAction;
 }
 
-export interface Command {
-	type: string;
+export interface TalonActionVersion0 {
+	type: "ok" | "copyLink";
 	target?: string;
-	textToCopy?: string;
-	textCopied?: string;
+}
+
+export interface ResponseToTalonVersion0 {
+	type: "response";
+	action: TalonActionVersion0;
+}
+
+export type ContentRequest = RangoAction | InternalContentRequest;
+
+type InternalContentRequestType =
+	| "getChromiumClipboard"
+	| "copyToChromiumClipboard";
+
+export interface InternalContentRequest {
+	type: InternalContentRequestType;
+	text?: string;
+	target?: string;
+}
+
+type BackgroundRequestType =
+	| "openInNewTab"
+	| "initStack"
+	| "claimHints"
+	| "releaseHints"
+	| "releaseOrphanHints";
+
+export interface BackgroundRequest {
+	type: BackgroundRequestType;
 	amount?: number;
 	hints?: string[];
+	url?: string;
 }
 
-export interface Message {
-	version?: number;
-	type: "request" | "response";
-	action: Command;
+export interface ScriptResponse {
+	text?: string;
+	talonAction?: TalonAction;
 }
 
 export interface Intersector {

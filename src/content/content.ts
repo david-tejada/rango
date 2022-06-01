@@ -1,5 +1,6 @@
 import browser from "webextension-polyfill";
-import { Command } from "../typing/types";
+import { ContentRequest, ScriptResponse } from "../typing/types";
+import { assertDefined } from "../typing/typing-utils";
 import { initOptions } from "../lib/options";
 import {
 	getChromiumClipboard,
@@ -25,88 +26,88 @@ initOptions()
 		console.error(error);
 	});
 
-browser.runtime.onMessage.addListener(async (command: Command) => {
-	let action: Command = { type: "ok" };
-	switch (command.type) {
-		case "getChromiumClipboard": {
-			const text = getChromiumClipboard();
-			action = {
-				type: "clipboardText",
-				textCopied: text,
-			};
-			break;
-		}
+browser.runtime.onMessage.addListener(
+	async (request: ContentRequest): Promise<ScriptResponse | void> => {
+		switch (request.type) {
+			// SCRIPT REQUESTS
+			case "getChromiumClipboard":
+				return { text: getChromiumClipboard() };
 
-		case "copyToChromiumClipboard": {
-			const text = command.textToCopy;
-			copyToChromiumClipboard(text!);
-			break;
-		}
-
-		case "clickElement": {
-			try {
-				await clickElement(command.target!, false);
-			} catch (error: unknown) {
-				console.error(error);
+			case "copyToChromiumClipboard": {
+				const text = request.text;
+				assertDefined(text);
+				copyToChromiumClipboard(text);
+				break;
 			}
 
-			break;
-		}
+			// RANGO ACTIONS
+			case "clickElement": {
+				try {
+					assertDefined(request.target);
+					await clickElement(request.target, false);
+				} catch (error: unknown) {
+					console.error(error);
+				}
 
-		case "copyLink": {
-			const url = copyLink(command.target!);
-			if (url) {
-				action = {
-					type: "copyToClipboard",
-					textToCopy: url,
-				};
+				break;
 			}
 
-			break;
+			case "copyLink": {
+				assertDefined(request.target);
+				const url = copyLink(request.target);
+				if (url) {
+					return {
+						talonAction: {
+							type: "copyToClipboard",
+							textToCopy: url,
+						},
+					};
+				}
+
+				break;
+			}
+
+			case "showLink":
+				assertDefined(request.target);
+				showLink(request.target);
+				break;
+
+			case "openInNewTab":
+				assertDefined(request.target);
+				await clickElement(request.target, true);
+				break;
+
+			case "hoverElement":
+				assertDefined(request.target);
+				await hoverElement(request.target, false);
+				break;
+
+			case "fixedHoverElement":
+				assertDefined(request.target);
+				await hoverElement(request.target, true);
+				break;
+
+			case "unhoverAll":
+				unhoverAll();
+				break;
+
+			case "toggleHints":
+				await toggleHints();
+				break;
+
+			case "increaseHintSize":
+				await increaseHintSize();
+				break;
+
+			case "decreaseHintSize":
+				await decreaseHintSize();
+				break;
+
+			default:
+				break;
 		}
-
-		case "showLink":
-			showLink(command.target!);
-			break;
-
-		case "openInNewTab":
-			await clickElement(command.target!, true);
-			break;
-
-		case "hoverElement":
-			await hoverElement(command.target!, false);
-			break;
-
-		case "fixedHoverElement":
-			await hoverElement(command.target!, true);
-			break;
-
-		case "unhoverAll":
-			unhoverAll();
-			break;
-
-		case "toggleHints":
-			await toggleHints();
-			break;
-
-		case "refreshHints":
-			await triggerHintsUpdate(true);
-			break;
-
-		case "increaseHintSize":
-			await increaseHintSize();
-			break;
-
-		case "decreaseHintSize":
-			await decreaseHintSize();
-			break;
-
-		default:
-			break;
 	}
-
-	return { type: "response", action };
-});
+);
 
 let hintsUpdateTimeout: ReturnType<typeof setTimeout>;
 

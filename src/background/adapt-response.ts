@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { Message, ResponseToTalon } from "../typing/types";
+import { ResponseToTalon, ResponseToTalonVersion0 } from "../typing/types";
 
 function notifyToUpdate() {
 	// Notify the user to update their extension
@@ -17,33 +17,27 @@ function notifyToUpdate() {
 }
 
 export function adaptResponse(
-	message: Message,
+	originalResponse: ResponseToTalon,
 	requestVersion: number
-): ResponseToTalon {
+): ResponseToTalon | ResponseToTalonVersion0 {
 	const currentVersion = 1;
 	if (requestVersion > currentVersion) {
 		notifyToUpdate();
 	}
 
-	let {
-		action: {
-			type: actionType,
-			target: actionTarget,
-			textToCopy: actionTextToCopy,
-		},
-	} = message;
-
-	if (requestVersion === 0 && message.action.type === "copyToClipboard") {
-		actionType = "copyLink";
-		actionTarget = actionTextToCopy;
+	if (
+		requestVersion === 0 &&
+		originalResponse.action.type === "copyToClipboard" &&
+		originalResponse.action.textToCopy
+	) {
+		return {
+			type: "response",
+			action: {
+				type: "copyLink",
+				target: originalResponse.action.textToCopy,
+			},
+		};
 	}
 
-	return {
-		type: "response",
-		action: {
-			type: actionType,
-			target: actionTarget,
-			textToCopy: actionTextToCopy,
-		},
-	};
+	return originalResponse;
 }

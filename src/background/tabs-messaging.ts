@@ -1,6 +1,10 @@
 import browser from "webextension-polyfill";
 import { Mutex } from "async-mutex";
-import { Message, Command, StorableHintsStack } from "../typing/types";
+import {
+	ContentRequest,
+	ScriptResponse,
+	StorableHintsStack,
+} from "../typing/types";
 import {
 	initStack,
 	claimHints,
@@ -37,31 +41,28 @@ async function getHintFrameId(
 	return 0;
 }
 
-export async function sendCommandToActiveTab(
-	command: Command
-): Promise<Message> {
+export async function sendRequestToActiveTab(
+	request: ContentRequest
+): Promise<ScriptResponse | void> {
 	const activeTab = await getActiveTab();
-	const hintText = command.target;
-	// We only want to send the command to the frame with the target hint or to the main
-	// frame in case that the command doesn't have a hint
+	const hintText = request.target;
+	// We only want to send the request to the frame with the target hint or to the main
+	// frame in case that the request doesn't have a hint
 	if (activeTab?.id) {
 		const frameId = await getHintFrameId(activeTab.id, hintText);
-		return (await browser.tabs.sendMessage(activeTab.id, command, {
+		return browser.tabs.sendMessage(activeTab.id, request, {
 			frameId,
-		})) as Message;
+		}) as Promise<ScriptResponse | void>;
 	}
 
-	return {
-		type: "response",
-		action: { type: "commandFailed" },
-	};
+	throw new Error("Failed sending request to active tab");
 }
 
-export async function sendCommandToAllTabs(command: Command) {
+export async function sendRequestToAllTabs(request: ContentRequest) {
 	const results = [];
 	const allTabs = await browser.tabs.query({});
 	for (const tab of allTabs) {
-		results.push(browser.tabs.sendMessage(tab.id!, command));
+		results.push(browser.tabs.sendMessage(tab.id!, request));
 	}
 
 	// We use allSettled here because we know some promises will fail, as the extension

@@ -1,5 +1,9 @@
-import { Message, RequestFromTalon, ResponseToTalon } from "../typing/types";
-import { sendCommandToActiveTab } from "./tabs-messaging";
+import {
+	RequestFromTalon,
+	ResponseToTalon,
+	ResponseToTalonVersion0,
+} from "../typing/types";
+import { sendRequestToActiveTab } from "./tabs-messaging";
 
 let lastRequestText: string | undefined;
 
@@ -26,7 +30,9 @@ export async function getMessageFromClipboard(): Promise<RequestFromTalon> {
 	throw new Error("Error reading from the clipboard");
 }
 
-export async function writeResponseToClipboard(response: ResponseToTalon) {
+export async function writeResponseToClipboard(
+	response: ResponseToTalon | ResponseToTalonVersion0
+) {
 	// We send the response so that talon can make sure the request was received
 	// and to tell talon to execute any actions
 	const jsonResponse = JSON.stringify(response);
@@ -38,16 +44,20 @@ export async function writeResponseToClipboard(response: ResponseToTalon) {
 }
 
 async function getChromiumClipboard(): Promise<string> {
-	const response = await sendCommandToActiveTab({
+	const response = await sendRequestToActiveTab({
 		type: "getChromiumClipboard",
 	});
-	return response.action.textCopied!;
+	if (response?.text) {
+		return response.text;
+	}
+
+	throw new Error("Error getting Chromium clipboard");
 }
 
-async function copyToChromiumClipboard(text: string): Promise<Message> {
-	return sendCommandToActiveTab({
+async function copyToChromiumClipboard(text: string) {
+	return sendRequestToActiveTab({
 		type: "copyToChromiumClipboard",
-		textToCopy: text,
+		text,
 	});
 }
 
