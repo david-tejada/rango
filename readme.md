@@ -46,8 +46,18 @@ With explicit clicking you have to precede every hint with the word `click`. Thi
 - `copy link <hint>`: It copies the url address to the clipboard.
 - `blank <hint>`: It opens the link in a new tab.
 - `hints toggle`: It shows and hides the hints.
-- `hint bigger`: It increases the size of the hints
-- `hint smaller`: It decreases the size of the hints
+- `hint bigger`: It increases the size of the hints.
+- `hint smaller`: It decreases the size of the hints.
+
+### Turning the Hints On and Off
+
+There are three ways to toggle the hints on and off:
+
+- With the Talon command `hints toggle`.
+- Using the keyboard shortcut `ctrl-shift-space`.
+- Clicking on the Rango icon in the toolbar.
+
+Bear in mind that even if the hints are off, if you are using direct clicking, Talon will still listen for one or two letters combinations. This happens because at the moment communication has to be initiated by Talon so we can't keep state. So Talon can't know if Rango hints are enabled. To avoid this pitfall you can switch to explicit clicking.
 
 ### Changing Hints Font Type
 
