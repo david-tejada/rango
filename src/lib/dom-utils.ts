@@ -1,5 +1,5 @@
+import { getOption } from "../content/options";
 import { isRgb, rgbaToRgb } from "./utils";
-import { getOption } from "./options";
 
 // This function is here mostly for debugging purposes
 export function getClickableType(element: Element): string | undefined {

@@ -1,8 +1,8 @@
 import browser from "webextension-polyfill";
 import { Intersector } from "../typing/types";
 import { elementIsObscured } from "../lib/dom-utils";
-import { applyInitialStyles } from "../lib/styles";
-import { getOption } from "../lib/options";
+import { applyInitialStyles } from "./styles";
+import { getOption } from "./options";
 import {
 	initStack,
 	claimHints,

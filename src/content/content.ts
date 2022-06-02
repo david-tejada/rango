@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { ContentRequest, ScriptResponse } from "../typing/types";
-import { initOptions } from "../lib/options";
+import { initOptions } from "./options";
 import {
 	getChromiumClipboard,
 	copyToChromiumClipboard,

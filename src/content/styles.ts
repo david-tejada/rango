@@ -1,12 +1,17 @@
 import { Intersector } from "../typing/types";
-import { getOption } from "./options";
-import { getContrast, getLuminance, parseColor, getTintOrShade } from "./utils";
+import {
+	getContrast,
+	getLuminance,
+	parseColor,
+	getTintOrShade,
+} from "../lib/utils";
 import {
 	calculateHintPosition,
 	getInheritedBackgroundColor,
 	getDefaultBackgroundColor,
 	getFirstTextNodeDescendant,
-} from "./dom-utils";
+} from "../lib/dom-utils";
+import { getOption } from "./options";
 
 const defaultBackgroundColor = getDefaultBackgroundColor();
 

@@ -1,4 +1,4 @@
-import { getOption, setOption } from "../lib/options";
+import { getOption, setOption } from "./options";
 import { triggerHintsUpdate } from "./hints";
 
 export async function increaseHintSize() {

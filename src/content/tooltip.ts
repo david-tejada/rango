@@ -1,6 +1,6 @@
 import tippy from "tippy.js";
-import { applyEmphasisStyles, applyInitialStyles } from "../lib/styles";
 import { Intersector } from "../typing/types";
+import { applyEmphasisStyles, applyInitialStyles } from "./styles";
 
 export function showTooltip(
 	target: Intersector,

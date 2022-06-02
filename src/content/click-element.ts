@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
 import { parseDomain, ParseResultType, fromUrl } from "parse-domain";
 import { focusesOnclick } from "../lib/dom-utils";
-import { applyEmphasisStyles, applyInitialStyles } from "../lib/styles";
+import { applyEmphasisStyles, applyInitialStyles } from "./styles";
 import { intersectors } from "./intersectors";
 import { triggerHintsUpdate } from "./hints";
 
