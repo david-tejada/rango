@@ -8,6 +8,10 @@ function getIntersector(element: Element): Intersector | undefined {
 	return intersectors.find((Intersector) => Intersector.element === element);
 }
 
+export function getIntersectorWithHint(hint: string): Intersector | undefined {
+	return intersectors.find((Intersector) => Intersector.hintText === hint);
+}
+
 function removeIntersector(element: Element) {
 	const intersectorIndex = intersectors.findIndex(
 		(Intersector) => Intersector.element === element
