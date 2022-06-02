@@ -31,7 +31,7 @@ export interface ResponseToTalon {
 	action: TalonAction;
 }
 
-export interface TalonActionVersion0 {
+interface TalonActionVersion0 {
 	type: "ok" | "copyLink";
 	target?: string;
 }
