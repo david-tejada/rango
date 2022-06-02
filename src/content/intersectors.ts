@@ -1,5 +1,6 @@
 import { Intersector } from "../typing/types";
 import { getClickableType, isVisible } from "../lib/dom-utils";
+import { NoHintError } from "./classes";
 
 export const intersectors: Intersector[] = [];
 export const removedIntersectorsHints: Set<string> = new Set();
@@ -8,8 +9,15 @@ function getIntersector(element: Element): Intersector | undefined {
 	return intersectors.find((Intersector) => Intersector.element === element);
 }
 
-export function getIntersectorWithHint(hint: string): Intersector | undefined {
-	return intersectors.find((Intersector) => Intersector.hintText === hint);
+export function getIntersectorWithHint(hint: string): Intersector {
+	const intersector = intersectors.find(
+		(Intersector) => Intersector.hintText === hint
+	);
+	if (!intersector) {
+		throw new NoHintError("No intersector found with that hint");
+	}
+
+	return intersector;
 }
 
 function removeIntersector(element: Element) {

@@ -17,6 +17,7 @@ import { hoverElement, unhoverAll } from "./hover";
 import { triggerHintsUpdate } from "./hints";
 import observe from "./observers";
 import { initStack } from "./hints-requests";
+import { NoHintError } from "./classes";
 
 // Initialize options
 initOptions()
@@ -96,6 +97,14 @@ browser.runtime.onMessage.addListener(
 					break;
 			}
 		} catch (error: unknown) {
+			if (error instanceof NoHintError) {
+				return {
+					talonAction: {
+						type: "noHintFound",
+					},
+				};
+			}
+
 			console.error(error);
 		}
 

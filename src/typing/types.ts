@@ -22,7 +22,7 @@ export interface RequestFromTalon {
 }
 
 export interface TalonAction {
-	type: "ok" | "copyToClipboard";
+	type: "ok" | "copyToClipboard" | "noHintFound";
 	textToCopy?: string;
 }
 
