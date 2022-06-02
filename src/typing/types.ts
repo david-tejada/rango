@@ -53,19 +53,36 @@ export interface InternalContentRequest {
 	target?: string;
 }
 
-type BackgroundRequestType =
-	| "openInNewTab"
-	| "initStack"
-	| "claimHints"
-	| "releaseHints"
-	| "releaseOrphanHints";
-
-export interface BackgroundRequest {
-	type: BackgroundRequestType;
-	amount?: number;
-	hints?: string[];
-	url?: string;
+interface OpenInNewTabRequest {
+	type: "openInNewTab";
+	url: string;
 }
+
+interface InitStackRequest {
+	type: "initStack";
+}
+
+interface ClaimHintsRequest {
+	type: "claimHints";
+	amount: number;
+}
+
+interface ReleaseHintsRequest {
+	type: "releaseHints";
+	hints: string[];
+}
+
+interface ReleaseOrphanHintsRequest {
+	type: "releaseOrphanHints";
+	activeHints: string[];
+}
+
+export type BackgroundRequest =
+	| OpenInNewTabRequest
+	| InitStackRequest
+	| ClaimHintsRequest
+	| ReleaseHintsRequest
+	| ReleaseOrphanHintsRequest;
 
 export interface ScriptResponse {
 	text?: string;

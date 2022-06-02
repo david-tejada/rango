@@ -4,7 +4,9 @@ import {
 	ContentRequest,
 	ScriptResponse,
 	StorableHintsStack,
+	BackgroundRequest,
 } from "../typing/types";
+import { assertDefined } from "../typing/typing-utils";
 import {
 	initStack,
 	claimHints,
@@ -73,36 +75,39 @@ export async function sendRequestToAllTabs(request: ContentRequest) {
 
 const mutex = new Mutex();
 
-browser.runtime.onMessage.addListener(async (message, sender) => {
-	const tabId = sender.tab!.id!;
-	const frameId = sender.frameId ?? 0;
+browser.runtime.onMessage.addListener(
+	async (request: BackgroundRequest, sender) => {
+		const tabId = sender.tab?.id;
+		assertDefined(tabId);
+		const frameId = sender.frameId ?? 0;
 
-	switch (message.action.type) {
-		case "openInNewTab":
-			await browser.tabs.create({
-				url: message.action.target as string,
-			});
-			break;
+		switch (request.type) {
+			case "openInNewTab":
+				await browser.tabs.create({
+					url: request.url,
+				});
+				break;
 
-		case "initStack":
-			return mutex.runExclusive(async () => {
-				return initStack(tabId, frameId);
-			});
+			case "initStack":
+				return mutex.runExclusive(async () => {
+					return initStack(tabId, frameId);
+				});
 
-		case "claimHints":
-			return mutex.runExclusive(async () => {
-				return claimHints(message.action.amount, tabId, frameId);
-			});
+			case "claimHints":
+				return mutex.runExclusive(async () => {
+					return claimHints(request.amount, tabId, frameId);
+				});
 
-		case "releaseHints":
-			return releaseHints(message.action.hints, tabId);
+			case "releaseHints":
+				return releaseHints(request.hints, tabId);
 
-		case "releaseOrphanHints":
-			return releaseOrphanHints(message.action.hints, tabId, frameId);
+			case "releaseOrphanHints":
+				return releaseOrphanHints(request.activeHints, tabId, frameId);
 
-		default:
-			break;
+			default:
+				throw new Error("Bad request to background script");
+		}
+
+		return undefined;
 	}
-
-	return undefined;
-});
+);

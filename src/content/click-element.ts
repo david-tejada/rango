@@ -36,17 +36,10 @@ export async function clickElement(hintText: string, newTab: boolean) {
 						(target.element as HTMLLinkElement).href &&
 						(target.element as HTMLLinkElement).href !== location.href))
 			) {
-				browser.runtime
-					.sendMessage({
-						type: "request",
-						action: {
-							type: "openInNewTab",
-							target: (target.element as HTMLLinkElement).href,
-						},
-					})
-					.catch((error) => {
-						console.error(error);
-					});
+				await browser.runtime.sendMessage({
+					type: "openInNewTab",
+					url: (target.element as HTMLLinkElement).href,
+				});
 			} else {
 				console.log("Clicking");
 				(target.element as HTMLElement).click();
