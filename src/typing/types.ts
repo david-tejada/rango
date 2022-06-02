@@ -1,19 +1,19 @@
-type RangoActionType =
-	| "clickElement"
-	| "openInNewTab"
-	| "copyLink"
-	| "showLink"
-	| "hoverElement"
-	| "fixedHoverElement"
-	| "unhoverAll"
-	| "toggleHints"
-	| "increaseHintSize"
-	| "decreaseHintSize";
-
-export interface RangoAction {
-	type: RangoActionType;
-	target?: string;
+interface RangoSimpleAction {
+	type: "unhoverAll" | "toggleHints" | "increaseHintSize" | "decreaseHintSize";
 }
+
+interface RangoActionWithHint {
+	type:
+		| "clickElement"
+		| "openInNewTab"
+		| "copyLink"
+		| "showLink"
+		| "hoverElement"
+		| "fixedHoverElement";
+	target: string;
+}
+
+export type RangoAction = RangoSimpleAction | RangoActionWithHint;
 
 export interface RequestFromTalon {
 	version?: number;

@@ -42,13 +42,11 @@ browser.runtime.onMessage.addListener(
 
 			// RANGO ACTIONS
 			case "clickElement": {
-				assertDefined(request.target);
 				await clickElement(request.target, false);
 				break;
 			}
 
 			case "copyLink": {
-				assertDefined(request.target);
 				const url = copyLink(request.target);
 				if (url) {
 					return {
@@ -63,22 +61,18 @@ browser.runtime.onMessage.addListener(
 			}
 
 			case "showLink":
-				assertDefined(request.target);
 				showLink(request.target);
 				break;
 
 			case "openInNewTab":
-				assertDefined(request.target);
 				await clickElement(request.target, true);
 				break;
 
 			case "hoverElement":
-				assertDefined(request.target);
 				await hoverElement(request.target, false);
 				break;
 
 			case "fixedHoverElement":
-				assertDefined(request.target);
 				await hoverElement(request.target, true);
 				break;
 
