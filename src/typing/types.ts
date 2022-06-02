@@ -41,17 +41,19 @@ export interface ResponseToTalonVersion0 {
 	action: TalonActionVersion0;
 }
 
-export type ContentRequest = RangoAction | InternalContentRequest;
-
-type InternalContentRequestType =
-	| "getChromiumClipboard"
-	| "copyToChromiumClipboard";
-
-export interface InternalContentRequest {
-	type: InternalContentRequestType;
-	text?: string;
-	target?: string;
+interface GetChromiumClipboardRequest {
+	type: "getChromiumClipboard";
 }
+
+interface CopyToChromiumClipboardRequest {
+	type: "copyToChromiumClipboard";
+	text: string;
+}
+
+export type ContentRequest =
+	| RangoAction
+	| GetChromiumClipboardRequest
+	| CopyToChromiumClipboardRequest;
 
 interface OpenInNewTabRequest {
 	type: "openInNewTab";

@@ -1,6 +1,5 @@
 import browser from "webextension-polyfill";
 import { ContentRequest, ScriptResponse } from "../typing/types";
-import { assertDefined } from "../typing/typing-utils";
 import { initOptions } from "../lib/options";
 import {
 	getChromiumClipboard,
@@ -27,7 +26,7 @@ initOptions()
 	});
 
 browser.runtime.onMessage.addListener(
-	async (request: ContentRequest): Promise<ScriptResponse | void> => {
+	async (request: ContentRequest): Promise<ScriptResponse> => {
 		switch (request.type) {
 			// SCRIPT REQUESTS
 			case "getChromiumClipboard":
@@ -35,7 +34,6 @@ browser.runtime.onMessage.addListener(
 
 			case "copyToChromiumClipboard": {
 				const text = request.text;
-				assertDefined(text);
 				copyToChromiumClipboard(text);
 				break;
 			}
@@ -95,6 +93,8 @@ browser.runtime.onMessage.addListener(
 			default:
 				break;
 		}
+
+		return {};
 	}
 );
 

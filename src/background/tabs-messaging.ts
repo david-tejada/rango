@@ -45,16 +45,20 @@ async function getHintFrameId(
 
 export async function sendRequestToActiveTab(
 	request: ContentRequest
-): Promise<ScriptResponse | void> {
+): Promise<ScriptResponse> {
 	const activeTab = await getActiveTab();
-	const hintText = request.target;
+	let hintText;
+	if ("target" in request) {
+		hintText = request.target;
+	}
+
 	// We only want to send the request to the frame with the target hint or to the main
 	// frame in case that the request doesn't have a hint
 	if (activeTab?.id) {
 		const frameId = await getHintFrameId(activeTab.id, hintText);
 		return browser.tabs.sendMessage(activeTab.id, request, {
 			frameId,
-		}) as Promise<ScriptResponse | void>;
+		}) as Promise<ScriptResponse>;
 	}
 
 	throw new Error("Failed sending request to active tab");

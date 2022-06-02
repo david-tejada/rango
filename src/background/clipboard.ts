@@ -44,11 +44,11 @@ export async function writeResponseToClipboard(
 }
 
 async function getChromiumClipboard(): Promise<string> {
-	const response = await sendRequestToActiveTab({
+	const { text } = await sendRequestToActiveTab({
 		type: "getChromiumClipboard",
 	});
-	if (response?.text) {
-		return response.text;
+	if (text) {
+		return text;
 	}
 
 	throw new Error("Error getting Chromium clipboard");

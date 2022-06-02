@@ -17,16 +17,12 @@ export async function dispatchCommand(
 		};
 	}
 
-	const commandResult = await sendRequestToActiveTab(command);
+	const { talonAction } = await sendRequestToActiveTab(command);
 
-	if (
-		commandResult &&
-		"talonAction" in commandResult &&
-		commandResult.talonAction
-	) {
+	if (talonAction) {
 		return {
 			type: "response",
-			action: commandResult.talonAction,
+			action: talonAction,
 		};
 	}
 
