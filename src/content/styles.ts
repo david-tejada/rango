@@ -69,3 +69,12 @@ export function applyEmphasisStyles(
 	};
 	Object.assign((intersector.hintElement as HTMLElement).style, styles);
 }
+
+export function flashHint(intersector: Intersector) {
+	applyEmphasisStyles(intersector, true);
+	setTimeout(() => {
+		applyInitialStyles(intersector).catch((error) => {
+			console.error(error);
+		});
+	}, 300);
+}
