@@ -1,4 +1,4 @@
-import { intersectors } from "./intersectors";
+import { getIntersectorWithHint } from "./intersectors";
 import { triggerHintsUpdate } from "./hints";
 
 const hoveredElements: Set<Element> = new Set();
@@ -14,11 +14,9 @@ export async function hoverElement(hintText: string, fixed: boolean) {
 		unhoverElement(hoveredElement);
 	}
 
-	const target = intersectors.find(
-		(intersector) => intersector.hintText === hintText
-	);
-	if (target) {
-		const targetElement = target.element;
+	const intersector = getIntersectorWithHint(hintText);
+	if (intersector) {
+		const targetElement = intersector.element;
 		const event = new MouseEvent("mouseover", {
 			view: window,
 			bubbles: true,

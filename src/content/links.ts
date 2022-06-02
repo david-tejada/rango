@@ -1,10 +1,8 @@
-import { intersectors } from "./intersectors";
+import { getIntersectorWithHint } from "./intersectors";
 import { showTooltip } from "./tooltip";
 
 export function copyLink(hintText: string) {
-	const target = intersectors.find(
-		(intersector) => intersector.hintText === String(hintText)
-	);
+	const target = getIntersectorWithHint(hintText);
 	if (target && (target?.element as HTMLLinkElement).href) {
 		showTooltip(target, "Copied!", 1500);
 		return (target?.element as HTMLLinkElement).href;
@@ -14,9 +12,7 @@ export function copyLink(hintText: string) {
 }
 
 export function showLink(hintText: string) {
-	const target = intersectors.find(
-		(intersector) => intersector.hintText === String(hintText)
-	);
+	const target = getIntersectorWithHint(hintText);
 	if (target) {
 		const href = (target.element as HTMLLinkElement).href;
 		showTooltip(target, href, 5000);
