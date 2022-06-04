@@ -7,8 +7,6 @@
 	z-index: 2147483647;
 	position: absolute;
 	border-radius: 20%;
-	width: auto;
-	line-height: 1;
-	text-align: center;
+	line-height: 1.2;
 	font-family: monospace;
 }
