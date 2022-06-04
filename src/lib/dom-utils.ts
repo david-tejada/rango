@@ -1,4 +1,5 @@
 import Color from "color";
+import { Intersector } from "../typing/types";
 import { getOption } from "../content/options";
 import { isRgb, rgbaToRgb } from "./color-utils";
 
@@ -202,12 +203,12 @@ export function elementIsObscured(element: Element): boolean {
 }
 
 export function calculateHintPosition(
-	element: Element,
-	chars: number
+	intersector: Intersector
 ): [number, number] {
 	// If the element has text, we situate the hint next to the first character
-	const firstCharacterRect = getFirstCharacterRect(element);
-	const rect = firstCharacterRect ?? element.getBoundingClientRect();
+	const firstCharacterRect = getFirstCharacterRect(intersector.element);
+	const rect =
+		firstCharacterRect ?? intersector.element.getBoundingClientRect();
 
 	const scrollLeft =
 		window.pageXOffset ||
@@ -221,16 +222,25 @@ export function calculateHintPosition(
 
 	const paddingLeft = firstCharacterRect
 		? 0
-		: Number.parseFloat(window.getComputedStyle(element).paddingLeft);
+		: Number.parseFloat(
+				window.getComputedStyle(intersector.element).paddingLeft
+		  );
 	const paddingTop = firstCharacterRect
 		? 0
-		: Number.parseFloat(window.getComputedStyle(element).paddingTop);
+		: Number.parseFloat(
+				window.getComputedStyle(intersector.element).paddingTop
+		  );
 
 	const hintFontSize = getOption("hintFontSize") as number;
 
 	// This is not very scientific. Adjusted through trial and error
 	let x =
-		rect.left + scrollLeft + paddingLeft - hintFontSize + 2 - (chars - 1) * 5;
+		rect.left +
+		scrollLeft +
+		paddingLeft -
+		hintFontSize +
+		2 -
+		(intersector.hintText!.length - 1) * 5;
 	x = x > 0 ? x : 0;
 
 	let y = rect.top + scrollTop + paddingTop - hintFontSize;

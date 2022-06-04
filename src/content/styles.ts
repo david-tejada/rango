@@ -12,11 +12,8 @@ import { getOption } from "./options";
 // It's usually rgba(0, 0, 0, 0)
 const defaultBackgroundColor = getDefaultBackgroundColor();
 
-export async function applyInitialStyles(intersector: Intersector) {
-	const [x, y] = calculateHintPosition(
-		intersector.element,
-		intersector.hintText!.length
-	);
+export function applyInitialStyles(intersector: Intersector) {
+	const [x, y] = calculateHintPosition(intersector);
 	const backgroundColor = getInheritedBackgroundColor(
 		intersector.element,
 		defaultBackgroundColor || "rgba(0, 0, 0, 0)"

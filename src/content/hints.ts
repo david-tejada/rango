@@ -98,17 +98,13 @@ async function updateHints() {
 		// If there are no more available hints to markup the page, don't
 		// append the element.
 		if (intersector.hintText) {
-			applyInitialStyles(intersector).catch((error) => {
-				console.error(error);
-			});
+			applyInitialStyles(intersector);
 			hintsContainer.append(intersector.hintElement as Node);
 		}
 	}
 
 	for (const intersector of toRefresh) {
-		applyInitialStyles(intersector).catch((error) => {
-			console.error(error);
-		});
+		applyInitialStyles(intersector);
 	}
 
 	// Hints cleanup
