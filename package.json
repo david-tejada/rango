@@ -8,9 +8,8 @@
 		"lint-fix": "run-p 'lint:* -- --fix'",
 		"lint:css": "stylelint src/**/*.css",
 		"lint:js": "xo",
-		"test": "run-p lint:* build test:jest",
-		"test:jest": "jest",
-		"watch:jest": "jest --watch",
+		"test": "run-p lint:* build",
+		"jest": "jest --watch",
 		"watch": "parcel watch src/mv2/manifest.json --dist-dir dist-mv2 --no-cache --no-hmr",
 		"watch:mv3": "parcel watch src/mv3/manifest.json --dist-dir dist-mv3 --no-cache --no-hmr"
 	},
