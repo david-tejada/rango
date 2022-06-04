@@ -1,5 +1,6 @@
+import Color from "color";
 import { getOption } from "../content/options";
-import { isRgb, rgbaToRgb } from "./utils";
+import { isRgb, rgbaToRgb } from "./color-utils";
 
 // This function is here mostly for debugging purposes
 export function getClickableType(element: Element): string | undefined {
@@ -218,13 +219,21 @@ export function calculateHintPosition(
 		document.documentElement.scrollTop ||
 		document.body.scrollTop;
 
+	const paddingLeft = firstCharacterRect
+		? 0
+		: Number.parseFloat(window.getComputedStyle(element).paddingLeft);
+	const paddingTop = firstCharacterRect
+		? 0
+		: Number.parseFloat(window.getComputedStyle(element).paddingTop);
+
 	const hintFontSize = getOption("hintFontSize") as number;
 
 	// This is not very scientific. Adjusted through trial and error
-	let x = rect.left + scrollLeft - hintFontSize + 2 - (chars - 1) * 5;
+	let x =
+		rect.left + scrollLeft + paddingLeft - hintFontSize + 2 - (chars - 1) * 5;
 	x = x > 0 ? x : 0;
 
-	let y = rect.top + scrollTop - hintFontSize;
+	let y = rect.top + scrollTop + paddingTop - hintFontSize;
 	y = y > 0 ? y : 0;
 
 	return [x, y];
@@ -232,11 +241,15 @@ export function calculateHintPosition(
 
 export function getInheritedBackgroundColor(
 	element: Element,
-	defaultBackgroundColor: string
-): string {
-	const backgroundColor = window.getComputedStyle(element).backgroundColor;
+	defaultBackgroundColor: Color
+): Color {
+	const backgroundColor = new Color(
+		window.getComputedStyle(element).backgroundColor || defaultBackgroundColor
+	);
 
-	if (backgroundColor !== defaultBackgroundColor) {
+	if (
+		backgroundColor.rgb().string() !== defaultBackgroundColor.rgb().string()
+	) {
 		if (isRgb(backgroundColor)) {
 			return backgroundColor;
 		}
@@ -246,7 +259,7 @@ export function getInheritedBackgroundColor(
 		}
 	}
 
-	if (!element.parentElement) return "rgb(255, 255, 255)";
+	if (!element.parentElement) return new Color("rgb(255, 255, 255)");
 
 	return getInheritedBackgroundColor(
 		element.parentElement,
@@ -254,21 +267,23 @@ export function getInheritedBackgroundColor(
 	);
 }
 
-export function getDefaultBackgroundColor(): string {
+export function getDefaultBackgroundColor(): Color {
 	// Have to add to the document in order to use getComputedStyle
 	const div = document.createElement("div");
 	document.head.append(div);
 	const backgroundColor = window.getComputedStyle(div).backgroundColor;
 	div.remove();
-	return backgroundColor;
+	return new Color(backgroundColor);
 }
 
-function getAscendantRgb(parent: HTMLElement): string {
+function getAscendantRgb(parent: HTMLElement): Color {
 	if (parent === null) {
-		return "rgb(255, 255, 255)";
+		return new Color("rgb(255, 255, 255)");
 	}
 
-	const parentBackgroundColor = window.getComputedStyle(parent).backgroundColor;
+	const parentBackgroundColor = new Color(
+		window.getComputedStyle(parent).backgroundColor
+	);
 	if (isRgb(parentBackgroundColor)) {
 		return parentBackgroundColor;
 	}
@@ -277,5 +292,5 @@ function getAscendantRgb(parent: HTMLElement): string {
 		return getAscendantRgb(parent.parentElement);
 	}
 
-	return "rgb(255, 255, 255)";
+	return new Color("rgb(255, 255, 255)");
 }

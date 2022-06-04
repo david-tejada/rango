@@ -99,13 +99,6 @@ export interface Intersector {
 	clickableType: string | undefined;
 }
 
-export interface Rgba {
-	r: number;
-	g: number;
-	b: number;
-	a: number;
-}
-
 export type HintsStack = {
 	free: string[];
 	assigned: Map<string, number>;

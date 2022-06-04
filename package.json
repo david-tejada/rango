@@ -55,6 +55,7 @@
 	},
 	"dependencies": {
 		"async-mutex": "^0.3.2",
+		"color": "^4.2.3",
 		"parse-domain": "^7.0.0",
 		"tippy.js": "^6.3.7",
 		"webextension-polyfill": "^0.8.0"
@@ -63,6 +64,7 @@
 		"@parcel/config-webextension": "^2.5.0",
 		"@parcel/transformer-image": "^2.5.0",
 		"@sindresorhus/tsconfig": "^2.0.0",
+		"@types/color": "^3.0.3",
 		"@types/jest": "^27.4.1",
 		"@types/webextension-polyfill": "^0.8.2",
 		"@typescript-eslint/eslint-plugin": "^5.16.0",
