@@ -144,7 +144,7 @@ function getTextNodeRect(textNode: Text): DOMRect {
 	return range.getBoundingClientRect();
 }
 
-export function getFirstTextNodeDescendant(element: Node): Node | undefined {
+export function getFirstTextNodeDescendant(element: Node): Text | undefined {
 	// Check to see if the element has any text content that is not white space
 	if (!element.textContent || !/\S/.test(element.textContent)) {
 		return undefined;
