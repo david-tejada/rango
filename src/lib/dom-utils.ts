@@ -1,6 +1,10 @@
 import Color from "color";
 import { Intersector } from "../typing/types";
-import { getOption } from "../content/options";
+import {
+	isTextNode,
+	isElementNode,
+	assertDefined,
+} from "../typing/typing-utils";
 import { isRgb, rgbaToRgb } from "./color-utils";
 
 // This function is here mostly for debugging purposes
@@ -121,43 +125,54 @@ export function hasTextNodesChildren(element: Element) {
 	);
 }
 
-function rangeGivesCoordinates(element: Element): boolean {
-	if (
-		element.parentElement?.tagName === "INPUT" ||
-		element.parentElement?.tagName === "TEXTAREA" ||
-		element.parentElement?.tagName === "title"
-	) {
+// Inside some elements you can't get the coordinates of a text node with Range and
+// instead you get the characters offset
+function rangeGivesCoordinates(textNode: Text): boolean {
+	const wrongRangeElements = new Set(["INPUT", "TEXTAREA", "title"]);
+	assertDefined(textNode.parentElement);
+	if (wrongRangeElements.has(textNode.parentElement.tagName)) {
 		return false;
 	}
 
 	return true;
 }
 
+function getTextNodeRect(textNode: Text): DOMRect {
+	const range = document.createRange();
+	range.setStart(textNode, 0);
+	range.setEnd(textNode, textNode.length);
+	return range.getBoundingClientRect();
+}
+
 export function getFirstTextNodeDescendant(element: Node): Node | undefined {
 	// Check to see if the element has any text content that is not white space
-	if (!/\S/.test(element.textContent!)) {
+	if (!element.textContent || !/\S/.test(element.textContent)) {
 		return undefined;
 	}
 
-	if (element) {
 		for (const childNode of element.childNodes) {
+		assertDefined(childNode.textContent);
 			if (
-				childNode.nodeType === 3 &&
-				rangeGivesCoordinates(childNode as HTMLElement) &&
-				/\S/.test(childNode.textContent!) &&
-				childNode.parentElement!.getBoundingClientRect().left > 0 &&
-				childNode.parentElement!.getBoundingClientRect().top > 0
+			isTextNode(childNode) &&
+			rangeGivesCoordinates(childNode) &&
+			/\S/.test(childNode.textContent)
 			) {
+			const rect = getTextNodeRect(childNode);
+			if (rect.y + rect.height > 0 && rect.x + rect.width > 0) {
 				return childNode;
 			}
+		}
 
-			if (childNode.nodeType === 1) {
-				if (getClickableType(childNode as HTMLElement)) {
+		if (isElementNode(childNode) && /\S/.test(childNode.textContent)) {
+			// Sometimes we get a clickable element inside another clickable element. For example,
+			// in the YouTube search suggestions every item is an element with role="option" and inside
+			// those that represent previous searches a link element to remove said search,
+			// positioned at the right end
+			if (getClickableType(childNode)) {
 					continue;
 				}
 
-				return getFirstTextNodeDescendant(childNode as Node);
-			}
+			return getFirstTextNodeDescendant(childNode);
 		}
 	}
 
