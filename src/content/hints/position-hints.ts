@@ -82,7 +82,9 @@ export function positionHint(intersector: Intersector) {
 	// Once the hint is at least 25% hidden, if there is space, we move it to the bottom left corner
 	if (
 		anchorRect &&
-		hintElement.getBoundingClientRect().top < -hintElement.offsetHeight * 0.25
+		hintElement.getBoundingClientRect().top <
+			-hintElement.offsetHeight * 0.25 &&
+		anchorRect.y + anchorRect.height > hintElement.offsetHeight * 0.5
 	) {
 		let targetX = anchorRect.x - hintElement.offsetWidth * (1 - nudgeX);
 		targetX = targetX > 0 ? targetX : 0;
