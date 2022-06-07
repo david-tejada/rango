@@ -12,15 +12,14 @@ import { getOption } from "./options";
 const defaultBackgroundColor = getDefaultBackgroundColor();
 
 export function applyInitialStyles(intersector: Intersector) {
-	// const [x, y] = calculateHintPosition(intersector);
 	const backgroundColor = getInheritedBackgroundColor(
 		intersector.element,
 		defaultBackgroundColor || "rgba(0, 0, 0, 0)"
 	);
 
 	// We want our hint font color to match the font color of the text it's hinting
-	const elementToGetColorFrom = (
-		getFirstTextNodeDescendant(intersector.element) as Element
+	const elementToGetColorFrom = getFirstTextNodeDescendant(
+		intersector.element
 	)?.parentElement;
 
 	const colorString = window.getComputedStyle(
