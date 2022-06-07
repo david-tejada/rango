@@ -332,13 +332,15 @@ export function positionHint(intersector: Intersector) {
 		getFirstTextNodeRect(element) ?? element.getBoundingClientRect();
 
 	if (anchorRect && anchorRect.top < hintElement.offsetHeight * (1 - nudgeY)) {
-		const x = anchorRect.x - hintElement.offsetWidth * (1 - nudgeX);
-		const y =
+		let targetX = anchorRect.x - hintElement.offsetWidth * (1 - nudgeX);
+		targetX = targetX > 0 ? targetX : 0;
+		let targetY =
 			anchorRect.y + anchorRect.height - hintElement.offsetHeight * nudgeY;
+		targetY = targetY > 0 ? targetY : 0;
 
-		if (!isHintThere(hintElement, x, y)) {
-			hintElement.style.left = `${scrollLeft + x}px`;
-			hintElement.style.top = `${scrollTop + y}px`;
+		if (!isHintThere(hintElement, targetX, targetY)) {
+			hintElement.style.left = `${scrollLeft + targetX}px`;
+			hintElement.style.top = `${scrollTop + targetY}px`;
 		}
 	}
 }
