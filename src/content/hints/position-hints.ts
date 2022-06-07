@@ -1,4 +1,4 @@
-import { Intersector } from "../../typing/types";
+import { HintedIntersector } from "../../typing/types";
 import { getFirstTextNodeRect } from "../utils/nodes-utils";
 
 function isHintThere(
@@ -36,9 +36,9 @@ function isHintThere(
 	return false;
 }
 
-export function positionHint(intersector: Intersector) {
+export function positionHint(intersector: HintedIntersector) {
 	const element = intersector.element as HTMLElement;
-	const hintElement = intersector.hintElement as HTMLDivElement;
+	const hintElement = intersector.hintElement;
 	let rect;
 
 	// With small buttons we just place the hint at the top left of the button,

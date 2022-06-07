@@ -93,10 +93,16 @@ export interface ScriptResponse {
 
 export interface Intersector {
 	element: Element;
-	hintElement?: Element;
+	hintElement?: HTMLDivElement;
 	hintText?: string;
 	isVisible: boolean;
 	clickableType: string | undefined;
+}
+
+export interface HintedIntersector extends Intersector {
+	hintElement: HTMLDivElement;
+	hintText: string;
+	clickableType: string;
 }
 
 export type HintsStack = {

@@ -29,7 +29,7 @@ const mutationCallback: MutationCallback = async (mutationList) => {
 	let updateHints = false;
 	for (const mutationRecord of mutationList) {
 		if (mutationRecord.type === "childList") {
-			for (const node of mutationRecord.addedNodes as NodeListOf<Node>) {
+			for (const node of mutationRecord.addedNodes) {
 				if (
 					isElementNode(node) &&
 					!node.id.includes("rango-hints-container") &&
@@ -45,10 +45,13 @@ const mutationCallback: MutationCallback = async (mutationList) => {
 
 		if (mutationRecord.type === "attributes") {
 			const hintsContainer = document.querySelector("#rango-hints-container");
-			if (!hintsContainer?.contains(mutationRecord.target)) {
+			if (
+				isElementNode(mutationRecord.target) &&
+				!hintsContainer?.contains(mutationRecord.target)
+			) {
 				// The function onAttributeMutation returns true if there is a change to
 				// the visibility or clickability of elements
-				updateHints = onAttributeMutation(mutationRecord.target as Element);
+				updateHints = onAttributeMutation(mutationRecord.target);
 			}
 		}
 	}

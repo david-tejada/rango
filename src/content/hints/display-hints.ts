@@ -1,16 +1,17 @@
 import browser from "webextension-polyfill";
-import { Intersector } from "../../typing/types";
+import { Intersector, HintedIntersector } from "../../typing/types";
+import { assertDefined, isHintedIntersector } from "../../typing/typing-utils";
 import { elementIsObscured } from "../utils/element-visibility";
+import { getOption } from "../options/options";
+import { intersectors, removedIntersectorsHints } from "../intersectors";
 import { positionHint } from "./position-hints";
 import { applyInitialStyles } from "./styles";
-import { getOption } from "../options/options";
 import {
 	initStack,
 	claimHints,
 	releaseHints,
 	releaseOrphanHints,
 } from "./hints-requests";
-import { intersectors, removedIntersectorsHints } from "../intersectors";
 
 let hintsWillUpdate = false;
 let hintsAreUpdating = false;
@@ -21,33 +22,33 @@ browser.storage.onChanged.addListener(async (changes) => {
 	}
 });
 
-function hiddenClickableNeedsRemoved(intersector: Intersector) {
+function hiddenClickableNeedsRemoved(intersector: Intersector): boolean {
 	return (
 		(!intersector.isVisible || elementIsObscured(intersector.element)) &&
-		intersector.clickableType &&
-		intersector.hintText
+		intersector.clickableType !== undefined &&
+		intersector.hintText !== undefined
 	);
 }
 
-function inViewClickableMissingHint(intersector: Intersector) {
+function inViewClickableMissingHint(intersector: Intersector): boolean {
 	return (
 		intersector.isVisible &&
 		!elementIsObscured(intersector.element) &&
-		intersector.clickableType &&
-		!intersector.hintText
+		intersector.clickableType !== undefined &&
+		intersector.hintText === undefined
 	);
 }
 
-function inViewClickablePossessesHint(intersector: Intersector) {
+function inViewClickablePossessesHint(intersector: Intersector): boolean {
 	return (
 		intersector.isVisible &&
 		!elementIsObscured(intersector.element) &&
-		intersector.clickableType &&
-		intersector.hintText
+		intersector.clickableType !== undefined &&
+		intersector.hintText !== undefined
 	);
 }
 
-function getHintsContainer(): HTMLElement {
+function getHintsContainer(): HTMLDivElement {
 	let container = document.querySelector("#rango-hints-container");
 	if (!container) {
 		container = document.createElement("div");
@@ -55,7 +56,7 @@ function getHintsContainer(): HTMLElement {
 		document.body.append(container);
 	}
 
-	return container as HTMLElement;
+	return container as HTMLDivElement;
 }
 
 async function updateHints() {
@@ -64,14 +65,17 @@ async function updateHints() {
 
 	const toBeRemoved: Intersector[] = [];
 	const toAddHint: Intersector[] = [];
-	const toRefresh: Intersector[] = [];
+	const toRefresh: HintedIntersector[] = [];
 
 	for (const intersector of intersectors) {
 		if (hiddenClickableNeedsRemoved(intersector)) {
 			toBeRemoved.push(intersector);
 		} else if (inViewClickableMissingHint(intersector)) {
 			toAddHint.push(intersector);
-		} else if (inViewClickablePossessesHint(intersector)) {
+		} else if (
+			isHintedIntersector(intersector) &&
+			inViewClickablePossessesHint(intersector)
+		) {
 			toRefresh.push(intersector);
 		}
 	}
@@ -98,9 +102,9 @@ async function updateHints() {
 
 		// If there are no more available hints to markup the page, don't
 		// append the element.
-		if (intersector.hintText) {
+		if (isHintedIntersector(intersector)) {
 			applyInitialStyles(intersector);
-			hintsContainer.append(intersector.hintElement as Node);
+			hintsContainer.append(intersector.hintElement);
 			positionHint(intersector);
 		}
 	}
@@ -112,17 +116,18 @@ async function updateHints() {
 
 	// Hints cleanup
 	const hintElements = hintsContainer.querySelectorAll(".rango-hint");
-	const hints = intersectors
-		.filter((intersector) => intersector.hintText)
-		.map((intersector) => intersector.hintText) as string[];
-	const hintsSet = new Set(hints);
+	const hintTexts = intersectors
+		.filter(isHintedIntersector) // eslint-disable-line unicorn/no-array-callback-reference
+		.map((intersector) => intersector.hintText);
+	const hintsSet = new Set(hintTexts);
 	for (const hintElement of hintElements) {
-		if (!hintsSet.has(hintElement.textContent!)) {
+		assertDefined(hintElement.textContent);
+		if (!hintsSet.has(hintElement.textContent)) {
 			hintElement.remove();
 		}
 	}
 
-	await releaseOrphanHints(hints);
+	await releaseOrphanHints(hintTexts);
 
 	if (process.env["NODE_ENV"] !== "production") {
 		const hintedIntersectors = intersectors

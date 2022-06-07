@@ -1,5 +1,5 @@
 import Color from "color";
-import { Intersector } from "../../typing/types";
+import { HintedIntersector } from "../../typing/types";
 import {
 	getInheritedBackgroundColor,
 	getDefaultBackgroundColor,
@@ -11,7 +11,7 @@ import { getOption } from "../options/options";
 // It's usually rgba(0, 0, 0, 0)
 const defaultBackgroundColor = getDefaultBackgroundColor();
 
-export function applyInitialStyles(intersector: Intersector) {
+export function applyInitialStyles(intersector: HintedIntersector) {
 	const backgroundColor = getInheritedBackgroundColor(
 		intersector.element,
 		defaultBackgroundColor || "rgba(0, 0, 0, 0)"
@@ -62,18 +62,17 @@ export function applyInitialStyles(intersector: Intersector) {
 		fontWeight,
 		padding: "0.15em",
 	};
-	Object.assign((intersector.hintElement as HTMLElement).style, styles);
-	intersector.hintElement!.className = "rango-hint";
+	Object.assign(intersector.hintElement.style, styles);
+	intersector.hintElement.className = "rango-hint";
 }
 
 export function applyEmphasisStyles(
-	intersector: Intersector,
+	intersector: HintedIntersector,
 	dynamic: boolean
 ) {
 	// We invert the colors for a visual clue
-	const color = (intersector.hintElement as HTMLInputElement).style
-		.backgroundColor;
-	const background = (intersector.hintElement as HTMLInputElement).style.color;
+	const color = intersector.hintElement.style.backgroundColor;
+	const background = intersector.hintElement.style.color;
 	const hintFontSize = getOption("hintFontSize") as number;
 	const fontSize = dynamic ? `${hintFontSize * 1.2}px` : `${hintFontSize}px`;
 	const styles = {
@@ -81,10 +80,10 @@ export function applyEmphasisStyles(
 		background,
 		color,
 	};
-	Object.assign((intersector.hintElement as HTMLElement).style, styles);
+	Object.assign(intersector.hintElement.style, styles);
 }
 
-export function flashHint(intersector: Intersector) {
+export function flashHint(intersector: HintedIntersector) {
 	applyEmphasisStyles(intersector, true);
 	setTimeout(() => {
 		applyInitialStyles(intersector);
