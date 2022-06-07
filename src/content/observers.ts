@@ -1,3 +1,4 @@
+import { isElementNode } from "../typing/typing-utils";
 import { hasTextNodesChildren } from "./utils/nodes-utils";
 import { getClickableType } from "./utils/clickable-type";
 import { triggerHintsUpdate } from "./hints/display-hints";
@@ -30,11 +31,11 @@ const mutationCallback: MutationCallback = async (mutationList) => {
 		if (mutationRecord.type === "childList") {
 			for (const node of mutationRecord.addedNodes as NodeListOf<Node>) {
 				if (
-					node.nodeType === 1 &&
-					!(node as Element).id.includes("rango-hints-container") &&
-					!(node as Element).parentElement?.id.includes("rango-hints-container")
+					isElementNode(node) &&
+					!node.id.includes("rango-hints-container") &&
+					!node.parentElement?.id.includes("rango-hints-container")
 				) {
-					maybeObserveIntersection(node as Element);
+					maybeObserveIntersection(node);
 					updateHints = true;
 				}
 			}
