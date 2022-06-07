@@ -180,13 +180,24 @@ export function getFirstTextNodeDescendant(element: Node): Text | undefined {
 	return undefined;
 }
 
-function getFirstCharacterRect(element: Element): DOMRect | undefined {
+function getFirstTextNodeRect(
+	element: Element,
+	onlyFirstCharacter = false
+): DOMRect | undefined {
 	const firstTextNodeDescendant = getFirstTextNodeDescendant(element);
 	if (firstTextNodeDescendant) {
 		const range = document.createRange();
 		range.setStart(firstTextNodeDescendant, 0);
-		range.setEnd(firstTextNodeDescendant, 1);
-		return range.getBoundingClientRect();
+		range.setEnd(
+			firstTextNodeDescendant,
+			onlyFirstCharacter ? 1 : firstTextNodeDescendant.length
+		);
+		const rect = range.getBoundingClientRect();
+		return rect.width === 0 && rect.height === 0 ? undefined : rect;
+	}
+
+	return undefined;
+}
 	}
 
 	return undefined;
