@@ -1,11 +1,11 @@
 import Color from "color";
-import { Intersector } from "../typing/types";
+import { Intersector } from "../../typing/types";
 import {
 	getInheritedBackgroundColor,
 	getDefaultBackgroundColor,
-} from "./background-color";
-import { getFirstTextNodeDescendant } from "./nodes-utils";
-import { getOption } from "./options";
+} from "../utils/background-color";
+import { getFirstTextNodeDescendant } from "../utils/nodes-utils";
+import { getOption } from "../options/options";
 
 // This is necessary to calculate background colors with alpha different than 1.
 // It's usually rgba(0, 0, 0, 0)

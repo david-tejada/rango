@@ -1,5 +1,5 @@
-import { getIntersectorWithHint } from "./intersectors";
-import { triggerHintsUpdate } from "./hints";
+import { getIntersectorWithHint } from "../intersectors";
+import { triggerHintsUpdate } from "../hints/display-hints";
 
 const hoveredElements: Set<Element> = new Set();
 const timeoutIds: Set<NodeJS.Timeout> = new Set();

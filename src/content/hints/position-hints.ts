@@ -1,5 +1,5 @@
-import { Intersector } from "../typing/types";
-import { getFirstTextNodeRect } from "./nodes-utils";
+import { Intersector } from "../../typing/types";
+import { getFirstTextNodeRect } from "../utils/nodes-utils";
 
 function isHintThere(
 	hintElement: HTMLDivElement,

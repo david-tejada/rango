@@ -2,7 +2,7 @@ import {
 	isTextNode,
 	isElementNode,
 	assertDefined,
-} from "../typing/typing-utils";
+} from "../../typing/typing-utils";
 import { getClickableType } from "./clickable-type";
 
 export function hasTextNodesChildren(element: Element) {

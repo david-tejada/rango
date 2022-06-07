@@ -1,8 +1,8 @@
 import { parseDomain, ParseResultType, fromUrl } from "parse-domain";
-import { focusesOnclick } from "./clickable-type";
-import { flashHint } from "./styles";
-import { getIntersectorWithHint } from "./intersectors";
-import { triggerHintsUpdate } from "./hints";
+import { focusesOnclick } from "../utils/clickable-type";
+import { flashHint } from "../hints/styles";
+import { getIntersectorWithHint } from "../intersectors";
+import { triggerHintsUpdate } from "../hints/display-hints";
 import { openInNewTab } from "./open-in-new-tab";
 
 function getMainDomain(url: string): string | undefined {

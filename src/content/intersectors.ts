@@ -1,7 +1,7 @@
 import { Intersector } from "../typing/types";
-import { isVisible } from "./element-visibility";
-import { getClickableType } from "./clickable-type";
-import { NoHintError } from "./classes";
+import { isVisible } from "./utils/element-visibility";
+import { getClickableType } from "./utils/clickable-type";
+import { NoHintError } from "./classes/errors";
 
 export const intersectors: Intersector[] = [];
 export const removedIntersectorsHints: Set<string> = new Set();

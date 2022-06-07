@@ -1,6 +1,6 @@
-import { hasTextNodesChildren } from "./nodes-utils";
-import { getClickableType } from "./clickable-type";
-import { triggerHintsUpdate } from "./hints";
+import { hasTextNodesChildren } from "./utils/nodes-utils";
+import { getClickableType } from "./utils/clickable-type";
+import { triggerHintsUpdate } from "./hints/display-hints";
 import { onIntersection, onAttributeMutation } from "./intersectors";
 
 // *** INTERSECTION OBSERVER ***

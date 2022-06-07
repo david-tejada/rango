@@ -1,5 +1,5 @@
 import Color from "color";
-import { isRgb, rgbaToRgb } from "../lib/color-utils";
+import { isRgb, rgbaToRgb } from "../../lib/color-utils";
 
 function getAscendantRgb(parent: HTMLElement): Color {
 	if (parent === null) {

@@ -1,23 +1,23 @@
 import browser from "webextension-polyfill";
 import { ContentRequest, ScriptResponse } from "../typing/types";
-import { initOptions } from "./options";
+import { initOptions } from "./options/options";
 import {
 	getChromiumClipboard,
 	copyToChromiumClipboard,
-} from "./chromium-clipboard";
+} from "./utils/chromium-clipboard";
 import {
 	increaseHintSize,
 	decreaseHintSize,
 	toggleHints,
-} from "./options-utils";
-import { clickElement } from "./click-element";
-import { openInNewTab } from "./open-in-new-tab";
-import { copyLink, showLink } from "./links";
-import { hoverElement, unhoverAll } from "./hover";
-import { triggerHintsUpdate } from "./hints";
+} from "./options/options-utils";
+import { clickElement } from "./actions/click-element";
+import { openInNewTab } from "./actions/open-in-new-tab";
+import { copyLink, showLink } from "./actions/show-and-copy-links";
+import { hoverElement, unhoverAll } from "./actions/hover";
+import { triggerHintsUpdate } from "./hints/display-hints";
 import observe from "./observers";
-import { initStack } from "./hints-requests";
-import { NoHintError } from "./classes";
+import { initStack } from "./hints/hints-requests";
+import { NoHintError } from "./classes/errors";
 
 // Initialize options
 initOptions()

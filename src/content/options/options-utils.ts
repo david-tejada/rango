@@ -1,5 +1,5 @@
 import { getOption, setOption } from "./options";
-import { triggerHintsUpdate } from "./hints";
+import { triggerHintsUpdate } from "../hints/display-hints";
 
 export async function increaseHintSize() {
 	const hintFontSize = (getOption("hintFontSize") as number) + 1;

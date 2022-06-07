@@ -1,5 +1,5 @@
-import { getIntersectorWithHint } from "./intersectors";
-import { showTooltip } from "./tooltip";
+import { getIntersectorWithHint } from "../intersectors";
+import { showTooltip } from "../hints/tooltip";
 
 export function copyLink(hintText: string) {
 	const target = getIntersectorWithHint(hintText);

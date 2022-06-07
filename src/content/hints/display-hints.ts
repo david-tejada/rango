@@ -1,16 +1,16 @@
 import browser from "webextension-polyfill";
-import { Intersector } from "../typing/types";
-import { elementIsObscured } from "./element-visibility";
+import { Intersector } from "../../typing/types";
+import { elementIsObscured } from "../utils/element-visibility";
 import { positionHint } from "./position-hints";
 import { applyInitialStyles } from "./styles";
-import { getOption } from "./options";
+import { getOption } from "../options/options";
 import {
 	initStack,
 	claimHints,
 	releaseHints,
 	releaseOrphanHints,
 } from "./hints-requests";
-import { intersectors, removedIntersectorsHints } from "./intersectors";
+import { intersectors, removedIntersectorsHints } from "../intersectors";
 
 let hintsWillUpdate = false;
 let hintsAreUpdating = false;

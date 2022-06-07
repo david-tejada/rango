@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
-import { Intersector } from "../typing/types";
-import { getIntersectorWithHint } from "./intersectors";
-import { flashHint } from "./styles";
+import { Intersector } from "../../typing/types";
+import { getIntersectorWithHint } from "../intersectors";
+import { flashHint } from "../hints/styles";
 
 export async function openInNewTab(hintOrIntersector: string | Intersector) {
 	const intersector =
