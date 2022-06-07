@@ -18,9 +18,7 @@ export function showTooltip(
 	instance.show();
 	applyEmphasisStyles(target, false);
 	setTimeout(() => {
-		applyInitialStyles(target).catch((error) => {
-			console.error(error);
-		});
+		applyInitialStyles(target);
 		instance.hide();
 		hintElement.removeAttribute("id");
 	}, duration);
