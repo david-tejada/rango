@@ -1,6 +1,7 @@
 import browser from "webextension-polyfill";
 import { Intersector } from "../typing/types";
-import { elementIsObscured, positionHint } from "../lib/dom-utils";
+import { elementIsObscured } from "../lib/dom-utils";
+import { positionHint } from "./position-hints";
 import { applyInitialStyles } from "./styles";
 import { getOption } from "./options";
 import {
