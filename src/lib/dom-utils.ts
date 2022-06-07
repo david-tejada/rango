@@ -198,32 +198,56 @@ function getFirstTextNodeRect(
 
 	return undefined;
 }
+
+function getElementFromPoint(x: number, y: number): Element | undefined {
+	const elementsFromPoint = document.elementsFromPoint(x, y);
+	for (const element of elementsFromPoint) {
+		if (element.className !== "rango-hint") {
+			return element;
+		}
 	}
 
 	return undefined;
 }
 
 export function elementIsObscured(element: Element): boolean {
-	const rect =
-		getFirstCharacterRect(element) ?? element.getBoundingClientRect();
+	const firstCharacterRect =
+		getFirstTextNodeRect(element, true) ?? element.getBoundingClientRect();
+	const rect = element.getBoundingClientRect();
+	const elementsFromPoint = [
+		getElementFromPoint(firstCharacterRect.x + 5, firstCharacterRect.y + 5),
+		getElementFromPoint(rect.x + rect.width - 5, rect.y + 5),
+		getElementFromPoint(rect.x + 5, rect.y + rect.height - 5),
+		getElementFromPoint(rect.x + rect.width - 5, rect.y + rect.height - 5),
+	];
 
-	const elementFromPoint = document.elementFromPoint(rect.x + 5, rect.y + 5);
+	// We need to check at the top left and the bottom left in case the element
+	// is partially out of the viewport
+	// const elementFromPoint =
+	// 	getElementFromPoint(rect.x + 5, rect.y + 5) ??
+	// 	getElementFromPoint(rect.x + 5, rect.y + rect.height - 5);
 
-	if (elementFromPoint?.className === "rango-hint") {
-		return false;
+	// if (!elementFromPoint) {
+	// 	return true;
+	// }
+
+	for (const elementFromPoint of elementsFromPoint) {
+		if (!elementFromPoint) {
+			continue;
 	}
 
 	// For the time being if elementFromPoint is a shadow output we'll assume it's not obscured.
 	// In the future we could use shadowRoot.elementFromPoint if it's necessary
-	if (elementFromPoint?.shadowRoot) {
+		if (elementFromPoint.shadowRoot) {
 		return false;
 	}
 
 	if (
-		elementFromPoint &&
-		(element.contains(elementFromPoint) || elementFromPoint.contains(element))
+			element.contains(elementFromPoint) ||
+			elementFromPoint.contains(element)
 	) {
 		return false;
+		}
 	}
 
 	return true;
