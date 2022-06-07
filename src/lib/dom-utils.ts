@@ -157,8 +157,9 @@ export function getFirstTextNodeDescendant(element: Node): Text | undefined {
 			rangeGivesCoordinates(childNode) &&
 			/\S/.test(childNode.textContent)
 			) {
+			// We make sure here that the element isn't hidden using the -9999px trick
 			const rect = getTextNodeRect(childNode);
-			if (rect.y + rect.height > 0 && rect.x + rect.width > 0) {
+			if (rect.y + rect.height > -500 && rect.x + rect.width > -500) {
 				return childNode;
 			}
 		}
