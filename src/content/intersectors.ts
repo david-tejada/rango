@@ -1,5 +1,6 @@
 import { Intersector } from "../typing/types";
-import { getClickableType, isVisible } from "../lib/dom-utils";
+import { isVisible } from "./element-visibility";
+import { getClickableType } from "./clickable-type";
 import { NoHintError } from "./classes";
 
 export const intersectors: Intersector[] = [];

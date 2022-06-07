@@ -1,5 +1,5 @@
 import { parseDomain, ParseResultType, fromUrl } from "parse-domain";
-import { focusesOnclick } from "../lib/dom-utils";
+import { focusesOnclick } from "./clickable-type";
 import { flashHint } from "./styles";
 import { getIntersectorWithHint } from "./intersectors";
 import { triggerHintsUpdate } from "./hints";

@@ -1,4 +1,5 @@
-import { getClickableType, hasTextNodesChildren } from "../lib/dom-utils";
+import { hasTextNodesChildren } from "./nodes-utils";
+import { getClickableType } from "./clickable-type";
 import { triggerHintsUpdate } from "./hints";
 import { onIntersection, onAttributeMutation } from "./intersectors";
 

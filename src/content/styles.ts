@@ -3,8 +3,8 @@ import { Intersector } from "../typing/types";
 import {
 	getInheritedBackgroundColor,
 	getDefaultBackgroundColor,
-	getFirstTextNodeDescendant,
-} from "../lib/dom-utils";
+} from "./background-color";
+import { getFirstTextNodeDescendant } from "./nodes-utils";
 import { getOption } from "./options";
 
 // This is necessary to calculate background colors with alpha different than 1.
