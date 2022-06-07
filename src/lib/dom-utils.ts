@@ -317,8 +317,8 @@ export function positionHint(intersector: Intersector) {
 		document.documentElement.scrollTop ||
 		document.body.scrollTop;
 
-	const nudgeX = 0.25;
-	const nudgeY = 0.5;
+	const nudgeX = 0.3;
+	const nudgeY = 0.4;
 
 	let x = rect.left + scrollLeft - hintElement.offsetWidth * (1 - nudgeX);
 	x = x > 0 ? x : 0;
@@ -331,7 +331,11 @@ export function positionHint(intersector: Intersector) {
 	const anchorRect =
 		getFirstTextNodeRect(element) ?? element.getBoundingClientRect();
 
-	if (anchorRect && anchorRect.top < hintElement.offsetHeight * (1 - nudgeY)) {
+	// Once the hint is at least 25% hidden, if there is space, we move it to the bottom left corner
+	if (
+		anchorRect &&
+		hintElement.getBoundingClientRect().top < -hintElement.offsetHeight * 0.25
+	) {
 		let targetX = anchorRect.x - hintElement.offsetWidth * (1 - nudgeX);
 		targetX = targetX > 0 ? targetX : 0;
 		let targetY =
