@@ -45,7 +45,7 @@ export function positionHint(intersector: Intersector) {
 	// no matter if they have text content or not. This gives a more consistent look
 	if (
 		element.tagName === "BUTTON" &&
-		element.offsetHeight < hintElement.offsetHeight * 2.5
+		element.offsetHeight < hintElement.offsetHeight * 2
 	) {
 		rect = element.getBoundingClientRect();
 	} else {
