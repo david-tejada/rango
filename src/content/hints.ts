@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { Intersector } from "../typing/types";
-import { elementIsObscured } from "../lib/dom-utils";
+import { elementIsObscured, positionHint } from "../lib/dom-utils";
 import { applyInitialStyles } from "./styles";
 import { getOption } from "./options";
 import {
@@ -100,11 +100,13 @@ async function updateHints() {
 		if (intersector.hintText) {
 			applyInitialStyles(intersector);
 			hintsContainer.append(intersector.hintElement as Node);
+			positionHint(intersector);
 		}
 	}
 
 	for (const intersector of toRefresh) {
 		applyInitialStyles(intersector);
+		positionHint(intersector);
 	}
 
 	// Hints cleanup

@@ -150,13 +150,13 @@ export function getFirstTextNodeDescendant(element: Node): Text | undefined {
 		return undefined;
 	}
 
-		for (const childNode of element.childNodes) {
+	for (const childNode of element.childNodes) {
 		assertDefined(childNode.textContent);
-			if (
+		if (
 			isTextNode(childNode) &&
 			rangeGivesCoordinates(childNode) &&
 			/\S/.test(childNode.textContent)
-			) {
+		) {
 			// We make sure here that the element isn't hidden using the -9999px trick
 			const rect = getTextNodeRect(childNode);
 			if (rect.y + rect.height > -500 && rect.x + rect.width > -500) {
@@ -170,8 +170,8 @@ export function getFirstTextNodeDescendant(element: Node): Text | undefined {
 			// those that represent previous searches a link element to remove said search,
 			// positioned at the right end
 			if (getClickableType(childNode)) {
-					continue;
-				}
+				continue;
+			}
 
 			return getFirstTextNodeDescendant(childNode);
 		}
@@ -234,32 +234,78 @@ export function elementIsObscured(element: Element): boolean {
 	for (const elementFromPoint of elementsFromPoint) {
 		if (!elementFromPoint) {
 			continue;
-	}
+		}
 
-	// For the time being if elementFromPoint is a shadow output we'll assume it's not obscured.
-	// In the future we could use shadowRoot.elementFromPoint if it's necessary
+		// For the time being if elementFromPoint is a shadow output we'll assume it's not obscured.
+		// In the future we could use shadowRoot.elementFromPoint if it's necessary
 		if (elementFromPoint.shadowRoot) {
-		return false;
-	}
+			return false;
+		}
 
-	if (
+		if (
 			element.contains(elementFromPoint) ||
 			elementFromPoint.contains(element)
-	) {
-		return false;
+		) {
+			return false;
 		}
 	}
 
 	return true;
 }
 
-export function calculateHintPosition(
-	intersector: Intersector
-): [number, number] {
-	// If the element has text, we situate the hint next to the first character
-	const firstCharacterRect = getFirstCharacterRect(intersector.element);
-	const rect =
-		firstCharacterRect ?? intersector.element.getBoundingClientRect();
+function isHintThere(
+	hintElement: HTMLDivElement,
+	x: number,
+	y: number
+): boolean {
+	const hintRect = hintElement.getBoundingClientRect();
+	const bottomLeftElement = document.elementFromPoint(
+		x,
+		y + hintRect.height - 2
+	);
+	const bottomCenterElement = document.elementFromPoint(
+		x + hintRect.width / 2,
+		y + hintRect.height - 2
+	);
+	const bottomRightElement = document.elementFromPoint(
+		x + hintRect.width,
+		y + hintRect.height - 2
+	);
+	const centerElement = document.elementFromPoint(
+		x + hintRect.width / 2,
+		y + hintRect.height / 2
+	);
+
+	if (
+		bottomLeftElement?.className === "rango-hint" ||
+		bottomCenterElement?.className === "rango-hint" ||
+		bottomRightElement?.className === "rango-hint" ||
+		centerElement?.className === "rango-hint"
+	) {
+		return true;
+	}
+
+	return false;
+}
+
+export function positionHint(intersector: Intersector) {
+	const element = intersector.element as HTMLElement;
+	const hintElement = intersector.hintElement as HTMLDivElement;
+	let rect;
+
+	// With small buttons we just place the hint at the top left of the button,
+	// no matter if they have text content or not. This gives a more consistent look
+	if (
+		element.tagName === "BUTTON" &&
+		element.offsetHeight < hintElement.offsetHeight * 2.5
+	) {
+		rect = element.getBoundingClientRect();
+	} else {
+		// If the element has text, we situate the hint next to the first character
+		// in case the text spans multiple lines
+		rect =
+			getFirstTextNodeRect(element, true) ?? element.getBoundingClientRect();
+	}
 
 	const scrollLeft =
 		window.pageXOffset ||
@@ -271,33 +317,30 @@ export function calculateHintPosition(
 		document.documentElement.scrollTop ||
 		document.body.scrollTop;
 
-	const paddingLeft = firstCharacterRect
-		? 0
-		: Number.parseFloat(
-				window.getComputedStyle(intersector.element).paddingLeft
-		  );
-	const paddingTop = firstCharacterRect
-		? 0
-		: Number.parseFloat(
-				window.getComputedStyle(intersector.element).paddingTop
-		  );
+	const nudgeX = 0.25;
+	const nudgeY = 0.5;
 
-	const hintFontSize = getOption("hintFontSize") as number;
-
-	// This is not very scientific. Adjusted through trial and error
-	let x =
-		rect.left +
-		scrollLeft +
-		paddingLeft -
-		hintFontSize +
-		2 -
-		(intersector.hintText!.length - 1) * 5;
+	let x = rect.left + scrollLeft - hintElement.offsetWidth * (1 - nudgeX);
 	x = x > 0 ? x : 0;
-
-	let y = rect.top + scrollTop + paddingTop - hintFontSize;
+	let y = rect.top + scrollTop - hintElement.offsetHeight * (1 - nudgeY);
 	y = y > 0 ? y : 0;
 
-	return [x, y];
+	hintElement.style.left = `${x}px`;
+	hintElement.style.top = `${y}px`;
+
+	const anchorRect =
+		getFirstTextNodeRect(element) ?? element.getBoundingClientRect();
+
+	if (anchorRect && anchorRect.top < hintElement.offsetHeight * (1 - nudgeY)) {
+		const x = anchorRect.x - hintElement.offsetWidth * (1 - nudgeX);
+		const y =
+			anchorRect.y + anchorRect.height - hintElement.offsetHeight * nudgeY;
+
+		if (!isHintThere(hintElement, x, y)) {
+			hintElement.style.left = `${scrollLeft + x}px`;
+			hintElement.style.top = `${scrollTop + y}px`;
+		}
+	}
 }
 
 export function getInheritedBackgroundColor(

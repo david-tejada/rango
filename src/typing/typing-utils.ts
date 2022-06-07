@@ -6,3 +6,11 @@ export function assertDefined<T>(
 		throw new Error(`Fatal error: value must not be null/undefined.`);
 	}
 }
+
+export function isTextNode(node: Node): node is Text {
+	return node.nodeType === Node.TEXT_NODE;
+}
+
+export function isElementNode(node: Node): node is Element {
+	return node.nodeType === Node.ELEMENT_NODE;
+}

@@ -1,7 +1,6 @@
 import Color from "color";
 import { Intersector } from "../typing/types";
 import {
-	calculateHintPosition,
 	getInheritedBackgroundColor,
 	getDefaultBackgroundColor,
 	getFirstTextNodeDescendant,
@@ -13,7 +12,7 @@ import { getOption } from "./options";
 const defaultBackgroundColor = getDefaultBackgroundColor();
 
 export function applyInitialStyles(intersector: Intersector) {
-	const [x, y] = calculateHintPosition(intersector);
+	// const [x, y] = calculateHintPosition(intersector);
 	const backgroundColor = getInheritedBackgroundColor(
 		intersector.element,
 		defaultBackgroundColor || "rgba(0, 0, 0, 0)"
@@ -57,8 +56,6 @@ export function applyInitialStyles(intersector: Intersector) {
 			: "normal";
 
 	const styles = {
-		left: `${x}px`,
-		top: `${y}px`,
 		backgroundColor: backgroundColor.string(),
 		color: color.string(),
 		outline: `1px solid ${outlineColor.string()}`,
@@ -91,8 +88,6 @@ export function applyEmphasisStyles(
 export function flashHint(intersector: Intersector) {
 	applyEmphasisStyles(intersector, true);
 	setTimeout(() => {
-		applyInitialStyles(intersector).catch((error) => {
-			console.error(error);
-		});
+		applyInitialStyles(intersector);
 	}, 300);
 }
