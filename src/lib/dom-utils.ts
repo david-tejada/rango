@@ -221,16 +221,6 @@ export function elementIsObscured(element: Element): boolean {
 		getElementFromPoint(rect.x + rect.width - 5, rect.y + rect.height - 5),
 	];
 
-	// We need to check at the top left and the bottom left in case the element
-	// is partially out of the viewport
-	// const elementFromPoint =
-	// 	getElementFromPoint(rect.x + 5, rect.y + 5) ??
-	// 	getElementFromPoint(rect.x + 5, rect.y + rect.height - 5);
-
-	// if (!elementFromPoint) {
-	// 	return true;
-	// }
-
 	for (const elementFromPoint of elementsFromPoint) {
 		if (!elementFromPoint) {
 			continue;
