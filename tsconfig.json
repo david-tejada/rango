@@ -1,6 +1,7 @@
 {
 	"extends": "@sindresorhus/tsconfig/tsconfig.json",
 	"compilerOptions": {
-		"outDir": "dist"
+		"outDir": "dist",
+		"esModuleInterop": true
 	}
 }
