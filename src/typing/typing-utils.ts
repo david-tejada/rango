@@ -1,4 +1,4 @@
-import { Intersector, HintedIntersector } from "./types";
+import { Intersector, HintedIntersector, FocusOnClickInput } from "./types";
 
 export function assertDefined<T>(
 	value: T | null | undefined // eslint-disable-line @typescript-eslint/ban-types
@@ -18,6 +18,29 @@ export function isElementNode(node: Node): node is Element {
 
 export function isLinkElement(element: Element): element is HTMLLinkElement {
 	return element.tagName === "A";
+}
+
+export function isInputElement(element: Element): element is HTMLInputElement {
+	return element.tagName === "INPUT";
+}
+
+export function isFocusOnClickInput(
+	element: Element
+): element is FocusOnClickInput {
+	return (
+		isInputElement(element) &&
+		![
+			"button",
+			"checkbox",
+			"color",
+			"file",
+			"hidden",
+			"image",
+			"radio",
+			"reset",
+			"submit",
+		].includes(element.type)
+	);
 }
 
 export function isHintedIntersector(

@@ -116,3 +116,18 @@ export type StorableHintsStack = {
 	free: string[];
 	assigned: Array<[string, number]>;
 };
+
+export interface FocusOnClickInput extends HTMLInputElement {
+	type: Exclude<
+		string,
+		| "button"
+		| "checkbox"
+		| "color"
+		| "file"
+		| "hidden"
+		| "image"
+		| "radio"
+		| "reset"
+		| "submit"
+	>;
+}

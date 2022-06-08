@@ -1,3 +1,5 @@
+import { isFocusOnClickInput } from "../../typing/typing-utils";
+
 // We could just return a boolean but I want to have the clickable type for debugging purposes
 export function getClickableType(element: Element): string | undefined {
 	// Ignoring some items that even though they have onclick event they don't do anything
@@ -72,28 +74,7 @@ export function getClickableType(element: Element): string | undefined {
 }
 
 export function focusesOnclick(element: Element): boolean {
-	const focusableInputTypes = [
-		"text",
-		"search",
-		"email",
-		"week",
-		"month",
-		"password",
-		"number",
-		"range",
-		"tel",
-		"date",
-		"time",
-		"datetime",
-		"datetime-local",
-		"url",
-	];
-
-	if (
-		element.tagName === "INPUT" &&
-		(!element.getAttribute("type") ||
-			focusableInputTypes.includes(element.getAttribute("type")!))
-	) {
+	if (isFocusOnClickInput(element)) {
 		return true;
 	}
 
