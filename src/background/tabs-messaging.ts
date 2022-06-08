@@ -65,16 +65,29 @@ export async function sendRequestToActiveTab(
 }
 
 export async function sendRequestToAllTabs(request: ContentRequest) {
-	const results = [];
+	const nonActiveTabsPromises = [];
 	const allTabs = await browser.tabs.query({});
+	let activeTabPromise;
 	for (const tab of allTabs) {
-		results.push(browser.tabs.sendMessage(tab.id!, request));
+		if (tab.active) {
+			activeTabPromise = browser.tabs.sendMessage(tab.id!, request);
+		} else {
+			const backgroundTabRequest = { ...request };
+			backgroundTabRequest.type += "OnIdle";
+			nonActiveTabsPromises.push(
+				browser.tabs.sendMessage(tab.id!, backgroundTabRequest)
+			);
+		}
 	}
+
+	// We first send the command to the active tab and then to the rest where it will be
+	// executed using window.requestIdleCallback
+	await activeTabPromise;
 
 	// We use allSettled here because we know some promises will fail, as the extension
 	// is not able to run on all tabs, for example, in pages like "about:debugging".
 	// So we just care that the promise either resolves or rejects
-	await Promise.allSettled(results);
+	await Promise.allSettled(nonActiveTabsPromises);
 }
 
 const mutex = new Mutex();

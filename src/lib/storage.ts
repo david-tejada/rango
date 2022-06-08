@@ -5,6 +5,6 @@ export async function getStored(name: string): Promise<unknown> {
 	return storage[name] as unknown;
 }
 
-export async function saveToStorage(object: Record<string, any>) {
+export async function setStored(object: Record<string, any>) {
 	await browser.storage.local.set(object);
 }

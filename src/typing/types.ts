@@ -1,5 +1,11 @@
 interface RangoSimpleAction {
-	type: "unhoverAll" | "toggleHints" | "increaseHintSize" | "decreaseHintSize";
+	type:
+		| "unhoverAll"
+		| "toggleHints"
+		| "fullHintsUpdate"
+		| "fullHintsUpdateOnIdle"
+		| "increaseHintSize"
+		| "decreaseHintSize";
 }
 
 interface RangoActionWithTarget {

@@ -31,6 +31,8 @@ export function getOption(option: string): unknown {
 	return cachedOptions[option];
 }
 
+// Although we don't use this now it might come in handy when we need to store
+// site specific options
 export async function setOption(option: Record<string, unknown>) {
 	const optionNames = Object.keys(option);
 	for (const key of optionNames) {

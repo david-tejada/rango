@@ -1,5 +1,5 @@
 import { HintsStack, StorableHintsStack } from "../typing/types";
-import { getStored, saveToStorage } from "../lib/storage";
+import { getStored, setStored } from "../lib/storage";
 import { allHints } from "./all-hints";
 
 function stackToStorable(stack: HintsStack): StorableHintsStack {
@@ -35,7 +35,7 @@ export async function getStack(tabId: number): Promise<HintsStack> {
 
 async function saveStack(stack: HintsStack, tabId: number) {
 	try {
-		await saveToStorage({
+		await setStored({
 			[`hints-stack-${tabId}`]: stackToStorable(stack),
 		});
 	} catch (error: unknown) {

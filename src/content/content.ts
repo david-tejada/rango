@@ -5,13 +5,6 @@ import {
 	getChromiumClipboard,
 	copyToChromiumClipboard,
 } from "./utils/chromium-clipboard";
-import {
-	increaseHintSize,
-	decreaseHintSize,
-	setHintStyle,
-	setHintWeight,
-	toggleHints,
-} from "./options/change-options";
 import { clickElement } from "./actions/click-element";
 import { openInNewTab } from "./actions/open-in-new-tab";
 import { copyLink, showLink } from "./actions/show-and-copy-links";
@@ -83,24 +76,14 @@ browser.runtime.onMessage.addListener(
 					unhoverAll();
 					break;
 
-				case "toggleHints":
-					await toggleHints();
+				case "fullHintsUpdate":
+					await triggerHintsUpdate(true);
 					break;
 
-				case "increaseHintSize":
-					await increaseHintSize();
-					break;
-
-				case "decreaseHintSize":
-					await decreaseHintSize();
-					break;
-
-				case "setHintStyle":
-					await setHintStyle(request.target);
-					break;
-
-				case "setHintWeight":
-					await setHintWeight(request.target);
+				case "fullHintsUpdateOnIdle":
+					window.requestIdleCallback(async () => {
+						await triggerHintsUpdate(true);
+					});
 					break;
 
 				default:

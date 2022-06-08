@@ -1,8 +1,7 @@
-import browser from "webextension-polyfill";
 import { Intersector, HintedIntersector } from "../../typing/types";
 import { assertDefined, isHintedIntersector } from "../../typing/typing-utils";
 import { elementIsObscured } from "../utils/element-visibility";
-import { getOption } from "../options/options-utils";
+import { getOption, initOptions } from "../options/options-utils";
 import { intersectors, removedIntersectorsHints } from "../intersectors";
 import { positionHint } from "./position-hints";
 import { applyInitialStyles } from "./styles";
@@ -15,12 +14,6 @@ import {
 
 let hintsWillUpdate = false;
 let hintsAreUpdating = false;
-
-browser.storage.onChanged.addListener(async (changes) => {
-	if ("showHints" in changes) {
-		await triggerHintsUpdate(true);
-	}
-});
 
 function hiddenClickableNeedsRemoved(intersector: Intersector): boolean {
 	return (
@@ -147,6 +140,7 @@ async function updateHints() {
 
 export async function triggerHintsUpdate(fullRefresh = false) {
 	if (fullRefresh) {
+		await initOptions();
 		document.querySelector("#rango-hints-container")?.remove();
 		await initStack();
 		for (const intersector of intersectors) {
