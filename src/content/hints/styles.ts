@@ -1,4 +1,5 @@
 import Color from "color";
+import { rgbaToRgb } from "../../lib/color-utils";
 import { HintedIntersector } from "../../typing/types";
 import {
 	getInheritedBackgroundColor,
@@ -25,8 +26,9 @@ export function applyInitialStyles(intersector: HintedIntersector) {
 	const colorString = window.getComputedStyle(
 		elementToGetColorFrom ?? intersector.element
 	).color;
-	// Sometimes the color string we get is an empty string
-	let color = new Color(colorString || "black");
+	// Sometimes the color string we get is an empty string. We also need to convert to rgb
+	// because the contrast function doesn't take into account alpha values
+	let color = rgbaToRgb(new Color(colorString || "black"), backgroundColor);
 
 	// If the element doesn't have any text just make sure there is contrast
 	if (!elementToGetColorFrom) {
@@ -38,6 +40,10 @@ export function applyInitialStyles(intersector: HintedIntersector) {
 			color = new Color("black");
 		}
 	}
+
+	console.log(
+		new Color("rgba(29, 28, 29, 0.3)").contrast(new Color("rgb(255, 255, 255)"))
+	);
 
 	// A contrast value of 2.5 might seem low but it is necessary to match the look of some pages.
 	// Some pages use low contrast with big text and, in my experience, it's more pleasant to keep
