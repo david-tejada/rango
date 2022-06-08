@@ -6,13 +6,14 @@ import {
 	getDefaultBackgroundColor,
 } from "../utils/background-color";
 import { getFirstTextNodeDescendant } from "../utils/nodes-utils";
-import { getOption } from "../options/options";
+import { getOption } from "../options/options-utils";
 
 // This is necessary to calculate background colors with alpha different than 1.
 // It's usually rgba(0, 0, 0, 0)
 const defaultBackgroundColor = getDefaultBackgroundColor();
 
 export function applyInitialStyles(intersector: HintedIntersector) {
+	const subtleHints = getOption("hintStyle") === "subtle";
 	const backgroundColor = getInheritedBackgroundColor(
 		intersector.element,
 		defaultBackgroundColor || "rgba(0, 0, 0, 0)"
@@ -41,10 +42,6 @@ export function applyInitialStyles(intersector: HintedIntersector) {
 		}
 	}
 
-	console.log(
-		new Color("rgba(29, 28, 29, 0.3)").contrast(new Color("rgb(255, 255, 255)"))
-	);
-
 	// A contrast value of 2.5 might seem low but it is necessary to match the look of some pages.
 	// Some pages use low contrast with big text and, in my experience, it's more pleasant to keep
 	// the aspect of the page. Having in mind that the text of the hints is not something that
@@ -55,15 +52,28 @@ export function applyInitialStyles(intersector: HintedIntersector) {
 
 	const outlineColor = new Color(color).alpha(0.3);
 	const hintFontSize = getOption("hintFontSize") as number;
-	const fontWeight =
-		backgroundColor.contrast(color) < 7 && hintFontSize < 14
-			? "bold"
-			: "normal";
+
+	const fontWeightOption = getOption("hintWeight");
+	let fontWeight;
+	if (fontWeightOption === "auto") {
+		fontWeight =
+			backgroundColor.contrast(color) < 7 && hintFontSize < 14
+				? "bold"
+				: "normal";
+	} else {
+		fontWeight = fontWeightOption;
+	}
+
+	const subtleBackground =
+		subtleHints &&
+		window.getComputedStyle(intersector.element).display.includes("inline");
 
 	const styles = {
-		backgroundColor: backgroundColor.string(),
+		backgroundColor: subtleBackground
+			? "transparent"
+			: backgroundColor.string(),
 		color: color.string(),
-		outline: `1px solid ${outlineColor.string()}`,
+		outline: subtleHints ? 0 : `1px solid ${outlineColor.string()}`,
 		fontSize: `${hintFontSize}px`,
 		fontWeight,
 		padding: "0.15em",

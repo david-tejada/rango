@@ -2,7 +2,7 @@ import browser from "webextension-polyfill";
 import { Intersector, HintedIntersector } from "../../typing/types";
 import { assertDefined, isHintedIntersector } from "../../typing/typing-utils";
 import { elementIsObscured } from "../utils/element-visibility";
-import { getOption } from "../options/options";
+import { getOption } from "../options/options-utils";
 import { intersectors, removedIntersectorsHints } from "../intersectors";
 import { positionHint } from "./position-hints";
 import { applyInitialStyles } from "./styles";

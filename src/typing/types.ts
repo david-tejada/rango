@@ -2,18 +2,20 @@ interface RangoSimpleAction {
 	type: "unhoverAll" | "toggleHints" | "increaseHintSize" | "decreaseHintSize";
 }
 
-interface RangoActionWithHint {
+interface RangoActionWithTarget {
 	type:
 		| "clickElement"
 		| "openInNewTab"
 		| "copyLink"
 		| "showLink"
 		| "hoverElement"
-		| "fixedHoverElement";
+		| "fixedHoverElement"
+		| "setHintStyle"
+		| "setHintWeight";
 	target: string;
 }
 
-export type RangoAction = RangoSimpleAction | RangoActionWithHint;
+export type RangoAction = RangoSimpleAction | RangoActionWithTarget;
 
 export interface RequestFromTalon {
 	version?: number;

@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { ContentRequest, ScriptResponse } from "../typing/types";
-import { initOptions } from "./options/options";
+import { initOptions } from "./options/options-utils";
 import {
 	getChromiumClipboard,
 	copyToChromiumClipboard,
@@ -8,8 +8,10 @@ import {
 import {
 	increaseHintSize,
 	decreaseHintSize,
+	setHintStyle,
+	setHintWeight,
 	toggleHints,
-} from "./options/options-utils";
+} from "./options/change-options";
 import { clickElement } from "./actions/click-element";
 import { openInNewTab } from "./actions/open-in-new-tab";
 import { copyLink, showLink } from "./actions/show-and-copy-links";
@@ -91,6 +93,14 @@ browser.runtime.onMessage.addListener(
 
 				case "decreaseHintSize":
 					await decreaseHintSize();
+					break;
+
+				case "setHintStyle":
+					await setHintStyle(request.target);
+					break;
+
+				case "setHintWeight":
+					await setHintWeight(request.target);
 					break;
 
 				default:
