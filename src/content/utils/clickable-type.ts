@@ -60,6 +60,10 @@ export function getClickableType(element: Element): string | undefined {
 		}
 	}
 
+	if (element.getAttribute("contenteditable") === "true") {
+		return "contenteditable";
+	}
+
 	if ((element as HTMLElement).onclick !== null) {
 		return "onclick";
 	}
@@ -94,6 +98,10 @@ export function focusesOnclick(element: Element): boolean {
 	}
 
 	if (element.tagName === "TEXTAREA" || element.tagName === "SELECT") {
+		return true;
+	}
+
+	if (element.getAttribute("contenteditable") === "true") {
 		return true;
 	}
 
