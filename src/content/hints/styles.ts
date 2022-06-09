@@ -14,13 +14,13 @@ const defaultBackgroundColor = getDefaultBackgroundColor();
 
 export function applyInitialStyles(intersector: HintedIntersector) {
 	const subtleHints = getOption("hintStyle") === "subtle";
-	const backgroundColor = intersector.backgroundColor
+	intersector.backgroundColor = intersector.backgroundColor
 		? intersector.backgroundColor
 		: getInheritedBackgroundColor(
 				intersector.element,
 				defaultBackgroundColor || "rgba(0, 0, 0, 0)"
 		  );
-	intersector.backgroundColor = backgroundColor;
+	const backgroundColor = intersector.backgroundColor;
 
 	// We want our hint font color to match the font color of the text it's hinting
 	const elementToGetColorFrom = getFirstTextNodeDescendant(
