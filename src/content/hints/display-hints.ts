@@ -17,27 +17,27 @@ let hintsAreUpdating = false;
 
 function hiddenClickableNeedsRemoved(intersector: Intersector): boolean {
 	return (
-		(!intersector.isVisible || elementIsObscured(intersector)) &&
 		intersector.clickableType !== undefined &&
-		intersector.hintText !== undefined
+		intersector.hintText !== undefined &&
+		(!intersector.isVisible || elementIsObscured(intersector))
 	);
 }
 
 function inViewClickableMissingHint(intersector: Intersector): boolean {
 	return (
 		intersector.isVisible &&
-		!elementIsObscured(intersector) &&
 		intersector.clickableType !== undefined &&
-		intersector.hintText === undefined
+		intersector.hintText === undefined &&
+		!elementIsObscured(intersector)
 	);
 }
 
 function inViewClickablePossessesHint(intersector: Intersector): boolean {
 	return (
 		intersector.isVisible &&
-		!elementIsObscured(intersector) &&
 		intersector.clickableType !== undefined &&
-		intersector.hintText !== undefined
+		intersector.hintText !== undefined &&
+		!elementIsObscured(intersector)
 	);
 }
 
