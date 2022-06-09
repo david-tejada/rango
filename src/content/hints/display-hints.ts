@@ -60,7 +60,6 @@ async function updateHints() {
 	const toAddHint: Intersector[] = [];
 	const toRefresh: HintedIntersector[] = [];
 
-	console.time("Intersectors hints update");
 	for (const intersector of intersectors) {
 		if (hiddenClickableNeedsRemoved(intersector)) {
 			toBeRemoved.push(intersector);
@@ -73,8 +72,6 @@ async function updateHints() {
 			toRefresh.push(intersector);
 		}
 	}
-
-	console.timeEnd("Intersectors hints update");
 
 	const hintsToRelease = toBeRemoved.map((intersector) => intersector.hintText);
 	await releaseHints([
