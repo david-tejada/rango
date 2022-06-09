@@ -71,7 +71,7 @@ export function onAttributeMutation(element: Element): boolean {
 
 	for (const intersector of intersectors) {
 		if (intersector.backgroundColor && element.contains(intersector.element)) {
-			intersector.recomputeBackgroundColor = true;
+			intersector.backgroundColor = undefined;
 		}
 	}
 

@@ -109,7 +109,6 @@ export interface Intersector {
 	hintText?: string;
 	hintAnchor?: HTMLElement;
 	backgroundColor?: Color;
-	recomputeBackgroundColor?: boolean;
 }
 
 export interface HintedIntersector extends Intersector {
