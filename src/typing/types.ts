@@ -1,3 +1,5 @@
+import Color from "color";
+
 interface RangoSimpleAction {
 	type:
 		| "unhoverAll"
@@ -101,10 +103,13 @@ export interface ScriptResponse {
 
 export interface Intersector {
 	element: Element;
-	hintElement?: HTMLDivElement;
-	hintText?: string;
 	isVisible: boolean;
 	clickableType: string | undefined;
+	hintElement?: HTMLDivElement;
+	hintText?: string;
+	hintAnchor?: HTMLElement;
+	backgroundColor?: Color;
+	recomputeBackgroundColor?: boolean;
 }
 
 export interface HintedIntersector extends Intersector {

@@ -14,10 +14,15 @@ const defaultBackgroundColor = getDefaultBackgroundColor();
 
 export function applyInitialStyles(intersector: HintedIntersector) {
 	const subtleHints = getOption("hintStyle") === "subtle";
-	const backgroundColor = getInheritedBackgroundColor(
-		intersector.element,
-		defaultBackgroundColor || "rgba(0, 0, 0, 0)"
-	);
+	const backgroundColor =
+		!intersector.backgroundColor || intersector.recomputeBackgroundColor
+			? getInheritedBackgroundColor(
+					intersector.element,
+					defaultBackgroundColor || "rgba(0, 0, 0, 0)"
+			  )
+			: intersector.backgroundColor;
+	intersector.backgroundColor = backgroundColor;
+	intersector.recomputeBackgroundColor = false;
 
 	// We want our hint font color to match the font color of the text it's hinting
 	const elementToGetColorFrom = getFirstTextNodeDescendant(
@@ -87,7 +92,7 @@ export function applyEmphasisStyles(
 	dynamic: boolean
 ) {
 	// We invert the colors for a visual clue
-	const color = intersector.hintElement.style.backgroundColor;
+	const color = intersector.backgroundColor;
 	const background = intersector.hintElement.style.color;
 	const hintFontSize = getOption("hintFontSize") as number;
 	const fontSize = dynamic ? `${hintFontSize * 1.2}px` : `${hintFontSize}px`;

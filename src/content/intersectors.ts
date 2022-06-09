@@ -69,6 +69,12 @@ export function onAttributeMutation(element: Element): boolean {
 		intersector.clickableType = clickableType;
 	}
 
+	for (const intersector of intersectors) {
+		if (intersector.backgroundColor && element.contains(intersector.element)) {
+			intersector.recomputeBackgroundColor = true;
+		}
+	}
+
 	for (const descendant of element.querySelectorAll("*")) {
 		const observedDescendantElement = getIntersector(descendant);
 		if (observedDescendantElement) {
