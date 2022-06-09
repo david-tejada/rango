@@ -1,4 +1,4 @@
-import { ResponseToTalon, RangoAction } from "../typing/types";
+import { ResponseToTalon, RangoAction, TalonAction } from "../typing/types";
 import { sendRequestToActiveTab } from "./tabs-messaging";
 import { executeBackgroundCommand } from "./background-commands";
 
@@ -23,7 +23,17 @@ export async function dispatchCommand(
 		};
 	}
 
-	const { talonAction } = await sendRequestToActiveTab(command);
+	let talonAction: TalonAction | undefined;
+	try {
+		const response = await sendRequestToActiveTab(command);
+		talonAction = response.talonAction;
+	} catch (error: unknown) {
+		if (error instanceof Error) {
+			talonAction = {
+				type: "noHintFound",
+			};
+		}
+	}
 
 	if (talonAction) {
 		return {
