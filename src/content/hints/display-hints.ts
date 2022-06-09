@@ -17,7 +17,7 @@ let hintsAreUpdating = false;
 
 function hiddenClickableNeedsRemoved(intersector: Intersector): boolean {
 	return (
-		(!intersector.isVisible || elementIsObscured(intersector.element)) &&
+		(!intersector.isVisible || elementIsObscured(intersector)) &&
 		intersector.clickableType !== undefined &&
 		intersector.hintText !== undefined
 	);
@@ -26,7 +26,7 @@ function hiddenClickableNeedsRemoved(intersector: Intersector): boolean {
 function inViewClickableMissingHint(intersector: Intersector): boolean {
 	return (
 		intersector.isVisible &&
-		!elementIsObscured(intersector.element) &&
+		!elementIsObscured(intersector) &&
 		intersector.clickableType !== undefined &&
 		intersector.hintText === undefined
 	);
@@ -35,7 +35,7 @@ function inViewClickableMissingHint(intersector: Intersector): boolean {
 function inViewClickablePossessesHint(intersector: Intersector): boolean {
 	return (
 		intersector.isVisible &&
-		!elementIsObscured(intersector.element) &&
+		!elementIsObscured(intersector) &&
 		intersector.clickableType !== undefined &&
 		intersector.hintText !== undefined
 	);
@@ -60,6 +60,7 @@ async function updateHints() {
 	const toAddHint: Intersector[] = [];
 	const toRefresh: HintedIntersector[] = [];
 
+	console.time("Intersectors hints update");
 	for (const intersector of intersectors) {
 		if (hiddenClickableNeedsRemoved(intersector)) {
 			toBeRemoved.push(intersector);
@@ -72,6 +73,8 @@ async function updateHints() {
 			toRefresh.push(intersector);
 		}
 	}
+
+	console.timeEnd("Intersectors hints update");
 
 	const hintsToRelease = toBeRemoved.map((intersector) => intersector.hintText);
 	await releaseHints([

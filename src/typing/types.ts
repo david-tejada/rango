@@ -105,6 +105,7 @@ export interface Intersector {
 	element: Element;
 	isVisible: boolean;
 	clickableType: string | undefined;
+	firstTextNodeDescendant?: Text;
 	hintElement?: HTMLDivElement;
 	hintText?: string;
 	hintAnchor?: HTMLElement;

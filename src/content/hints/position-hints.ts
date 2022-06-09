@@ -1,5 +1,8 @@
 import { HintedIntersector } from "../../typing/types";
-import { getFirstTextNodeRect } from "../utils/nodes-utils";
+import {
+	getFirstCharacterRect,
+	getFirstTextNodeDescendant,
+} from "../utils/nodes-utils";
 
 function isHintThere(
 	hintElement: HTMLDivElement,
@@ -39,6 +42,10 @@ function isHintThere(
 export function positionHint(intersector: HintedIntersector) {
 	const element = intersector.element as HTMLElement;
 	const hintElement = intersector.hintElement;
+	intersector.firstTextNodeDescendant = intersector.firstTextNodeDescendant
+		?.isConnected
+		? intersector.firstTextNodeDescendant
+		: getFirstTextNodeDescendant(intersector.element);
 	let rect;
 
 	// With small buttons we just place the hint at the top left of the button,
@@ -52,7 +59,8 @@ export function positionHint(intersector: HintedIntersector) {
 		// If the element has text, we situate the hint next to the first character
 		// in case the text spans multiple lines
 		rect =
-			getFirstTextNodeRect(element, true) ?? element.getBoundingClientRect();
+			getFirstCharacterRect(intersector.firstTextNodeDescendant) ??
+			element.getBoundingClientRect();
 	}
 
 	const scrollLeft =
@@ -77,7 +85,8 @@ export function positionHint(intersector: HintedIntersector) {
 	hintElement.style.top = `${y}px`;
 
 	const anchorRect =
-		getFirstTextNodeRect(element) ?? element.getBoundingClientRect();
+		getFirstCharacterRect(intersector.firstTextNodeDescendant) ??
+		element.getBoundingClientRect();
 
 	// Once the hint is at least 25% hidden, if there is space, we move it to the bottom left corner
 	if (

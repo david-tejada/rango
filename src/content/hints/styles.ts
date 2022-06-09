@@ -23,9 +23,13 @@ export function applyInitialStyles(intersector: HintedIntersector) {
 	const backgroundColor = intersector.backgroundColor;
 
 	// We want our hint font color to match the font color of the text it's hinting
-	const elementToGetColorFrom = getFirstTextNodeDescendant(
-		intersector.element
-	)?.parentElement;
+	intersector.firstTextNodeDescendant = intersector.firstTextNodeDescendant
+		?.isConnected
+		? intersector.firstTextNodeDescendant
+		: getFirstTextNodeDescendant(intersector.element);
+
+	const elementToGetColorFrom =
+		intersector.firstTextNodeDescendant?.parentElement;
 
 	const colorString = window.getComputedStyle(
 		elementToGetColorFrom ?? intersector.element

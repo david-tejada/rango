@@ -30,6 +30,20 @@ function getTextNodeRect(textNode: Text): DOMRect {
 	return range.getBoundingClientRect();
 }
 
+export function getFirstCharacterRect(
+	textNode: Text | undefined
+): DOMRect | undefined {
+	if (textNode) {
+		const range = document.createRange();
+		range.setStart(textNode, 0);
+		range.setEnd(textNode, 1);
+		const rect = range.getBoundingClientRect();
+		return rect.width === 0 && rect.height === 0 ? undefined : rect;
+	}
+
+	return undefined;
+}
+
 export function getFirstTextNodeDescendant(element: Node): Text | undefined {
 	// Check to see if the element has any text content that is not white space
 	if (!element.textContent || !/\S/.test(element.textContent)) {
@@ -61,25 +75,6 @@ export function getFirstTextNodeDescendant(element: Node): Text | undefined {
 
 			return getFirstTextNodeDescendant(childNode);
 		}
-	}
-
-	return undefined;
-}
-
-export function getFirstTextNodeRect(
-	element: Element,
-	onlyFirstCharacter = false
-): DOMRect | undefined {
-	const firstTextNodeDescendant = getFirstTextNodeDescendant(element);
-	if (firstTextNodeDescendant) {
-		const range = document.createRange();
-		range.setStart(firstTextNodeDescendant, 0);
-		range.setEnd(
-			firstTextNodeDescendant,
-			onlyFirstCharacter ? 1 : firstTextNodeDescendant.length
-		);
-		const rect = range.getBoundingClientRect();
-		return rect.width === 0 && rect.height === 0 ? undefined : rect;
 	}
 
 	return undefined;

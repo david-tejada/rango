@@ -1,4 +1,8 @@
-import { getFirstTextNodeRect } from "./nodes-utils";
+import { Intersector } from "../../typing/types";
+import {
+	getFirstCharacterRect,
+	getFirstTextNodeDescendant,
+} from "./nodes-utils";
 
 function getElementFromPoint(x: number, y: number): Element | undefined {
 	const elementsFromPoint = document.elementsFromPoint(x, y);
@@ -21,10 +25,15 @@ export function isVisible(element: Element): boolean {
 	);
 }
 
-export function elementIsObscured(element: Element): boolean {
+export function elementIsObscured(intersector: Intersector): boolean {
+	intersector.firstTextNodeDescendant = intersector.firstTextNodeDescendant
+		?.isConnected
+		? intersector.firstTextNodeDescendant
+		: getFirstTextNodeDescendant(intersector.element);
 	const firstCharacterRect =
-		getFirstTextNodeRect(element, true) ?? element.getBoundingClientRect();
-	const rect = element.getBoundingClientRect();
+		getFirstCharacterRect(intersector.firstTextNodeDescendant) ??
+		intersector.element.getBoundingClientRect();
+	const rect = intersector.element.getBoundingClientRect();
 	const elementsFromPoint = [
 		getElementFromPoint(firstCharacterRect.x + 5, firstCharacterRect.y + 5),
 		getElementFromPoint(rect.x + rect.width - 5, rect.y + 5),
@@ -44,8 +53,8 @@ export function elementIsObscured(element: Element): boolean {
 		}
 
 		if (
-			element.contains(elementFromPoint) ||
-			elementFromPoint.contains(element)
+			intersector.element.contains(elementFromPoint) ||
+			elementFromPoint.contains(intersector.element)
 		) {
 			return false;
 		}
