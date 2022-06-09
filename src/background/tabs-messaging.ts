@@ -64,33 +64,46 @@ export async function sendRequestToActiveTab(
 	throw new Error("Failed sending request to active tab");
 }
 
-export async function sendRequestToAllTabs(request: ContentRequest) {
+export async function sendRequestToAllTabs(
+	request: ContentRequest
+): Promise<void> {
 	// We first send the command to the active tabs and then to the rest where it will be
-	// executed using window.requestIdleCallback
+	// executed using window.requestIdleCallback.
+	// We catch errors here because we know some promises might fail, as the extension
+	// is not able to run on all tabs, for example, in pages like "about:debugging".
 	const activeTabs = await browser.tabs.query({
 		active: true,
 	});
-	const activePromises = [];
+
 	for (const tab of activeTabs) {
-		activePromises.push(browser.tabs.sendMessage(tab.id!, request));
+		browser.tabs.sendMessage(tab.id!, request).catch((error) => {
+			if (
+				error.message !==
+				"Could not establish connection. Receiving end does not exist."
+			) {
+				throw new Error(error);
+			}
+		});
 	}
 
 	const rest = await browser.tabs.query({
 		active: false,
 	});
 
-	const restPromises = [];
-
 	for (const tab of rest) {
 		const backgroundTabRequest = { ...request };
 		backgroundTabRequest.type += "OnIdle";
-		restPromises.push(browser.tabs.sendMessage(tab.id!, backgroundTabRequest));
+		void browser.tabs
+			.sendMessage(tab.id!, backgroundTabRequest)
+			.catch((error) => {
+				if (
+					error.message !==
+					"Could not establish connection. Receiving end does not exist."
+				) {
+					throw new Error(error);
+				}
+			});
 	}
-
-	// We use allSettled here because we know some promises will fail, as the extension
-	// is not able to run on all tabs, for example, in pages like "about:debugging".
-	// So we just care that the promise either resolves or rejects
-	await Promise.allSettled([...restPromises, ...activePromises]);
 }
 
 const mutex = new Mutex();
