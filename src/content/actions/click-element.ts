@@ -1,5 +1,5 @@
 import { parseDomain, ParseResultType, fromUrl } from "parse-domain";
-import { isHintedIntersector, isLinkElement } from "../../typing/typing-utils";
+import { isHintedIntersector } from "../../typing/typing-utils";
 import { focusesOnclick } from "../utils/clickable-type";
 import { flashHint } from "../hints/styles";
 import { getIntersectorWithHint } from "../intersectors";
@@ -31,7 +31,7 @@ export async function clickElement(hintText: string) {
 				element as HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
 			).focus();
 		} else {
-			if (isLinkElement(element)) {
+			if (element instanceof HTMLAnchorElement) {
 				const linkElement = element;
 				// Sometimes websites use links with target="_blank" but don't open a new tab.
 				// They probably prevent the default behavior with javascript. For example Slack

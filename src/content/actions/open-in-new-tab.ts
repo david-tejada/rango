@@ -1,5 +1,6 @@
 import browser from "webextension-polyfill";
 import { Intersector } from "../../typing/types";
+import { isHintedIntersector } from "../../typing/typing-utils";
 import { getIntersectorWithHint } from "../intersectors";
 import { flashHint } from "../hints/styles";
 
@@ -8,7 +9,7 @@ export async function openInNewTab(hintOrIntersector: string | Intersector) {
 		typeof hintOrIntersector === "string"
 			? getIntersectorWithHint(hintOrIntersector)
 			: hintOrIntersector;
-	if (intersector) {
+	if (isHintedIntersector(intersector)) {
 		flashHint(intersector);
 		await browser.runtime.sendMessage({
 			type: "openInNewTab",

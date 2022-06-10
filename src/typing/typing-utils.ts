@@ -8,27 +8,11 @@ export function assertDefined<T>(
 	}
 }
 
-export function isTextNode(node: Node): node is Text {
-	return node.nodeType === Node.TEXT_NODE;
-}
-
-export function isElementNode(node: Node): node is Element {
-	return node.nodeType === Node.ELEMENT_NODE;
-}
-
-export function isLinkElement(element: Element): element is HTMLLinkElement {
-	return element.tagName === "A";
-}
-
-export function isInputElement(element: Element): element is HTMLInputElement {
-	return element.tagName === "INPUT";
-}
-
 export function isFocusOnClickInput(
 	element: Element
 ): element is FocusOnClickInput {
 	return (
-		isInputElement(element) &&
+		element instanceof HTMLInputElement &&
 		![
 			"button",
 			"checkbox",

@@ -1,8 +1,4 @@
-import {
-	isTextNode,
-	isElementNode,
-	assertDefined,
-} from "../../typing/typing-utils";
+import { assertDefined } from "../../typing/typing-utils";
 import { getClickableType } from "./clickable-type";
 
 export function hasTextNodesChildren(element: Element) {
@@ -53,7 +49,7 @@ export function getFirstTextNodeDescendant(element: Node): Text | undefined {
 	for (const childNode of element.childNodes) {
 		assertDefined(childNode.textContent);
 		if (
-			isTextNode(childNode) &&
+			childNode instanceof Text &&
 			rangeGivesCoordinates(childNode) &&
 			/\S/.test(childNode.textContent)
 		) {
@@ -64,7 +60,7 @@ export function getFirstTextNodeDescendant(element: Node): Text | undefined {
 			}
 		}
 
-		if (isElementNode(childNode) && /\S/.test(childNode.textContent)) {
+		if (childNode instanceof Element && /\S/.test(childNode.textContent)) {
 			// Sometimes we get a clickable element inside another clickable element. For example,
 			// in the YouTube search suggestions every item is an element with role="option" and inside
 			// those that represent previous searches a link element to remove said search,

@@ -1,4 +1,3 @@
-import { isElementNode } from "../typing/typing-utils";
 import { hasTextNodesChildren } from "./utils/nodes-utils";
 import { getClickableType } from "./utils/clickable-type";
 import { triggerHintsUpdate } from "./hints/display-hints";
@@ -31,7 +30,7 @@ const mutationCallback: MutationCallback = async (mutationList) => {
 		if (mutationRecord.type === "childList") {
 			for (const node of mutationRecord.addedNodes) {
 				if (
-					isElementNode(node) &&
+					node instanceof Element &&
 					!node.id.includes("rango-hints-container") &&
 					!node.parentElement?.id.includes("rango-hints-container")
 				) {
