@@ -23,7 +23,15 @@ interface RangoActionWithTarget {
 	target: string;
 }
 
-export type RangoAction = RangoSimpleAction | RangoActionWithTarget;
+interface RangoActionWithMultipleTargets {
+	type: "openInBackgroundTab";
+	target: string[];
+}
+
+export type RangoAction =
+	| RangoSimpleAction
+	| RangoActionWithTarget
+	| RangoActionWithMultipleTargets;
 
 export interface RequestFromTalon {
 	version?: number;
@@ -51,50 +59,56 @@ export interface ResponseToTalonVersion0 {
 	action: TalonActionVersion0;
 }
 
-interface GetChromiumClipboardRequest {
+interface GetChromiumClipboard {
 	type: "getChromiumClipboard";
 }
 
-interface CopyToChromiumClipboardRequest {
+interface CopyToChromiumClipboard {
 	type: "copyToChromiumClipboard";
 	text: string;
 }
 
 export type ContentRequest =
 	| RangoAction
-	| GetChromiumClipboardRequest
-	| CopyToChromiumClipboardRequest;
+	| GetChromiumClipboard
+	| CopyToChromiumClipboard;
 
-interface OpenInNewTabRequest {
+interface OpenInNewTab {
 	type: "openInNewTab";
 	url: string;
 }
 
-interface InitStackRequest {
+interface OpenMultipleInBackgroundTab {
+	type: "openMultipleInBackgroundTab";
+	links: string[];
+}
+
+interface InitStack {
 	type: "initStack";
 }
 
-interface ClaimHintsRequest {
+interface ClaimHints {
 	type: "claimHints";
 	amount: number;
 }
 
-interface ReleaseHintsRequest {
+interface ReleaseHints {
 	type: "releaseHints";
 	hints: string[];
 }
 
-interface ReleaseOrphanHintsRequest {
+interface ReleaseOrphanHints {
 	type: "releaseOrphanHints";
 	activeHints: string[];
 }
 
 export type BackgroundRequest =
-	| OpenInNewTabRequest
-	| InitStackRequest
-	| ClaimHintsRequest
-	| ReleaseHintsRequest
-	| ReleaseOrphanHintsRequest;
+	| OpenInNewTab
+	| InitStack
+	| ClaimHints
+	| ReleaseHints
+	| ReleaseOrphanHints
+	| OpenMultipleInBackgroundTab;
 
 export interface ScriptResponse {
 	text?: string;

@@ -121,6 +121,16 @@ browser.runtime.onMessage.addListener(
 				});
 				break;
 
+			case "openInBackgroundTab":
+				for (const link of request.links) {
+					void browser.tabs.create({
+						url: link,
+						active: false,
+					});
+				}
+
+				break;
+
 			case "initStack":
 				return mutex.runExclusive(async () => {
 					return initStack(tabId, frameId);

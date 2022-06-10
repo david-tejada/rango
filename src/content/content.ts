@@ -6,7 +6,7 @@ import {
 	copyToChromiumClipboard,
 } from "./utils/chromium-clipboard";
 import { clickElement } from "./actions/click-element";
-import { openInNewTab } from "./actions/open-in-new-tab";
+import { openInNewTab, openInBackgroundTab } from "./actions/open-in-new-tab";
 import { copyLink, showLink } from "./actions/show-and-copy-links";
 import { hoverElement, unhoverAll } from "./actions/hover";
 import { triggerHintsUpdate } from "./hints/display-hints";
@@ -62,6 +62,10 @@ browser.runtime.onMessage.addListener(
 
 				case "openInNewTab":
 					await openInNewTab(request.target);
+					break;
+
+				case "openInBackgroundTab":
+					await openInBackgroundTab(request.target);
 					break;
 
 				case "hoverElement":
