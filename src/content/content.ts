@@ -37,7 +37,8 @@ browser.runtime.onMessage.addListener(
 				}
 
 				// RANGO ACTIONS
-				case "clickElement": {
+				case "clickElement":
+				case "directClickElement": {
 					await clickElement(request.target);
 					break;
 				}
@@ -94,7 +95,10 @@ browser.runtime.onMessage.addListener(
 					break;
 			}
 		} catch (error: unknown) {
-			if (error instanceof NoHintError) {
+			if (
+				request.type === "directClickElement" &&
+				error instanceof NoHintError
+			) {
 				return {
 					talonAction: {
 						type: "noHintFound",

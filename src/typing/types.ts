@@ -13,6 +13,7 @@ interface RangoSimpleAction {
 interface RangoActionWithTarget {
 	type:
 		| "clickElement"
+		| "directClickElement"
 		| "openInNewTab"
 		| "copyLink"
 		| "showLink"

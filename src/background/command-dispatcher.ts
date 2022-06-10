@@ -28,7 +28,7 @@ export async function dispatchCommand(
 		const response = await sendRequestToActiveTab(command);
 		talonAction = response.talonAction;
 	} catch (error: unknown) {
-		if (error instanceof Error) {
+		if (command.type === "directClickElement" && error instanceof Error) {
 			talonAction = {
 				type: "noHintFound",
 			};
