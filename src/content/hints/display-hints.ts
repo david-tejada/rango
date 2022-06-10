@@ -41,7 +41,12 @@ function inViewClickablePossessesHint(intersector: Intersector): boolean {
 	);
 }
 
-function getHintsContainer(): HTMLDivElement {
+function getHintsContainer(): HTMLDivElement | undefined {
+	// This addresses issue #20 where the hint text would get sent on submit
+	if (document.body.contentEditable === "true") {
+		return undefined;
+	}
+
 	let container = document.querySelector("#rango-hints-container");
 	if (!container) {
 		container = document.createElement("div");
@@ -55,6 +60,10 @@ function getHintsContainer(): HTMLDivElement {
 async function updateHints() {
 	hintsAreUpdating = true;
 	const hintsContainer = getHintsContainer();
+
+	if (!hintsContainer) {
+		return;
+	}
 
 	const toBeRemoved: Intersector[] = [];
 	const toAddHint: Intersector[] = [];
