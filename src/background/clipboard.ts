@@ -1,4 +1,5 @@
 import {
+	ClipboardResponse,
 	RequestFromTalon,
 	ResponseToTalon,
 	ResponseToTalonVersion0,
@@ -44,9 +45,10 @@ export async function writeResponseToClipboard(
 }
 
 async function getChromiumClipboard(): Promise<string> {
-	const { text } = await sendRequestToActiveTab({
+	const { text } = (await sendRequestToActiveTab({
 		type: "getChromiumClipboard",
-	});
+	})) as ClipboardResponse;
+
 	if (text) {
 		return text;
 	}

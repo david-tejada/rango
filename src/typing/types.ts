@@ -17,6 +17,7 @@ interface RangoActionWithTarget {
 		| "directClickElement"
 		| "openInNewTab"
 		| "copyLink"
+		| "copyTextContent"
 		| "showLink"
 		| "hoverElement"
 		| "setHintStyle"
@@ -111,10 +112,15 @@ export type BackgroundRequest =
 	| ReleaseOrphanHints
 	| OpenInBackgroundTab;
 
-export interface ScriptResponse {
-	text?: string;
-	talonAction?: TalonAction;
+export interface ClipboardResponse {
+	text: string;
 }
+
+export interface ResponseWithTalonAction {
+	talonAction: TalonAction;
+}
+
+export type ScriptResponse = ClipboardResponse | ResponseWithTalonAction;
 
 export interface Intersector {
 	element: Element;

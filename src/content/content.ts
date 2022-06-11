@@ -7,13 +7,13 @@ import {
 } from "./utils/chromium-clipboard";
 import { clickElement } from "./actions/click-element";
 import { openInNewTab, openInBackgroundTab } from "./actions/open-in-new-tab";
-import { copyLink, showLink } from "./actions/show-and-copy-links";
+import { showLink } from "./actions/show";
 import { hoverElement, unhoverAll } from "./actions/hover";
 import { triggerHintsUpdate } from "./hints/display-hints";
 import observe from "./observers";
 import { initStack } from "./hints/hints-requests";
 import { NoHintError } from "./classes/errors";
-import { copyToClipboardResponse } from "./actions/copy";
+import { copyTextContent, copyLink } from "./actions/copy";
 
 // Initialize options
 initOptions()
@@ -24,7 +24,7 @@ initOptions()
 	});
 
 browser.runtime.onMessage.addListener(
-	async (request: ContentRequest): Promise<ScriptResponse> => {
+	async (request: ContentRequest): Promise<ScriptResponse | undefined> => {
 		try {
 			switch (request.type) {
 				// SCRIPT REQUESTS
@@ -44,14 +44,11 @@ browser.runtime.onMessage.addListener(
 					break;
 				}
 
-				case "copyLink": {
-					const url = copyLink(request.target);
-					if (url) {
-						return copyToClipboardResponse(url);
-					}
+				case "copyLink":
+					return copyLink(request.target);
 
-					break;
-				}
+				case "copyTextContent":
+					return copyTextContent(request.target);
 
 				case "showLink":
 					showLink(request.target);
@@ -105,7 +102,7 @@ browser.runtime.onMessage.addListener(
 			console.error(error);
 		}
 
-		return {};
+		return undefined;
 	}
 );
 
