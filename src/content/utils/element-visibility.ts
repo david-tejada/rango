@@ -74,25 +74,5 @@ export function elementIsObscured(intersector: Intersector): boolean {
 		return false;
 	}
 
-	// Top Right
-	if (
-		isNotObscured(
-			element,
-			getElementFromPoint(rect.x + rect.width - 5, rect.y + 5)
-		)
-	) {
-		return false;
-	}
-
-	// Bottom right
-	if (
-		isNotObscured(
-			element,
-			getElementFromPoint(rect.x + rect.width - 5, rect.y + rect.height - 5)
-		)
-	) {
-		return false;
-	}
-
 	return true;
 }
