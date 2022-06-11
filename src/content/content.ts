@@ -61,6 +61,18 @@ browser.runtime.onMessage.addListener(
 				case "copyCurrentUrl":
 					return await copyGeneric(window.location.href, "URL");
 
+				case "copyCurrentHostname":
+					return await copyGeneric(window.location.hostname, "Domain");
+
+				case "copyCurrentPath":
+					return await copyGeneric(window.location.pathname, "Path");
+
+				case "copyCurrentUrlMarkdown":
+					return await copyGeneric(
+						`[${document.title}](${window.location.href})`,
+						"Markdown address"
+					);
+
 				case "showLink":
 					showLink(request.target);
 					break;

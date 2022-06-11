@@ -4,6 +4,9 @@ interface RangoSimpleAction {
 	type:
 		| "unhoverAll"
 		| "copyCurrentUrl"
+		| "copyCurrentHostname"
+		| "copyCurrentPath"
+		| "copyCurrentUrlMarkdown"
 		| "toggleHints"
 		| "refreshHints"
 		| "fullHintsUpdate"

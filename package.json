@@ -33,7 +33,8 @@
 				2,
 				"never"
 			],
-			"node/prefer-global/process": "off"
+			"node/prefer-global/process": "off",
+			"complexity": "off"
 		}
 	},
 	"prettier": {
