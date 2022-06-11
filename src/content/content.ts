@@ -70,11 +70,7 @@ browser.runtime.onMessage.addListener(
 					break;
 
 				case "hoverElement":
-					await hoverElement(request.target, false);
-					break;
-
-				case "fixedHoverElement":
-					await hoverElement(request.target, true);
+					await hoverElement(request.target);
 					break;
 
 				case "unhoverAll":
