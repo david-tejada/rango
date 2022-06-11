@@ -4,6 +4,7 @@ interface RangoSimpleAction {
 	type:
 		| "unhoverAll"
 		| "toggleHints"
+		| "refreshHints"
 		| "fullHintsUpdate"
 		| "fullHintsUpdateOnIdle"
 		| "increaseHintSize"

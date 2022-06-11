@@ -77,6 +77,10 @@ browser.runtime.onMessage.addListener(
 					unhoverAll();
 					break;
 
+				case "refreshHints":
+					await triggerHintsUpdate(true);
+					break;
+
 				case "fullHintsUpdate":
 					await triggerHintsUpdate(true);
 					break;
