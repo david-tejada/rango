@@ -1,14 +1,24 @@
+import browser from "webextension-polyfill";
 import { ResponseWithTalonAction } from "../../typing/types";
 import { showTooltip } from "../hints/tooltip";
 import { getIntersectorWithHint } from "../intersectors";
 
-function copyToClipboardResponse(text: string): ResponseWithTalonAction {
+export function copyToClipboardResponse(text: string): ResponseWithTalonAction {
 	return {
 		talonAction: {
 			type: "copyToClipboard",
 			textToCopy: text,
 		},
 	};
+}
+
+export async function copyGeneric(text: string, item: string) {
+	void browser.runtime.sendMessage({
+		type: "notify",
+		title: "Rango",
+		message: `${item} copied to the clipboard!`,
+	});
+	return copyToClipboardResponse(text);
 }
 
 export function copyTextContent(hintText: string) {

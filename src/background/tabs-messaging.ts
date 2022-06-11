@@ -147,6 +147,15 @@ browser.runtime.onMessage.addListener(
 			case "releaseOrphanHints":
 				return releaseOrphanHints(request.activeHints, tabId, frameId);
 
+			case "notify":
+				void browser.notifications.create("rango-notification", {
+					type: "basic",
+					iconUrl: browser.runtime.getURL("../assets/icon128.png"),
+					title: request.title,
+					message: request.message,
+				});
+				break;
+
 			default:
 				throw new Error("Bad request to background script");
 		}

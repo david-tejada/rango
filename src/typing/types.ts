@@ -3,6 +3,7 @@ import Color from "color";
 interface RangoSimpleAction {
 	type:
 		| "unhoverAll"
+		| "copyCurrentUrl"
 		| "toggleHints"
 		| "refreshHints"
 		| "fullHintsUpdate"
@@ -105,13 +106,20 @@ interface ReleaseOrphanHints {
 	activeHints: string[];
 }
 
+interface Notify {
+	type: "notify";
+	title: string;
+	message: string;
+}
+
 export type BackgroundRequest =
 	| OpenInNewTab
 	| InitStack
 	| ClaimHints
 	| ReleaseHints
 	| ReleaseOrphanHints
-	| OpenInBackgroundTab;
+	| OpenInBackgroundTab
+	| Notify;
 
 export interface ClipboardResponse {
 	text: string;

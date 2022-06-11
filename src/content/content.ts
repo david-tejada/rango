@@ -13,7 +13,12 @@ import { triggerHintsUpdate } from "./hints/display-hints";
 import observe from "./observers";
 import { initStack } from "./hints/hints-requests";
 import { NoHintError } from "./classes/errors";
-import { copyTextContent, copyLink, copyMarkdownLink } from "./actions/copy";
+import {
+	copyTextContent,
+	copyLink,
+	copyMarkdownLink,
+	copyGeneric,
+} from "./actions/copy";
 
 // Initialize options
 initOptions()
@@ -52,6 +57,9 @@ browser.runtime.onMessage.addListener(
 
 				case "copyTextContent":
 					return copyTextContent(request.target);
+
+				case "copyCurrentUrl":
+					return await copyGeneric(window.location.href, "URL");
 
 				case "showLink":
 					showLink(request.target);
