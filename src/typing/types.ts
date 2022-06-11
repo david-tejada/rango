@@ -18,7 +18,6 @@ interface RangoActionWithTarget {
 		| "copyLink"
 		| "showLink"
 		| "hoverElement"
-		| "fixedHoverElement"
 		| "setHintStyle"
 		| "setHintWeight";
 	target: string;

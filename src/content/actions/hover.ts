@@ -1,21 +1,20 @@
 import { getIntersectorWithHint } from "../intersectors";
 import { triggerHintsUpdate } from "../hints/display-hints";
+import { flashHint } from "../hints/styles";
+import { isHintedIntersector } from "../../typing/typing-utils";
 
 const hoveredElements: Set<Element> = new Set();
-const timeoutIds: Set<NodeJS.Timeout> = new Set();
 
-export async function hoverElement(hintText: string, fixed: boolean) {
+export async function hoverElement(hintText: string) {
 	hoveredElements.clear();
-	for (const timeoutId of timeoutIds) {
-		clearTimeout(timeoutId);
-	}
 
 	for (const hoveredElement of hoveredElements) {
 		unhoverElement(hoveredElement);
 	}
 
 	const intersector = getIntersectorWithHint(hintText);
-	if (intersector) {
+	if (isHintedIntersector(intersector)) {
+		flashHint(intersector);
 		const targetElement = intersector.element;
 		const event = new MouseEvent("mouseover", {
 			view: window,
@@ -26,19 +25,6 @@ export async function hoverElement(hintText: string, fixed: boolean) {
 		targetElement.dispatchEvent(event);
 		hoveredElements.add(targetElement);
 		await triggerHintsUpdate();
-
-		if (!fixed) {
-			const timeoutId = setTimeout(() => {
-				unhoverElement(targetElement);
-			}, 10_000);
-			timeoutIds.add(timeoutId);
-		}
-	}
-}
-
-export function unhoverAll() {
-	for (const hoveredElement of hoveredElements) {
-		unhoverElement(hoveredElement);
 	}
 }
 
@@ -55,4 +41,10 @@ function unhoverElement(element: Element) {
 	});
 	element.dispatchEvent(mouseoutEvent);
 	element.dispatchEvent(mouseleaveEvent);
+}
+
+export function unhoverAll() {
+	for (const hoveredElement of hoveredElements) {
+		unhoverElement(hoveredElement);
+	}
 }
