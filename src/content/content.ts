@@ -13,6 +13,7 @@ import { triggerHintsUpdate } from "./hints/display-hints";
 import observe from "./observers";
 import { initStack } from "./hints/hints-requests";
 import { NoHintError } from "./classes/errors";
+import { copyToClipboardResponse } from "./actions/copy";
 
 // Initialize options
 initOptions()
@@ -46,12 +47,7 @@ browser.runtime.onMessage.addListener(
 				case "copyLink": {
 					const url = copyLink(request.target);
 					if (url) {
-						return {
-							talonAction: {
-								type: "copyToClipboard",
-								textToCopy: url,
-							},
-						};
+						return copyToClipboardResponse(url);
 					}
 
 					break;
