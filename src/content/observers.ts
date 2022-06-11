@@ -45,7 +45,7 @@ const mutationCallback: MutationCallback = async (mutationList) => {
 		if (mutationRecord.type === "attributes") {
 			const hintsContainer = document.querySelector("#rango-hints-container");
 			if (
-				isElementNode(mutationRecord.target) &&
+				mutationRecord.target instanceof Element &&
 				!hintsContainer?.contains(mutationRecord.target)
 			) {
 				// The function onAttributeMutation returns true if there is a change to

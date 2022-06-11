@@ -79,8 +79,8 @@ interface OpenInNewTab {
 	url: string;
 }
 
-interface OpenMultipleInBackgroundTab {
-	type: "openMultipleInBackgroundTab";
+interface OpenInBackgroundTab {
+	type: "openInBackgroundTab";
 	links: string[];
 }
 
@@ -109,7 +109,7 @@ export type BackgroundRequest =
 	| ClaimHints
 	| ReleaseHints
 	| ReleaseOrphanHints
-	| OpenMultipleInBackgroundTab;
+	| OpenInBackgroundTab;
 
 export interface ScriptResponse {
 	text?: string;
