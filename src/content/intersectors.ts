@@ -1,5 +1,4 @@
 import { Intersector } from "../typing/types";
-import { isVisible } from "./utils/element-visibility";
 import { getClickableType } from "./utils/clickable-type";
 import { NoHintError } from "./classes/errors";
 
@@ -43,7 +42,6 @@ export function onIntersection(
 	if (isIntersecting) {
 		intersectors.push({
 			element,
-			isVisible: isVisible(element),
 			clickableType: getClickableType(element),
 		});
 	} else {
@@ -55,17 +53,12 @@ export function onAttributeMutation(element: Element): boolean {
 	const intersector = getIntersector(element);
 	let updateHints = false;
 	if (intersector) {
-		const visible = isVisible(element);
 		const clickableType = getClickableType(element);
 
-		if (
-			visible !== intersector.isVisible ||
-			clickableType !== intersector.clickableType
-		) {
+		if (clickableType !== intersector.clickableType) {
 			updateHints = true;
 		}
 
-		intersector.isVisible = visible;
 		intersector.clickableType = clickableType;
 	}
 
@@ -78,12 +71,7 @@ export function onAttributeMutation(element: Element): boolean {
 	for (const descendant of element.querySelectorAll("*")) {
 		const observedDescendantElement = getIntersector(descendant);
 		if (observedDescendantElement) {
-			const visible = isVisible(descendant);
-			if (visible !== observedDescendantElement.isVisible) {
-				updateHints = true;
-			}
-
-			observedDescendantElement.isVisible = visible;
+			updateHints = true;
 		}
 	}
 

@@ -1,6 +1,6 @@
 import { Intersector, HintedIntersector } from "../../typing/types";
 import { assertDefined, isHintedIntersector } from "../../typing/typing-utils";
-import { elementIsObscured } from "../utils/element-visibility";
+import { elementIsVisible } from "../utils/element-visibility";
 import { getOption, initOptions } from "../options/options-utils";
 import { intersectors, removedIntersectorsHints } from "../intersectors";
 import { positionHint } from "./position-hints";
@@ -19,25 +19,23 @@ function hiddenClickableNeedsRemoved(intersector: Intersector): boolean {
 	return (
 		intersector.clickableType !== undefined &&
 		intersector.hintText !== undefined &&
-		(!intersector.isVisible || elementIsObscured(intersector))
+		!elementIsVisible(intersector)
 	);
 }
 
 function inViewClickableMissingHint(intersector: Intersector): boolean {
 	return (
-		intersector.isVisible &&
 		intersector.clickableType !== undefined &&
 		intersector.hintText === undefined &&
-		!elementIsObscured(intersector)
+		elementIsVisible(intersector)
 	);
 }
 
 function inViewClickablePossessesHint(intersector: Intersector): boolean {
 	return (
-		intersector.isVisible &&
 		intersector.clickableType !== undefined &&
 		intersector.hintText !== undefined &&
-		!elementIsObscured(intersector)
+		elementIsVisible(intersector)
 	);
 }
 
