@@ -30,3 +30,18 @@ export function copyLink(hintText: string) {
 	showTooltip(target, message, 1500);
 	return href ? copyToClipboardResponse(href) : undefined;
 }
+
+export function copyMarkdownLink(hintText: string) {
+	const target = getIntersectorWithHint(hintText);
+	let href;
+	let markdown;
+	if (target.element instanceof HTMLAnchorElement) {
+		href = target.element.href;
+		const title = target.element.textContent ?? "";
+		markdown = `[${title}](${href})`;
+	}
+
+	const message = markdown ? "Copied!" : "Not a link";
+	showTooltip(target, message, 1500);
+	return markdown ? copyToClipboardResponse(markdown) : undefined;
+}

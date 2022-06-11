@@ -45,7 +45,7 @@ async function getHintFrameId(
 
 export async function sendRequestToActiveTab(
 	request: ContentRequest
-): Promise<ScriptResponse> {
+): Promise<ScriptResponse | undefined> {
 	const activeTab = await getActiveTab();
 	let hintText;
 	if ("target" in request) {
@@ -58,10 +58,10 @@ export async function sendRequestToActiveTab(
 		const frameId = await getHintFrameId(activeTab.id, hintText);
 		return browser.tabs.sendMessage(activeTab.id, request, {
 			frameId,
-		}) as Promise<ScriptResponse>;
+		}) as Promise<ScriptResponse | undefined>;
 	}
 
-	throw new Error("Failed sending request to active tab");
+	return undefined;
 }
 
 export async function sendRequestToAllTabs(

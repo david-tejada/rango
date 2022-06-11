@@ -13,7 +13,7 @@ import { triggerHintsUpdate } from "./hints/display-hints";
 import observe from "./observers";
 import { initStack } from "./hints/hints-requests";
 import { NoHintError } from "./classes/errors";
-import { copyTextContent, copyLink } from "./actions/copy";
+import { copyTextContent, copyLink, copyMarkdownLink } from "./actions/copy";
 
 // Initialize options
 initOptions()
@@ -46,6 +46,9 @@ browser.runtime.onMessage.addListener(
 
 				case "copyLink":
 					return copyLink(request.target);
+
+				case "copyMarkdownLink":
+					return copyMarkdownLink(request.target);
 
 				case "copyTextContent":
 					return copyTextContent(request.target);

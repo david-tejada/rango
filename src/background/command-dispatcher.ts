@@ -1,4 +1,9 @@
-import { ResponseToTalon, RangoAction, TalonAction } from "../typing/types";
+import {
+	ResponseToTalon,
+	ResponseWithTalonAction,
+	RangoAction,
+	TalonAction,
+} from "../typing/types";
 import { sendRequestToActiveTab } from "./tabs-messaging";
 import { executeBackgroundCommand } from "./background-commands";
 
@@ -25,9 +30,15 @@ export async function dispatchCommand(
 
 	let talonAction: TalonAction | undefined;
 	try {
-		const response = await sendRequestToActiveTab(command);
-		talonAction = response.talonAction;
+		const response = (await sendRequestToActiveTab(command)) as
+			| ResponseWithTalonAction
+			| undefined;
+		if (response?.talonAction) {
+			talonAction = response.talonAction;
+		}
 	} catch (error: unknown) {
+		// This handles when the user says one or two letters in a page where Rango can't run,
+		// for example, a New tab page
 		if (command.type === "directClickElement" && error instanceof Error) {
 			talonAction = {
 				type: "noHintFound",

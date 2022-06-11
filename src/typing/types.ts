@@ -17,6 +17,7 @@ interface RangoActionWithTarget {
 		| "directClickElement"
 		| "openInNewTab"
 		| "copyLink"
+		| "copyMarkdownLink"
 		| "copyTextContent"
 		| "showLink"
 		| "hoverElement"
