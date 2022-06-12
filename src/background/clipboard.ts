@@ -19,8 +19,6 @@ async function getTextFromClipboard(): Promise<string | undefined> {
 			request: "getTextFromClipboard"
 		}).then(
 			function (response: any): string {
-				console.log("response from extension:")
-				console.log(response);
 				return response["textFromClipboard"];
 			});
 	}
