@@ -51,7 +51,21 @@ export async function writeResponseToClipboard(
 	// and to tell talon to execute any actions
 	const jsonResponse = JSON.stringify(response);
 	if (navigator.clipboard) {
-		return navigator.clipboard.writeText(jsonResponse);
+		if (isSafari()) {
+			const copyPasteArea =
+				document.querySelector("#copy-paste-area") ??
+				document.createElement("textarea");
+			copyPasteArea.id = "copy-paste-area";
+			document.body.append(copyPasteArea);
+			if (copyPasteArea instanceof HTMLTextAreaElement) {
+				copyPasteArea.value = jsonResponse;
+				copyPasteArea.select();
+				document.execCommand("copy");
+				copyPasteArea.value = "";
+			}
+		} else {
+			return navigator.clipboard.writeText(jsonResponse);
+		}
 	}
 
 	return copyToChromiumClipboard(jsonResponse);
