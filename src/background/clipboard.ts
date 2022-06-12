@@ -5,10 +5,25 @@ import {
 	ResponseToTalonVersion0,
 } from "../typing/types";
 import { sendRequestToActiveTab } from "./tabs-messaging";
+import browser from "webextension-polyfill";
 
 let lastRequestText: string | undefined;
 
+function isSafari(): boolean {
+	return navigator.vendor.indexOf('Apple') != -1;
+}
+
 async function getTextFromClipboard(): Promise<string | undefined> {
+	if (isSafari()) {
+		return browser.runtime.sendNativeMessage("", {
+			request: "getTextFromClipboard"
+		}).then(
+			function (response: any): string {
+				console.log("response from extension:")
+				console.log(response);
+				return response["textFromClipboard"];
+			});
+	}
 	if (navigator.clipboard) {
 		return navigator.clipboard.readText();
 	}
