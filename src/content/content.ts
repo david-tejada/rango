@@ -1,5 +1,9 @@
 import browser from "webextension-polyfill";
-import { ContentRequest, ScriptResponse } from "../typing/types";
+import {
+	ContentRequest,
+	ScriptResponse,
+	WindowLocationKeys,
+} from "../typing/types";
 import { initOptions } from "./options/options-utils";
 import {
 	getClipboardManifestV3,
@@ -14,10 +18,10 @@ import observe from "./observers";
 import { initStack } from "./hints/hints-requests";
 import { NoHintError } from "./classes/errors";
 import {
-	copyTextContent,
-	copyLink,
-	copyMarkdownLink,
-	copyGeneric,
+	copyElementTextContentToClipboard,
+	copyLinkToClipboard,
+	copyMarkdownLinkToClipboard,
+	copyToClipboardResponse,
 } from "./actions/copy";
 
 // Initialize options
@@ -50,27 +54,17 @@ browser.runtime.onMessage.addListener(
 				}
 
 				case "copyLink":
-					return copyLink(request.target);
+					return copyLinkToClipboard(request.target);
 
 				case "copyMarkdownLink":
-					return copyMarkdownLink(request.target);
+					return copyMarkdownLinkToClipboard(request.target);
 
-				case "copyTextContent":
-					return copyTextContent(request.target);
+				case "copyElementTextContent":
+					return copyElementTextContentToClipboard(request.target);
 
-				case "copyCurrentUrl":
-					return await copyGeneric(window.location.href, "URL");
-
-				case "copyCurrentHostname":
-					return await copyGeneric(window.location.hostname, "Domain");
-
-				case "copyCurrentPath":
-					return await copyGeneric(window.location.pathname, "Path");
-
-				case "copyCurrentUrlMarkdown":
-					return await copyGeneric(
-						`[${document.title}](${window.location.href})`,
-						"Markdown address"
+				case "copyLocationProperty":
+					return copyToClipboardResponse(
+						window.location[request.target as WindowLocationKeys]
 					);
 
 				case "showLink":

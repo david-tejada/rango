@@ -3,10 +3,8 @@ import Color from "color";
 interface RangoSimpleAction {
 	type:
 		| "unhoverAll"
-		| "copyCurrentUrl"
-		| "copyCurrentHostname"
-		| "copyCurrentPath"
-		| "copyCurrentUrlMarkdown"
+		| "copyCurrentTabMarkdownUrl"
+		| "getCurrentTabUrl"
 		| "toggleHints"
 		| "refreshHints"
 		| "fullHintsUpdate"
@@ -22,7 +20,8 @@ interface RangoActionWithTarget {
 		| "openInNewTab"
 		| "copyLink"
 		| "copyMarkdownLink"
-		| "copyTextContent"
+		| "copyElementTextContent"
+		| "copyLocationProperty"
 		| "showLink"
 		| "hoverElement"
 		| "setHintStyle"
@@ -47,8 +46,9 @@ export interface RequestFromTalon {
 }
 
 export interface TalonAction {
-	type: "ok" | "copyToClipboard" | "noHintFound";
+	type: "noAction" | "copyToClipboard" | "textRetrieved" | "noHintFound";
 	textToCopy?: string;
+	text?: string;
 }
 
 export interface ResponseToTalon {
@@ -109,20 +109,13 @@ interface ReleaseOrphanHints {
 	activeHints: string[];
 }
 
-interface Notify {
-	type: "notify";
-	title: string;
-	message: string;
-}
-
 export type BackgroundRequest =
 	| OpenInNewTab
 	| InitStack
 	| ClaimHints
 	| ReleaseHints
 	| ReleaseOrphanHints
-	| OpenInBackgroundTab
-	| Notify;
+	| OpenInBackgroundTab;
 
 export interface ClipboardResponse {
 	text: string;
@@ -143,6 +136,15 @@ export interface Intersector {
 	hintAnchor?: HTMLElement;
 	backgroundColor?: Color;
 }
+
+export type WindowLocationKeys =
+	| "href"
+	| "hostname"
+	| "host"
+	| "origin"
+	| "pathname"
+	| "port"
+	| "protocol";
 
 export interface HintedIntersector extends Intersector {
 	hintElement: HTMLDivElement;

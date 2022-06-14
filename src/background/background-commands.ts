@@ -1,8 +1,10 @@
-import { RangoAction } from "../typing/types";
+import { RangoAction, TalonAction } from "../typing/types";
 import { getStored, setStored } from "../lib/storage";
-import { sendRequestToAllTabs } from "./tabs-messaging";
+import { sendRequestToAllTabs, getActiveTab } from "./tabs-messaging";
 
-export async function executeBackgroundCommand(command: RangoAction) {
+export async function executeBackgroundCommand(
+	command: RangoAction
+): Promise<TalonAction> {
 	switch (command.type) {
 		case "toggleHints": {
 			const showHints = await getStored("showHints");
@@ -30,9 +32,40 @@ export async function executeBackgroundCommand(command: RangoAction) {
 			await setStored({ hintWeight: command.target });
 			break;
 
+		case "getCurrentTabUrl": {
+			const activeTab = await getActiveTab();
+			if (activeTab?.url) {
+				return {
+					type: "textRetrieved",
+					text: activeTab.url.toString(),
+				};
+			}
+
+			return {
+				type: "noAction",
+			};
+		}
+
+		case "copyCurrentTabMarkdownUrl": {
+			const activeTab = await getActiveTab();
+			if (activeTab?.url && activeTab?.title) {
+				return {
+					type: "copyToClipboard",
+					textToCopy: `[${activeTab.title}](${activeTab.url.toString()})`,
+				};
+			}
+
+			return {
+				type: "noAction",
+			};
+		}
+
 		default:
 			break;
 	}
 
 	await sendRequestToAllTabs({ type: "fullHintsUpdate" });
+	return {
+		type: "noAction",
+	};
 }

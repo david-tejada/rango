@@ -1,5 +1,4 @@
 import browser from "webextension-polyfill";
-import { ResponseToTalon } from "../typing/types";
 import {
 	getRequestFromClipboard,
 	writeResponseToClipboard,
@@ -7,6 +6,10 @@ import {
 } from "./clipboard";
 import { dispatchCommand } from "./command-dispatcher";
 import { adaptResponse } from "./adapt-response";
+import {
+	getCopyToClipboardResponseObject,
+	noActionResponse,
+} from "./response-utils";
 
 if (browser.action) {
 	browser.action.onClicked.addListener(async () => {
@@ -26,46 +29,39 @@ browser.commands.onCommand.addListener(async (internalCommand: string) => {
 				return;
 			}
 
-			if (
-				navigator.clipboard ||
-				commandsThatChangeTheClipboard.has(request.action.type)
-			) {
+			const requiresResponseValue = /^copy|^get/.test(request.action.type);
+
+			if (navigator.clipboard || requiresResponseValue) {
 				let response = await dispatchCommand(request.action);
-				const changedClipboard = await getClipboardIfChanged();
-				if (changedClipboard) {
-					response = {
-						type: "response",
-						action: {
-							type: "copyToClipboard",
-							textToCopy: changedClipboard,
-						},
-					};
+
+				if (
+					request.action.type === "clickElement" ||
+					request.action.type === "directClickElement"
+				) {
+					const changedClipboard = await getClipboardIfChanged();
+					response = changedClipboard
+						? getCopyToClipboardResponseObject(changedClipboard)
+						: response;
 				}
 
 				const adaptedResponse = adaptResponse(response, request.version ?? 0);
 				await writeResponseToClipboard(adaptedResponse);
 			} else {
-				const response: ResponseToTalon = {
-					type: "response",
-					action: {
-						type: "ok",
-					},
-				};
-				const adaptedResponse = adaptResponse(response, request.version ?? 0);
+				const adaptedResponse = adaptResponse(
+					noActionResponse,
+					request.version ?? 0
+				);
 				await writeResponseToClipboard(adaptedResponse);
-				// Because of the way I had to implement copying and pasting to the clipboard in Chromium,
+				// Because of the way I had to implement copying and pasting to the clipboard in Manifest v3,
 				// sending a response requires focusing the textarea element dedicated for it, which might
 				// close popup elements or have other unintended consequences, therefore I will first send
 				// the response back and then execute the command
 				await dispatchCommand(request.action);
 			}
 		} catch (error: unknown) {
-			let errorMessage = "Error: There was an error";
 			if (error instanceof Error) {
-				errorMessage = error.message;
+				console.error(error);
 			}
-
-			console.error(errorMessage);
 		}
 	}
 
