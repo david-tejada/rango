@@ -31,7 +31,10 @@
 			],
 			"import/extensions": [
 				2,
-				"never"
+				"never",
+				{
+					"png": "always"
+				}
 			],
 			"node/prefer-global/process": "off",
 			"complexity": "off"
