@@ -66,19 +66,19 @@ export interface ResponseToTalonVersion0 {
 	action: TalonActionVersion0;
 }
 
-interface GetChromiumClipboard {
-	type: "getChromiumClipboard";
+interface GetClipboardManifestV3 {
+	type: "getClipboardManifestV3";
 }
 
-interface CopyToChromiumClipboard {
-	type: "copyToChromiumClipboard";
+interface CopyToClipboardManifestV3 {
+	type: "copyToClipboardManifestV3";
 	text: string;
 }
 
 export type ContentRequest =
 	| RangoAction
-	| GetChromiumClipboard
-	| CopyToChromiumClipboard;
+	| GetClipboardManifestV3
+	| CopyToClipboardManifestV3;
 
 interface OpenInNewTab {
 	type: "openInNewTab";

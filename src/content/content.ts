@@ -2,9 +2,9 @@ import browser from "webextension-polyfill";
 import { ContentRequest, ScriptResponse } from "../typing/types";
 import { initOptions } from "./options/options-utils";
 import {
-	getChromiumClipboard,
-	copyToChromiumClipboard,
-} from "./utils/chromium-clipboard";
+	getClipboardManifestV3,
+	copyToClipboardManifestV3,
+} from "./utils/manifest-v3-clipboard";
 import { clickElement } from "./actions/click-element";
 import { openInNewTab, openInBackgroundTab } from "./actions/open-in-new-tab";
 import { showLink } from "./actions/show";
@@ -33,12 +33,12 @@ browser.runtime.onMessage.addListener(
 		try {
 			switch (request.type) {
 				// SCRIPT REQUESTS
-				case "getChromiumClipboard":
-					return { text: getChromiumClipboard() };
+				case "getClipboardManifestV3":
+					return { text: getClipboardManifestV3() };
 
-				case "copyToChromiumClipboard": {
+				case "copyToClipboardManifestV3": {
 					const text = request.text;
-					copyToChromiumClipboard(text);
+					copyToClipboardManifestV3(text);
 					break;
 				}
 

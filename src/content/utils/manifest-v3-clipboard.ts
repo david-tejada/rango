@@ -18,7 +18,7 @@ function getCopyPasteArea(): HTMLTextAreaElement {
 	return copyPasteArea;
 }
 
-export function getChromiumClipboard(): string {
+export function getClipboardManifestV3(): string {
 	let result = "";
 	const copyPasteArea = getCopyPasteArea();
 	copyPasteArea.disabled = false;
@@ -32,7 +32,7 @@ export function getChromiumClipboard(): string {
 	return result;
 }
 
-export function copyToChromiumClipboard(text: string) {
+export function copyToClipboardManifestV3(text: string) {
 	const copyPasteArea = getCopyPasteArea();
 	copyPasteArea.disabled = false;
 	copyPasteArea.value = text;

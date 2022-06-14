@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
 import { ResponseToTalon } from "../typing/types";
 import {
-	getMessageFromClipboard,
+	getRequestFromClipboard,
 	writeResponseToClipboard,
 	getClipboardIfChanged,
 } from "./clipboard";
@@ -21,8 +21,11 @@ if (browser.action) {
 browser.commands.onCommand.addListener(async (internalCommand: string) => {
 	if (internalCommand === "get-talon-request") {
 		try {
-			const request = await getMessageFromClipboard();
-			const commandsThatChangeTheClipboard = new Set(["copyLink"]);
+			const request = await getRequestFromClipboard();
+			if (!request) {
+				throw new Error("Unable to get the request from clipboard");
+			}
+
 			if (
 				navigator.clipboard ||
 				commandsThatChangeTheClipboard.has(request.action.type)
