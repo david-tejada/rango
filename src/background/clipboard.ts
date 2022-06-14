@@ -40,7 +40,6 @@ async function getClipboardTabId(): Promise<number | undefined> {
 				});
 				// If we get here it means there wasn't an error connecting to the content script,
 				// so we can use this tab for clipboard
-				console.log("Clipboard tab:", tab);
 				return tab.id;
 			}
 		} catch (error: unknown) {
@@ -50,6 +49,8 @@ async function getClipboardTabId(): Promise<number | undefined> {
 			}
 		}
 	}
+
+	console.error("No tab found for copy-paste area");
 
 	return undefined;
 }
@@ -99,7 +100,6 @@ export async function getRequestFromClipboard(): Promise<
 	const clipText = await getTextFromClipboard();
 	let request: RequestFromTalon;
 	if (clipText) {
-		console.log("clipText:", clipText);
 		try {
 			request = JSON.parse(clipText) as RequestFromTalon;
 			// This is just to be extra safe

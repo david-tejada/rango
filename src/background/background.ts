@@ -23,7 +23,7 @@ browser.commands.onCommand.addListener(async (internalCommand: string) => {
 		try {
 			const request = await getRequestFromClipboard();
 			if (!request) {
-				throw new Error("Unable to get the request from clipboard");
+				return;
 			}
 
 			if (
