@@ -16,6 +16,8 @@ const backgroundCommands = new Set([
 	"setHintWeight",
 	"getCurrentTabUrl",
 	"copyCurrentTabMarkdownUrl",
+	"enableUrlInTitle",
+	"disableUrlInTitle",
 ]);
 
 export async function dispatchCommand(

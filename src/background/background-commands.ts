@@ -1,6 +1,7 @@
 import { RangoAction, TalonAction } from "../typing/types";
 import { getStored, setStored } from "../lib/storage";
 import { sendRequestToAllTabs, getActiveTab } from "./tabs-messaging";
+import { notify } from "./notify";
 
 export async function executeBackgroundCommand(
 	command: RangoAction
@@ -9,27 +10,42 @@ export async function executeBackgroundCommand(
 		case "toggleHints": {
 			const showHints = await getStored("showHints");
 			await setStored({ showHints: !showHints });
+			await sendRequestToAllTabs({ type: "fullHintsUpdate" });
 			break;
 		}
 
 		case "increaseHintSize": {
 			const hintFontSize = (await getStored("hintFontSize")) as number;
 			await setStored({ hintFontSize: hintFontSize + 1 });
+			await sendRequestToAllTabs({ type: "fullHintsUpdate" });
 			break;
 		}
 
 		case "decreaseHintSize": {
 			const hintFontSize = (await getStored("hintFontSize")) as number;
 			await setStored({ hintFontSize: hintFontSize - 1 });
+			await sendRequestToAllTabs({ type: "fullHintsUpdate" });
 			break;
 		}
 
 		case "setHintStyle":
 			await setStored({ hintStyle: command.target });
+			await sendRequestToAllTabs({ type: "fullHintsUpdate" });
 			break;
 
 		case "setHintWeight":
 			await setStored({ hintWeight: command.target });
+			await sendRequestToAllTabs({ type: "fullHintsUpdate" });
+			break;
+
+		case "enableUrlInTitle":
+			await setStored({ urlInTitle: true });
+			notify("Url in title enabled", "Refresh the page to update the title");
+			break;
+
+		case "disableUrlInTitle":
+			await setStored({ urlInTitle: false });
+			notify("Url in title disabled", "Refresh the page to update the title");
 			break;
 
 		case "getCurrentTabUrl": {
@@ -64,7 +80,6 @@ export async function executeBackgroundCommand(
 			break;
 	}
 
-	await sendRequestToAllTabs({ type: "fullHintsUpdate" });
 	return {
 		type: "noAction",
 	};

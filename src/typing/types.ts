@@ -7,6 +7,8 @@ interface RangoSimpleAction {
 		| "getCurrentTabUrl"
 		| "toggleHints"
 		| "refreshHints"
+		| "enableUrlInTitle"
+		| "disableUrlInTitle"
 		| "fullHintsUpdate"
 		| "fullHintsUpdateOnIdle"
 		| "increaseHintSize"

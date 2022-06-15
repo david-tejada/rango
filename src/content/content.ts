@@ -23,8 +23,10 @@ import {
 	copyMarkdownLinkToClipboard,
 	copyToClipboardResponse,
 } from "./actions/copy";
+import { addUrlToTitle } from "./utils/url-in-title";
 
-// Initialize options
+addUrlToTitle();
+
 initOptions()
 	.then(initStack)
 	.then(observe)
