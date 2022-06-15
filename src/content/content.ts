@@ -25,9 +25,8 @@ import {
 } from "./actions/copy";
 import { addUrlToTitle } from "./utils/url-in-title";
 
-addUrlToTitle();
-
 initOptions()
+	.then(addUrlToTitle)
 	.then(initStack)
 	.then(observe)
 	.catch((error) => {
