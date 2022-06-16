@@ -25,7 +25,7 @@ import {
 } from "./actions/copy";
 import { addUrlToTitle } from "./utils/url-in-title";
 import {
-	scrollAtElementVertically,
+	scrollVerticallyAtElement,
 	scrollPageVertically,
 } from "./actions/scroll";
 
@@ -58,15 +58,20 @@ browser.runtime.onMessage.addListener(
 					break;
 				}
 
-				case "scrollAtElementVertically":
-					scrollAtElementVertically(
-						request.args[0] as "up" | "down",
-						request.target
-					);
+				case "scrollUpAtElement":
+					scrollVerticallyAtElement("up", request.target);
 					break;
 
-				case "scrollPageVertically":
-					scrollPageVertically(request.args[0] as "up" | "down");
+				case "scrollDownAtElement":
+					scrollVerticallyAtElement("down", request.target);
+					break;
+
+				case "scrollUpPage":
+					scrollPageVertically("up");
+					break;
+
+				case "scrollDownPage":
+					scrollPageVertically("down");
 					break;
 
 				case "copyLink":
@@ -80,7 +85,7 @@ browser.runtime.onMessage.addListener(
 
 				case "copyLocationProperty":
 					return copyToClipboardResponse(
-						window.location[request.target as WindowLocationKeys]
+						window.location[request.args[0] as WindowLocationKeys]
 					);
 
 				case "showLink":

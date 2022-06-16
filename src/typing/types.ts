@@ -1,7 +1,9 @@
 import Color from "color";
 
-interface RangoSimpleAction {
+interface RangoActionWithoutTarget {
 	type:
+		| "scrollUpPage"
+		| "scrollDownPage"
 		| "unhoverAll"
 		| "copyCurrentTabMarkdownUrl"
 		| "getCurrentTabUrl"
@@ -15,26 +17,29 @@ interface RangoSimpleAction {
 		| "decreaseHintSize";
 }
 
+interface RangoActionWithoutTargetWithModifier {
+	type:
+		| "copyLocationProperty"
+		| "setHintStyle"
+		| "setHintWeight"
+		| "enableHints"
+		| "disableHints";
+	modifier: string;
+}
+
 interface RangoActionWithTarget {
 	type:
+		| "scrollUpAtElement"
+		| "scrollDownAtElement"
 		| "clickElement"
 		| "directClickElement"
 		| "openInNewTab"
 		| "copyLink"
 		| "copyMarkdownLink"
 		| "copyElementTextContent"
-		| "copyLocationProperty"
 		| "showLink"
-		| "hoverElement"
-		| "setHintStyle"
-		| "setHintWeight";
+		| "hoverElement";
 	target: string;
-}
-
-interface RangoActionWithArguments {
-	type: "scrollAtElementVertically" | "scrollPageVertically";
-	target?: string;
-	args: unknown[];
 }
 
 interface RangoActionWithMultipleTargets {
@@ -43,10 +48,10 @@ interface RangoActionWithMultipleTargets {
 }
 
 export type RangoAction =
-	| RangoSimpleAction
+	| RangoActionWithoutTarget
 	| RangoActionWithTarget
 	| RangoActionWithMultipleTargets
-	| RangoActionWithArguments;
+	| RangoActionWithoutTargetWithModifier;
 
 export interface RequestFromTalon {
 	version?: number;

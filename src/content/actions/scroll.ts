@@ -38,7 +38,7 @@ function scrollVertically(
 	scrollContainer.style.scrollBehavior = previousScrollBehavior;
 }
 
-export function scrollAtElementVertically(
+export function scrollVerticallyAtElement(
 	direction: "up" | "down",
 	hint?: string
 ) {

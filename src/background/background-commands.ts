@@ -45,12 +45,12 @@ export async function executeBackgroundCommand(
 		}
 
 		case "setHintStyle":
-			await setStored({ hintStyle: command.target });
+			await setStored({ hintStyle: command.modifier });
 			await sendRequestToAllTabs({ type: "fullHintsUpdate" });
 			break;
 
 		case "setHintWeight":
-			await setStored({ hintWeight: command.target });
+			await setStored({ hintWeight: command.modifier });
 			await sendRequestToAllTabs({ type: "fullHintsUpdate" });
 			break;
 
