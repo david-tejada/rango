@@ -24,6 +24,10 @@ import {
 	copyToClipboardResponse,
 } from "./actions/copy";
 import { addUrlToTitle } from "./utils/url-in-title";
+import {
+	scrollAtElementVertically,
+	scrollPageVertically,
+} from "./actions/scroll";
 
 initOptions()
 	.then(addUrlToTitle)
@@ -53,6 +57,17 @@ browser.runtime.onMessage.addListener(
 					await clickElement(request.target);
 					break;
 				}
+
+				case "scrollAtElementVertically":
+					scrollAtElementVertically(
+						request.args[0] as "up" | "down",
+						request.target
+					);
+					break;
+
+				case "scrollPageVertically":
+					scrollPageVertically(request.args[0] as "up" | "down");
+					break;
 
 				case "copyLink":
 					return copyLinkToClipboard(request.target);

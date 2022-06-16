@@ -31,6 +31,12 @@ interface RangoActionWithTarget {
 	target: string;
 }
 
+interface RangoActionWithArguments {
+	type: "scrollAtElementVertically" | "scrollPageVertically";
+	target?: string;
+	args: unknown[];
+}
+
 interface RangoActionWithMultipleTargets {
 	type: "openInBackgroundTab";
 	target: string[];
@@ -39,7 +45,8 @@ interface RangoActionWithMultipleTargets {
 export type RangoAction =
 	| RangoSimpleAction
 	| RangoActionWithTarget
-	| RangoActionWithMultipleTargets;
+	| RangoActionWithMultipleTargets
+	| RangoActionWithArguments;
 
 export interface RequestFromTalon {
 	version?: number;
