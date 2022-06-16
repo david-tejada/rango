@@ -10,6 +10,8 @@ import { noActionResponse } from "./response-utils";
 
 const backgroundCommands = new Set([
 	"toggleHints",
+	"enableHints",
+	"disableHints",
 	"increaseHintSize",
 	"decreaseHintSize",
 	"setHintStyle",

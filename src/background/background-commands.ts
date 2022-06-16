@@ -14,6 +14,22 @@ export async function executeBackgroundCommand(
 			break;
 		}
 
+		case "enableHints":
+			if (command.modifier === "global") {
+				await setStored({ showHints: true });
+				await sendRequestToAllTabs({ type: "fullHintsUpdate" });
+			}
+
+			break;
+
+		case "disableHints":
+			if (command.modifier === "global") {
+				await setStored({ showHints: false });
+				await sendRequestToAllTabs({ type: "fullHintsUpdate" });
+			}
+
+			break;
+
 		case "increaseHintSize": {
 			const hintFontSize = (await getStored("hintFontSize")) as number;
 			await setStored({ hintFontSize: hintFontSize + 1 });
