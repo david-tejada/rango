@@ -25,6 +25,10 @@ browser.commands.onCommand.addListener(async (internalCommand: string) => {
 	if (internalCommand === "get-talon-request") {
 		try {
 			const request = await getRequestFromClipboard();
+			if (process.env["NODE_ENV"] !== "production") {
+				console.log(JSON.stringify(request, null, 2));
+			}
+
 			if (!request) {
 				return;
 			}
