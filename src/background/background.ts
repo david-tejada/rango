@@ -10,6 +10,11 @@ import {
 	getCopyToClipboardResponseObject,
 	noActionResponse,
 } from "./response-utils";
+import { initStorage } from "./init-storage";
+
+initStorage().catch((error) => {
+	console.error(error);
+});
 
 if (browser.action) {
 	browser.action.onClicked.addListener(async () => {

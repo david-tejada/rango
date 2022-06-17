@@ -4,7 +4,7 @@ import {
 	ScriptResponse,
 	WindowLocationKeys,
 } from "../typing/types";
-import { initOptions } from "./options/options-utils";
+import { cacheHintOptions } from "./options/hint-style-options";
 import {
 	getClipboardManifestV3,
 	copyToClipboardManifestV3,
@@ -29,7 +29,7 @@ import {
 	scrollPageVertically,
 } from "./actions/scroll";
 
-initOptions()
+cacheHintOptions()
 	.then(addUrlToTitle)
 	.then(initStack)
 	.then(observe)

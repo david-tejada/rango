@@ -2,7 +2,7 @@ import browser from "webextension-polyfill";
 import { Intersector, HintedIntersector } from "../../typing/types";
 import { assertDefined, isHintedIntersector } from "../../typing/typing-utils";
 import { elementIsVisible } from "../utils/element-visibility";
-import { initOptions } from "../options/options-utils";
+import { cacheHintOptions } from "../options/hint-style-options";
 import { intersectors, removedIntersectorsHints } from "../intersectors";
 import { positionHint } from "./position-hints";
 import { applyInitialStyles } from "./styles";
@@ -148,7 +148,7 @@ async function updateHints() {
 
 export async function triggerHintsUpdate(fullRefresh = false) {
 	if (fullRefresh) {
-		await initOptions();
+		await cacheHintOptions();
 		document.querySelector("#rango-hints-container")?.remove();
 		await initStack();
 		for (const intersector of intersectors) {

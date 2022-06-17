@@ -6,14 +6,14 @@ import {
 	getDefaultBackgroundColor,
 } from "../utils/background-color";
 import { getFirstTextNodeDescendant } from "../utils/nodes-utils";
-import { getOption } from "../options/options-utils";
+import { getHintOption } from "../options/hint-style-options";
 
 // This is necessary to calculate background colors with alpha different than 1.
 // It's usually rgba(0, 0, 0, 0)
 const defaultBackgroundColor = getDefaultBackgroundColor();
 
 export function applyInitialStyles(intersector: HintedIntersector) {
-	const subtleHints = getOption("hintStyle") === "subtle";
+	const subtleHints = getHintOption("hintStyle") === "subtle";
 	intersector.backgroundColor = intersector.backgroundColor
 		? intersector.backgroundColor
 		: getInheritedBackgroundColor(
@@ -58,9 +58,9 @@ export function applyInitialStyles(intersector: HintedIntersector) {
 	}
 
 	const outlineColor = new Color(color).alpha(0.3);
-	const hintFontSize = getOption("hintFontSize") as number;
+	const hintFontSize = getHintOption("hintFontSize") as number;
 
-	const fontWeightOption = getOption("hintWeight");
+	const fontWeightOption = getHintOption("hintWeight");
 	let fontWeight;
 	if (fontWeightOption === "auto") {
 		fontWeight =
@@ -96,7 +96,7 @@ export function applyEmphasisStyles(
 	// We invert the colors for a visual clue
 	const color = intersector.backgroundColor;
 	const background = intersector.hintElement.style.color;
-	const hintFontSize = getOption("hintFontSize") as number;
+	const hintFontSize = getHintOption("hintFontSize") as number;
 	const fontSize = dynamic ? `${hintFontSize * 1.2}px` : `${hintFontSize}px`;
 	const styles = {
 		fontSize,
