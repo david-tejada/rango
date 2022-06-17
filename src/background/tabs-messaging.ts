@@ -51,30 +51,26 @@ async function getHintFrameId(
 export async function sendRequestToActiveTab(
 	request: ContentRequest
 ): Promise<ScriptResponse | undefined> {
-	try {
-		const activeTab = await getActiveTab();
-		let hintText;
-		if (
-			"target" in request &&
-			typeof request.target === "string" &&
-			request.target.length < 3
-		) {
-			hintText = request.target;
-		}
+	const activeTab = await getActiveTab();
+	let hintText;
+	if (
+		"target" in request &&
+		typeof request.target === "string" &&
+		request.target.length < 3
+	) {
+		hintText = request.target;
+	}
 
-		// We only want to send the request to the frame with the target hint or to the main
-		// frame in case that the request doesn't have a hint
-		if (activeTab?.id) {
-			const frameId = await getHintFrameId(activeTab.id, hintText);
-			const response = (await browser.tabs.sendMessage(activeTab.id, request, {
-				frameId,
-			})) as ScriptResponse | undefined;
-			if (response) {
-				return response;
-			}
+	// We only want to send the request to the frame with the target hint or to the main
+	// frame in case that the request doesn't have a hint
+	if (activeTab?.id) {
+		const frameId = await getHintFrameId(activeTab.id, hintText);
+		const response = (await browser.tabs.sendMessage(activeTab.id, request, {
+			frameId,
+		})) as ScriptResponse | undefined;
+		if (response) {
+			return response;
 		}
-	} catch (error: unknown) {
-		console.error(error);
 	}
 
 	return undefined;
@@ -159,6 +155,10 @@ browser.runtime.onMessage.addListener(
 
 			case "releaseOrphanHints":
 				return releaseOrphanHints(request.activeHints, tabId, frameId);
+
+			case "getTabId": {
+				return { tabId };
+			}
 
 			default:
 				throw new Error("Bad request to background script");
