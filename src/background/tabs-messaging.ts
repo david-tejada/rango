@@ -30,6 +30,11 @@ async function getHintFrameId(
 	const stackName = `hints-stack-${tabId}`;
 	const storage = await browser.storage.local.get(stackName);
 	const storableStack = storage[stackName] as StorableHintsStack;
+
+	if (!storableStack) {
+		return 0;
+	}
+
 	const stack = {
 		free: storableStack.free,
 		assigned: new Map(storableStack.assigned),
