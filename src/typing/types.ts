@@ -160,6 +160,21 @@ export type WindowLocationKeys =
 	| "port"
 	| "protocol";
 
+export interface DisplayHints {
+	global: boolean;
+	tabs: Record<number, boolean>;
+	hosts: Record<number, boolean>;
+	paths: Record<number, boolean>;
+}
+
+export interface RangoOptions {
+	hintFontSize: number;
+	displayHints: DisplayHints;
+	hintWeight: "auto" | "normal" | "bold";
+	hintStyle: "boxed" | "subtle";
+	urlInTitle: boolean;
+}
+
 export interface HintedIntersector extends Intersector {
 	hintElement: HTMLDivElement;
 	hintText: string;

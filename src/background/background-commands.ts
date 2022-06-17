@@ -1,4 +1,4 @@
-import { RangoAction, TalonAction } from "../typing/types";
+import { RangoAction, DisplayHints, TalonAction } from "../typing/types";
 import { getStored, setStored } from "../lib/storage";
 import { sendRequestToAllTabs, getActiveTab } from "./tabs-messaging";
 import { notify } from "./notify";
@@ -8,15 +8,18 @@ export async function executeBackgroundCommand(
 ): Promise<TalonAction> {
 	switch (command.type) {
 		case "toggleHints": {
-			const showHints = await getStored("showHints");
-			await setStored({ showHints: !showHints });
+			const displayHints = (await getStored("displayHints")) as DisplayHints;
+			displayHints.global = !displayHints.global;
+			await setStored({ displayHints });
 			await sendRequestToAllTabs({ type: "fullHintsUpdate" });
 			break;
 		}
 
 		case "enableHints":
 			if (command.arg === "global") {
-				await setStored({ showHints: true });
+				const displayHints = (await getStored("displayHints")) as DisplayHints;
+				displayHints.global = true;
+				await setStored({ displayHints });
 				await sendRequestToAllTabs({ type: "fullHintsUpdate" });
 			}
 
@@ -24,7 +27,9 @@ export async function executeBackgroundCommand(
 
 		case "disableHints":
 			if (command.arg === "global") {
-				await setStored({ showHints: false });
+				const displayHints = (await getStored("displayHints")) as DisplayHints;
+				displayHints.global = false;
+				await setStored({ displayHints });
 				await sendRequestToAllTabs({ type: "fullHintsUpdate" });
 			}
 

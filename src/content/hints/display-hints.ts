@@ -160,12 +160,12 @@ export async function triggerHintsUpdate(fullRefresh = false) {
 
 	// We set a timeout in order to avoid updating the hints too often, for example,
 	// when there are multiple mutations or intersections happening
-	const { showHints } = await browser.storage.local.get("showHints");
-	if (showHints && hintsAreUpdating) {
+	const { displayHints } = await browser.storage.local.get("displayHints");
+	if (displayHints.global && hintsAreUpdating) {
 		setTimeout(triggerHintsUpdate, 300);
 	}
 
-	if (showHints && !hintsWillUpdate && !hintsAreUpdating) {
+	if (displayHints.global && !hintsWillUpdate && !hintsAreUpdating) {
 		hintsWillUpdate = true;
 		setTimeout(updateHints, 50);
 	}
