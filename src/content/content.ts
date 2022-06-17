@@ -85,7 +85,7 @@ browser.runtime.onMessage.addListener(
 
 				case "copyLocationProperty":
 					return copyToClipboardResponse(
-						window.location[request.args[0] as WindowLocationKeys]
+						window.location[request.arg as WindowLocationKeys]
 					);
 
 				case "showLink":
