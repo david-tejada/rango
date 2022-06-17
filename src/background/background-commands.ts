@@ -15,7 +15,7 @@ export async function executeBackgroundCommand(
 		}
 
 		case "enableHints":
-			if (command.modifier === "global") {
+			if (command.arg === "global") {
 				await setStored({ showHints: true });
 				await sendRequestToAllTabs({ type: "fullHintsUpdate" });
 			}
@@ -23,7 +23,7 @@ export async function executeBackgroundCommand(
 			break;
 
 		case "disableHints":
-			if (command.modifier === "global") {
+			if (command.arg === "global") {
 				await setStored({ showHints: false });
 				await sendRequestToAllTabs({ type: "fullHintsUpdate" });
 			}
@@ -45,12 +45,12 @@ export async function executeBackgroundCommand(
 		}
 
 		case "setHintStyle":
-			await setStored({ hintStyle: command.modifier });
+			await setStored({ hintStyle: command.arg });
 			await sendRequestToAllTabs({ type: "fullHintsUpdate" });
 			break;
 
 		case "setHintWeight":
-			await setStored({ hintWeight: command.modifier });
+			await setStored({ hintWeight: command.arg });
 			await sendRequestToAllTabs({ type: "fullHintsUpdate" });
 			break;
 

@@ -17,14 +17,14 @@ interface RangoActionWithoutTarget {
 		| "decreaseHintSize";
 }
 
-interface RangoActionWithoutTargetWithModifier {
+interface RangoActionWithoutTargetWithArg {
 	type:
 		| "copyLocationProperty"
 		| "setHintStyle"
 		| "setHintWeight"
 		| "enableHints"
 		| "disableHints";
-	modifier: string;
+	arg: string;
 }
 
 interface RangoActionWithTarget {
@@ -51,7 +51,7 @@ export type RangoAction =
 	| RangoActionWithoutTarget
 	| RangoActionWithTarget
 	| RangoActionWithMultipleTargets
-	| RangoActionWithoutTargetWithModifier;
+	| RangoActionWithoutTargetWithArg;
 
 export interface RequestFromTalon {
 	version?: number;
