@@ -24,7 +24,7 @@ export async function toggleHints(level: string, enable?: boolean) {
 	})) as ResponseWithLocation;
 
 	switch (level) {
-		case "all":
+		case "everywhere":
 			if (enable === undefined) {
 				hintsToggle.global = true;
 				hintsToggle.tabs = new Map();
