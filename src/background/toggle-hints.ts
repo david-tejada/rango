@@ -33,7 +33,7 @@ export async function toggleHints(level: string, enable?: boolean) {
 			}
 			break;
 
-		case "navigation":
+		case "now":
 			assertDefined(enable);
 			const requestType = enable
 				? "enableHintsNavigation"
@@ -72,7 +72,7 @@ export async function toggleHints(level: string, enable?: boolean) {
 
 			break;
 
-		case "path":
+		case "page":
 			if (origin && pathname) {
 				if (enable === undefined) {
 					displayHints.paths.delete(origin + pathname);
