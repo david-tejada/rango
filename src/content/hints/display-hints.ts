@@ -1,4 +1,3 @@
-import browser from "webextension-polyfill";
 import { Intersector, HintedIntersector } from "../../typing/types";
 import { assertDefined, isHintedIntersector } from "../../typing/typing-utils";
 import { elementIsVisible } from "../utils/element-visibility";
@@ -12,6 +11,7 @@ import {
 	releaseHints,
 	releaseOrphanHints,
 } from "./hints-requests";
+import { shouldDisplayHints } from "./should-display-hints";
 
 let hintsWillUpdate = false;
 let hintsAreUpdating = false;
@@ -160,12 +160,12 @@ export async function triggerHintsUpdate(fullRefresh = false) {
 
 	// We set a timeout in order to avoid updating the hints too often, for example,
 	// when there are multiple mutations or intersections happening
-	const { displayHints } = await browser.storage.local.get("displayHints");
-	if (displayHints.global && hintsAreUpdating) {
+	const showHints = await shouldDisplayHints();
+	if (showHints && hintsAreUpdating) {
 		setTimeout(triggerHintsUpdate, 300);
 	}
 
-	if (displayHints.global && !hintsWillUpdate && !hintsAreUpdating) {
+	if (showHints && !hintsWillUpdate && !hintsAreUpdating) {
 		hintsWillUpdate = true;
 		setTimeout(updateHints, 50);
 	}

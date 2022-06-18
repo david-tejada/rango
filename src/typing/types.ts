@@ -8,6 +8,8 @@ interface RangoActionWithoutTarget {
 		| "copyCurrentTabMarkdownUrl"
 		| "getCurrentTabUrl"
 		| "toggleHints"
+		| "enableHintsNavigation"
+		| "disableHintsNavigation"
 		| "refreshHints"
 		| "enableUrlInTitle"
 		| "disableUrlInTitle"
@@ -23,7 +25,8 @@ interface RangoActionWithoutTargetWithArg {
 		| "setHintStyle"
 		| "setHintWeight"
 		| "enableHints"
-		| "disableHints";
+		| "disableHints"
+		| "resetToggleLevel";
 	arg: string;
 }
 
@@ -89,10 +92,15 @@ interface CopyToClipboardManifestV3 {
 	text: string;
 }
 
+interface GetLocation {
+	type: "getLocation";
+}
+
 export type ContentRequest =
 	| RangoAction
 	| GetClipboardManifestV3
-	| CopyToClipboardManifestV3;
+	| CopyToClipboardManifestV3
+	| GetLocation;
 
 interface OpenInNewTab {
 	type: "openInNewTab";
@@ -123,23 +131,33 @@ interface ReleaseOrphanHints {
 	activeHints: string[];
 }
 
+interface GetTabId {
+	type: "getTabId";
+}
+
 export type BackgroundRequest =
 	| OpenInNewTab
 	| InitStack
 	| ClaimHints
 	| ReleaseHints
 	| ReleaseOrphanHints
-	| OpenInBackgroundTab;
+	| OpenInBackgroundTab
+	| GetTabId;
 
 export interface ClipboardResponse {
 	text: string;
 }
 
+export type ResponseWithLocation = Partial<Record<WindowLocationKeys, string>>;
+
 export interface ResponseWithTalonAction {
 	talonAction: TalonAction;
 }
 
-export type ScriptResponse = ClipboardResponse | ResponseWithTalonAction;
+export type ScriptResponse =
+	| ClipboardResponse
+	| ResponseWithLocation
+	| ResponseWithTalonAction;
 
 export interface Intersector {
 	element: Element;
@@ -162,14 +180,29 @@ export type WindowLocationKeys =
 
 export interface DisplayHints {
 	global: boolean;
-	tabs: Record<number, boolean>;
-	hosts: Record<number, boolean>;
-	paths: Record<number, boolean>;
+	tabs: Map<number, boolean>;
+	hosts: Map<string, boolean>;
+	paths: Map<string, boolean>;
+}
+
+export interface StorableDisplayHints {
+	global: boolean;
+	tabs: Array<[number, boolean]>;
+	hosts: Array<[string, boolean]>;
+	paths: Array<[string, boolean]>;
 }
 
 export interface RangoOptions {
 	hintFontSize: number;
 	displayHints: DisplayHints;
+	hintWeight: "auto" | "normal" | "bold";
+	hintStyle: "boxed" | "subtle";
+	urlInTitle: boolean;
+}
+
+export interface StorableRangoOptions {
+	hintFontSize: number;
+	displayHints: StorableDisplayHints;
 	hintWeight: "auto" | "normal" | "bold";
 	hintStyle: "boxed" | "subtle";
 	urlInTitle: boolean;

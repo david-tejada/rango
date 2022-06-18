@@ -28,6 +28,7 @@ import {
 	scrollVerticallyAtElement,
 	scrollPageVertically,
 } from "./actions/scroll";
+import { setNavigationToggle } from "./hints/should-display-hints";
 
 cacheHintOptions()
 	.then(addUrlToTitle)
@@ -50,6 +51,13 @@ browser.runtime.onMessage.addListener(
 					copyToClipboardManifestV3(text);
 					break;
 				}
+
+				case "getLocation":
+					return {
+						host: window.location.host,
+						origin: window.location.origin,
+						pathname: window.location.pathname,
+					};
 
 				// RANGO ACTIONS
 				case "clickElement":
@@ -109,6 +117,16 @@ browser.runtime.onMessage.addListener(
 					break;
 
 				case "refreshHints":
+					await triggerHintsUpdate(true);
+					break;
+
+				case "enableHintsNavigation":
+					setNavigationToggle(true);
+					await triggerHintsUpdate(true);
+					break;
+
+				case "disableHintsNavigation":
+					setNavigationToggle(false);
 					await triggerHintsUpdate(true);
 					break;
 

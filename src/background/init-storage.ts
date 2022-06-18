@@ -1,13 +1,17 @@
 import browser from "webextension-polyfill";
-import { RangoOptions, DisplayHints } from "../typing/types";
+import {
+	RangoOptions,
+	StorableRangoOptions,
+	StorableDisplayHints,
+} from "../typing/types";
 
-const defaultOptions: RangoOptions = {
+const defaultOptions: StorableRangoOptions = {
 	hintFontSize: 10,
 	displayHints: {
 		global: true,
-		tabs: {},
-		hosts: {},
-		paths: {},
+		tabs: [],
+		hosts: [],
+		paths: [],
 	},
 	hintWeight: "auto",
 	hintStyle: "boxed",
@@ -33,20 +37,25 @@ async function clearUnusedStacks() {
 
 export async function initStorage() {
 	await clearUnusedStacks();
-	const localStorage = await browser.storage.local.get([
-		"hintFontSize",
-		"displayHints",
-	]);
+	const localStorage = await browser.storage.local.get(
+		Object.keys(defaultOptions)
+	);
 
-	// We just need to check one property to see if the options are initialized
-	if (localStorage["hintFontSize"] === undefined) {
-		await browser.storage.local.set(defaultOptions);
+	let key: keyof RangoOptions;
+	const storing = [];
+
+	for (key in defaultOptions) {
+		if (localStorage[key] === undefined) {
+			storing.push(browser.storage.local.set({ [key]: defaultOptions[key] }));
+		}
 	}
 
-	// We cleanup the tabs displayHints on start
+	// We clean up the tabs in displayHints on start
 	if (localStorage["displayHints"]) {
-		const displayHints = localStorage["displayHints"] as DisplayHints;
-		displayHints.tabs = {};
-		await browser.storage.local.set({ displayHints });
+		const displayHints = localStorage["displayHints"] as StorableDisplayHints;
+		displayHints.tabs = [];
+		storing.push(browser.storage.local.set({ displayHints }));
 	}
+
+	await Promise.all(storing);
 }

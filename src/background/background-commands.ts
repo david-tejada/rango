@@ -2,6 +2,7 @@ import { RangoAction, DisplayHints, TalonAction } from "../typing/types";
 import { getStored, setStored } from "../lib/storage";
 import { sendRequestToAllTabs, getActiveTab } from "./tabs-messaging";
 import { notify } from "./notify";
+import { toggleHints } from "./toggle-hints";
 
 export async function executeBackgroundCommand(
 	command: RangoAction
@@ -15,23 +16,19 @@ export async function executeBackgroundCommand(
 			break;
 		}
 
-		case "enableHints":
-			if (command.arg === "global") {
-				const displayHints = (await getStored("displayHints")) as DisplayHints;
-				displayHints.global = true;
-				await setStored({ displayHints });
-				await sendRequestToAllTabs({ type: "fullHintsUpdate" });
-			}
+		case "enableHints": {
+			await toggleHints(command.arg, true);
+
+			break;
+		}
+
+		case "disableHints":
+			await toggleHints(command.arg, false);
 
 			break;
 
-		case "disableHints":
-			if (command.arg === "global") {
-				const displayHints = (await getStored("displayHints")) as DisplayHints;
-				displayHints.global = false;
-				await setStored({ displayHints });
-				await sendRequestToAllTabs({ type: "fullHintsUpdate" });
-			}
+		case "resetToggleLevel":
+			await toggleHints(command.arg);
 
 			break;
 

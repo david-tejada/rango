@@ -12,6 +12,7 @@ const backgroundCommands = new Set([
 	"toggleHints",
 	"enableHints",
 	"disableHints",
+	"resetToggleLevel",
 	"increaseHintSize",
 	"decreaseHintSize",
 	"setHintStyle",
