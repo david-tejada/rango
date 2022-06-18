@@ -1,10 +1,9 @@
-import { DisplayHints, StorableDisplayHints } from "../typing/types";
+import { HintsToggle, StorableHintsToggle } from "../typing/types";
 
-export function displayHintsToStorable(
-	displayHints: DisplayHints
-): StorableDisplayHints {
-	const { global, tabs, hosts, paths } = displayHints;
-	// console.log({ global, tabs, hosts, paths });
+export function hintsToggleToStorable(
+	hintsToggle: HintsToggle
+): StorableHintsToggle {
+	const { global, tabs, hosts, paths } = hintsToggle;
 	return {
 		global,
 		tabs: Array.from(tabs),
@@ -13,11 +12,10 @@ export function displayHintsToStorable(
 	};
 }
 
-export function displayHintsFromStorable(
-	storableDisplayHints: StorableDisplayHints
-): DisplayHints {
-	const { global, tabs, hosts, paths } = storableDisplayHints;
-	// console.log({ global, tabs, hosts, paths });
+export function hintsToggleFromStorable(
+	storableHintsToggle: StorableHintsToggle
+): HintsToggle {
+	const { global, tabs, hosts, paths } = storableHintsToggle;
 	return {
 		global,
 		tabs: new Map(tabs),

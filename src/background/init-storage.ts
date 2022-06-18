@@ -2,12 +2,12 @@ import browser from "webextension-polyfill";
 import {
 	RangoOptions,
 	StorableRangoOptions,
-	StorableDisplayHints,
+	StorableHintsToggle,
 } from "../typing/types";
 
 const defaultOptions: StorableRangoOptions = {
 	hintFontSize: 10,
-	displayHints: {
+	hintsToggle: {
 		global: true,
 		tabs: [],
 		hosts: [],
@@ -50,11 +50,11 @@ export async function initStorage() {
 		}
 	}
 
-	// We clean up the tabs in displayHints on start
-	if (localStorage["displayHints"]) {
-		const displayHints = localStorage["displayHints"] as StorableDisplayHints;
-		displayHints.tabs = [];
-		storing.push(browser.storage.local.set({ displayHints }));
+	// We clean up the tabs in hintsToggle on start
+	if (localStorage["hintsToggle"]) {
+		const hintsToggle = localStorage["hintsToggle"] as StorableHintsToggle;
+		hintsToggle.tabs = [];
+		storing.push(browser.storage.local.set({ hintsToggle }));
 	}
 
 	await Promise.all(storing);

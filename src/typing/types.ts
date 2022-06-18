@@ -178,14 +178,14 @@ export type WindowLocationKeys =
 	| "port"
 	| "protocol";
 
-export interface DisplayHints {
+export interface HintsToggle {
 	global: boolean;
 	tabs: Map<number, boolean>;
 	hosts: Map<string, boolean>;
 	paths: Map<string, boolean>;
 }
 
-export interface StorableDisplayHints {
+export interface StorableHintsToggle {
 	global: boolean;
 	tabs: Array<[number, boolean]>;
 	hosts: Array<[string, boolean]>;
@@ -194,7 +194,7 @@ export interface StorableDisplayHints {
 
 export interface RangoOptions {
 	hintFontSize: number;
-	displayHints: DisplayHints;
+	hintsToggle: HintsToggle;
 	hintWeight: "auto" | "normal" | "bold";
 	hintStyle: "boxed" | "subtle";
 	urlInTitle: boolean;
@@ -202,7 +202,7 @@ export interface RangoOptions {
 
 export interface StorableRangoOptions {
 	hintFontSize: number;
-	displayHints: StorableDisplayHints;
+	hintsToggle: StorableHintsToggle;
 	hintWeight: "auto" | "normal" | "bold";
 	hintStyle: "boxed" | "subtle";
 	urlInTitle: boolean;

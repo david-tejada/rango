@@ -1,4 +1,4 @@
-import { RangoAction, DisplayHints, TalonAction } from "../typing/types";
+import { RangoAction, HintsToggle, TalonAction } from "../typing/types";
 import { getStored, setStored } from "../lib/storage";
 import { sendRequestToAllTabs, getActiveTab } from "./tabs-messaging";
 import { notify } from "./notify";
@@ -9,9 +9,9 @@ export async function executeBackgroundCommand(
 ): Promise<TalonAction> {
 	switch (command.type) {
 		case "toggleHints": {
-			const displayHints = (await getStored("displayHints")) as DisplayHints;
-			displayHints.global = !displayHints.global;
-			await setStored({ displayHints });
+			const hintsToggle = (await getStored("hintsToggle")) as HintsToggle;
+			hintsToggle.global = !hintsToggle.global;
+			await setStored({ hintsToggle });
 			await sendRequestToAllTabs({ type: "fullHintsUpdate" });
 			break;
 		}

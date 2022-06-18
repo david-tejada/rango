@@ -1,9 +1,9 @@
 import {
-	displayHintsFromStorable,
-	displayHintsToStorable,
+	hintsToggleFromStorable,
+	hintsToggleToStorable,
 } from "../common/storable-display-hints";
 import { getStored, setStored } from "../lib/storage";
-import { ResponseWithLocation, StorableDisplayHints } from "../typing/types";
+import { ResponseWithLocation, StorableHintsToggle } from "../typing/types";
 import { assertDefined } from "../typing/typing-utils";
 import {
 	getActiveTab,
@@ -12,10 +12,10 @@ import {
 } from "./tabs-messaging";
 
 export async function toggleHints(level: string, enable?: boolean) {
-	const storableDisplayHints = (await getStored(
-		"displayHints"
-	)) as StorableDisplayHints;
-	const displayHints = displayHintsFromStorable(storableDisplayHints);
+	const storableHintsToggle = (await getStored(
+		"hintsToggle"
+	)) as StorableHintsToggle;
+	const hintsToggle = hintsToggleFromStorable(storableHintsToggle);
 	const activeTab = await getActiveTab();
 	assertDefined(activeTab);
 	assertDefined(activeTab.id);
@@ -26,14 +26,15 @@ export async function toggleHints(level: string, enable?: boolean) {
 	switch (level) {
 		case "all":
 			if (enable === undefined) {
-				displayHints.global = true;
-				displayHints.tabs = new Map();
-				displayHints.hosts = new Map();
-				displayHints.paths = new Map();
+				hintsToggle.global = true;
+				hintsToggle.tabs = new Map();
+				hintsToggle.hosts = new Map();
+				hintsToggle.paths = new Map();
 			}
+
 			break;
 
-		case "now":
+		case "now": {
 			assertDefined(enable);
 			const requestType = enable
 				? "enableHintsNavigation"
@@ -42,10 +43,11 @@ export async function toggleHints(level: string, enable?: boolean) {
 				type: requestType,
 			});
 			break;
+		}
 
 		case "global":
 			if (enable !== undefined) {
-				displayHints.global = enable;
+				hintsToggle.global = enable;
 			}
 
 			break;
@@ -53,9 +55,9 @@ export async function toggleHints(level: string, enable?: boolean) {
 		case "tab":
 			if (activeTab?.id) {
 				if (enable === undefined) {
-					displayHints.tabs.delete(activeTab.id);
+					hintsToggle.tabs.delete(activeTab.id);
 				} else {
-					displayHints.tabs.set(activeTab.id, enable);
+					hintsToggle.tabs.set(activeTab.id, enable);
 				}
 			}
 
@@ -64,9 +66,9 @@ export async function toggleHints(level: string, enable?: boolean) {
 		case "host":
 			if (host) {
 				if (enable === undefined) {
-					displayHints.hosts.delete(host);
+					hintsToggle.hosts.delete(host);
 				} else {
-					displayHints.hosts.set(host, enable);
+					hintsToggle.hosts.set(host, enable);
 				}
 			}
 
@@ -75,9 +77,9 @@ export async function toggleHints(level: string, enable?: boolean) {
 		case "page":
 			if (origin && pathname) {
 				if (enable === undefined) {
-					displayHints.paths.delete(origin + pathname);
+					hintsToggle.paths.delete(origin + pathname);
 				} else {
-					displayHints.paths.set(origin + pathname, enable);
+					hintsToggle.paths.set(origin + pathname, enable);
 				}
 			}
 
@@ -87,6 +89,6 @@ export async function toggleHints(level: string, enable?: boolean) {
 			break;
 	}
 
-	await setStored({ displayHints: displayHintsToStorable(displayHints) });
+	await setStored({ hintsToggle: hintsToggleToStorable(hintsToggle) });
 	await sendRequestToAllTabs({ type: "fullHintsUpdate" });
 }
