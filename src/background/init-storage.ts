@@ -15,6 +15,7 @@ const defaultOptions: StorableRangoOptions = {
 	},
 	hintWeight: "auto",
 	hintStyle: "boxed",
+	includeSingleLetterHints: true,
 	urlInTitle: true,
 };
 

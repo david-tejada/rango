@@ -10,6 +10,8 @@ interface RangoActionWithoutTarget {
 		| "toggleHints"
 		| "enableHintsNavigation"
 		| "disableHintsNavigation"
+		| "excludeSingleLetterHints"
+		| "includeSingleLetterHints"
 		| "refreshHints"
 		| "enableUrlInTitle"
 		| "disableUrlInTitle"
@@ -197,6 +199,7 @@ export interface RangoOptions {
 	hintsToggle: HintsToggle;
 	hintWeight: "auto" | "normal" | "bold";
 	hintStyle: "boxed" | "subtle";
+	includeSingleLetterHints: boolean;
 	urlInTitle: boolean;
 }
 
@@ -205,6 +208,7 @@ export interface StorableRangoOptions {
 	hintsToggle: StorableHintsToggle;
 	hintWeight: "auto" | "normal" | "bold";
 	hintStyle: "boxed" | "subtle";
+	includeSingleLetterHints: boolean;
 	urlInTitle: boolean;
 }
 

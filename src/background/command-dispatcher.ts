@@ -21,6 +21,8 @@ const backgroundCommands = new Set([
 	"copyCurrentTabMarkdownUrl",
 	"enableUrlInTitle",
 	"disableUrlInTitle",
+	"excludeSingleLetterHints",
+	"includeSingleLetterHints",
 ]);
 
 export async function dispatchCommand(

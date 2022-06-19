@@ -32,6 +32,16 @@ export async function executeBackgroundCommand(
 
 			break;
 
+		case "includeSingleLetterHints":
+			await setStored({ includeSingleLetterHints: true });
+			await sendRequestToAllTabs({ type: "fullHintsUpdate" });
+			break;
+
+		case "excludeSingleLetterHints":
+			await setStored({ includeSingleLetterHints: false });
+			await sendRequestToAllTabs({ type: "fullHintsUpdate" });
+			break;
+
 		case "increaseHintSize": {
 			const hintFontSize = (await getStored("hintFontSize")) as number;
 			await setStored({ hintFontSize: hintFontSize + 1 });

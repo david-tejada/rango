@@ -45,9 +45,15 @@ async function saveStack(stack: HintsStack, tabId: number) {
 
 export async function initStack(tabId: number, frameId: number) {
 	if (frameId === 0) {
+		const includeSingleLetterHints = await getStored(
+			"includeSingleLetterHints"
+		);
+		const possibleHints = includeSingleLetterHints
+			? [...allHints]
+			: allHints.slice(0, -26);
 		await saveStack(
 			{
-				free: [...allHints],
+				free: possibleHints,
 				assigned: new Map(),
 			},
 			tabId
