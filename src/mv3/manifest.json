@@ -33,7 +33,7 @@
 		"get-talon-request": {
 			"suggested_key": {
 				"default": "Ctrl+Shift+Insert",
-				"mac": "MacCtrl+Shift+Insert"
+				"mac": "MacCtrl+Shift+1"
 			},
 			"description": "Get the talon request"
 		},
