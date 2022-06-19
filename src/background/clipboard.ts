@@ -10,6 +10,7 @@ import browser from "webextension-polyfill";
 let lastRequestText: string | undefined;
 
 function isSafari(): boolean {
+	if (!navigator.vendor) return false;
 	return navigator.vendor.indexOf('Apple') != -1;
 }
 
