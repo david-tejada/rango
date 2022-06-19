@@ -56,11 +56,26 @@ export function positionHint(intersector: HintedIntersector) {
 	) {
 		rect = element.getBoundingClientRect();
 	} else {
-		// If the element has text, we situate the hint next to the first character
-		// in case the text spans multiple lines
-		rect =
-			getFirstCharacterRect(intersector.firstTextNodeDescendant) ??
-			element.getBoundingClientRect();
+		// If before the first element with text comes an image we use that to place the hint
+		const imageOrFirstElementWithTextSelector = intersector
+			.firstTextNodeDescendant?.parentElement
+			? `svg, img, ${intersector.firstTextNodeDescendant.parentElement.tagName}`
+			: "svg, img";
+		const firstImageOrElementWithText = element.querySelector(
+			imageOrFirstElementWithTextSelector
+		);
+		if (
+			firstImageOrElementWithText &&
+			/svg|img/i.test(firstImageOrElementWithText.tagName)
+		) {
+			rect = firstImageOrElementWithText.getBoundingClientRect();
+		} else {
+			// If the element has text, we situate the hint next to the first character
+			// in case the text spans multiple lines
+			rect =
+				getFirstCharacterRect(intersector.firstTextNodeDescendant) ??
+				element.getBoundingClientRect();
+		}
 	}
 
 	const scrollLeft =
