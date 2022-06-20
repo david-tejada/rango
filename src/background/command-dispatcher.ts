@@ -7,6 +7,7 @@ import {
 import { sendRequestToActiveTab } from "./tabs-messaging";
 import { executeBackgroundCommand } from "./background-commands";
 import { noActionResponse } from "./response-utils";
+import { getStored } from "../lib/storage";
 
 const backgroundCommands = new Set([
 	"toggleHints",
@@ -23,12 +24,24 @@ const backgroundCommands = new Set([
 	"disableUrlInTitle",
 	"excludeSingleLetterHints",
 	"includeSingleLetterHints",
+	"enableDirectClicking",
+	"disableDirectClicking",
 ]);
 
 export async function dispatchCommand(
 	command: RangoAction
 ): Promise<ResponseToTalon> {
 	let talonAction: TalonAction | undefined;
+	const directClicking = await getStored("directClicking");
+
+	if (command.type === "directClickElement" && !directClicking) {
+		return {
+			type: "response",
+			action: {
+				type: "noHintFound",
+			},
+		};
+	}
 
 	if (backgroundCommands.has(command.type)) {
 		talonAction = await executeBackgroundCommand(command);

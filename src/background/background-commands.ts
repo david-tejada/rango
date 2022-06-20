@@ -32,6 +32,14 @@ export async function executeBackgroundCommand(
 
 			break;
 
+		case "enableDirectClicking":
+			await setStored({ directClicking: true });
+			break;
+
+		case "disableDirectClicking":
+			await setStored({ directClicking: false });
+			break;
+
 		case "includeSingleLetterHints":
 			await setStored({ includeSingleLetterHints: true });
 			await sendRequestToAllTabs({ type: "fullHintsUpdate" });
