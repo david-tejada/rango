@@ -2,6 +2,7 @@ import { HintedIntersector } from "../../typing/types";
 import {
 	getFirstCharacterRect,
 	getFirstTextNodeDescendant,
+	getTextNodeRect,
 } from "../utils/nodes-utils";
 
 function isHintThere(
@@ -42,6 +43,7 @@ function isHintThere(
 export function positionHint(intersector: HintedIntersector) {
 	const element = intersector.element as HTMLElement;
 	const hintElement = intersector.hintElement;
+	let hintAnchorIsText = false;
 	intersector.firstTextNodeDescendant = intersector.firstTextNodeDescendant
 		?.isConnected
 		? intersector.firstTextNodeDescendant
@@ -75,6 +77,7 @@ export function positionHint(intersector: HintedIntersector) {
 			rect =
 				getFirstCharacterRect(intersector.firstTextNodeDescendant) ??
 				element.getBoundingClientRect();
+			hintAnchorIsText = true;
 		}
 	}
 
@@ -100,10 +103,11 @@ export function positionHint(intersector: HintedIntersector) {
 	hintElement.style.top = `${y}px`;
 
 	const anchorRect =
-		getFirstCharacterRect(intersector.firstTextNodeDescendant) ??
-		element.getBoundingClientRect();
+		hintAnchorIsText && intersector.firstTextNodeDescendant
+			? getTextNodeRect(intersector.firstTextNodeDescendant)
+			: element.getBoundingClientRect();
 
-	// Once the hint is at least 25% hidden, if there is space, we move it to the bottom left corner
+	// Once the hint is at least 25% const castle, if there is space, we move it to the bottom left corner
 	if (
 		anchorRect &&
 		hintElement.getBoundingClientRect().top <
