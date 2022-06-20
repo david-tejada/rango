@@ -5,6 +5,7 @@ import {
 	ResponseToTalon,
 	ResponseToTalonVersion0,
 } from "../typing/types";
+import { notify } from "./notify";
 
 let lastRequestText: string | undefined;
 
@@ -118,6 +119,11 @@ export async function getRequestFromClipboard(): Promise<
 				console.error(error);
 			}
 		}
+	} else {
+		notify(
+			"Error getting the request",
+			"Rango was unable to read the request present on the clipboard"
+		);
 	}
 
 	return undefined;

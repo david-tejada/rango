@@ -38,7 +38,9 @@ browser.commands.onCommand.addListener(async (internalCommand: string) => {
 				return;
 			}
 
-			const requiresResponseValue = /^copy|^get/.test(request.action.type);
+			const requiresResponseValue = /^copy|^get|^direct/.test(
+				request.action.type
+			);
 
 			if (navigator.clipboard || requiresResponseValue) {
 				let response = await dispatchCommand(request.action);
