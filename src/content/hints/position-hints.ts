@@ -1,9 +1,6 @@
 import { HintedIntersector } from "../../typing/types";
-import {
-	getFirstCharacterRect,
-	getFirstTextNodeDescendant,
-	getTextNodeRect,
-} from "../utils/nodes-utils";
+import { assertDefined } from "../../typing/typing-utils";
+import { getTextNodeRect } from "../utils/nodes-utils";
 
 function isHintThere(
 	hintElement: HTMLDivElement,
@@ -43,43 +40,9 @@ function isHintThere(
 export function positionHint(intersector: HintedIntersector) {
 	const element = intersector.element as HTMLElement;
 	const hintElement = intersector.hintElement;
-	let hintAnchorIsText = false;
-	intersector.firstTextNodeDescendant = intersector.firstTextNodeDescendant
-		?.isConnected
-		? intersector.firstTextNodeDescendant
-		: getFirstTextNodeDescendant(intersector.element);
-	let rect;
-
-	// With small buttons we just place the hint at the top left of the button,
-	// no matter if they have text content or not. This gives a more consistent look
-	if (
-		element.tagName === "BUTTON" &&
-		element.offsetHeight < hintElement.offsetHeight * 2
-	) {
-		rect = element.getBoundingClientRect();
-	} else {
-		// If before the first element with text comes an image we use that to place the hint
-		const imageOrFirstElementWithTextSelector = intersector
-			.firstTextNodeDescendant?.parentElement
-			? `svg, img, ${intersector.firstTextNodeDescendant.parentElement.tagName}`
-			: "svg, img";
-		const firstImageOrElementWithText = element.querySelector(
-			imageOrFirstElementWithTextSelector
-		);
-		if (
-			firstImageOrElementWithText &&
-			/svg|img/i.test(firstImageOrElementWithText.tagName)
-		) {
-			rect = firstImageOrElementWithText.getBoundingClientRect();
-		} else {
-			// If the element has text, we situate the hint next to the first character
-			// in case the text spans multiple lines
-			rect =
-				getFirstCharacterRect(intersector.firstTextNodeDescendant) ??
-				element.getBoundingClientRect();
-			hintAnchorIsText = true;
-		}
-	}
+	hintElement.style.display = "block";
+	const rect = intersector.hintAnchorRect;
+	assertDefined(rect);
 
 	const scrollLeft =
 		window.pageXOffset ||
@@ -102,25 +65,31 @@ export function positionHint(intersector: HintedIntersector) {
 	hintElement.style.left = `${x}px`;
 	hintElement.style.top = `${y}px`;
 
-	const anchorRect =
-		hintAnchorIsText && intersector.firstTextNodeDescendant
+	const bottomAnchorRect =
+		intersector.hintAnchorIsText && intersector.firstTextNodeDescendant
 			? getTextNodeRect(intersector.firstTextNodeDescendant)
 			: element.getBoundingClientRect();
 
 	// Once the hint is at least 25% const castle, if there is space, we move it to the bottom left corner
 	if (
-		anchorRect &&
-		hintElement.getBoundingClientRect().top <
-			-hintElement.offsetHeight * 0.25 &&
-		anchorRect.y + anchorRect.height > hintElement.offsetHeight * 0.5
+		(bottomAnchorRect &&
+			hintElement.getBoundingClientRect().top <
+				-hintElement.offsetHeight * 0.25 &&
+			bottomAnchorRect.y + bottomAnchorRect.height >
+				hintElement.offsetHeight * 0.5) ||
+		intersector.hintPlacement === "bottom"
 	) {
-		let targetX = anchorRect.x - hintElement.offsetWidth * (1 - nudgeX);
+		let targetX = bottomAnchorRect.x - hintElement.offsetWidth * (1 - nudgeX);
 		targetX = targetX > 0 ? targetX : 0;
 		let targetY =
-			anchorRect.y + anchorRect.height - hintElement.offsetHeight * nudgeY;
+			bottomAnchorRect.y +
+			bottomAnchorRect.height -
+			hintElement.offsetHeight * nudgeY;
 		targetY = targetY > 0 ? targetY : 0;
 
-		if (!isHintThere(hintElement, targetX, targetY)) {
+		if (isHintThere(hintElement, targetX, targetY)) {
+			hintElement.style.display = "none";
+		} else {
 			hintElement.style.left = `${scrollLeft + targetX}px`;
 			hintElement.style.top = `${scrollTop + targetY}px`;
 		}

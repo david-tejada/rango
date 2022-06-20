@@ -26,9 +26,7 @@ export function getTextNodeRect(textNode: Text): DOMRect {
 	return range.getBoundingClientRect();
 }
 
-export function getFirstCharacterRect(
-	textNode: Text | undefined
-): DOMRect | undefined {
+export function getFirstCharacterRect(textNode: Text): DOMRect | undefined {
 	if (textNode) {
 		const range = document.createRange();
 		range.setStart(textNode, 0);

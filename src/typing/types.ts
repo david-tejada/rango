@@ -167,7 +167,9 @@ export interface Intersector {
 	firstTextNodeDescendant?: Text;
 	hintElement?: HTMLDivElement;
 	hintText?: string;
-	hintAnchor?: HTMLElement;
+	hintAnchorRect?: DOMRect;
+	hintAnchorIsText?: boolean;
+	hintPlacement?: "top" | "bottom";
 	backgroundColor?: Color;
 }
 
