@@ -4,6 +4,9 @@ interface RangoActionWithoutTarget {
 	type:
 		| "scrollUpPage"
 		| "scrollDownPage"
+		| "closeOtherTabsInWindow"
+		| "closeTabsToTheLeftInWindow"
+		| "closeTabsToTheRightInWindow"
 		| "unhoverAll"
 		| "copyCurrentTabMarkdownUrl"
 		| "getCurrentTabUrl"
@@ -21,7 +24,7 @@ interface RangoActionWithoutTarget {
 		| "decreaseHintSize";
 }
 
-interface RangoActionWithoutTargetWithArg {
+interface RangoActionWithoutTargetWithStringArg {
 	type:
 		| "copyLocationProperty"
 		| "setHintStyle"
@@ -30,6 +33,15 @@ interface RangoActionWithoutTargetWithArg {
 		| "disableHints"
 		| "resetToggleLevel";
 	arg: string;
+}
+
+interface RangoActionWithoutTargetWithNumberArg {
+	type:
+		| "closeTabsLeftEndInWindow"
+		| "closeTabsRightEndInWindow"
+		| "closePreviousTabsInWindow"
+		| "closeNextTabsInWindow";
+	arg: number;
 }
 
 interface RangoActionWithTarget {
@@ -56,7 +68,8 @@ export type RangoAction =
 	| RangoActionWithoutTarget
 	| RangoActionWithTarget
 	| RangoActionWithMultipleTargets
-	| RangoActionWithoutTargetWithArg;
+	| RangoActionWithoutTargetWithStringArg
+	| RangoActionWithoutTargetWithNumberArg;
 
 export interface RequestFromTalon {
 	version?: number;

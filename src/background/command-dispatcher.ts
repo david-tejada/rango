@@ -23,6 +23,13 @@ const backgroundCommands = new Set([
 	"disableUrlInTitle",
 	"excludeSingleLetterHints",
 	"includeSingleLetterHints",
+	"closeOtherTabsInWindow",
+	"closeTabsToTheLeftInWindow",
+	"closeTabsToTheRightInWindow",
+	"closeTabsLeftEndInWindow",
+	"closeTabsRightEndInWindow",
+	"closePreviousTabsInWindow",
+	"closeNextTabsInWindow",
 ]);
 
 export async function dispatchCommand(

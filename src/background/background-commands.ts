@@ -1,8 +1,10 @@
+import browser from "webextension-polyfill";
 import { RangoAction, HintsToggle, TalonAction } from "../typing/types";
 import { getStored, setStored } from "../lib/storage";
 import { sendRequestToAllTabs, getActiveTab } from "./tabs-messaging";
 import { notify } from "./notify";
 import { toggleHints } from "./toggle-hints";
+import { closeTabsInWindow } from "./close-tabs";
 
 export async function executeBackgroundCommand(
 	command: RangoAction
@@ -76,6 +78,34 @@ export async function executeBackgroundCommand(
 			notify("Url in title disabled", "Refresh the page to update the title");
 			break;
 
+		case "closeOtherTabsInWindow":
+			await closeTabsInWindow("other");
+			break;
+
+		case "closeTabsToTheLeftInWindow":
+			await closeTabsInWindow("left");
+			break;
+
+		case "closeTabsToTheRightInWindow":
+			await closeTabsInWindow("right");
+			break;
+
+		case "closeTabsLeftEndInWindow":
+			await closeTabsInWindow("leftEnd", command.arg);
+			break;
+
+		case "closeTabsRightEndInWindow":
+			await closeTabsInWindow("rightEnd", command.arg);
+			break;
+
+		case "closePreviousTabsInWindow":
+			await closeTabsInWindow("previous", command.arg);
+			break;
+
+		case "closeNextTabsInWindow":
+			await closeTabsInWindow("next", command.arg);
+			break;
+
 		case "getCurrentTabUrl": {
 			const activeTab = await getActiveTab();
 			if (activeTab?.url) {
@@ -112,3 +142,7 @@ export async function executeBackgroundCommand(
 		type: "noAction",
 	};
 }
+
+browser.tabs.onMoved.addListener((tabId, moveInfo) => {
+	console.log({ tabId, moveInfo });
+});
