@@ -9,6 +9,12 @@ import { notify } from "./notify";
 
 let lastRequestText: string | undefined;
 
+async function timer(ms: number) {
+	return new Promise((resolve) => {
+		setTimeout(resolve, ms);
+	});
+}
+
 // In order to avoid the pitfalls of creating a copy-paste textarea in the current tab
 // with Manifest v3, when possible, we create the textarea in a different tab. This also gives
 // us the possibility of executing background commands were content scripts can't run.
@@ -24,6 +30,7 @@ async function getClipboardTabId(): Promise<number | undefined> {
 		active: true,
 		currentWindow: true,
 	});
+	const activeTab = activeTabsCurrentWindow[0];
 	const possibleClipboardTabsByPriority = [
 		...nonActiveTabs,
 		...activeTabsOtherWindows,
@@ -32,6 +39,19 @@ async function getClipboardTabId(): Promise<number | undefined> {
 
 	for (const tab of possibleClipboardTabsByPriority) {
 		try {
+			// If we need to use the active tab for the clipboard area, we need to make sure
+			// that the tab status is "complete", otherwise the message to the content script will
+			// fail because it won't be loaded. This can happen for example when we click a link
+			// an the new page still has a loaded when we try to write the response to the clipboard.
+			// If in about two seconds the page hasn't completed we continue.
+			if (tab === activeTab) {
+				let i = 0;
+				while (tab.status !== "complete" && i < 40) {
+					await timer(50); // eslint-disable-line no-await-in-loop
+					i++;
+				}
+			}
+
 			if (tab.id) {
 				// We don't expect a response here, the only thing important is we don't
 				// get an error because we weren't able to connect to the content script.
