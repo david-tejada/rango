@@ -30,6 +30,7 @@ const backgroundCommands = new Set([
 	"closeTabsRightEndInWindow",
 	"closePreviousTabsInWindow",
 	"closeNextTabsInWindow",
+	"cloneCurrentTab",
 ]);
 
 export async function dispatchCommand(

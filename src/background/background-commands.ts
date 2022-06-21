@@ -106,6 +106,15 @@ export async function executeBackgroundCommand(
 			await closeTabsInWindow("next", command.arg);
 			break;
 
+		case "cloneCurrentTab": {
+			const activeTab = await getActiveTab();
+			if (activeTab?.id) {
+				await browser.tabs.duplicate(activeTab.id);
+			}
+
+			break;
+		}
+
 		case "getCurrentTabUrl": {
 			const activeTab = await getActiveTab();
 			if (activeTab?.url) {
