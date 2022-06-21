@@ -151,7 +151,3 @@ export async function executeBackgroundCommand(
 		type: "noAction",
 	};
 }
-
-browser.tabs.onMoved.addListener((tabId, moveInfo) => {
-	console.log({ tabId, moveInfo });
-});
