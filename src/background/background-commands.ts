@@ -134,7 +134,10 @@ export async function executeBackgroundCommand(
 			if (activeTab?.url && activeTab?.title) {
 				return {
 					type: "copyToClipboard",
-					textToCopy: `[${activeTab.title}](${activeTab.url.toString()})`,
+					textToCopy: `[${activeTab.title.replace(
+						` - ${activeTab.url}`,
+						""
+					)}](${activeTab.url})`,
 				};
 			}
 
