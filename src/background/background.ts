@@ -27,7 +27,10 @@ if (browser.action) {
 }
 
 browser.commands.onCommand.addListener(async (internalCommand: string) => {
-	if (internalCommand === "get-talon-request") {
+	if (
+		internalCommand === "get-talon-request" ||
+		internalCommand === "get-talon-request-legacy"
+	) {
 		try {
 			const request = await getRequestFromClipboard();
 			if (process.env["NODE_ENV"] !== "production") {
