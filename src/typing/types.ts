@@ -10,8 +10,6 @@ interface RangoActionWithoutTarget {
 		| "toggleHints"
 		| "enableHintsNavigation"
 		| "disableHintsNavigation"
-		| "enableDirectClicking"
-		| "disableDirectClicking"
 		| "excludeSingleLetterHints"
 		| "includeSingleLetterHints"
 		| "refreshHints"
@@ -199,7 +197,6 @@ export interface StorableHintsToggle {
 }
 
 export interface RangoOptions {
-	directClicking: boolean;
 	hintFontSize: number;
 	hintsToggle: HintsToggle;
 	hintWeight: "auto" | "normal" | "bold";
@@ -209,7 +206,6 @@ export interface RangoOptions {
 }
 
 export interface StorableRangoOptions {
-	directClicking: boolean;
 	hintFontSize: number;
 	hintsToggle: StorableHintsToggle;
 	hintWeight: "auto" | "normal" | "bold";

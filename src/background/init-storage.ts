@@ -1,7 +1,4 @@
-import iconDark48Url from "url:../assets/icon-dark48.png";
-import icon48Url from "url:../assets/icon48.png";
-import browser, { browserAction } from "webextension-polyfill";
-import { getStored } from "../lib/storage";
+import browser from "webextension-polyfill";
 import {
 	RangoOptions,
 	StorableRangoOptions,
@@ -9,7 +6,6 @@ import {
 } from "../typing/types";
 
 const defaultOptions: StorableRangoOptions = {
-	directClicking: true,
 	hintFontSize: 10,
 	hintsToggle: {
 		global: true,
@@ -63,30 +59,4 @@ export async function initStorage() {
 	}
 
 	await Promise.all(storing);
-
-	// We change the icon if necessary
-	const directClicking = await getStored("directClicking");
-	if (browser.action) {
-		await browser.action.setIcon({
-			path: directClicking ? icon48Url : iconDark48Url,
-		});
-	} else {
-		await browserAction.setIcon({
-			path: directClicking ? icon48Url : iconDark48Url,
-		});
-	}
 }
-
-browser.storage.onChanged.addListener(async (changes) => {
-	if ("directClicking" in changes) {
-		if (browser.action) {
-			await browser.action.setIcon({
-				path: changes["directClicking"]?.newValue ? icon48Url : iconDark48Url,
-			});
-		} else {
-			await browserAction.setIcon({
-				path: changes["directClicking"]?.newValue ? icon48Url : iconDark48Url,
-			});
-		}
-	}
-});
