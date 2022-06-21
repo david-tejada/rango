@@ -37,8 +37,8 @@
 	"commands": {
 		"get-talon-request": {
 			"suggested_key": {
-				"default": "Ctrl+Shift+1",
-				"mac": "MacCtrl+Shift+1"
+				"default": "Ctrl+Shift+3",
+				"mac": "MacCtrl+Shift+3"
 			},
 			"description": "Get the talon request"
 		},
