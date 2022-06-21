@@ -18,9 +18,13 @@ export async function openInNewTab(hintOrIntersector: string | Intersector) {
 	}
 }
 
-export async function openInBackgroundTab(hints: string[]) {
+export async function openInBackgroundTab(hints: string | string[]) {
 	const links = [];
 	const intersectors = [];
+	if (typeof hints === "string") {
+		hints = [hints];
+	}
+
 	for (const hint of hints) {
 		const intersector = getIntersectorWithHint(hint);
 		if (intersector.element instanceof HTMLAnchorElement) {
