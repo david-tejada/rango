@@ -22,8 +22,8 @@ All notable changes to the Rango extension will be documented in this file.
 - Added command for cloning the current tab.
 - Added commands for scrolling the current page and the scroll container of a particular hint.
 - Added command to copy the text content of a hinted element.
-- Added command to copy the address of a particular hint in markdown format.
-- Added commands to copy the location information of the current hint (host, origin, address, ...).
+- Added command to copy the address of a particular hinted link in markdown format.
+- Added commands to copy the location information of the current page (host, origin, address, ...).
 - Added command to copy the address of the current page in markdown format.
 - Added commands to change between "boxed" and "subtle" hint style.
 - Added command to change the weight of the hint font between "bold", "normal" and "auto".
