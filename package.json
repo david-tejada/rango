@@ -3,7 +3,11 @@
 	"scripts": {
 		"build:mv2": "rimraf dist-mv2 && parcel build src/mv2/manifest.json --no-content-hash --no-source-maps --dist-dir dist-mv2 --no-cache --detailed-report 0",
 		"build:mv3": "rimraf dist-mv3 && parcel build src/mv3/manifest.json --no-content-hash --no-source-maps --dist-dir dist-mv3 --no-cache --detailed-report 0",
-		"build": "run-s build:*",
+		"build": "run-p build:*",
+		"package:mv2": "web-ext build --artifacts-dir=web-ext-artifacts/mv2",
+		"package:mv3": "web-ext build --source-dir=dist-mv3 --artifacts-dir=web-ext-artifacts/mv3",
+		"package": "run-p package:*",
+		"build-and-package": "run-s build package",
 		"lint": "run-p lint:*",
 		"lint-fix": "run-p 'lint:* -- --fix'",
 		"lint:css": "stylelint src/**/*.css",
