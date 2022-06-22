@@ -55,6 +55,13 @@
 				"mac": "MacCtrl+Shift+Space"
 			},
 			"description": "Toggle hints"
+		},
+		"disable-hints": {
+			"suggested_key": {
+				"default": "Ctrl+Shift+4",
+				"mac": "MacCtrl+Shift+4"
+			},
+			"description": "Disable hints"
 		}
 	},
 	"browser_action": {

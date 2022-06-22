@@ -11,6 +11,7 @@ import {
 	noActionResponse,
 } from "./response-utils";
 import { initStorage } from "./init-storage";
+import { toggleHints } from "./toggle-hints";
 
 initStorage().catch((error) => {
 	console.error(error);
@@ -81,5 +82,9 @@ browser.commands.onCommand.addListener(async (internalCommand: string) => {
 
 	if (internalCommand === "toggle-hints") {
 		await dispatchCommand({ type: "toggleHints" });
+	}
+
+	if (internalCommand === "disable-hints") {
+		await toggleHints("global", false);
 	}
 });
