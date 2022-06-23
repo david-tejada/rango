@@ -55,6 +55,9 @@ export function elementIsVisible(intersector: Intersector): boolean {
 	const firstImage = element.querySelector("svg, img");
 	if (
 		firstImage &&
+		window.getComputedStyle(firstImage).visibility !== "hidden" &&
+		window.getComputedStyle(firstImage).display !== "none" &&
+		Number.parseFloat(window.getComputedStyle(firstImage).opacity) < 0.1 &&
 		(!intersector.firstTextNodeDescendant ||
 			firstImage.compareDocumentPosition(
 				intersector.firstTextNodeDescendant
