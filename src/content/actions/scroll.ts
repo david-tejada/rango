@@ -10,6 +10,14 @@ function getScrollContainer(node: Node | null): Element | undefined {
 			(window.getComputedStyle(node).overflowY === "auto" ||
 				window.getComputedStyle(node).overflowY === "scroll")
 		) {
+			if (
+				node === document.body &&
+				document.documentElement.clientHeight !==
+					document.documentElement.scrollHeight
+			) {
+				return document.documentElement;
+			}
+
 			return node;
 		}
 
