@@ -34,7 +34,7 @@ There are two modes: direct and explicit clicking. To switch between them you ha
 
 #### Direct Clicking
 
-This is the default mode. With it enabled you just have to say the characters to click an element. To avoid misclicks it only listens to a pause, one or two letters, followed by another pause. If you actually want to enter one or two letters you have to use the knausj command `press`. If there is no hint with those letters it will type them.
+This is the default mode. With it enabled you just have to say the characters displayed on the hint to click an element. To avoid misclicks it only listens to a pause, one or two letters, followed by another pause. If there is no hint with those letters it will type them. If you actually want to enter one or two characters the are part of a hint you have to use the knausj command `press`.
 
 ##### Examples
 
