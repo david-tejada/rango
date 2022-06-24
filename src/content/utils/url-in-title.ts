@@ -5,14 +5,14 @@ export async function addUrlToTitle() {
 		"urlInTitle"
 	)) as Record<string, boolean>;
 	if (urlInTitle) {
-		if (!document.title.includes(window.location.href)) {
+		if (document.title && !document.title.includes(window.location.href)) {
 			document.title = document.title + " - " + window.location.href;
 		}
 
 		const headObserver = new MutationObserver(() => {
 			// We don't care to check if <title> was changed, in involves looping over addedNodes, ...
 			// I think it's quicker this way
-			if (!document.title.includes(window.location.href)) {
+			if (document.title && !document.title.includes(window.location.href)) {
 				document.title = document.title + " - " + window.location.href;
 			}
 		});
