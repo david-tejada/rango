@@ -14,7 +14,8 @@
 		"activeTab",
 		"clipboardRead",
 		"clipboardWrite",
-		"notifications"
+		"notifications",
+		"webNavigation"
 	],
 	"content_scripts": [
 		{

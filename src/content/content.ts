@@ -15,7 +15,6 @@ import { showLink } from "./actions/show";
 import { hoverElement, unhoverAll } from "./actions/hover";
 import { triggerHintsUpdate } from "./hints/display-hints";
 import observe from "./observers";
-import { initStack } from "./hints/hints-requests";
 import { NoHintError } from "./classes/errors";
 import {
 	copyElementTextContentToClipboard,
@@ -32,7 +31,6 @@ import { setNavigationToggle } from "./hints/should-display-hints";
 
 cacheHintOptions()
 	.then(addUrlToTitle)
-	.then(initStack)
 	.then(observe)
 	.catch((error) => {
 		console.error(error);

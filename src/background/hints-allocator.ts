@@ -1,3 +1,4 @@
+import browser from "webextension-polyfill";
 import { HintsStack, StorableHintsStack } from "../typing/types";
 import { getStored, setStored } from "../lib/storage";
 import { allHints } from "./all-hints";
@@ -105,3 +106,11 @@ export async function releaseOrphanHints(
 	);
 	await releaseHints(orphanHints, tabId);
 }
+
+// We use onCommitted because onBeforeNavigate can sometimes be received repeated times.
+// onCommitted is also guaranteed to be received before any of the subframes onBeforeNavigate
+browser.webNavigation.onCommitted.addListener(async ({ frameId, tabId }) => {
+	if (frameId === 0) {
+		await initStack(tabId, frameId);
+	}
+});
