@@ -1,3 +1,4 @@
+import browser from "webextension-polyfill";
 import { HintsStack, StorableHintsStack } from "../typing/types";
 import { getStored, setStored } from "../lib/storage";
 import { allHints } from "./all-hints";
@@ -45,9 +46,15 @@ async function saveStack(stack: HintsStack, tabId: number) {
 
 export async function initStack(tabId: number, frameId: number) {
 	if (frameId === 0) {
+		const includeSingleLetterHints = await getStored(
+			"includeSingleLetterHints"
+		);
+		const possibleHints = includeSingleLetterHints
+			? [...allHints]
+			: allHints.slice(0, -26);
 		await saveStack(
 			{
-				free: [...allHints],
+				free: possibleHints,
 				assigned: new Map(),
 			},
 			tabId
@@ -99,3 +106,11 @@ export async function releaseOrphanHints(
 	);
 	await releaseHints(orphanHints, tabId);
 }
+
+// We use onCommitted because onBeforeNavigate can sometimes be received repeated times.
+// onCommitted is also guaranteed to be received before any of the subframes onBeforeNavigate
+browser.webNavigation.onCommitted.addListener(async ({ frameId, tabId }) => {
+	if (frameId === 0) {
+		await initStack(tabId, frameId);
+	}
+});

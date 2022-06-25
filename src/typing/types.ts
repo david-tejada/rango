@@ -1,32 +1,62 @@
 import Color from "color";
 
-interface RangoSimpleAction {
+interface RangoActionWithoutTarget {
 	type:
+		| "scrollUpPage"
+		| "scrollDownPage"
+		| "closeOtherTabsInWindow"
+		| "closeTabsToTheLeftInWindow"
+		| "closeTabsToTheRightInWindow"
+		| "cloneCurrentTab"
 		| "unhoverAll"
-		| "copyCurrentUrl"
-		| "copyCurrentHostname"
-		| "copyCurrentPath"
-		| "copyCurrentUrlMarkdown"
+		| "copyCurrentTabMarkdownUrl"
+		| "getCurrentTabUrl"
 		| "toggleHints"
+		| "enableHintsNavigation"
+		| "disableHintsNavigation"
+		| "excludeSingleLetterHints"
+		| "includeSingleLetterHints"
 		| "refreshHints"
+		| "enableUrlInTitle"
+		| "disableUrlInTitle"
 		| "fullHintsUpdate"
 		| "fullHintsUpdateOnIdle"
 		| "increaseHintSize"
 		| "decreaseHintSize";
 }
 
+interface RangoActionWithoutTargetWithStringArg {
+	type:
+		| "copyLocationProperty"
+		| "setHintStyle"
+		| "setHintWeight"
+		| "enableHints"
+		| "disableHints"
+		| "resetToggleLevel";
+	arg: string;
+}
+
+interface RangoActionWithoutTargetWithNumberArg {
+	type:
+		| "closeTabsLeftEndInWindow"
+		| "closeTabsRightEndInWindow"
+		| "closePreviousTabsInWindow"
+		| "closeNextTabsInWindow";
+	arg: number;
+}
+
 interface RangoActionWithTarget {
 	type:
+		| "scrollUpAtElement"
+		| "scrollDownAtElement"
 		| "clickElement"
 		| "directClickElement"
 		| "openInNewTab"
 		| "copyLink"
 		| "copyMarkdownLink"
-		| "copyTextContent"
+		| "copyElementTextContent"
 		| "showLink"
-		| "hoverElement"
-		| "setHintStyle"
-		| "setHintWeight";
+		| "hoverElement";
 	target: string;
 }
 
@@ -36,9 +66,11 @@ interface RangoActionWithMultipleTargets {
 }
 
 export type RangoAction =
-	| RangoSimpleAction
+	| RangoActionWithoutTarget
 	| RangoActionWithTarget
-	| RangoActionWithMultipleTargets;
+	| RangoActionWithMultipleTargets
+	| RangoActionWithoutTargetWithStringArg
+	| RangoActionWithoutTargetWithNumberArg;
 
 export interface RequestFromTalon {
 	version?: number;
@@ -47,8 +79,9 @@ export interface RequestFromTalon {
 }
 
 export interface TalonAction {
-	type: "ok" | "copyToClipboard" | "noHintFound";
+	type: "noAction" | "copyToClipboard" | "textRetrieved" | "noHintFound";
 	textToCopy?: string;
+	text?: string;
 }
 
 export interface ResponseToTalon {
@@ -66,19 +99,24 @@ export interface ResponseToTalonVersion0 {
 	action: TalonActionVersion0;
 }
 
-interface GetChromiumClipboard {
-	type: "getChromiumClipboard";
+interface GetClipboardManifestV3 {
+	type: "getClipboardManifestV3";
 }
 
-interface CopyToChromiumClipboard {
-	type: "copyToChromiumClipboard";
+interface CopyToClipboardManifestV3 {
+	type: "copyToClipboardManifestV3";
 	text: string;
+}
+
+interface GetLocation {
+	type: "getLocation";
 }
 
 export type ContentRequest =
 	| RangoAction
-	| GetChromiumClipboard
-	| CopyToChromiumClipboard;
+	| GetClipboardManifestV3
+	| CopyToClipboardManifestV3
+	| GetLocation;
 
 interface OpenInNewTab {
 	type: "openInNewTab";
@@ -109,10 +147,8 @@ interface ReleaseOrphanHints {
 	activeHints: string[];
 }
 
-interface Notify {
-	type: "notify";
-	title: string;
-	message: string;
+interface GetTabId {
+	type: "getTabId";
 }
 
 export type BackgroundRequest =
@@ -122,17 +158,22 @@ export type BackgroundRequest =
 	| ReleaseHints
 	| ReleaseOrphanHints
 	| OpenInBackgroundTab
-	| Notify;
+	| GetTabId;
 
 export interface ClipboardResponse {
 	text: string;
 }
 
+export type ResponseWithLocation = Partial<Record<WindowLocationKeys, string>>;
+
 export interface ResponseWithTalonAction {
 	talonAction: TalonAction;
 }
 
-export type ScriptResponse = ClipboardResponse | ResponseWithTalonAction;
+export type ScriptResponse =
+	| ClipboardResponse
+	| ResponseWithLocation
+	| ResponseWithTalonAction;
 
 export interface Intersector {
 	element: Element;
@@ -140,8 +181,51 @@ export interface Intersector {
 	firstTextNodeDescendant?: Text;
 	hintElement?: HTMLDivElement;
 	hintText?: string;
-	hintAnchor?: HTMLElement;
+	hintAnchorRect?: DOMRect;
+	hintAnchorIsText?: boolean;
+	hintPlacement?: "top" | "bottom";
 	backgroundColor?: Color;
+}
+
+export type WindowLocationKeys =
+	| "href"
+	| "hostname"
+	| "host"
+	| "origin"
+	| "pathname"
+	| "port"
+	| "protocol";
+
+export interface HintsToggle {
+	global: boolean;
+	tabs: Map<number, boolean>;
+	hosts: Map<string, boolean>;
+	paths: Map<string, boolean>;
+}
+
+export interface StorableHintsToggle {
+	global: boolean;
+	tabs: Array<[number, boolean]>;
+	hosts: Array<[string, boolean]>;
+	paths: Array<[string, boolean]>;
+}
+
+export interface RangoOptions {
+	hintFontSize: number;
+	hintsToggle: HintsToggle;
+	hintWeight: "auto" | "normal" | "bold";
+	hintStyle: "boxed" | "subtle";
+	includeSingleLetterHints: boolean;
+	urlInTitle: boolean;
+}
+
+export interface StorableRangoOptions {
+	hintFontSize: number;
+	hintsToggle: StorableHintsToggle;
+	hintWeight: "auto" | "normal" | "bold";
+	hintStyle: "boxed" | "subtle";
+	includeSingleLetterHints: boolean;
+	urlInTitle: boolean;
 }
 
 export interface HintedIntersector extends Intersector {

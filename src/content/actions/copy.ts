@@ -1,4 +1,3 @@
-import browser from "webextension-polyfill";
 import { ResponseWithTalonAction } from "../../typing/types";
 import { showTooltip } from "../hints/tooltip";
 import { getIntersectorWithHint } from "../intersectors";
@@ -12,16 +11,7 @@ export function copyToClipboardResponse(text: string): ResponseWithTalonAction {
 	};
 }
 
-export async function copyGeneric(text: string, item: string) {
-	void browser.runtime.sendMessage({
-		type: "notify",
-		title: "Rango",
-		message: `${item} copied to the clipboard!`,
-	});
-	return copyToClipboardResponse(text);
-}
-
-export function copyTextContent(hintText: string) {
+export function copyElementTextContentToClipboard(hintText: string) {
 	const target = getIntersectorWithHint(hintText);
 	const textContent = target.element.textContent;
 	const message = textContent ? "Copied!" : "No text content to copy";
@@ -29,7 +19,7 @@ export function copyTextContent(hintText: string) {
 	return textContent ? copyToClipboardResponse(textContent) : undefined;
 }
 
-export function copyLink(hintText: string) {
+export function copyLinkToClipboard(hintText: string) {
 	const target = getIntersectorWithHint(hintText);
 	let href;
 	if (target.element instanceof HTMLAnchorElement) {
@@ -41,7 +31,7 @@ export function copyLink(hintText: string) {
 	return href ? copyToClipboardResponse(href) : undefined;
 }
 
-export function copyMarkdownLink(hintText: string) {
+export function copyMarkdownLinkToClipboard(hintText: string) {
 	const target = getIntersectorWithHint(hintText);
 	let href;
 	let markdown;

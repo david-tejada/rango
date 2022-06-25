@@ -1,5 +1,5 @@
 import tippy from "tippy.js";
-import { Intersector } from "../../typing/types";
+import { Intersector, HintedIntersector } from "../../typing/types";
 import { applyEmphasisStyles, applyInitialStyles } from "./styles";
 
 export function showTooltip(
@@ -16,9 +16,9 @@ export function showTooltip(
 		maxWidth: "none",
 	});
 	instance.show();
-	applyEmphasisStyles(target, false);
+	applyEmphasisStyles(target as HintedIntersector, false);
 	setTimeout(() => {
-		applyInitialStyles(target);
+		applyInitialStyles(target as HintedIntersector);
 		instance.hide();
 		hintElement.removeAttribute("id");
 	}, duration);

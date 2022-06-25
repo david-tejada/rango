@@ -1,7 +1,7 @@
 import { Intersector, HintedIntersector } from "../../typing/types";
 import { assertDefined, isHintedIntersector } from "../../typing/typing-utils";
 import { elementIsVisible } from "../utils/element-visibility";
-import { getOption, initOptions } from "../options/options-utils";
+import { cacheHintOptions } from "../options/hint-style-options";
 import { intersectors, removedIntersectorsHints } from "../intersectors";
 import { positionHint } from "./position-hints";
 import { applyInitialStyles } from "./styles";
@@ -11,6 +11,7 @@ import {
 	releaseHints,
 	releaseOrphanHints,
 } from "./hints-requests";
+import { shouldDisplayHints } from "./should-display-hints";
 
 let hintsWillUpdate = false;
 let hintsAreUpdating = false;
@@ -147,7 +148,7 @@ async function updateHints() {
 
 export async function triggerHintsUpdate(fullRefresh = false) {
 	if (fullRefresh) {
-		await initOptions();
+		await cacheHintOptions();
 		document.querySelector("#rango-hints-container")?.remove();
 		await initStack();
 		for (const intersector of intersectors) {
@@ -159,7 +160,7 @@ export async function triggerHintsUpdate(fullRefresh = false) {
 
 	// We set a timeout in order to avoid updating the hints too often, for example,
 	// when there are multiple mutations or intersections happening
-	const showHints = getOption("showHints");
+	const showHints = await shouldDisplayHints();
 	if (showHints && hintsAreUpdating) {
 		setTimeout(triggerHintsUpdate, 300);
 	}

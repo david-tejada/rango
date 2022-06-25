@@ -1,6 +1,6 @@
 {
 	"name": "Rango",
-	"version": "0.1.9",
+	"version": "0.2.0",
 	"description": "Extension that allows you to interact with webpages using your voice and talon",
 	"homepage_url": "https://github.com/david-tejada/rango",
 	"manifest_version": 2,
@@ -20,7 +20,8 @@
 		"clipboardRead",
 		"clipboardWrite",
 		"notifications",
-		"nativeMessaging"
+		"nativeMessaging",
+		"webNavigation"
 	],
 	"content_scripts": [
 		{
@@ -38,10 +39,17 @@
 	"commands": {
 		"get-talon-request": {
 			"suggested_key": {
-				"default": "Ctrl+Shift+Insert",
-				"mac": "MacCtrl+Shift+1"
+				"default": "Ctrl+Shift+3",
+				"mac": "MacCtrl+Shift+3"
 			},
 			"description": "Get the talon request"
+		},
+		"get-talon-request-legacy": {
+			"suggested_key": {
+				"default": "Ctrl+Shift+Insert",
+				"mac": "MacCtrl+Shift+Insert"
+			},
+			"description": "Get the talon request (legacy)"
 		},
 		"toggle-hints": {
 			"suggested_key": {
@@ -49,6 +57,13 @@
 				"mac": "MacCtrl+Shift+Space"
 			},
 			"description": "Toggle hints"
+		},
+		"disable-hints": {
+			"suggested_key": {
+				"default": "Ctrl+Shift+4",
+				"mac": "MacCtrl+Shift+4"
+			},
+			"description": "Disable hints"
 		}
 	},
 	"browser_action": {

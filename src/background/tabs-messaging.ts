@@ -14,7 +14,7 @@ import {
 	releaseOrphanHints,
 } from "./hints-allocator";
 
-async function getActiveTab(): Promise<browser.Tabs.Tab | undefined> {
+export async function getActiveTab(): Promise<browser.Tabs.Tab | undefined> {
 	const activeTabs = await browser.tabs.query({
 		currentWindow: true,
 		active: true,
@@ -30,6 +30,11 @@ async function getHintFrameId(
 	const stackName = `hints-stack-${tabId}`;
 	const storage = await browser.storage.local.get(stackName);
 	const storableStack = storage[stackName] as StorableHintsStack;
+
+	if (!storableStack) {
+		return 0;
+	}
+
 	const stack = {
 		free: storableStack.free,
 		assigned: new Map(storableStack.assigned),
@@ -48,7 +53,11 @@ export async function sendRequestToActiveTab(
 ): Promise<ScriptResponse | undefined> {
 	const activeTab = await getActiveTab();
 	let hintText;
-	if ("target" in request) {
+	if (
+		"target" in request &&
+		typeof request.target === "string" &&
+		request.target.length < 3
+	) {
 		hintText = request.target;
 	}
 
@@ -56,61 +65,55 @@ export async function sendRequestToActiveTab(
 	// frame in case that the request doesn't have a hint
 	if (activeTab?.id) {
 		const frameId = await getHintFrameId(activeTab.id, hintText);
-		return browser.tabs.sendMessage(activeTab.id, request, {
+		const response = (await browser.tabs.sendMessage(activeTab.id, request, {
 			frameId,
-		}) as Promise<ScriptResponse | undefined>;
+		})) as ScriptResponse | undefined;
+		if (response) {
+			return response;
+		}
 	}
 
 	return undefined;
 }
 
-export async function sendRequestToAllTabs(
-	request: ContentRequest
-): Promise<void> {
+export async function sendRequestToAllTabs(request: ContentRequest) {
 	// We first send the command to the active tabs and then to the rest where it will be
 	// executed using window.requestIdleCallback.
-	// We catch errors here because we know some promises might fail, as the extension
-	// is not able to run on all tabs, for example, in pages like "about:debugging".
 	const activeTabs = await browser.tabs.query({
 		active: true,
 	});
 
-	for (const tab of activeTabs) {
-		browser.tabs.sendMessage(tab.id!, request).catch((error) => {
-			if (
-				error.message !==
-				"Could not establish connection. Receiving end does not exist."
-			) {
-				throw new Error(error);
+	// We use allSettled here because we want to finish with the active tabs before
+	// we move on with the non-active tabs
+	await Promise.allSettled(
+		activeTabs.map(async (tab) => {
+			if (tab.id) {
+				return browser.tabs.sendMessage(tab.id, request);
 			}
-		});
-	}
+		})
+	);
 
-	const rest = await browser.tabs.query({
+	const nonActiveTabs = await browser.tabs.query({
 		active: false,
 	});
 
-	for (const tab of rest) {
-		const backgroundTabRequest = { ...request };
-		backgroundTabRequest.type += "OnIdle";
-		void browser.tabs
-			.sendMessage(tab.id!, backgroundTabRequest)
-			.catch((error) => {
-				if (
-					error.message !==
-					"Could not establish connection. Receiving end does not exist."
-				) {
-					throw new Error(error);
-				}
-			});
-	}
+	const backgroundTabRequest = { ...request };
+	backgroundTabRequest.type += "OnIdle";
+	await Promise.all(
+		nonActiveTabs.map(async (tab) => {
+			if (tab.id) {
+				return browser.tabs.sendMessage(tab.id, backgroundTabRequest);
+			}
+		})
+	);
 }
 
 const mutex = new Mutex();
 
 browser.runtime.onMessage.addListener(
 	async (request: BackgroundRequest, sender) => {
-		const tabId = sender.tab?.id;
+		assertDefined(sender.tab);
+		const tabId = sender.tab.id;
 		assertDefined(tabId);
 		const frameId = sender.frameId ?? 0;
 
@@ -122,11 +125,17 @@ browser.runtime.onMessage.addListener(
 				break;
 
 			case "openInBackgroundTab":
-				for (const link of request.links) {
-					void browser.tabs.create({
-						url: link,
-						active: false,
-					});
+				try {
+					await Promise.all(
+						request.links.map(async (link) =>
+							browser.tabs.create({
+								url: link,
+								active: false,
+							})
+						)
+					);
+				} catch (error: unknown) {
+					console.error(error);
 				}
 
 				break;
@@ -147,14 +156,9 @@ browser.runtime.onMessage.addListener(
 			case "releaseOrphanHints":
 				return releaseOrphanHints(request.activeHints, tabId, frameId);
 
-			case "notify":
-				void browser.notifications.create("rango-notification", {
-					type: "basic",
-					iconUrl: browser.runtime.getURL("../assets/icon128.png"),
-					title: request.title,
-					message: request.message,
-				});
-				break;
+			case "getTabId": {
+				return { tabId };
+			}
 
 			default:
 				throw new Error("Bad request to background script");

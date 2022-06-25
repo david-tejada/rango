@@ -1,20 +1,5 @@
-import browser from "webextension-polyfill";
 import { ResponseToTalon, ResponseToTalonVersion0 } from "../typing/types";
-
-function notifyToUpdate() {
-	// Notify the user to update their extension
-	browser.notifications
-		.create("rango-notification", {
-			type: "basic",
-			iconUrl: browser.runtime.getURL("../assets/icon128.png"),
-			title: "Update your Rango extension!",
-			message:
-				"Your Rango extension version is behind your rango-talon. Please update your extension",
-		})
-		.catch((error) => {
-			console.error(error);
-		});
-}
+import { notify } from "./notify";
 
 export function adaptResponse(
 	originalResponse: ResponseToTalon,
@@ -22,7 +7,10 @@ export function adaptResponse(
 ): ResponseToTalon | ResponseToTalonVersion0 {
 	const currentVersion = 1;
 	if (requestVersion > currentVersion) {
-		notifyToUpdate();
+		notify(
+			"Update your Rango extension!",
+			"Your Rango extension version is behind your rango-talon. Please update your extension"
+		);
 	}
 
 	if (

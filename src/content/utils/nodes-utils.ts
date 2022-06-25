@@ -19,16 +19,14 @@ function rangeGivesCoordinates(textNode: Text): boolean {
 	return true;
 }
 
-function getTextNodeRect(textNode: Text): DOMRect {
+export function getTextNodeRect(textNode: Text): DOMRect {
 	const range = document.createRange();
 	range.setStart(textNode, 0);
 	range.setEnd(textNode, textNode.length);
 	return range.getBoundingClientRect();
 }
 
-export function getFirstCharacterRect(
-	textNode: Text | undefined
-): DOMRect | undefined {
+export function getFirstCharacterRect(textNode: Text): DOMRect | undefined {
 	if (textNode) {
 		const range = document.createRange();
 		range.setStart(textNode, 0);

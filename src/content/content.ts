@@ -1,28 +1,36 @@
 import browser from "webextension-polyfill";
-import { ContentRequest, ScriptResponse } from "../typing/types";
-import { initOptions } from "./options/options-utils";
 import {
-	getChromiumClipboard,
-	copyToChromiumClipboard,
-} from "./utils/chromium-clipboard";
+	ContentRequest,
+	ScriptResponse,
+	WindowLocationKeys,
+} from "../typing/types";
+import { cacheHintOptions } from "./options/hint-style-options";
+import {
+	getClipboardManifestV3,
+	copyToClipboardManifestV3,
+} from "./utils/manifest-v3-clipboard";
 import { clickElement } from "./actions/click-element";
 import { openInNewTab, openInBackgroundTab } from "./actions/open-in-new-tab";
 import { showLink } from "./actions/show";
 import { hoverElement, unhoverAll } from "./actions/hover";
 import { triggerHintsUpdate } from "./hints/display-hints";
 import observe from "./observers";
-import { initStack } from "./hints/hints-requests";
 import { NoHintError } from "./classes/errors";
 import {
-	copyTextContent,
-	copyLink,
-	copyMarkdownLink,
-	copyGeneric,
+	copyElementTextContentToClipboard,
+	copyLinkToClipboard,
+	copyMarkdownLinkToClipboard,
+	copyToClipboardResponse,
 } from "./actions/copy";
+import { addUrlToTitle } from "./utils/url-in-title";
+import {
+	scrollVerticallyAtElement,
+	scrollPageVertically,
+} from "./actions/scroll";
+import { setNavigationToggle } from "./hints/should-display-hints";
 
-// Initialize options
-initOptions()
-	.then(initStack)
+cacheHintOptions()
+	.then(addUrlToTitle)
 	.then(observe)
 	.catch((error) => {
 		console.error(error);
@@ -33,14 +41,21 @@ browser.runtime.onMessage.addListener(
 		try {
 			switch (request.type) {
 				// SCRIPT REQUESTS
-				case "getChromiumClipboard":
-					return { text: getChromiumClipboard() };
+				case "getClipboardManifestV3":
+					return { text: getClipboardManifestV3() };
 
-				case "copyToChromiumClipboard": {
+				case "copyToClipboardManifestV3": {
 					const text = request.text;
-					copyToChromiumClipboard(text);
+					copyToClipboardManifestV3(text);
 					break;
 				}
+
+				case "getLocation":
+					return {
+						host: window.location.host,
+						origin: window.location.origin,
+						pathname: window.location.pathname,
+					};
 
 				// RANGO ACTIONS
 				case "clickElement":
@@ -49,28 +64,34 @@ browser.runtime.onMessage.addListener(
 					break;
 				}
 
+				case "scrollUpAtElement":
+					scrollVerticallyAtElement("up", request.target);
+					break;
+
+				case "scrollDownAtElement":
+					scrollVerticallyAtElement("down", request.target);
+					break;
+
+				case "scrollUpPage":
+					scrollPageVertically("up");
+					break;
+
+				case "scrollDownPage":
+					scrollPageVertically("down");
+					break;
+
 				case "copyLink":
-					return copyLink(request.target);
+					return copyLinkToClipboard(request.target);
 
 				case "copyMarkdownLink":
-					return copyMarkdownLink(request.target);
+					return copyMarkdownLinkToClipboard(request.target);
 
-				case "copyTextContent":
-					return copyTextContent(request.target);
+				case "copyElementTextContent":
+					return copyElementTextContentToClipboard(request.target);
 
-				case "copyCurrentUrl":
-					return await copyGeneric(window.location.href, "URL");
-
-				case "copyCurrentHostname":
-					return await copyGeneric(window.location.hostname, "Domain");
-
-				case "copyCurrentPath":
-					return await copyGeneric(window.location.pathname, "Path");
-
-				case "copyCurrentUrlMarkdown":
-					return await copyGeneric(
-						`[${document.title}](${window.location.href})`,
-						"Markdown address"
+				case "copyLocationProperty":
+					return copyToClipboardResponse(
+						window.location[request.arg as WindowLocationKeys]
 					);
 
 				case "showLink":
@@ -94,6 +115,16 @@ browser.runtime.onMessage.addListener(
 					break;
 
 				case "refreshHints":
+					await triggerHintsUpdate(true);
+					break;
+
+				case "enableHintsNavigation":
+					setNavigationToggle(true);
+					await triggerHintsUpdate(true);
+					break;
+
+				case "disableHintsNavigation":
+					setNavigationToggle(false);
 					await triggerHintsUpdate(true);
 					break;
 

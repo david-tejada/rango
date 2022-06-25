@@ -18,7 +18,8 @@ function getCopyPasteArea(): HTMLTextAreaElement {
 	return copyPasteArea;
 }
 
-export function getChromiumClipboard(): string {
+export function getClipboardManifestV3(): string {
+	const lastActiveElement = document.activeElement;
 	let result = "";
 	const copyPasteArea = getCopyPasteArea();
 	copyPasteArea.disabled = false;
@@ -29,10 +30,15 @@ export function getChromiumClipboard(): string {
 
 	copyPasteArea.value = "";
 	copyPasteArea.disabled = true;
+	if (lastActiveElement instanceof HTMLElement) {
+		lastActiveElement.focus();
+	}
+
 	return result;
 }
 
-export function copyToChromiumClipboard(text: string) {
+export function copyToClipboardManifestV3(text: string) {
+	const lastActiveElement = document.activeElement;
 	const copyPasteArea = getCopyPasteArea();
 	copyPasteArea.disabled = false;
 	copyPasteArea.value = text;
@@ -40,4 +46,7 @@ export function copyToChromiumClipboard(text: string) {
 	document.execCommand("copy");
 	copyPasteArea.value = "";
 	copyPasteArea.disabled = true;
+	if (lastActiveElement instanceof HTMLElement) {
+		lastActiveElement.focus();
+	}
 }
