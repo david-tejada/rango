@@ -49,6 +49,9 @@ interface RangoActionWithTarget {
 	type:
 		| "scrollUpAtElement"
 		| "scrollDownAtElement"
+		| "scrollElementToTop"
+		| "scrollElementToBottom"
+		| "scrollElementToCenter"
 		| "clickElement"
 		| "directClickElement"
 		| "openInNewTab"

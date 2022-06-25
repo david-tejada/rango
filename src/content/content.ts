@@ -26,6 +26,9 @@ import { addUrlToTitle } from "./utils/url-in-title";
 import {
 	scrollVerticallyAtElement,
 	scrollPageVertically,
+	scrollElementToTop,
+	scrollElementToBottom,
+	scrollElementToCenter,
 } from "./actions/scroll";
 import { setNavigationToggle } from "./hints/should-display-hints";
 
@@ -70,6 +73,18 @@ browser.runtime.onMessage.addListener(
 
 				case "scrollDownAtElement":
 					scrollVerticallyAtElement("down", request.target);
+					break;
+
+				case "scrollElementToTop":
+					scrollElementToTop(request.target);
+					break;
+
+				case "scrollElementToBottom":
+					scrollElementToBottom(request.target);
+					break;
+
+				case "scrollElementToCenter":
+					scrollElementToCenter(request.target);
 					break;
 
 				case "scrollUpPage":
