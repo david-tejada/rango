@@ -99,23 +99,6 @@ function getElementVisibleRect(element: Element): DOMRect {
 	);
 }
 
-function getStickyHeaderHeight(): number {
-	const elements = document.body.querySelectorAll("div, header, nav");
-	const stickyHeights = [];
-	for (const element of elements) {
-		const style = window.getComputedStyle(element);
-		if (
-			(style.position === "fixed" || style.position === "sticky") &&
-			Number.parseInt(style.top, 10) === 0 &&
-			element.clientWidth > element.clientHeight
-		) {
-			stickyHeights.push(element.scrollHeight);
-		}
-	}
-
-	return Math.max(0, ...stickyHeights);
-}
-
 export function scrollElementToTop(hint: string) {
 	const element = getIntersectorWithHint(hint).element;
 	scrollContainer = getScrollContainer(element);
@@ -123,20 +106,40 @@ export function scrollElementToTop(hint: string) {
 	if (scrollContainer) {
 		const containerRect = getElementVisibleRect(scrollContainer);
 		const elementTop = element.getBoundingClientRect().top;
-		const stickyHeight = getStickyHeaderHeight();
 		const scrollAmount = isPageScroll(scrollContainer)
-			? elementTop - stickyHeight
+			? elementTop
 			: elementTop - containerRect.top;
 
 		scrollVerticallyAmount(scrollContainer, scrollAmount);
 
-		// After scrolling we check again for sticky headers in case they were added with javascript
-		if (stickyHeight === 0) {
-			setTimeout(() => {
-				if (scrollContainer && isPageScroll(scrollContainer)) {
-					scrollVerticallyAmount(scrollContainer, -getStickyHeaderHeight());
-				}
-			}, 0);
+		// After scrolling we need to check if were the element sits now there is a
+		// sticky or fixed element obscuring the element. If that's the case we scroll
+		// down the height of that sticky element
+		const elementRect = element.getBoundingClientRect();
+		const elementsAt = document.elementsFromPoint(
+			elementRect.x + 5,
+			elementRect.y + 5
+		);
+		let outerSticky;
+
+		for (const elementAt of elementsAt) {
+			if (elementAt === element || elementAt.contains(element)) {
+				break;
+			}
+
+			const elementPosition = window.getComputedStyle(elementAt).position;
+			if (
+				(elementPosition === "sticky" || elementPosition === "fixed") &&
+				(!outerSticky ||
+					outerSticky.compareDocumentPosition(elementAt) === 4 || // ElementAt precedes outerSticky
+					outerSticky.compareDocumentPosition(elementAt) === 10) // ElementAt precedes and contains outerSticky
+			) {
+				outerSticky = elementAt;
+			}
+		}
+
+		if (outerSticky) {
+			scrollVerticallyAmount(scrollContainer, -outerSticky.clientHeight);
 		}
 	}
 }
