@@ -83,7 +83,7 @@ export function applyInitialStyles(intersector: HintedIntersector) {
 		outline: subtleHints ? 0 : `1px solid ${outlineColor.string()}`,
 		fontSize: `${hintFontSize}px`,
 		fontWeight,
-		padding: "0.15em",
+		padding: "0 0.15em",
 	};
 	Object.assign(intersector.hintElement.style, styles);
 	intersector.hintElement.className = "rango-hint";
