@@ -39,7 +39,9 @@ export function elementIsVisible(intersector: Intersector): boolean {
 	if (
 		window.getComputedStyle(element).visibility === "hidden" ||
 		window.getComputedStyle(element).display === "none" ||
-		Number.parseFloat(window.getComputedStyle(element).opacity) < 0.1
+		Number.parseFloat(window.getComputedStyle(element).opacity) < 0.1 ||
+		Number.parseFloat(window.getComputedStyle(element).width) < 5 ||
+		Number.parseFloat(window.getComputedStyle(element).height) < 5
 	) {
 		return false;
 	}
