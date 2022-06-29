@@ -20,6 +20,27 @@ function getMainDomain(url: string): string | undefined {
 	return undefined;
 }
 
+function dispatchClick(element: Element) {
+	const mousedownEvent = new MouseEvent("mousedown", {
+		view: window,
+		bubbles: true,
+		cancelable: true,
+	});
+	const mouseupEvent = new MouseEvent("mouseup", {
+		view: window,
+		bubbles: true,
+		cancelable: true,
+	});
+	const clickEvent = new MouseEvent("click", {
+		view: window,
+		bubbles: true,
+		cancelable: true,
+	});
+	element.dispatchEvent(mousedownEvent);
+	element.dispatchEvent(mouseupEvent);
+	element.dispatchEvent(clickEvent);
+}
+
 export async function clickElement(hintText: string) {
 	const intersector = getIntersectorWithHint(hintText);
 
@@ -45,15 +66,10 @@ export async function clickElement(hintText: string) {
 				) {
 					await openInNewTab(intersector);
 				} else {
-					linkElement.click();
+					dispatchClick(element);
 				}
 			} else {
-				const event = new MouseEvent("click", {
-					view: window,
-					bubbles: true,
-					cancelable: true,
-				});
-				element.dispatchEvent(event);
+				dispatchClick(element);
 			}
 
 			// On some pages like codepen there are hints remaining after closing a popup panel.
