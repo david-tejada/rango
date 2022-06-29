@@ -41,6 +41,7 @@ export function getClickableType(element: Element): string | undefined {
 		"radio",
 		"checkbox",
 		"menuitem",
+		"menuitemradio",
 	]);
 	const elementTag = element.tagName;
 	const elementRole = element.getAttribute("role");
