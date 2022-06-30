@@ -12,6 +12,7 @@ import {
 	claimHints,
 	releaseHints,
 	releaseOrphanHints,
+	getStack,
 } from "./hints-allocator";
 
 export async function getActiveTab(): Promise<browser.Tabs.Tab | undefined> {
@@ -159,6 +160,26 @@ browser.runtime.onMessage.addListener(
 			case "getTabId": {
 				return { tabId };
 			}
+
+			case "clickHintInFrame":
+				await browser.tabs.sendMessage(tabId, {
+					type: "clickElement",
+					target: request.hint,
+				});
+				break;
+
+			case "markHintsAsKeyboardReachable":
+				await browser.tabs.sendMessage(tabId, {
+					type: "markHintsAsKeyboardReachable",
+					letter: request.letter,
+				});
+				break;
+
+			case "restoreKeyboardReachableHints":
+				await browser.tabs.sendMessage(tabId, {
+					type: "restoreKeyboardReachableHints",
+				});
+				break;
 
 			default:
 				throw new Error("Bad request to background script");

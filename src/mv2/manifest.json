@@ -63,6 +63,13 @@
 				"mac": "MacCtrl+Shift+4"
 			},
 			"description": "Disable hints"
+		},
+		"toggle-keyboard-clicking": {
+			"suggested_key": {
+				"default": "Ctrl+Shift+5",
+				"mac": "MacCtrl+Shift+5"
+			},
+			"description": "Toggle keyboard clicking"
 		}
 	},
 	"browser_action": {

@@ -137,7 +137,11 @@ async function updateHints() {
 				(a, b) =>
 					a.hintText!.length - b.hintText!.length ||
 					a.hintText!.localeCompare(b.hintText!)
-			);
+			)
+			.map((intersector) => ({
+				hint: intersector.hintText,
+				element: intersector.element,
+			}));
 		console.log("intersectors:", intersectors);
 		console.log("hinted intersectors:", hintedIntersectors);
 	}

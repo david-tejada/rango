@@ -31,10 +31,24 @@ import {
 	scrollElementToCenter,
 } from "./actions/scroll";
 import { setNavigationToggle } from "./hints/should-display-hints";
+import {
+	markHintsAsKeyboardReachable,
+	initKeyboardNavigation,
+	restoreKeyboardReachableHints,
+	updateHintsInTab,
+} from "./keyboard-clicking";
 
 cacheHintOptions()
 	.then(addUrlToTitle)
 	.then(observe)
+	.then(async () => {
+		const { keyboardClicking } = await browser.storage.local.get(
+			"keyboardClicking"
+		);
+		if (keyboardClicking) {
+			await initKeyboardNavigation();
+		}
+	})
 	.catch((error) => {
 		console.error(error);
 	});
@@ -59,6 +73,22 @@ browser.runtime.onMessage.addListener(
 						origin: window.location.origin,
 						pathname: window.location.pathname,
 					};
+
+				case "updateHintsInTab":
+					updateHintsInTab(request.hints);
+					break;
+
+				case "markHintsAsKeyboardReachable":
+					markHintsAsKeyboardReachable(request.letter);
+					break;
+
+				case "restoreKeyboardReachableHints":
+					restoreKeyboardReachableHints();
+					break;
+
+				case "initKeyboardNavigation":
+					await initKeyboardNavigation();
+					break;
 
 				// RANGO ACTIONS
 				case "clickElement":

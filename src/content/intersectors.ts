@@ -1,6 +1,7 @@
 import { Intersector } from "../typing/types";
 import { getClickableType } from "./utils/clickable-type";
 import { NoHintError } from "./classes/errors";
+import Color from "color";
 
 export const intersectors: Intersector[] = [];
 export const removedIntersectorsHints: Set<string> = new Set();
@@ -63,7 +64,11 @@ export function onAttributeMutation(element: Element): boolean {
 	}
 
 	for (const intersector of intersectors) {
-		if (intersector.backgroundColor && element.contains(intersector.element)) {
+		if (
+			intersector.backgroundColor &&
+			intersector.backgroundColor.hex() !== "#FDA65D" &&
+			element.contains(intersector.element)
+		) {
 			intersector.backgroundColor = undefined;
 		}
 	}
