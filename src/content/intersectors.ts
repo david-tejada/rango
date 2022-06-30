@@ -62,6 +62,23 @@ export function onAttributeMutation(element: Element): boolean {
 		intersector.clickableType = clickableType;
 	}
 
+	if (
+		element instanceof HTMLInputElement ||
+		element instanceof HTMLTextAreaElement ||
+		element instanceof HTMLButtonElement ||
+		element instanceof HTMLSelectElement
+	) {
+		const elementLabels = element.labels;
+		if (elementLabels) {
+			for (const label of elementLabels) {
+				const intersector = getIntersector(label);
+				if (intersector) {
+					intersector.clickableType = getClickableType(label);
+				}
+			}
+		}
+	}
+
 	for (const intersector of intersectors) {
 		if (
 			intersector.backgroundColor &&

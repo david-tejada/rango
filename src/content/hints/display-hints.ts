@@ -24,9 +24,17 @@ function hiddenClickableNeedsRemoved(intersector: Intersector): boolean {
 	);
 }
 
+function disabledClickableNeedsRemoved(intersector: Intersector): boolean {
+	return (
+		intersector.clickableType === "disabled" &&
+		intersector.hintText !== undefined
+	);
+}
+
 function inViewClickableMissingHint(intersector: Intersector): boolean {
 	return (
 		intersector.clickableType !== undefined &&
+		intersector.clickableType !== "disabled" &&
 		intersector.hintText === undefined &&
 		elementIsVisible(intersector)
 	);
@@ -35,6 +43,7 @@ function inViewClickableMissingHint(intersector: Intersector): boolean {
 function inViewClickablePossessesHint(intersector: Intersector): boolean {
 	return (
 		intersector.clickableType !== undefined &&
+		intersector.clickableType !== "disabled" &&
 		intersector.hintText !== undefined &&
 		elementIsVisible(intersector)
 	);
@@ -69,7 +78,10 @@ async function updateHints() {
 	const toRefresh: HintedIntersector[] = [];
 
 	for (const intersector of intersectors) {
-		if (hiddenClickableNeedsRemoved(intersector)) {
+		if (
+			hiddenClickableNeedsRemoved(intersector) ||
+			disabledClickableNeedsRemoved(intersector)
+		) {
 			toBeRemoved.push(intersector);
 		} else if (inViewClickableMissingHint(intersector)) {
 			toAddHint.push(intersector);

@@ -1,5 +1,16 @@
 import { isFocusOnClickInput } from "../../typing/typing-utils";
 
+function isDisabled(element: Element) {
+	return (
+		(element instanceof HTMLInputElement ||
+			element instanceof HTMLTextAreaElement ||
+			element instanceof HTMLOptionElement ||
+			element instanceof HTMLButtonElement ||
+			element instanceof HTMLSelectElement) &&
+		element.disabled
+	);
+}
+
 // We could just return a boolean but I want to have the clickable type for debugging purposes
 export function getClickableType(element: Element): string | undefined {
 	// Ignoring some items that even though they have onclick event they don't do anything
@@ -20,6 +31,20 @@ export function getClickableType(element: Element): string | undefined {
 		element.className === "yt-simple-endpoint style-scope ytd-button-renderer" // Duplicate
 	) {
 		return undefined;
+	}
+
+	// Don't show hints if the element is disabled
+	if (isDisabled(element)) {
+		return "disabled";
+	}
+
+	if (element instanceof HTMLLabelElement) {
+		const labeledElement = element.htmlFor
+			? document.querySelector(`.${element.htmlFor}`)
+			: element.querySelector("input");
+		if (labeledElement && isDisabled(labeledElement)) {
+			return "disabled";
+		}
 	}
 
 	const clickableTags = new Set([
