@@ -1,7 +1,6 @@
 import { Intersector } from "../typing/types";
 import { getClickableType } from "./utils/clickable-type";
 import { NoHintError } from "./classes/errors";
-import Color from "color";
 
 export const intersectors: Intersector[] = [];
 export const removedIntersectorsHints: Set<string> = new Set();

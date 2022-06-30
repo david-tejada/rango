@@ -12,7 +12,6 @@ import {
 	claimHints,
 	releaseHints,
 	releaseOrphanHints,
-	getStack,
 } from "./hints-allocator";
 
 export async function getActiveTab(): Promise<browser.Tabs.Tab | undefined> {

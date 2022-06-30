@@ -94,25 +94,4 @@ export function positionHint(intersector: HintedIntersector) {
 			hintElement.style.top = `${scrollTop + targetY}px`;
 		}
 	}
-
-	// const hintRect = hintElement.getBoundingClientRect();
-	// const elementAt = document.elementFromPoint(hintRect.x - 2, hintRect.y - 2);
-	// if (elementAt) {
-	// 	const elementAtStyle = window.getComputedStyle(elementAt);
-	// 	if (
-	// 		!elementAt.contains(element) &&
-	// 		Number.parseFloat(elementAtStyle.paddingRight) < 5 &&
-	// 		Number.parseFloat(elementAtStyle.paddingBottom) < 5 &&
-	// 		(elementAt.tagName === "P" ||
-	// 			elementAt.tagName === "SPAN" ||
-	// 			elementAt.tagName === "A" ||
-	// 			elementAt.tagName === "STRONG" ||
-	// 			elementAt.tagName === "B" ||
-	// 			elementAt.tagName === "EM" ||
-	// 			elementAt.tagName === "LI")
-	// 	) {
-	// 		hintElement.style.backgroundColor = "transparent";
-	// 		hintElement.style.outline = "0";
-	// 	}
-	// }
 }
