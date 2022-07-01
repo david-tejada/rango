@@ -161,7 +161,7 @@ browser.runtime.onMessage.addListener(
 			}
 
 			case "clickHintInFrame":
-				await browser.tabs.sendMessage(tabId, {
+				await sendRequestToActiveTab({
 					type: "clickElement",
 					target: request.hint,
 				});
