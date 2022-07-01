@@ -8,6 +8,11 @@ export function assertDefined<T>(
 	}
 }
 
+// eslint-disable-next-line @typescript-eslint/ban-types
+export function isNotNull<T>(value: T | null): value is T {
+	return value !== null;
+}
+
 export function isFocusOnClickInput(
 	element: Element
 ): element is FocusOnClickInput {

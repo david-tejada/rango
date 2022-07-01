@@ -1,5 +1,9 @@
 import { Intersector, HintedIntersector } from "../../typing/types";
-import { assertDefined, isHintedIntersector } from "../../typing/typing-utils";
+import {
+	assertDefined,
+	isHintedIntersector,
+	isNotNull,
+} from "../../typing/typing-utils";
 import { elementIsVisible } from "../utils/element-visibility";
 import { cacheHintOptions } from "../options/hint-style-options";
 import { intersectors, removedIntersectorsHints } from "../intersectors";
@@ -141,6 +145,19 @@ async function updateHints() {
 	}
 
 	await releaseOrphanHints(hintTexts);
+
+	// I don't know why it happens but after the hints update some intersectors end up
+	// with the same hint, so if that happens we just make a full hints refresh
+	const hintsInUse = [...hintsContainer.querySelectorAll(".rango-hint")]
+		.map((hintElement) => hintElement.textContent)
+		.filter(isNotNull); // eslint-disable-line unicorn/no-array-callback-reference
+	const firstDuplicatedHint = hintsInUse.find(
+		(item, index) => hintsInUse.indexOf(item) !== index
+	);
+
+	if (firstDuplicatedHint) {
+		await triggerHintsUpdate(true);
+	}
 
 	if (process.env["NODE_ENV"] !== "production") {
 		const hintedIntersectors = intersectors
