@@ -14,7 +14,7 @@ function isDisabled(element: Element) {
 function getLabeledElement(element: HTMLLabelElement): Element | undefined {
 	if (element.htmlFor) {
 		try {
-			return document.querySelector(`.${element.htmlFor}`) ?? undefined;
+			return document.querySelector(`#${element.htmlFor}`) ?? undefined;
 		} catch (error: unknown) {
 			if (error instanceof SyntaxError) {
 				return undefined;
