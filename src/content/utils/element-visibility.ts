@@ -4,7 +4,7 @@ import {
 	getFirstTextNodeDescendant,
 } from "./nodes-utils";
 
-function getElementFromPoint(x: number, y: number): Element | undefined {
+export function getElementFromPoint(x: number, y: number): Element | undefined {
 	const elementsFromPoint = document.elementsFromPoint(x, y);
 	for (const element of elementsFromPoint) {
 		if (element.className !== "rango-hint") {
