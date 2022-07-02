@@ -11,7 +11,7 @@ import {
 } from "./utils/manifest-v3-clipboard";
 import { clickElement } from "./actions/click-element";
 import { openInNewTab, openInBackgroundTab } from "./actions/open-in-new-tab";
-import { showLink } from "./actions/show";
+import { showTitleAndHref } from "./actions/show";
 import { hoverElement, unhoverAll } from "./actions/hover";
 import { triggerHintsUpdate } from "./hints/display-hints";
 import observe from "./observers";
@@ -140,7 +140,7 @@ browser.runtime.onMessage.addListener(
 					);
 
 				case "showLink":
-					showLink(request.target);
+					showTitleAndHref(request.target);
 					break;
 
 				case "openInNewTab":

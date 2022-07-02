@@ -14,6 +14,7 @@ export function showTooltip(
 		zIndex: 2_147_483_647,
 		appendTo: hintElement.parentElement!,
 		maxWidth: "none",
+		allowHTML: true, // eslint-disable-line @typescript-eslint/naming-convention
 	});
 	instance.show();
 	applyEmphasisStyles(target as HintedIntersector, false);
