@@ -116,7 +116,10 @@ export function focusesOnclick(element: Element): boolean {
 		return true;
 	}
 
-	if (element.tagName === "TEXTAREA" || element.tagName === "SELECT") {
+	if (
+		element instanceof HTMLTextAreaElement ||
+		element instanceof HTMLSelectElement
+	) {
 		return true;
 	}
 
