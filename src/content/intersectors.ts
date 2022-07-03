@@ -22,6 +22,12 @@ export function getIntersectorWithHint(hint: string): HintedIntersector {
 	throw new NoHintError("No intersector found with that hint");
 }
 
+export function getIntersectorsWithHints(hints: string[]): HintedIntersector[] {
+	return intersectors
+		.filter(isHintedIntersector) // eslint-disable-line unicorn/no-array-callback-reference
+		.filter((targetIntersector) => hints.includes(targetIntersector.hintText));
+}
+
 function removeIntersector(element: Element) {
 	const intersectorIndex = intersectors.findIndex(
 		(Intersector) => Intersector.element === element
