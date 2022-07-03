@@ -1,10 +1,6 @@
 import Color from "color";
 import browser from "webextension-polyfill";
-import {
-	assertDefined,
-	isFocusOnClickInput,
-	isHintedIntersector,
-} from "../typing/typing-utils";
+import { assertDefined, isFocusOnClickInput } from "../typing/typing-utils";
 import { applyInitialStyles } from "./hints/styles";
 import { getIntersectorWithHint } from "./intersectors";
 
@@ -42,9 +38,7 @@ export function restoreKeyboardReachableHints() {
 		assertDefined(hintElement.textContent);
 		const intersector = getIntersectorWithHint(hintElement.textContent);
 		intersector.freezeHintStyle = false;
-		if (isHintedIntersector(intersector)) {
-			applyInitialStyles(intersector);
-		}
+		applyInitialStyles(intersector);
 	}
 }
 

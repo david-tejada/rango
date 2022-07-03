@@ -1,7 +1,6 @@
 import { getIntersectorWithHint } from "../intersectors";
 import { triggerHintsUpdate } from "../hints/display-hints";
 import { flashHint } from "../hints/styles";
-import { isHintedIntersector } from "../../typing/typing-utils";
 import { getElementFromPoint } from "../utils/element-visibility";
 
 const hoveredElements: Set<Element> = new Set();
@@ -9,30 +8,28 @@ const hoveredElements: Set<Element> = new Set();
 export async function hoverElement(hintText: string) {
 	unhoverAll();
 	const intersector = getIntersectorWithHint(hintText);
-	if (isHintedIntersector(intersector)) {
-		flashHint(intersector);
-		const targetElement = intersector.element;
-		const targetElementRect = targetElement.getBoundingClientRect();
-		const elementToDispatchEvent =
-			getElementFromPoint(targetElementRect.x + 5, targetElementRect.y + 5) ??
-			targetElement;
+	flashHint(intersector);
+	const targetElement = intersector.element;
+	const targetElementRect = targetElement.getBoundingClientRect();
+	const elementToDispatchEvent =
+		getElementFromPoint(targetElementRect.x + 5, targetElementRect.y + 5) ??
+		targetElement;
 
-		const mouseenterEvent = new MouseEvent("mouseenter", {
-			view: window,
-			bubbles: true,
-			cancelable: true,
-		});
-		const mouseoverEvent = new MouseEvent("mouseover", {
-			view: window,
-			bubbles: true,
-			cancelable: true,
-		});
-		elementToDispatchEvent.dispatchEvent(mouseenterEvent);
-		elementToDispatchEvent.dispatchEvent(mouseoverEvent);
+	const mouseenterEvent = new MouseEvent("mouseenter", {
+		view: window,
+		bubbles: true,
+		cancelable: true,
+	});
+	const mouseoverEvent = new MouseEvent("mouseover", {
+		view: window,
+		bubbles: true,
+		cancelable: true,
+	});
+	elementToDispatchEvent.dispatchEvent(mouseenterEvent);
+	elementToDispatchEvent.dispatchEvent(mouseoverEvent);
 
-		hoveredElements.add(targetElement);
-		await triggerHintsUpdate();
-	}
+	hoveredElements.add(targetElement);
+	await triggerHintsUpdate();
 }
 
 function unhoverElement(element: Element) {

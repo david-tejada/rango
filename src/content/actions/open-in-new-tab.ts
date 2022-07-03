@@ -1,21 +1,20 @@
 import browser from "webextension-polyfill";
-import { Intersector } from "../../typing/types";
-import { isHintedIntersector } from "../../typing/typing-utils";
+import { HintedIntersector } from "../../typing/types";
 import { getIntersectorWithHint } from "../intersectors";
 import { flashHint } from "../hints/styles";
 
-export async function openInNewTab(hintOrIntersector: string | Intersector) {
+export async function openInNewTab(
+	hintOrIntersector: string | HintedIntersector
+) {
 	const intersector =
 		typeof hintOrIntersector === "string"
 			? getIntersectorWithHint(hintOrIntersector)
 			: hintOrIntersector;
-	if (isHintedIntersector(intersector)) {
-		flashHint(intersector);
-		await browser.runtime.sendMessage({
-			type: "openInNewTab",
-			url: (intersector.element as HTMLLinkElement).href,
-		});
-	}
+	flashHint(intersector);
+	await browser.runtime.sendMessage({
+		type: "openInNewTab",
+		url: (intersector.element as HTMLLinkElement).href,
+	});
 }
 
 export async function openInBackgroundTab(hints: string | string[]) {
@@ -35,9 +34,7 @@ export async function openInBackgroundTab(hints: string | string[]) {
 
 	if (links.length > 0) {
 		for (const intersector of intersectors) {
-			if (isHintedIntersector(intersector)) {
-				flashHint(intersector);
-			}
+			flashHint(intersector);
 		}
 
 		await browser.runtime.sendMessage({
