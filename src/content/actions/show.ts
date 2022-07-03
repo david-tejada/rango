@@ -1,7 +1,6 @@
 import { getIntersectorWithHint } from "../intersectors";
 import { showTooltip } from "../hints/tooltip";
 import { flashHint } from "../hints/styles";
-import { HintedIntersector } from "../../typing/types";
 
 export function showTitleAndHref(hintText: string) {
 	const target = getIntersectorWithHint(hintText);
@@ -31,6 +30,6 @@ export function showTitleAndHref(hintText: string) {
 	if (result) {
 		showTooltip(target, result, 5000);
 	} else {
-		flashHint(target as HintedIntersector);
+		flashHint(target);
 	}
 }
