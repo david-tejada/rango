@@ -1,6 +1,7 @@
 import { getIntersectorWithHint } from "../intersectors";
 
 let scrollContainer: HTMLElement | undefined;
+let lastScrollFactor: number;
 
 function isPageScroll(container: Element) {
 	return container === document.body || container === document.documentElement;
@@ -57,29 +58,35 @@ function scrollVerticallyAmount(
 
 function scrollVertically(
 	scrollContainer: HTMLElement,
-	direction: "up" | "down"
+	direction: "up" | "down",
+	scrollFactor: number
 ) {
+	lastScrollFactor = scrollFactor;
 	const scrollHeight = Math.min(
 		scrollContainer.clientHeight,
 		document.documentElement.clientHeight
 	);
 	const scrollAmount =
-		direction === "up" ? (-scrollHeight * 2) / 3 : (scrollHeight * 2) / 3;
+		direction === "up"
+			? -scrollHeight * scrollFactor
+			: scrollHeight * scrollFactor;
 
 	scrollVerticallyAmount(scrollContainer, scrollAmount);
 }
 
 export function scrollVerticallyAtElement(
 	direction: "up" | "down",
-	hint?: string
+	hint?: string,
+	scrollFactor?: number
 ) {
+	scrollFactor = scrollFactor ?? lastScrollFactor ?? 0.66;
 	if (hint) {
 		const element = getIntersectorWithHint(hint).element;
 		scrollContainer = getScrollContainer(element);
 	}
 
 	if (scrollContainer) {
-		scrollVertically(scrollContainer, direction);
+		scrollVertically(scrollContainer, direction, scrollFactor);
 	}
 }
 
@@ -185,12 +192,15 @@ export function scrollElementToCenter(hint: string) {
 	}
 }
 
-export function scrollPageVertically(direction: "up" | "down") {
+export function scrollPageVertically(
+	direction: "up" | "down",
+	scrollAmount = 0.66
+) {
 	const scrollContainer =
 		document.documentElement.clientHeight ===
 		document.documentElement.scrollHeight
 			? document.body
 			: document.documentElement;
 
-	scrollVertically(scrollContainer, direction);
+	scrollVertically(scrollContainer, direction, scrollAmount);
 }

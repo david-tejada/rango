@@ -98,11 +98,11 @@ browser.runtime.onMessage.addListener(
 				}
 
 				case "scrollUpAtElement":
-					scrollVerticallyAtElement("up", request.target);
+					scrollVerticallyAtElement("up", request.target, request.arg);
 					break;
 
 				case "scrollDownAtElement":
-					scrollVerticallyAtElement("down", request.target);
+					scrollVerticallyAtElement("down", request.target, request.arg);
 					break;
 
 				case "scrollElementToTop":
@@ -118,11 +118,11 @@ browser.runtime.onMessage.addListener(
 					break;
 
 				case "scrollUpPage":
-					scrollPageVertically("up");
+					scrollPageVertically("up", request.arg);
 					break;
 
 				case "scrollDownPage":
-					scrollPageVertically("down");
+					scrollPageVertically("down", request.arg);
 					break;
 
 				case "copyLink":
