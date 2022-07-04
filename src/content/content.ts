@@ -35,8 +35,8 @@ import {
 	markHintsAsKeyboardReachable,
 	initKeyboardNavigation,
 	restoreKeyboardReachableHints,
-	updateHintsInTab,
 } from "./keyboard-clicking";
+import { updateHintsInTab } from "./utils/get-hints-in-tab";
 import { listenToScrollAndResizeEvents } from "./utils/listen-to-scroll-and-resize-events";
 
 cacheHintOptions()

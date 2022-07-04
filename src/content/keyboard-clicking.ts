@@ -1,16 +1,12 @@
 import Color from "color";
 import browser from "webextension-polyfill";
 import { assertDefined, isFocusOnClickInput } from "../typing/typing-utils";
+import { getHintsInTab } from "./utils/get-hints-in-tab";
 import { applyInitialStyles } from "./hints/styles";
 import { getIntersectorWithHint } from "./intersectors";
 
 let keysPressedBuffer = "";
-let hintsInTab: string[] = [];
 let timeoutId: ReturnType<typeof setTimeout>;
-
-export function updateHintsInTab(hints: string[]) {
-	hintsInTab = hints;
-}
 
 export function markHintsAsKeyboardReachable(letter: string) {
 	const hintElements = document.querySelectorAll(".rango-hint");
@@ -78,7 +74,7 @@ async function keydownHandler(event: KeyboardEvent) {
 
 	// After typing the first character we need to check if any of the hints start with that letter
 	const firstCharactersInHints = new Set(
-		hintsInTab.map((hint) => hint.slice(0, 1))
+		getHintsInTab().map((hint) => hint.slice(0, 1))
 	);
 
 	const hintIsReachable =
@@ -111,7 +107,7 @@ async function keydownHandler(event: KeyboardEvent) {
 				type: "restoreKeyboardReachableHints",
 			});
 
-			if (hintsInTab.includes(keysPressedBuffer)) {
+			if (getHintsInTab().includes(keysPressedBuffer)) {
 				await browser.runtime.sendMessage({
 					type: "clickHintInFrame",
 					hint: keysPressedBuffer,

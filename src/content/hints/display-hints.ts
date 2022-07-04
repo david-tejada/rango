@@ -7,6 +7,7 @@ import {
 import { elementIsVisible } from "../utils/element-visibility";
 import { cacheHintOptions } from "../options/hint-style-options";
 import { intersectors, removedIntersectorsHints } from "../intersectors";
+import { getHintsInTab } from "../utils/get-hints-in-tab";
 import { positionHint } from "./position-hints";
 import { applyInitialStyles } from "./styles";
 import {
@@ -105,13 +106,27 @@ async function updateHints() {
 	] as string[]);
 	removedIntersectorsHints.clear();
 
-	const claimedHints = await claimHints(toAddHint.length);
-
 	for (const intersector of toBeRemoved) {
 		intersector.hintElement?.remove();
 		intersector.hintElement = undefined;
 		intersector.hintText = undefined;
 	}
+
+	// Extra check to make sure all hints in intersectors are already claimed so
+	// that no duplicate hints are assigned
+	const hintsInTab = new Set(getHintsInTab());
+	const intersectorsWithUnclaimedHints = intersectors.filter(
+		(intersector) =>
+			intersector.hintText && !hintsInTab.has(intersector.hintText)
+	);
+	for (const intersector of intersectorsWithUnclaimedHints) {
+		intersector.hintElement?.remove();
+		intersector.hintElement = undefined;
+		intersector.hintText = undefined;
+		toAddHint.push(intersector);
+	}
+
+	const claimedHints = await claimHints(toAddHint.length);
 
 	for (const intersector of toAddHint) {
 		if (shouldDisplayHint(intersector)) {
