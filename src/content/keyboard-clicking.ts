@@ -24,7 +24,9 @@ export function markHintsAsKeyboardReachable(letter: string) {
 			intersector.freezeHintStyle = true;
 			hintElement.style.fontWeight = "bold";
 			hintElement.style.outlineWidth = "2px";
-			hintElement.style.outlineColor = new Color(hintElement.style.outlineColor)
+			hintElement.style.outlineColor = new Color(
+				window.getComputedStyle(hintElement).outlineColor
+			)
 				.alpha(0.7)
 				.string();
 		}
