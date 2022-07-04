@@ -1,8 +1,13 @@
 import { Intersector, HintedIntersector } from "../../typing/types";
-import { assertDefined, isHintedIntersector } from "../../typing/typing-utils";
+import {
+	assertDefined,
+	isHintedIntersector,
+	isNotNull,
+} from "../../typing/typing-utils";
 import { elementIsVisible } from "../utils/element-visibility";
 import { cacheHintOptions } from "../options/hint-style-options";
 import { intersectors, removedIntersectorsHints } from "../intersectors";
+import { getHintsInTab } from "../utils/get-hints-in-tab";
 import { positionHint } from "./position-hints";
 import { applyInitialStyles } from "./styles";
 import {
@@ -12,6 +17,7 @@ import {
 	releaseOrphanHints,
 } from "./hints-requests";
 import { shouldDisplayHints } from "./should-display-hints";
+import { shouldDisplayHint, shouldPositionHint } from "./should-display-hint";
 
 let hintsWillUpdate = false;
 let hintsAreUpdating = false;
@@ -24,9 +30,17 @@ function hiddenClickableNeedsRemoved(intersector: Intersector): boolean {
 	);
 }
 
+function disabledClickableNeedsRemoved(intersector: Intersector): boolean {
+	return (
+		intersector.clickableType === "disabled" &&
+		intersector.hintText !== undefined
+	);
+}
+
 function inViewClickableMissingHint(intersector: Intersector): boolean {
 	return (
 		intersector.clickableType !== undefined &&
+		intersector.clickableType !== "disabled" &&
 		intersector.hintText === undefined &&
 		elementIsVisible(intersector)
 	);
@@ -35,6 +49,7 @@ function inViewClickableMissingHint(intersector: Intersector): boolean {
 function inViewClickablePossessesHint(intersector: Intersector): boolean {
 	return (
 		intersector.clickableType !== undefined &&
+		intersector.clickableType !== "disabled" &&
 		intersector.hintText !== undefined &&
 		elementIsVisible(intersector)
 	);
@@ -69,7 +84,10 @@ async function updateHints() {
 	const toRefresh: HintedIntersector[] = [];
 
 	for (const intersector of intersectors) {
-		if (hiddenClickableNeedsRemoved(intersector)) {
+		if (
+			hiddenClickableNeedsRemoved(intersector) ||
+			disabledClickableNeedsRemoved(intersector)
+		) {
 			toBeRemoved.push(intersector);
 		} else if (inViewClickableMissingHint(intersector)) {
 			toAddHint.push(intersector);
@@ -88,31 +106,57 @@ async function updateHints() {
 	] as string[]);
 	removedIntersectorsHints.clear();
 
-	const claimedHints = await claimHints(toAddHint.length);
-
 	for (const intersector of toBeRemoved) {
 		intersector.hintElement?.remove();
 		intersector.hintElement = undefined;
 		intersector.hintText = undefined;
 	}
 
+	// Extra check to make sure all hints in intersectors are already claimed so
+	// that no duplicate hints are assigned
+	const hintsInTab = new Set(getHintsInTab());
+	const intersectorsWithUnclaimedHints = intersectors.filter(
+		(intersector) =>
+			intersector.hintText && !hintsInTab.has(intersector.hintText)
+	);
+	for (const intersector of intersectorsWithUnclaimedHints) {
+		intersector.hintElement?.remove();
+		intersector.hintElement = undefined;
+		intersector.hintText = undefined;
+		toAddHint.push(intersector);
+	}
+
+	const claimedHints = await claimHints(toAddHint.length);
+
 	for (const intersector of toAddHint) {
-		intersector.hintElement = document.createElement("div");
-		intersector.hintText = claimedHints.pop();
-		intersector.hintElement.textContent = intersector.hintText ?? "";
+		if (shouldDisplayHint(intersector)) {
+			intersector.hintElement = document.createElement("div");
+			intersector.hintElement.style.display = "none";
+			intersector.hintText = claimedHints.pop();
+			intersector.hintElement.textContent = intersector.hintText ?? "";
+		}
 
 		// If there are no more available hints to markup the page, don't
 		// append the element.
 		if (isHintedIntersector(intersector)) {
 			applyInitialStyles(intersector);
 			hintsContainer.append(intersector.hintElement);
-			positionHint(intersector);
+			if (shouldPositionHint(intersector)) {
+				positionHint(intersector);
+			}
 		}
 	}
 
 	for (const intersector of toRefresh) {
-		applyInitialStyles(intersector);
-		positionHint(intersector);
+		if (shouldDisplayHint(intersector)) {
+			applyInitialStyles(intersector);
+		} else {
+			intersector.hintElement.style.display = "none";
+		}
+
+		if (shouldPositionHint(intersector)) {
+			positionHint(intersector);
+		}
 	}
 
 	// Hints cleanup
@@ -130,6 +174,19 @@ async function updateHints() {
 
 	await releaseOrphanHints(hintTexts);
 
+	// I don't know why it happens but after the hints update some intersectors end up
+	// with the same hint, so if that happens we just make a full hints refresh
+	const hintsInUse = [...hintsContainer.querySelectorAll(".rango-hint")]
+		.map((hintElement) => hintElement.textContent)
+		.filter(isNotNull); // eslint-disable-line unicorn/no-array-callback-reference
+	const firstDuplicatedHint = hintsInUse.find(
+		(item, index) => hintsInUse.indexOf(item) !== index
+	);
+
+	if (firstDuplicatedHint) {
+		await triggerHintsUpdate(true);
+	}
+
 	if (process.env["NODE_ENV"] !== "production") {
 		const hintedIntersectors = intersectors
 			.filter((intersector) => intersector.hintText)
@@ -137,7 +194,11 @@ async function updateHints() {
 				(a, b) =>
 					a.hintText!.length - b.hintText!.length ||
 					a.hintText!.localeCompare(b.hintText!)
-			);
+			)
+			.map((intersector) => ({
+				hint: intersector.hintText,
+				element: intersector.element,
+			}));
 		console.log("intersectors:", intersectors);
 		console.log("hinted intersectors:", hintedIntersectors);
 	}

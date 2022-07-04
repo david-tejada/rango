@@ -2,8 +2,6 @@ import Color from "color";
 
 interface RangoActionWithoutTarget {
 	type:
-		| "scrollUpPage"
-		| "scrollDownPage"
 		| "closeOtherTabsInWindow"
 		| "closeTabsToTheLeftInWindow"
 		| "closeTabsToTheRightInWindow"
@@ -12,6 +10,7 @@ interface RangoActionWithoutTarget {
 		| "copyCurrentTabMarkdownUrl"
 		| "getCurrentTabUrl"
 		| "toggleHints"
+		| "toggleKeyboardClicking"
 		| "enableHintsNavigation"
 		| "disableHintsNavigation"
 		| "excludeSingleLetterHints"
@@ -45,10 +44,21 @@ interface RangoActionWithoutTargetWithNumberArg {
 	arg: number;
 }
 
-interface RangoActionWithTarget {
+interface RangoActionWithOptionalTargetWithOptionalNumberArg {
 	type:
 		| "scrollUpAtElement"
 		| "scrollDownAtElement"
+		| "scrollUpPage"
+		| "scrollDownPage";
+	target?: string;
+	arg?: number;
+}
+
+interface RangoActionWithTarget {
+	type:
+		| "scrollElementToTop"
+		| "scrollElementToBottom"
+		| "scrollElementToCenter"
 		| "clickElement"
 		| "directClickElement"
 		| "openInNewTab"
@@ -70,7 +80,8 @@ export type RangoAction =
 	| RangoActionWithTarget
 	| RangoActionWithMultipleTargets
 	| RangoActionWithoutTargetWithStringArg
-	| RangoActionWithoutTargetWithNumberArg;
+	| RangoActionWithoutTargetWithNumberArg
+	| RangoActionWithOptionalTargetWithOptionalNumberArg;
 
 export interface RequestFromTalon {
 	version?: number;
@@ -112,11 +123,24 @@ interface GetLocation {
 	type: "getLocation";
 }
 
+interface UpdateHintsInTab {
+	type: "updateHintsInTab";
+	hints: string[];
+}
+
+interface InitKeyboardNavigation {
+	type: "initKeyboardNavigation";
+}
+
 export type ContentRequest =
 	| RangoAction
 	| GetClipboardManifestV3
 	| CopyToClipboardManifestV3
-	| GetLocation;
+	| GetLocation
+	| UpdateHintsInTab
+	| MarkHintsAsKeyboardReachable
+	| RestoreKeyboardReachableHints
+	| InitKeyboardNavigation;
 
 interface OpenInNewTab {
 	type: "openInNewTab";
@@ -151,6 +175,20 @@ interface GetTabId {
 	type: "getTabId";
 }
 
+interface ClickHintInFrame {
+	type: "clickHintInFrame";
+	hint: string;
+}
+
+interface MarkHintsAsKeyboardReachable {
+	type: "markHintsAsKeyboardReachable";
+	letter: string;
+}
+
+interface RestoreKeyboardReachableHints {
+	type: "restoreKeyboardReachableHints";
+}
+
 export type BackgroundRequest =
 	| OpenInNewTab
 	| InitStack
@@ -158,7 +196,10 @@ export type BackgroundRequest =
 	| ReleaseHints
 	| ReleaseOrphanHints
 	| OpenInBackgroundTab
-	| GetTabId;
+	| GetTabId
+	| ClickHintInFrame
+	| MarkHintsAsKeyboardReachable
+	| RestoreKeyboardReachableHints;
 
 export interface ClipboardResponse {
 	text: string;
@@ -177,6 +218,7 @@ export type ScriptResponse =
 
 export interface Intersector {
 	element: Element;
+	scrollContainer?: Element;
 	clickableType: string | undefined;
 	firstTextNodeDescendant?: Text;
 	hintElement?: HTMLDivElement;
@@ -185,6 +227,7 @@ export interface Intersector {
 	hintAnchorIsText?: boolean;
 	hintPlacement?: "top" | "bottom";
 	backgroundColor?: Color;
+	freezeHintStyle?: boolean;
 }
 
 export type WindowLocationKeys =
@@ -217,6 +260,7 @@ export interface RangoOptions {
 	hintStyle: "boxed" | "subtle";
 	includeSingleLetterHints: boolean;
 	urlInTitle: boolean;
+	keyboardClicking: boolean;
 }
 
 export interface StorableRangoOptions {
@@ -226,6 +270,7 @@ export interface StorableRangoOptions {
 	hintStyle: "boxed" | "subtle";
 	includeSingleLetterHints: boolean;
 	urlInTitle: boolean;
+	keyboardClicking: boolean;
 }
 
 export interface HintedIntersector extends Intersector {

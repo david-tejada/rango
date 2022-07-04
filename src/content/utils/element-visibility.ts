@@ -4,7 +4,7 @@ import {
 	getFirstTextNodeDescendant,
 } from "./nodes-utils";
 
-function getElementFromPoint(x: number, y: number): Element | undefined {
+export function getElementFromPoint(x: number, y: number): Element | undefined {
 	const elementsFromPoint = document.elementsFromPoint(x, y);
 	for (const element of elementsFromPoint) {
 		if (element.className !== "rango-hint") {
@@ -39,7 +39,9 @@ export function elementIsVisible(intersector: Intersector): boolean {
 	if (
 		window.getComputedStyle(element).visibility === "hidden" ||
 		window.getComputedStyle(element).display === "none" ||
-		Number.parseFloat(window.getComputedStyle(element).opacity) < 0.1
+		Number.parseFloat(window.getComputedStyle(element).opacity) < 0.1 ||
+		Number.parseFloat(window.getComputedStyle(element).width) < 5 ||
+		Number.parseFloat(window.getComputedStyle(element).height) < 5
 	) {
 		return false;
 	}
@@ -57,7 +59,7 @@ export function elementIsVisible(intersector: Intersector): boolean {
 		firstImage &&
 		window.getComputedStyle(firstImage).visibility !== "hidden" &&
 		window.getComputedStyle(firstImage).display !== "none" &&
-		Number.parseFloat(window.getComputedStyle(firstImage).opacity) < 0.1 &&
+		Number.parseFloat(window.getComputedStyle(firstImage).opacity) > 0.1 &&
 		(!intersector.firstTextNodeDescendant ||
 			firstImage.compareDocumentPosition(
 				intersector.firstTextNodeDescendant

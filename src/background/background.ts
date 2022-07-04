@@ -12,6 +12,7 @@ import {
 } from "./response-utils";
 import { initStorage } from "./init-storage";
 import { toggleHints } from "./toggle-hints";
+import { toggleKeyboardClicking } from "./toggle-keyboard-clicking";
 
 initStorage().catch((error) => {
 	console.error(error);
@@ -86,5 +87,9 @@ browser.commands.onCommand.addListener(async (internalCommand: string) => {
 
 	if (internalCommand === "disable-hints") {
 		await toggleHints("global", false);
+	}
+
+	if (internalCommand === "toggle-keyboard-clicking") {
+		await toggleKeyboardClicking();
 	}
 });

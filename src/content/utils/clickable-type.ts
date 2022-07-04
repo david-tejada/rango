@@ -1,5 +1,30 @@
 import { isFocusOnClickInput } from "../../typing/typing-utils";
 
+function isDisabled(element: Element) {
+	return (
+		(element instanceof HTMLInputElement ||
+			element instanceof HTMLTextAreaElement ||
+			element instanceof HTMLOptionElement ||
+			element instanceof HTMLButtonElement ||
+			element instanceof HTMLSelectElement) &&
+		element.disabled
+	);
+}
+
+function getLabeledElement(element: HTMLLabelElement): Element | undefined {
+	if (element.htmlFor) {
+		try {
+			return document.querySelector(`#${element.htmlFor}`) ?? undefined;
+		} catch (error: unknown) {
+			if (error instanceof SyntaxError) {
+				return undefined;
+			}
+		}
+	}
+
+	return undefined;
+}
+
 // We could just return a boolean but I want to have the clickable type for debugging purposes
 export function getClickableType(element: Element): string | undefined {
 	// Ignoring some items that even though they have onclick event they don't do anything
@@ -22,6 +47,18 @@ export function getClickableType(element: Element): string | undefined {
 		return undefined;
 	}
 
+	// Don't show hints if the element is disabled
+	if (isDisabled(element)) {
+		return "disabled";
+	}
+
+	if (element instanceof HTMLLabelElement) {
+		const labeledElement = getLabeledElement(element);
+		if (labeledElement && isDisabled(labeledElement)) {
+			return "disabled";
+		}
+	}
+
 	const clickableTags = new Set([
 		"BUTTON",
 		"A",
@@ -41,6 +78,7 @@ export function getClickableType(element: Element): string | undefined {
 		"radio",
 		"checkbox",
 		"menuitem",
+		"menuitemradio",
 	]);
 	const elementTag = element.tagName;
 	const elementRole = element.getAttribute("role");
@@ -78,7 +116,10 @@ export function focusesOnclick(element: Element): boolean {
 		return true;
 	}
 
-	if (element.tagName === "TEXTAREA" || element.tagName === "SELECT") {
+	if (
+		element instanceof HTMLTextAreaElement ||
+		element instanceof HTMLSelectElement
+	) {
 		return true;
 	}
 

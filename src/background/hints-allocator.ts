@@ -49,9 +49,14 @@ export async function initStack(tabId: number, frameId: number) {
 		const includeSingleLetterHints = await getStored(
 			"includeSingleLetterHints"
 		);
-		const possibleHints = includeSingleLetterHints
-			? [...allHints]
-			: allHints.slice(0, -26);
+		// For keyboard clicking we need to get rid of single letter hints so that
+		// all hints are reachable
+		const keyboardClicking = await getStored("keyboardClicking");
+		const possibleHints =
+			includeSingleLetterHints && !keyboardClicking
+				? [...allHints]
+				: allHints.slice(0, -26);
+
 		await saveStack(
 			{
 				free: possibleHints,
@@ -77,6 +82,11 @@ export async function claimHints(
 
 	await saveStack(stack, tabId);
 
+	const hintsInTab = [...stack.assigned.keys()];
+	await browser.tabs.sendMessage(tabId, {
+		type: "updateHintsInTab",
+		hints: hintsInTab,
+	});
 	return hints;
 }
 

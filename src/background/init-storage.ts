@@ -1,4 +1,5 @@
 import browser from "webextension-polyfill";
+import keyboardClickingIconUrl from "url:../assets/icon-keyboard-clicking48.png";
 import {
 	RangoOptions,
 	StorableRangoOptions,
@@ -17,6 +18,7 @@ const defaultOptions: StorableRangoOptions = {
 	hintStyle: "boxed",
 	includeSingleLetterHints: true,
 	urlInTitle: true,
+	keyboardClicking: false,
 };
 
 async function clearUnusedStacks() {
@@ -41,6 +43,12 @@ export async function initStorage() {
 	const localStorage = await browser.storage.local.get(
 		Object.keys(defaultOptions)
 	);
+
+	if (localStorage["keyboardClicking"]) {
+		await (browser.action
+			? browser.action.setIcon({ path: keyboardClickingIconUrl })
+			: browser.browserAction.setIcon({ path: keyboardClickingIconUrl }));
+	}
 
 	let key: keyof RangoOptions;
 	const storing = [];

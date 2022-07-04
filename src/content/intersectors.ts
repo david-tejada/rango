@@ -1,6 +1,8 @@
-import { Intersector } from "../typing/types";
+import { HintedIntersector, Intersector } from "../typing/types";
+import { isHintedIntersector } from "../typing/typing-utils";
 import { getClickableType } from "./utils/clickable-type";
 import { NoHintError } from "./classes/errors";
+import { getScrollContainer } from "./utils/get-scroll-container";
 
 export const intersectors: Intersector[] = [];
 export const removedIntersectorsHints: Set<string> = new Set();
@@ -9,15 +11,22 @@ function getIntersector(element: Element): Intersector | undefined {
 	return intersectors.find((Intersector) => Intersector.element === element);
 }
 
-export function getIntersectorWithHint(hint: string): Intersector {
+export function getIntersectorWithHint(hint: string): HintedIntersector {
 	const intersector = intersectors.find(
 		(Intersector) => Intersector.hintText === hint
 	);
-	if (!intersector) {
-		throw new NoHintError("No intersector found with that hint");
+
+	if (intersector && isHintedIntersector(intersector)) {
+		return intersector;
 	}
 
-	return intersector;
+	throw new NoHintError("No intersector found with that hint");
+}
+
+export function getIntersectorsWithHints(hints: string[]): HintedIntersector[] {
+	return intersectors
+		.filter(isHintedIntersector) // eslint-disable-line unicorn/no-array-callback-reference
+		.filter((targetIntersector) => hints.includes(targetIntersector.hintText));
 }
 
 function removeIntersector(element: Element) {
@@ -43,6 +52,7 @@ export function onIntersection(
 		intersectors.push({
 			element,
 			clickableType: getClickableType(element),
+			scrollContainer: getScrollContainer(element),
 		});
 	} else {
 		removeIntersector(element);
@@ -62,8 +72,29 @@ export function onAttributeMutation(element: Element): boolean {
 		intersector.clickableType = clickableType;
 	}
 
+	if (
+		element instanceof HTMLInputElement ||
+		element instanceof HTMLTextAreaElement ||
+		element instanceof HTMLButtonElement ||
+		element instanceof HTMLSelectElement
+	) {
+		const elementLabels = element.labels;
+		if (elementLabels) {
+			for (const label of elementLabels) {
+				const intersector = getIntersector(label);
+				if (intersector) {
+					intersector.clickableType = getClickableType(label);
+				}
+			}
+		}
+	}
+
 	for (const intersector of intersectors) {
-		if (intersector.backgroundColor && element.contains(intersector.element)) {
+		if (
+			intersector.backgroundColor &&
+			intersector.backgroundColor.hex() !== "#FDA65D" &&
+			element.contains(intersector.element)
+		) {
 			intersector.backgroundColor = undefined;
 		}
 	}

@@ -26,7 +26,7 @@ export function getDefaultBackgroundColor(): Color {
 	document.head.append(div);
 	const backgroundColor = window.getComputedStyle(div).backgroundColor;
 	div.remove();
-	return new Color(backgroundColor);
+	return new Color(backgroundColor || "rgba(0, 0, 0, 0)");
 }
 
 export function getInheritedBackgroundColor(

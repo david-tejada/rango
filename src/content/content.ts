@@ -11,7 +11,7 @@ import {
 } from "./utils/manifest-v3-clipboard";
 import { clickElement } from "./actions/click-element";
 import { openInNewTab, openInBackgroundTab } from "./actions/open-in-new-tab";
-import { showLink } from "./actions/show";
+import { showTitleAndHref } from "./actions/show";
 import { hoverElement, unhoverAll } from "./actions/hover";
 import { triggerHintsUpdate } from "./hints/display-hints";
 import observe from "./observers";
@@ -26,12 +26,31 @@ import { addUrlToTitle } from "./utils/url-in-title";
 import {
 	scrollVerticallyAtElement,
 	scrollPageVertically,
+	scrollElementToTop,
+	scrollElementToBottom,
+	scrollElementToCenter,
 } from "./actions/scroll";
 import { setNavigationToggle } from "./hints/should-display-hints";
+import {
+	markHintsAsKeyboardReachable,
+	initKeyboardNavigation,
+	restoreKeyboardReachableHints,
+} from "./keyboard-clicking";
+import { updateHintsInTab } from "./utils/get-hints-in-tab";
+import { listenToScrollAndResizeEvents } from "./utils/listen-to-scroll-and-resize-events";
 
 cacheHintOptions()
 	.then(addUrlToTitle)
 	.then(observe)
+	.then(listenToScrollAndResizeEvents)
+	.then(async () => {
+		const { keyboardClicking } = await browser.storage.local.get(
+			"keyboardClicking"
+		);
+		if (keyboardClicking) {
+			await initKeyboardNavigation();
+		}
+	})
 	.catch((error) => {
 		console.error(error);
 	});
@@ -57,6 +76,22 @@ browser.runtime.onMessage.addListener(
 						pathname: window.location.pathname,
 					};
 
+				case "updateHintsInTab":
+					updateHintsInTab(request.hints);
+					break;
+
+				case "markHintsAsKeyboardReachable":
+					markHintsAsKeyboardReachable(request.letter);
+					break;
+
+				case "restoreKeyboardReachableHints":
+					restoreKeyboardReachableHints();
+					break;
+
+				case "initKeyboardNavigation":
+					await initKeyboardNavigation();
+					break;
+
 				// RANGO ACTIONS
 				case "clickElement":
 				case "directClickElement": {
@@ -65,19 +100,31 @@ browser.runtime.onMessage.addListener(
 				}
 
 				case "scrollUpAtElement":
-					scrollVerticallyAtElement("up", request.target);
+					scrollVerticallyAtElement("up", request.target, request.arg);
 					break;
 
 				case "scrollDownAtElement":
-					scrollVerticallyAtElement("down", request.target);
+					scrollVerticallyAtElement("down", request.target, request.arg);
+					break;
+
+				case "scrollElementToTop":
+					scrollElementToTop(request.target);
+					break;
+
+				case "scrollElementToBottom":
+					scrollElementToBottom(request.target);
+					break;
+
+				case "scrollElementToCenter":
+					scrollElementToCenter(request.target);
 					break;
 
 				case "scrollUpPage":
-					scrollPageVertically("up");
+					scrollPageVertically("up", request.arg);
 					break;
 
 				case "scrollDownPage":
-					scrollPageVertically("down");
+					scrollPageVertically("down", request.arg);
 					break;
 
 				case "copyLink":
@@ -95,7 +142,7 @@ browser.runtime.onMessage.addListener(
 					);
 
 				case "showLink":
-					showLink(request.target);
+					showTitleAndHref(request.target);
 					break;
 
 				case "openInNewTab":
@@ -159,15 +206,3 @@ browser.runtime.onMessage.addListener(
 		return undefined;
 	}
 );
-
-let hintsUpdateTimeout: ReturnType<typeof setTimeout>;
-
-document.addEventListener("scroll", async () => {
-	clearTimeout(hintsUpdateTimeout);
-	hintsUpdateTimeout = setTimeout(triggerHintsUpdate, 300);
-});
-
-window.addEventListener("resize", async () => {
-	clearTimeout(hintsUpdateTimeout);
-	hintsUpdateTimeout = setTimeout(triggerHintsUpdate, 300);
-});

@@ -13,6 +13,12 @@ import { getHintOption } from "../options/hint-style-options";
 const defaultBackgroundColor = getDefaultBackgroundColor();
 
 export function applyInitialStyles(intersector: HintedIntersector) {
+	// This is here in case we are using keyboard clicking so that once we press one
+	// key and the reachable elements are marked the style of those hints doesn't get reset
+	if (intersector.freezeHintStyle) {
+		return;
+	}
+
 	const subtleHints = getHintOption("hintStyle") === "subtle";
 	intersector.backgroundColor = intersector.backgroundColor
 		? intersector.backgroundColor
@@ -83,7 +89,7 @@ export function applyInitialStyles(intersector: HintedIntersector) {
 		outline: subtleHints ? 0 : `1px solid ${outlineColor.string()}`,
 		fontSize: `${hintFontSize}px`,
 		fontWeight,
-		padding: "0.15em",
+		padding: "0 0.15em",
 	};
 	Object.assign(intersector.hintElement.style, styles);
 	intersector.hintElement.className = "rango-hint";
@@ -91,11 +97,13 @@ export function applyInitialStyles(intersector: HintedIntersector) {
 
 export function applyEmphasisStyles(
 	intersector: HintedIntersector,
-	dynamic: boolean
+	dynamic: boolean,
+	fontColor?: string,
+	backgroundColor?: string
 ) {
 	// We invert the colors for a visual clue
-	const color = intersector.backgroundColor;
-	const background = intersector.hintElement.style.color;
+	const color = fontColor ?? intersector.backgroundColor;
+	const background = backgroundColor ?? intersector.hintElement.style.color;
 	const hintFontSize = getHintOption("hintFontSize") as number;
 	const fontSize = dynamic ? `${hintFontSize * 1.2}px` : `${hintFontSize}px`;
 	const styles = {
@@ -106,8 +114,12 @@ export function applyEmphasisStyles(
 	Object.assign(intersector.hintElement.style, styles);
 }
 
-export function flashHint(intersector: HintedIntersector) {
-	applyEmphasisStyles(intersector, true);
+export function flashHint(
+	intersector: HintedIntersector,
+	fontColor?: string,
+	backgroundColor?: string
+) {
+	applyEmphasisStyles(intersector, true, fontColor, backgroundColor);
 	setTimeout(() => {
 		applyInitialStyles(intersector);
 	}, 300);

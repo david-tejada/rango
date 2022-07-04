@@ -5,6 +5,7 @@ import { sendRequestToAllTabs, getActiveTab } from "./tabs-messaging";
 import { notify } from "./notify";
 import { toggleHints } from "./toggle-hints";
 import { closeTabsInWindow } from "./close-tabs";
+import { toggleKeyboardClicking } from "./toggle-keyboard-clicking";
 
 export async function executeBackgroundCommand(
 	command: RangoAction
@@ -32,6 +33,10 @@ export async function executeBackgroundCommand(
 		case "resetToggleLevel":
 			await toggleHints(command.arg);
 
+			break;
+
+		case "toggleKeyboardClicking":
+			await toggleKeyboardClicking();
 			break;
 
 		case "includeSingleLetterHints":

@@ -2,6 +2,34 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.2.1](https://github.com/david-tejada/rango/releases/tag/v0.2.1) - 2022-07-04
+
+### Changed
+
+- Changed hints size and positioning so they get less in the way.
+- Hide hints when scrolling unless they scroll with the page.
+- Don't show hints on disabled elements.
+
+### Added
+
+- Added commands for scrolling element to top, center and bottom.
+- Added additional parameter to the API for custom scroll amount.
+- Added role="menuitemradio" to clickable elements.
+- Added keyboard clicking.
+- Added element title to "show" command.
+- Added ability to click on multiple targets.
+
+### Fixed
+
+- Fixed occurrences of duplicated hints.
+- Fixed some elements not reacting to clicks by also dispatching "mousedown" and "mouseup" events.
+- Fixed some elements not reacting to hover by also dispatching "mouseenter" event.
+- Fixed url in title sometimes removing the title and leaving only the url.
+- Fixed url in title not updating with hash changes.
+- Fixed command dismiss buggy behavior.
+- Fix error calling "new Color" with empty string which resulted in hints not showing in some pages (issue #28)
+- Fixed jittery hints after v0.2.0
+
 ## [0.2.0](https://github.com/david-tejada/rango/releases/tag/v0.2.0) - 2022-06-22
 
 ### Changed

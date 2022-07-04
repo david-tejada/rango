@@ -1,6 +1,6 @@
 {
 	"name": "Rango",
-	"version": "0.2.0",
+	"version": "0.2.1",
 	"description": "Extension that allows you to interact with webpages using your voice and talon",
 	"homepage_url": "https://github.com/david-tejada/rango",
 	"manifest_version": 2,
@@ -64,6 +64,13 @@
 				"mac": "MacCtrl+Shift+4"
 			},
 			"description": "Disable hints"
+		},
+		"toggle-keyboard-clicking": {
+			"suggested_key": {
+				"default": "Ctrl+Shift+5",
+				"mac": "MacCtrl+Shift+5"
+			},
+			"description": "Toggle keyboard clicking"
 		}
 	},
 	"browser_action": {
