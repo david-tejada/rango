@@ -94,4 +94,6 @@ export function positionHint(intersector: HintedIntersector) {
 			hintElement.style.top = `${scrollTop + targetY}px`;
 		}
 	}
+
+	intersector.hintElement.style.display = "block";
 }

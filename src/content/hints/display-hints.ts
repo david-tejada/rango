@@ -16,6 +16,7 @@ import {
 	releaseOrphanHints,
 } from "./hints-requests";
 import { shouldDisplayHints } from "./should-display-hints";
+import { shouldDisplayHint, shouldPositionHint } from "./should-display-hint";
 
 let hintsWillUpdate = false;
 let hintsAreUpdating = false;
@@ -113,22 +114,34 @@ async function updateHints() {
 	}
 
 	for (const intersector of toAddHint) {
-		intersector.hintElement = document.createElement("div");
-		intersector.hintText = claimedHints.pop();
-		intersector.hintElement.textContent = intersector.hintText ?? "";
+		if (shouldDisplayHint(intersector)) {
+			intersector.hintElement = document.createElement("div");
+			intersector.hintElement.style.display = "none";
+			intersector.hintText = claimedHints.pop();
+			intersector.hintElement.textContent = intersector.hintText ?? "";
+		}
 
 		// If there are no more available hints to markup the page, don't
 		// append the element.
 		if (isHintedIntersector(intersector)) {
 			applyInitialStyles(intersector);
 			hintsContainer.append(intersector.hintElement);
-			positionHint(intersector);
+			if (shouldPositionHint(intersector)) {
+				positionHint(intersector);
+			}
 		}
 	}
 
 	for (const intersector of toRefresh) {
-		applyInitialStyles(intersector);
-		positionHint(intersector);
+		if (shouldDisplayHint(intersector)) {
+			applyInitialStyles(intersector);
+		} else {
+			intersector.hintElement.style.display = "none";
+		}
+
+		if (shouldPositionHint(intersector)) {
+			positionHint(intersector);
+		}
 	}
 
 	// Hints cleanup

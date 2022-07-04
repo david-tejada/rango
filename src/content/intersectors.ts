@@ -2,6 +2,7 @@ import { HintedIntersector, Intersector } from "../typing/types";
 import { isHintedIntersector } from "../typing/typing-utils";
 import { getClickableType } from "./utils/clickable-type";
 import { NoHintError } from "./classes/errors";
+import { getScrollContainer } from "./utils/get-scroll-container";
 
 export const intersectors: Intersector[] = [];
 export const removedIntersectorsHints: Set<string> = new Set();
@@ -51,6 +52,7 @@ export function onIntersection(
 		intersectors.push({
 			element,
 			clickableType: getClickableType(element),
+			scrollContainer: getScrollContainer(element),
 		});
 	} else {
 		removeIntersector(element);

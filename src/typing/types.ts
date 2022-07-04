@@ -218,6 +218,7 @@ export type ScriptResponse =
 
 export interface Intersector {
 	element: Element;
+	scrollContainer?: Element;
 	clickableType: string | undefined;
 	firstTextNodeDescendant?: Text;
 	hintElement?: HTMLDivElement;

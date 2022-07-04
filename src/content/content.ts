@@ -37,10 +37,12 @@ import {
 	restoreKeyboardReachableHints,
 	updateHintsInTab,
 } from "./keyboard-clicking";
+import { listenToScrollAndResizeEvents } from "./utils/listen-to-scroll-and-resize-events";
 
 cacheHintOptions()
 	.then(addUrlToTitle)
 	.then(observe)
+	.then(listenToScrollAndResizeEvents)
 	.then(async () => {
 		const { keyboardClicking } = await browser.storage.local.get(
 			"keyboardClicking"
@@ -204,15 +206,3 @@ browser.runtime.onMessage.addListener(
 		return undefined;
 	}
 );
-
-let hintsUpdateTimeout: ReturnType<typeof setTimeout>;
-
-document.addEventListener("scroll", async () => {
-	clearTimeout(hintsUpdateTimeout);
-	hintsUpdateTimeout = setTimeout(triggerHintsUpdate, 300);
-});
-
-window.addEventListener("resize", async () => {
-	clearTimeout(hintsUpdateTimeout);
-	hintsUpdateTimeout = setTimeout(triggerHintsUpdate, 300);
-});
