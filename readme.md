@@ -4,7 +4,7 @@
 
 # Rango
 
-Rango is a cross browser extension that helps you interact with web pages using your voice and [talon](https://talonvoice.com/). It does this by drawing hints with letters next to elements that you can use to click, hover, copy or show link adresses and many more features to come.
+Rango is a cross browser extension that helps you interact with web pages using your voice and [talon](https://talonvoice.com/). It does this by drawing hints with letters next to elements that you can use to click, hover, copy or show link adresses. It also helps you scroll, open multiple links in new tabs, close multiple tabs and more.
 
 <p align="center">
   <img src="images/screenshot.png">
@@ -14,7 +14,7 @@ Rango is a cross browser extension that helps you interact with web pages using 
 
 In order to use the extension you need two pieces: the extension and the talon files.
 
-- The extension can be installed from the respective store: [Firefox](https://addons.mozilla.org/en-US/firefox/addon/rango/), [Chrome](https://chrome.google.com/webstore/detail/rango/lnemjdnjjofijemhdogofbpcedhgcpmb)
+- The extension can be installed from the respective store: [Firefox](https://addons.mozilla.org/en-US/firefox/addon/rango/), [Chrome](https://chrome.google.com/webstore/detail/rango/lnemjdnjjofijemhdogofbpcedhgcpmb), [Edge](https://microsoftedge.microsoft.com/addons/detail/rango/pcngjebdhphedjkfhipblkgjbjoeaaeb).
 
 - The talon files can be found [here](https://github.com/david-tejada/rango-talon). Clone or download them to your talon user folder.
 
@@ -22,15 +22,19 @@ In order to use the extension you need two pieces: the extension and the talon f
 
 If the hints are displayed but the commands don't work, most of the time it has to do with the configuration of the hotkey. In order to communicate with Rango, Talon presses a key combination to prompt Rango to read the command present on the clipboard. By default the key combination is `ctrl-shift-insert` in Windows and Linux and `ctrl-shift-3` in Mac. If Rango commands aren't working for you, make sure that the hotkey is properly set up.
 
+#### Where to Find the Extension Keyboard Shortcuts
+
 In Firefox, navigate to [about:addons](about:addons), click on the cog at the top right and then "Manage Extension Shortcuts".
 
 In Chrome, navigate to [chrome://extensions/](chrome://extensions/), click on the hamburger menu at the top left and select "Keyboard shortcuts".
+
+In Edge, navigate to [edge://extensions/](edge://extensions/), click on "Keyboard shortcuts" on the left sidebar.
 
 ## Usage
 
 ### Click
 
-There are two modes: direct and explicit clicking. To switch between them you have to use the command `rango direct` or `rango explicit`. You can also set the default mode by changing the talon setting `user.rango_start_with_direct_clicking` in browser.talon of your rango-talon.
+There are two modes: direct and explicit clicking. To switch between them you have to use the command `rango direct` or `rango explicit`. You can also set the default mode by changing the talon setting `user.rango_start_with_direct_clicking` in rango.talon of your rango-talon.
 
 #### Direct Clicking
 
@@ -47,6 +51,12 @@ This is the default mode. With it enabled you just have to say the characters di
 
 With explicit clicking you have to precede every hint with the word `click`. This mode prevents any misclicks at the expense of being a bit more tedious.
 
+#### Keyboard Clicking
+
+Apart from using your voice for clicking you can also use your keyboard for that.
+
+To toggle it you have to use the command `keyboard toggle` or press `ctrl-shift-5` in Firefox. In Chrome and Edge you have to set the shortcut manually since there is a limit of four shortcuts we can set by default. You'll see the toolbar icon shows a little orange dot when keyboard clicking is on. To allow typing text in pages, keyboard clicking will be off whenever the element in focus accepts text input.
+
 ### Open in a New Tab
 
 - `blank <hint>`: Opens the link in a new tab.
@@ -57,18 +67,48 @@ With explicit clicking you have to precede every hint with the word `click`. Thi
 - `hover <hint>`: Dispatches a hover event to the selected element. Sometimes this command doesn't have a visible result if the current page doesn't have a hover event handler for this element. One example of a page that does have hover event handlers for links is the Wikipedia, where you'll get a popup with a preview of the linked article.
 - `dismiss`: Clears any previously hovered element.
 
-### Show Link URL
+### Show Element Information
 
-- `show <hint>`: Shows the url if the element is a link.
+- `show <hint>`: Shows a tooltip with the element title and url if the element is a link.
 
 ### Scroll
 
 - `upper`: Scroll the page up.
 - `downer`: Scroll the page down.
+
+Sometimes we want to scroll a container that is not the main page. An example for that could be a sidebar with links for navigation. For that we need to refer to one of the hints inside said container and use one of the following commands:
+
 - `upper <hint>`: Scroll up the container with the hinted element.
 - `downer <hint>`: Scroll down the container with the hinted element.
+
+#### Scrolling Small Amounts
+
+The commands above scroll two thirds of the scrolling container, the following commands scroll one fifth of the scrolling container:
+
+- `tiny up`: Scroll the page up 20%.
+- `tiny down`: Scroll the page down 20%.
+- `tiny up <hint>`: Scroll up the container with the hinted element 20%.
+- `tiny down <hint>`: Scroll down the container with the hinted element 20%.
+
+#### Scrolling the Same Container Repeated Times
+
+Once you have scrolled a container by referring to a hint inside it, you can keep scrolling the same container with these commands without needing to refer to a hint within it again. It will also use the same amount of scroll last used:
+
 - `up again`: Scroll up a previously scrolled container.
 - `down again`: Scroll down a previously scrolled container.
+
+#### Custom Scroll Amounts
+
+You can change the scroll amount of these commands or create new scroll commands by adding/changing the last argument in the function call in your rango.talon file. For example, the next commands would scroll up or down half of its scroll container:
+
+```talon
+half up: user.rango_command_without_target("scrollUpPage", 0.5)
+half down: user.rango_command_without_target("scrollDownPage", 0.5)
+half up <user.rango_target>:
+  user.rango_command_with_target("scrollUpAtElement", rango_target, 0.5)
+half down <user.rango_target>:
+  user.rango_command_with_target("scrollDownAtElement", rango_target, 0.5)
+```
 
 ### Copy Target Information
 
