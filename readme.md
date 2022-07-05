@@ -90,6 +90,12 @@ The commands above scroll two thirds of the scrolling container, the following c
 - `tiny up <hint>`: Scroll up the container with the hinted element 20%.
 - `tiny down <hint>`: Scroll down the container with the hinted element 20%.
 
+#### Scrolling an Element to the Top, Bottom or Center
+
+- `crown <hint>`: Scrolls the element with the hint to the top of the page/container. It tries to take into account any sticky/fixed headers and not scroll past that.
+- `center <hint>`: Scrolls the element to the center of the page/container.
+- `bottom <hint>`: Scrolls the element to the bottom of the page/container.
+
 #### Scrolling the Same Container Repeated Times
 
 Once you have scrolled a container by referring to a hint inside it, you can keep scrolling the same container with these commands without needing to refer to a hint within it again. It will also use the same amount of scroll last used:
