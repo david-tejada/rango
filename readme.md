@@ -173,3 +173,7 @@ half down <user.rango_target>:
 ### Changing Hints Font Family
 
 If you find hints text difficult to read, apart from using the commands for changing the hints size and font weight, you can change the monospace font in the browser settings and the hints will render with that font.
+
+## Contributing
+
+See the [Contributing guide](CONTRIBUTING.md).
