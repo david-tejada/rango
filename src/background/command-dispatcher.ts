@@ -32,6 +32,7 @@ const backgroundCommands = new Set([
 	"closeNextTabsInWindow",
 	"cloneCurrentTab",
 	"toggleKeyboardClicking",
+	"moveCurrentTabToNewWindow",
 ]);
 
 export async function dispatchCommand(

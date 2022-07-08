@@ -10,6 +10,8 @@ import { toggleKeyboardClicking } from "./toggle-keyboard-clicking";
 export async function executeBackgroundCommand(
 	command: RangoAction
 ): Promise<TalonAction> {
+	const activeTab = await getActiveTab();
+
 	switch (command.type) {
 		case "toggleHints": {
 			const hintsToggle = (await getStored("hintsToggle")) as HintsToggle;
@@ -111,17 +113,18 @@ export async function executeBackgroundCommand(
 			await closeTabsInWindow("next", command.arg);
 			break;
 
-		case "cloneCurrentTab": {
-			const activeTab = await getActiveTab();
+		case "cloneCurrentTab":
 			if (activeTab?.id) {
 				await browser.tabs.duplicate(activeTab.id);
 			}
 
 			break;
-		}
 
-		case "getCurrentTabUrl": {
-			const activeTab = await getActiveTab();
+		case "moveCurrentTabToNewWindow":
+			await browser.windows.create({ tabId: activeTab?.id });
+			break;
+
+		case "getCurrentTabUrl":
 			if (activeTab?.url) {
 				return {
 					type: "textRetrieved",
@@ -132,10 +135,8 @@ export async function executeBackgroundCommand(
 			return {
 				type: "noAction",
 			};
-		}
 
-		case "copyCurrentTabMarkdownUrl": {
-			const activeTab = await getActiveTab();
+		case "copyCurrentTabMarkdownUrl":
 			if (activeTab?.url && activeTab?.title) {
 				return {
 					type: "copyToClipboard",
@@ -149,7 +150,6 @@ export async function executeBackgroundCommand(
 			return {
 				type: "noAction",
 			};
-		}
 
 		default:
 			break;
