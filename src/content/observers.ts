@@ -2,6 +2,7 @@ import { hasTextNodesChildren } from "./utils/nodes-utils";
 import { getClickableType } from "./utils/clickable-type";
 import { triggerHintsUpdate } from "./hints/display-hints";
 import { onIntersection, onAttributeMutation } from "./intersectors";
+import { checkIfElementHasClickListeners } from "./utils/check-if-element-has-click-listeners";
 
 // *** INTERSECTION OBSERVER ***
 
@@ -86,6 +87,13 @@ function maybeObserveIntersection(element: Element) {
 		const clickableType = getClickableType(element);
 		if (clickableType || hasTextNodesChildren(element)) {
 			intersectionObserver.observe(element);
+		}
+
+		if (
+			!clickableType &&
+			window.getComputedStyle(element).cursor === "pointer"
+		) {
+			checkIfElementHasClickListeners(element);
 		}
 	}
 }

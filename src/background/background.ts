@@ -13,10 +13,25 @@ import {
 import { initStorage } from "./init-storage";
 import { toggleHints } from "./toggle-hints";
 import { toggleKeyboardClicking } from "./toggle-keyboard-clicking";
+import { getEventListeners } from "./get-event-listeners";
 
 initStorage().catch((error) => {
 	console.error(error);
 });
+
+// This code injects the function getEventListeners into the current page in its context.
+// It injects code that hijacks the methods Element.prototype.addEventListener and
+// Element.prototype.removeEventListener so that we can know what elements have events attached.
+// This only works for manifest v3. It's supposed to work with manifest v2 since Firefox 102,
+// but in my case it didn't work.
+if (browser.action) {
+	browser.webNavigation.onCompleted.addListener(async ({ tabId }) => {
+		await browser.scripting.executeScript({
+			target: { tabId, allFrames: true },
+			func: getEventListeners,
+		});
+	});
+}
 
 if (browser.action) {
 	browser.action.onClicked.addListener(async () => {

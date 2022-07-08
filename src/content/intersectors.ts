@@ -7,6 +7,18 @@ import { getScrollContainer } from "./utils/get-scroll-container";
 export const intersectors: Intersector[] = [];
 export const removedIntersectorsHints: Set<string> = new Set();
 
+window.addEventListener("message", ({ data }) => {
+	if (data.type === "elementHasClickListeners") {
+		const elements = document.querySelectorAll(data.selector);
+		const elementsIntersectors = intersectors.filter((intersector) =>
+			Array.from(elements).includes(intersector.element)
+		);
+		for (const intersector of elementsIntersectors) {
+			intersector.clickableType ||= "event:click";
+		}
+	}
+});
+
 function getIntersector(element: Element): Intersector | undefined {
 	return intersectors.find((Intersector) => Intersector.element === element);
 }

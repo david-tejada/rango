@@ -198,6 +198,7 @@ async function updateHints() {
 			.map((intersector) => ({
 				hint: intersector.hintText,
 				element: intersector.element,
+				clickableType: intersector.clickableType,
 			}));
 		console.log("intersectors:", intersectors);
 		console.log("hinted intersectors:", hintedIntersectors);

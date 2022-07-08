@@ -20,7 +20,8 @@
 		"clipboardRead",
 		"clipboardWrite",
 		"notifications",
-		"webNavigation"
+		"webNavigation",
+		"scripting"
 	],
 	"content_scripts": [
 		{
@@ -28,7 +29,13 @@
 			"js": ["../content/content.ts"],
 			"css": ["../styles/hints.css", "../styles/tippy.css"],
 			"all_frames": true,
-			"run_at": "document_idle"
+			"run_at": "document_end"
+		},
+		{
+			"matches": ["<all_urls>"],
+			"js": ["../content/utils/get-event-listeners-mv2.ts"],
+			"all_frames": true,
+			"run_at": "document_start"
 		}
 	],
 	"background": {
