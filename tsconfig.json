@@ -2,6 +2,7 @@
 	"extends": "@sindresorhus/tsconfig/tsconfig.json",
 	"compilerOptions": {
 		"outDir": "dist",
-		"esModuleInterop": true
+		"esModuleInterop": true,
+		"lib": ["es2021", "ES2021.String", "DOM", "DOM.Iterable"]
 	}
 }

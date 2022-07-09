@@ -4,9 +4,10 @@ import {
 	RangoAction,
 	TalonAction,
 } from "../typing/types";
-import { sendRequestToActiveTab } from "./tabs-messaging";
+import { sendRequestToCurrentTab } from "./tabs-messaging";
 import { executeBackgroundCommand } from "./background-commands";
 import { noActionResponse } from "./response-utils";
+import { assertDocumentFocused } from "./assert-document-focused";
 
 const backgroundCommands = new Set([
 	"toggleHints",
@@ -32,6 +33,7 @@ const backgroundCommands = new Set([
 	"closeNextTabsInWindow",
 	"cloneCurrentTab",
 	"toggleKeyboardClicking",
+	"moveCurrentTabToNewWindow",
 ]);
 
 export async function dispatchCommand(
@@ -43,7 +45,17 @@ export async function dispatchCommand(
 		talonAction = await executeBackgroundCommand(command);
 	} else {
 		try {
-			const response = (await sendRequestToActiveTab(command)) as
+			if (
+				command.type === "directClickElement" &&
+				(typeof command.target === "string" || command.target.length === 1)
+			) {
+				// If there is no document focused (for example, the user is in the address
+				// bar or the devtools) this will throw an AggregateError that will be
+				// handled by the catch below
+				await assertDocumentFocused();
+			}
+
+			const response = (await sendRequestToCurrentTab(command)) as
 				| ResponseWithTalonAction
 				| undefined;
 			if (response?.talonAction) {

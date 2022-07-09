@@ -11,7 +11,7 @@ function getIntersector(element: Element): Intersector | undefined {
 	return intersectors.find((Intersector) => Intersector.element === element);
 }
 
-export function getIntersectorWithHint(hint: string): HintedIntersector {
+export function getIntersectorByHint(hint: string): HintedIntersector {
 	const intersector = intersectors.find(
 		(Intersector) => Intersector.hintText === hint
 	);
@@ -23,7 +23,7 @@ export function getIntersectorWithHint(hint: string): HintedIntersector {
 	throw new NoHintError("No intersector found with that hint");
 }
 
-export function getIntersectorsWithHints(hints: string[]): HintedIntersector[] {
+export function getIntersectorsByHints(hints: string[]): HintedIntersector[] {
 	return intersectors
 		.filter(isHintedIntersector) // eslint-disable-line unicorn/no-array-callback-reference
 		.filter((targetIntersector) => hints.includes(targetIntersector.hintText));

@@ -11,20 +11,6 @@ function isDisabled(element: Element) {
 	);
 }
 
-function getLabeledElement(element: HTMLLabelElement): Element | undefined {
-	if (element.htmlFor) {
-		try {
-			return document.querySelector(`#${element.htmlFor}`) ?? undefined;
-		} catch (error: unknown) {
-			if (error instanceof SyntaxError) {
-				return undefined;
-			}
-		}
-	}
-
-	return undefined;
-}
-
 // We could just return a boolean but I want to have the clickable type for debugging purposes
 export function getClickableType(element: Element): string | undefined {
 	// Ignoring some items that even though they have onclick event they don't do anything
@@ -52,11 +38,12 @@ export function getClickableType(element: Element): string | undefined {
 		return "disabled";
 	}
 
-	if (element instanceof HTMLLabelElement) {
-		const labeledElement = getLabeledElement(element);
-		if (labeledElement && isDisabled(labeledElement)) {
-			return "disabled";
-		}
+	if (
+		element instanceof HTMLLabelElement &&
+		element.control &&
+		isDisabled(element.control)
+	) {
+		return "disabled";
 	}
 
 	const clickableTags = new Set([

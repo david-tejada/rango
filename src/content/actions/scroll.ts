@@ -1,4 +1,3 @@
-import { getIntersectorWithHint } from "../intersectors";
 import { getScrollContainer } from "../utils/get-scroll-container";
 
 let scrollContainer: HTMLElement | undefined;
@@ -40,14 +39,11 @@ function scrollVertically(
 
 export function scrollVerticallyAtElement(
 	direction: "up" | "down",
-	hint?: string,
+	element: Element,
 	scrollFactor?: number
 ) {
 	scrollFactor = scrollFactor ?? lastScrollFactor ?? 0.66;
-	if (hint) {
-		const element = getIntersectorWithHint(hint).element;
-		scrollContainer = getScrollContainer(element);
-	}
+	scrollContainer = getScrollContainer(element);
 
 	if (scrollContainer) {
 		scrollVertically(scrollContainer, direction, scrollFactor);
@@ -70,8 +66,7 @@ function getElementVisibleRect(element: Element): DOMRect {
 	);
 }
 
-export function scrollElementToTop(hint: string) {
-	const element = getIntersectorWithHint(hint).element;
+export function scrollElementToTop(element: Element) {
 	scrollContainer = getScrollContainer(element);
 
 	if (scrollContainer) {
@@ -115,8 +110,7 @@ export function scrollElementToTop(hint: string) {
 	}
 }
 
-export function scrollElementToBottom(hint: string) {
-	const element = getIntersectorWithHint(hint).element;
+export function scrollElementToBottom(element: Element) {
 	scrollContainer = getScrollContainer(element);
 
 	if (scrollContainer) {
@@ -130,8 +124,7 @@ export function scrollElementToBottom(hint: string) {
 	}
 }
 
-export function scrollElementToCenter(hint: string) {
-	const element = getIntersectorWithHint(hint).element;
+export function scrollElementToCenter(element: Element) {
 	scrollContainer = getScrollContainer(element);
 
 	if (scrollContainer) {

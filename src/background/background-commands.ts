@@ -1,7 +1,8 @@
 import browser from "webextension-polyfill";
 import { RangoAction, HintsToggle, TalonAction } from "../typing/types";
 import { getStored, setStored } from "../lib/storage";
-import { sendRequestToAllTabs, getActiveTab } from "./tabs-messaging";
+import { sendRequestToAllTabs } from "./tabs-messaging";
+import { getCurrentTab, getCurrentTabId } from "./current-tab";
 import { notify } from "./notify";
 import { toggleHints } from "./toggle-hints";
 import { closeTabsInWindow } from "./close-tabs";
@@ -10,6 +11,9 @@ import { toggleKeyboardClicking } from "./toggle-keyboard-clicking";
 export async function executeBackgroundCommand(
 	command: RangoAction
 ): Promise<TalonAction> {
+	const currentTab = await getCurrentTab();
+	const currentTabId = await getCurrentTabId();
+
 	switch (command.type) {
 		case "toggleHints": {
 			const hintsToggle = (await getStored("hintsToggle")) as HintsToggle;
@@ -111,45 +115,41 @@ export async function executeBackgroundCommand(
 			await closeTabsInWindow("next", command.arg);
 			break;
 
-		case "cloneCurrentTab": {
-			const activeTab = await getActiveTab();
-			if (activeTab?.id) {
-				await browser.tabs.duplicate(activeTab.id);
-			}
+		case "cloneCurrentTab":
+			await browser.tabs.duplicate(currentTabId);
 
 			break;
-		}
 
-		case "getCurrentTabUrl": {
-			const activeTab = await getActiveTab();
-			if (activeTab?.url) {
+		case "moveCurrentTabToNewWindow":
+			await browser.windows.create({ tabId: currentTabId });
+			break;
+
+		case "getCurrentTabUrl":
+			if (currentTab.url) {
 				return {
 					type: "textRetrieved",
-					text: activeTab.url.toString(),
+					text: currentTab.url.toString(),
 				};
 			}
 
 			return {
 				type: "noAction",
 			};
-		}
 
-		case "copyCurrentTabMarkdownUrl": {
-			const activeTab = await getActiveTab();
-			if (activeTab?.url && activeTab?.title) {
+		case "copyCurrentTabMarkdownUrl":
+			if (currentTab.url && currentTab.title) {
 				return {
 					type: "copyToClipboard",
-					textToCopy: `[${activeTab.title.replace(
-						` - ${activeTab.url}`,
+					textToCopy: `[${currentTab.title.replace(
+						` - ${currentTab.url}`,
 						""
-					)}](${activeTab.url})`,
+					)}](${currentTab.url})`,
 				};
 			}
 
 			return {
 				type: "noAction",
 			};
-		}
 
 		default:
 			break;

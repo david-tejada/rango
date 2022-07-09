@@ -6,20 +6,18 @@ import { getStored, setStored } from "../lib/storage";
 import { ResponseWithLocation, StorableHintsToggle } from "../typing/types";
 import { assertDefined } from "../typing/typing-utils";
 import {
-	getActiveTab,
-	sendRequestToActiveTab,
+	sendRequestToCurrentTab,
 	sendRequestToAllTabs,
 } from "./tabs-messaging";
+import { getCurrentTabId } from "./current-tab";
 
 export async function toggleHints(level: string, enable?: boolean) {
 	const storableHintsToggle = (await getStored(
 		"hintsToggle"
 	)) as StorableHintsToggle;
 	const hintsToggle = hintsToggleFromStorable(storableHintsToggle);
-	const activeTab = await getActiveTab();
-	assertDefined(activeTab);
-	assertDefined(activeTab.id);
-	const { host, origin, pathname } = (await sendRequestToActiveTab({
+	const currentTabId = await getCurrentTabId();
+	const { host, origin, pathname } = (await sendRequestToCurrentTab({
 		type: "getLocation",
 	})) as ResponseWithLocation;
 
@@ -39,7 +37,7 @@ export async function toggleHints(level: string, enable?: boolean) {
 			const requestType = enable
 				? "enableHintsNavigation"
 				: "disableHintsNavigation";
-			await sendRequestToActiveTab({
+			await sendRequestToCurrentTab({
 				type: requestType,
 			});
 			break;
@@ -53,12 +51,10 @@ export async function toggleHints(level: string, enable?: boolean) {
 			break;
 
 		case "tab":
-			if (activeTab?.id) {
-				if (enable === undefined) {
-					hintsToggle.tabs.delete(activeTab.id);
-				} else {
-					hintsToggle.tabs.set(activeTab.id, enable);
-				}
+			if (enable === undefined) {
+				hintsToggle.tabs.delete(currentTabId);
+			} else {
+				hintsToggle.tabs.set(currentTabId, enable);
 			}
 
 			break;

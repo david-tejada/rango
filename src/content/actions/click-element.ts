@@ -1,11 +1,8 @@
 import { parseDomain, ParseResultType, fromUrl } from "parse-domain";
 import { focusesOnclick } from "../utils/clickable-type";
 import { flashHint } from "../hints/styles";
-import {
-	getIntersectorsWithHints,
-	getIntersectorWithHint,
-} from "../intersectors";
 import { triggerHintsUpdate } from "../hints/display-hints";
+import { HintedIntersector } from "../../typing/types";
 import { openInBackgroundTab, openInNewTab } from "./open-in-new-tab";
 
 function getMainDomain(url: string): string | undefined {
@@ -43,22 +40,17 @@ function dispatchClick(element: Element) {
 	element.dispatchEvent(clickEvent);
 }
 
-export async function clickElement(hintTexts: string | string[]) {
-	let intersectors =
-		typeof hintTexts === "string"
-			? [getIntersectorWithHint(hintTexts)]
-			: getIntersectorsWithHints(hintTexts);
-
+export async function clickElements(intersectors: HintedIntersector[]) {
 	// If there are multiple targets and some of them are anchor elements we open
 	// those in a new background tab
 	if (intersectors.length > 1) {
-		const anchorIntersectorsHints = intersectors
-			.filter((intersector) => intersector.element instanceof HTMLAnchorElement)
-			.map((intersector) => intersector.hintText);
+		const anchorIntersectors = intersectors.filter(
+			(intersector) => intersector.element instanceof HTMLAnchorElement
+		);
 		intersectors = intersectors.filter(
 			(intersector) => !(intersector.element instanceof HTMLAnchorElement)
 		);
-		await openInBackgroundTab(anchorIntersectorsHints);
+		await openInBackgroundTab(anchorIntersectors);
 	}
 
 	for (const intersector of intersectors) {

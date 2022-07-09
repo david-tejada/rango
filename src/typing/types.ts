@@ -1,11 +1,12 @@
 import Color from "color";
 
-interface RangoActionWithoutTarget {
+interface RangoActionWithoutTargetWithoutArg {
 	type:
 		| "closeOtherTabsInWindow"
 		| "closeTabsToTheLeftInWindow"
 		| "closeTabsToTheRightInWindow"
 		| "cloneCurrentTab"
+		| "moveCurrentTabToNewWindow"
 		| "unhoverAll"
 		| "copyCurrentTabMarkdownUrl"
 		| "getCurrentTabUrl"
@@ -44,21 +45,32 @@ interface RangoActionWithoutTargetWithNumberArg {
 	arg: number;
 }
 
-interface RangoActionWithOptionalTargetWithOptionalNumberArg {
+interface RangoActionWithTargetWithOptionalNumberArg {
 	type:
 		| "scrollUpAtElement"
 		| "scrollDownAtElement"
 		| "scrollUpPage"
 		| "scrollDownPage";
-	target?: string;
+	target: string;
 	arg?: number;
 }
 
-interface RangoActionWithTarget {
+interface RangoActionWithoutTargetWithOptionalNumberArg {
+	type: "scrollUpPage" | "scrollDownPage";
+	arg?: number;
+}
+
+interface RangoActionWithSingleTarget {
 	type:
 		| "scrollElementToTop"
 		| "scrollElementToBottom"
-		| "scrollElementToCenter"
+		| "scrollElementToCenter";
+	target: string;
+}
+
+interface RangoActionWithMultipleTargets {
+	type:
+		| "openInBackgroundTab"
 		| "clickElement"
 		| "directClickElement"
 		| "openInNewTab"
@@ -67,21 +79,21 @@ interface RangoActionWithTarget {
 		| "copyElementTextContent"
 		| "showLink"
 		| "hoverElement";
-	target: string;
-}
-
-interface RangoActionWithMultipleTargets {
-	type: "openInBackgroundTab";
 	target: string[];
 }
 
-export type RangoAction =
-	| RangoActionWithoutTarget
-	| RangoActionWithTarget
+export type RangoActionWithTarget =
+	| RangoActionWithSingleTarget
 	| RangoActionWithMultipleTargets
+	| RangoActionWithTargetWithOptionalNumberArg;
+
+export type RangoActionWithoutTarget =
+	| RangoActionWithoutTargetWithoutArg
 	| RangoActionWithoutTargetWithStringArg
 	| RangoActionWithoutTargetWithNumberArg
-	| RangoActionWithOptionalTargetWithOptionalNumberArg;
+	| RangoActionWithoutTargetWithOptionalNumberArg;
+
+export type RangoAction = RangoActionWithTarget | RangoActionWithoutTarget;
 
 export interface RequestFromTalon {
 	version?: number;
@@ -132,6 +144,10 @@ interface InitKeyboardNavigation {
 	type: "initKeyboardNavigation";
 }
 
+interface CheckIfDocumentHasFocus {
+	type: "checkIfDocumentHasFocus";
+}
+
 export type ContentRequest =
 	| RangoAction
 	| GetClipboardManifestV3
@@ -140,7 +156,8 @@ export type ContentRequest =
 	| UpdateHintsInTab
 	| MarkHintsAsKeyboardReachable
 	| RestoreKeyboardReachableHints
-	| InitKeyboardNavigation;
+	| InitKeyboardNavigation
+	| CheckIfDocumentHasFocus;
 
 interface OpenInNewTab {
 	type: "openInNewTab";
@@ -214,7 +231,8 @@ export interface ResponseWithTalonAction {
 export type ScriptResponse =
 	| ClipboardResponse
 	| ResponseWithLocation
-	| ResponseWithTalonAction;
+	| ResponseWithTalonAction
+	| boolean;
 
 export interface Intersector {
 	element: Element;
