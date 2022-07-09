@@ -45,7 +45,10 @@ export async function dispatchCommand(
 		talonAction = await executeBackgroundCommand(command);
 	} else {
 		try {
-			if (command.type === "directClickElement") {
+			if (
+				command.type === "directClickElement" &&
+				(typeof command.target === "string" || command.target.length === 1)
+			) {
 				// If there is no document focused (for example, the user is in the address
 				// bar or the devtools) this will throw an AggregateError that will be
 				// handled by the catch below

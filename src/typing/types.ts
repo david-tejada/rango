@@ -64,7 +64,13 @@ interface RangoActionWithSingleTarget {
 	type:
 		| "scrollElementToTop"
 		| "scrollElementToBottom"
-		| "scrollElementToCenter"
+		| "scrollElementToCenter";
+	target: string;
+}
+
+interface RangoActionWithMultipleTargets {
+	type:
+		| "openInBackgroundTab"
 		| "clickElement"
 		| "directClickElement"
 		| "openInNewTab"
@@ -73,11 +79,6 @@ interface RangoActionWithSingleTarget {
 		| "copyElementTextContent"
 		| "showLink"
 		| "hoverElement";
-	target: string;
-}
-
-interface RangoActionWithMultipleTargets {
-	type: "openInBackgroundTab";
 	target: string[];
 }
 
