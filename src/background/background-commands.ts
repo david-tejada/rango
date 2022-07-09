@@ -1,7 +1,8 @@
 import browser from "webextension-polyfill";
 import { RangoAction, HintsToggle, TalonAction } from "../typing/types";
 import { getStored, setStored } from "../lib/storage";
-import { sendRequestToAllTabs, getActiveTab } from "./tabs-messaging";
+import { sendRequestToAllTabs } from "./tabs-messaging";
+import { getCurrentTab, getCurrentTabId } from "./current-tab";
 import { notify } from "./notify";
 import { toggleHints } from "./toggle-hints";
 import { closeTabsInWindow } from "./close-tabs";
@@ -10,7 +11,8 @@ import { toggleKeyboardClicking } from "./toggle-keyboard-clicking";
 export async function executeBackgroundCommand(
 	command: RangoAction
 ): Promise<TalonAction> {
-	const activeTab = await getActiveTab();
+	const currentTab = await getCurrentTab();
+	const currentTabId = await getCurrentTabId();
 
 	switch (command.type) {
 		case "toggleHints": {
@@ -114,21 +116,19 @@ export async function executeBackgroundCommand(
 			break;
 
 		case "cloneCurrentTab":
-			if (activeTab?.id) {
-				await browser.tabs.duplicate(activeTab.id);
-			}
+			await browser.tabs.duplicate(currentTabId);
 
 			break;
 
 		case "moveCurrentTabToNewWindow":
-			await browser.windows.create({ tabId: activeTab?.id });
+			await browser.windows.create({ tabId: currentTabId });
 			break;
 
 		case "getCurrentTabUrl":
-			if (activeTab?.url) {
+			if (currentTab.url) {
 				return {
 					type: "textRetrieved",
-					text: activeTab.url.toString(),
+					text: currentTab.url.toString(),
 				};
 			}
 
@@ -137,13 +137,13 @@ export async function executeBackgroundCommand(
 			};
 
 		case "copyCurrentTabMarkdownUrl":
-			if (activeTab?.url && activeTab?.title) {
+			if (currentTab.url && currentTab.title) {
 				return {
 					type: "copyToClipboard",
-					textToCopy: `[${activeTab.title.replace(
-						` - ${activeTab.url}`,
+					textToCopy: `[${currentTab.title.replace(
+						` - ${currentTab.url}`,
 						""
-					)}](${activeTab.url})`,
+					)}](${currentTab.url})`,
 				};
 			}
 

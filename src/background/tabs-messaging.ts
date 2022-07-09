@@ -13,15 +13,7 @@ import {
 	releaseHints,
 	releaseOrphanHints,
 } from "./hints-allocator";
-
-export async function getActiveTab(): Promise<browser.Tabs.Tab | undefined> {
-	const activeTabs = await browser.tabs.query({
-		currentWindow: true,
-		active: true,
-	});
-
-	return activeTabs[0];
-}
+import { getCurrentTabId } from "./current-tab";
 
 async function getHintFrameId(
 	tabId: number,
@@ -48,10 +40,10 @@ async function getHintFrameId(
 	return 0;
 }
 
-export async function sendRequestToActiveTab(
+export async function sendRequestToCurrentTab(
 	request: ContentRequest
 ): Promise<ScriptResponse | undefined> {
-	const activeTab = await getActiveTab();
+	const currentTabId = await getCurrentTabId();
 	let hintText;
 	if (
 		"target" in request &&
@@ -63,9 +55,9 @@ export async function sendRequestToActiveTab(
 
 	// We only want to send the request to the frame with the target hint or to the main
 	// frame in case that the request doesn't have a hint
-	if (activeTab?.id) {
-		const frameId = await getHintFrameId(activeTab.id, hintText);
-		const response = (await browser.tabs.sendMessage(activeTab.id, request, {
+	if (currentTabId) {
+		const frameId = await getHintFrameId(currentTabId, hintText);
+		const response = (await browser.tabs.sendMessage(currentTabId, request, {
 			frameId,
 		})) as ScriptResponse | undefined;
 		if (response) {
@@ -161,7 +153,7 @@ browser.runtime.onMessage.addListener(
 			}
 
 			case "clickHintInFrame":
-				await sendRequestToActiveTab({
+				await sendRequestToCurrentTab({
 					type: "clickElement",
 					target: request.hint,
 				});

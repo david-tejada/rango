@@ -4,7 +4,7 @@ import {
 	RangoAction,
 	TalonAction,
 } from "../typing/types";
-import { sendRequestToActiveTab } from "./tabs-messaging";
+import { sendRequestToCurrentTab } from "./tabs-messaging";
 import { executeBackgroundCommand } from "./background-commands";
 import { noActionResponse } from "./response-utils";
 import { assertDocumentFocused } from "./assert-document-focused";
@@ -52,7 +52,7 @@ export async function dispatchCommand(
 				await assertDocumentFocused();
 			}
 
-			const response = (await sendRequestToActiveTab(command)) as
+			const response = (await sendRequestToCurrentTab(command)) as
 				| ResponseWithTalonAction
 				| undefined;
 			if (response?.talonAction) {

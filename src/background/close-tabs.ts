@@ -1,5 +1,6 @@
 import browser, { Tabs } from "webextension-polyfill";
 import { assertDefined } from "../typing/typing-utils";
+import { getCurrentTab, getCurrentTabId } from "./current-tab";
 
 export async function closeTabsInWindow(
 	tabsToClose:
@@ -16,28 +17,22 @@ export async function closeTabsInWindow(
 		currentWindow: true,
 	});
 
-	const activeTabs = await browser.tabs.query({
-		currentWindow: true,
-		active: true,
-	});
-	const activeTab = activeTabs[0];
-	assertDefined(activeTab);
-	const activeTabId = activeTab.id;
-	assertDefined(activeTabId);
+	const currentTab = await getCurrentTab();
+	const currentTabId = await getCurrentTabId();
 
 	let filterFunction: (tab: Tabs.Tab) => boolean;
 
 	switch (tabsToClose) {
 		case "other":
-			filterFunction = (tab) => tab.id !== activeTabId;
+			filterFunction = (tab) => tab.id !== currentTabId;
 			break;
 
 		case "left":
-			filterFunction = (tab) => tab.index < activeTab.index;
+			filterFunction = (tab) => tab.index < currentTab.index;
 			break;
 
 		case "right":
-			filterFunction = (tab) => tab.index > activeTab.index;
+			filterFunction = (tab) => tab.index > currentTab.index;
 			break;
 
 		case "leftEnd":
@@ -53,13 +48,13 @@ export async function closeTabsInWindow(
 		case "previous":
 			assertDefined(amount);
 			filterFunction = (tab) =>
-				tab.index >= activeTab.index - amount && tab.index < activeTab.index;
+				tab.index >= currentTab.index - amount && tab.index < currentTab.index;
 			break;
 
 		case "next":
 			assertDefined(amount);
 			filterFunction = (tab) =>
-				tab.index > activeTab.index && tab.index <= activeTab.index + amount;
+				tab.index > currentTab.index && tab.index <= currentTab.index + amount;
 			break;
 
 		default:
