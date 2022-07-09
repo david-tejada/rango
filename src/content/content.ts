@@ -92,6 +92,15 @@ browser.runtime.onMessage.addListener(
 					await initKeyboardNavigation();
 					break;
 
+				case "checkIfDocumentHasFocus":
+					if (document.hasFocus()) {
+						console.log("Document has focus");
+						return true;
+					}
+
+					// eslint-disable-next-line unicorn/no-useless-promise-resolve-reject, @typescript-eslint/return-await
+					return Promise.reject();
+
 				// RANGO ACTIONS
 				case "clickElement":
 				case "directClickElement": {

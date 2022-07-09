@@ -133,6 +133,10 @@ interface InitKeyboardNavigation {
 	type: "initKeyboardNavigation";
 }
 
+interface CheckIfDocumentHasFocus {
+	type: "checkIfDocumentHasFocus";
+}
+
 export type ContentRequest =
 	| RangoAction
 	| GetClipboardManifestV3
@@ -141,7 +145,8 @@ export type ContentRequest =
 	| UpdateHintsInTab
 	| MarkHintsAsKeyboardReachable
 	| RestoreKeyboardReachableHints
-	| InitKeyboardNavigation;
+	| InitKeyboardNavigation
+	| CheckIfDocumentHasFocus;
 
 interface OpenInNewTab {
 	type: "openInNewTab";
@@ -215,7 +220,8 @@ export interface ResponseWithTalonAction {
 export type ScriptResponse =
 	| ClipboardResponse
 	| ResponseWithLocation
-	| ResponseWithTalonAction;
+	| ResponseWithTalonAction
+	| boolean;
 
 export interface Intersector {
 	element: Element;

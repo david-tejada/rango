@@ -7,6 +7,7 @@ import {
 import { sendRequestToActiveTab } from "./tabs-messaging";
 import { executeBackgroundCommand } from "./background-commands";
 import { noActionResponse } from "./response-utils";
+import { isWindowFocused } from "./is-window-focused";
 
 const backgroundCommands = new Set([
 	"toggleHints",
@@ -44,6 +45,17 @@ export async function dispatchCommand(
 		talonAction = await executeBackgroundCommand(command);
 	} else {
 		try {
+			const windowIsFocused = await isWindowFocused();
+			console.log({ windowIsFocused });
+			if (command.type === "directClickElement" && !windowIsFocused) {
+				return {
+					type: "response",
+					action: {
+						type: "noHintFound",
+					},
+				};
+			}
+
 			const response = (await sendRequestToActiveTab(command)) as
 				| ResponseWithTalonAction
 				| undefined;
