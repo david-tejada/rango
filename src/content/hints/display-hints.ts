@@ -160,7 +160,8 @@ async function updateHints() {
 	}
 
 	// Hints cleanup
-	const hintElements = hintsContainer.querySelectorAll(".rango-hint");
+	const hintElements: NodeListOf<HTMLDivElement> =
+		hintsContainer.querySelectorAll(".rango-hint");
 	const hintTexts = intersectors
 		.filter(isHintedIntersector) // eslint-disable-line unicorn/no-array-callback-reference
 		.map((intersector) => intersector.hintText);

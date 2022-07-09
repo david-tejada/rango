@@ -9,7 +9,8 @@ let keysPressedBuffer = "";
 let timeoutId: ReturnType<typeof setTimeout>;
 
 export function markHintsAsKeyboardReachable(letter: string) {
-	const hintElements = document.querySelectorAll(".rango-hint");
+	const hintElements: NodeListOf<HTMLDivElement> =
+		document.querySelectorAll(".rango-hint");
 	const hintsToHighlight = [...hintElements].filter((hintElement) =>
 		hintElement.textContent?.startsWith(letter)
 	);
