@@ -3,7 +3,7 @@ import { getActiveTab } from "./tabs-messaging";
 
 // This function checks if any of the frames in the current tab has focus.
 // We use this to avoid clicking when the user is in the devtools or in the adress bar
-export async function isWindowFocused(): Promise<boolean> {
+export async function assertDocumentFocused() {
 	const activeTab = await getActiveTab();
 	if (activeTab?.id) {
 		const tabId = activeTab.id;
@@ -21,8 +21,6 @@ export async function isWindowFocused(): Promise<boolean> {
 			)
 		) as Array<Promise<boolean>>;
 
-		return Promise.any(requesting);
+		await Promise.any(requesting);
 	}
-
-	return false;
 }

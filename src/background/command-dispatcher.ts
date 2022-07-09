@@ -7,7 +7,7 @@ import {
 import { sendRequestToActiveTab } from "./tabs-messaging";
 import { executeBackgroundCommand } from "./background-commands";
 import { noActionResponse } from "./response-utils";
-import { isWindowFocused } from "./is-window-focused";
+import { assertDocumentFocused } from "./assert-document-focused";
 
 const backgroundCommands = new Set([
 	"toggleHints",
@@ -45,15 +45,11 @@ export async function dispatchCommand(
 		talonAction = await executeBackgroundCommand(command);
 	} else {
 		try {
-			const windowIsFocused = await isWindowFocused();
-			console.log({ windowIsFocused });
-			if (command.type === "directClickElement" && !windowIsFocused) {
-				return {
-					type: "response",
-					action: {
-						type: "noHintFound",
-					},
-				};
+			if (command.type === "directClickElement") {
+				// If there is no document focused (for example, the user is in the address
+				// bar or the devtools) this will throw an AggregateError that will be
+				// handled by the catch below
+				await assertDocumentFocused();
 			}
 
 			const response = (await sendRequestToActiveTab(command)) as
