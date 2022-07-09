@@ -53,6 +53,7 @@
 
 /* Begin PBXFileReference section */
 		E17BC8F7285E2315007EB9C6 /* Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
+		E181855B287A133300771324 /* RangoVersion.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = RangoVersion.xcconfig; sourceTree = "<group>"; };
 		E1AEB956284D1D7700154974 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = ../Base.lproj/Main.html; sourceTree = "<group>"; };
 		E1AEB957284D1D7700154974 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		E1AEB958284D1D7700154974 /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
@@ -75,6 +76,7 @@
 		E1AEB9B5284D1D7800154974 /* content.b26eff75.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = content.b26eff75.js; path = "../../dist-mv2/content.b26eff75.js"; sourceTree = "<group>"; };
 		E1AEB9B6284D1D7800154974 /* icon48.21c6254b.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon48.21c6254b.png; path = "../../dist-mv2/icon48.21c6254b.png"; sourceTree = "<group>"; };
 		E1AEB9B7284D1D7800154974 /* background.8c443abb.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = background.8c443abb.js; path = "../../dist-mv2/background.8c443abb.js"; sourceTree = "<group>"; };
+		E1E0B327287A38DD00A5B751 /* UpdateRangoVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateRangoVersion.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -95,9 +97,19 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		E181855D287A150700771324 /* Build */ = {
+			isa = PBXGroup;
+			children = (
+				E181855B287A133300771324 /* RangoVersion.xcconfig */,
+				E1E0B327287A38DD00A5B751 /* UpdateRangoVersion.swift */,
+			);
+			path = Build;
+			sourceTree = "<group>";
+		};
 		E1AEB94E284D1D7700154974 = {
 			isa = PBXGroup;
 			children = (
+				E181855D287A150700771324 /* Build */,
 				E1AEB953284D1D7700154974 /* Shared (App) */,
 				E1AEB95C284D1D7800154974 /* Shared (Extension) */,
 				E1AEB975284D1D7800154974 /* macOS (App) */,
@@ -338,6 +350,7 @@
 /* Begin XCBuildConfiguration section */
 		E1AEB9A0284D1D7800154974 /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E181855B287A133300771324 /* RangoVersion.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -388,7 +401,6 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 12.3;
-				MARKETING_VERSION = 0.2.1;
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				ONLY_ACTIVE_ARCH = YES;
@@ -400,6 +412,7 @@
 		};
 		E1AEB9A1284D1D7800154974 /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = E181855B287A133300771324 /* RangoVersion.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -444,7 +457,6 @@
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
 				MACOSX_DEPLOYMENT_TARGET = 12.3;
-				MARKETING_VERSION = 0.2.1;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				MTL_FAST_MATH = YES;
 				SWIFT_COMPILATION_MODE = wholemodule;
