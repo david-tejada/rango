@@ -1,6 +1,5 @@
-import { ResponseWithTalonAction } from "../../typing/types";
+import { HintedIntersector, ResponseWithTalonAction } from "../../typing/types";
 import { showTooltip } from "../hints/tooltip";
-import { getIntersectorWithHint } from "../intersectors";
 
 export function copyToClipboardResponse(text: string): ResponseWithTalonAction {
 	return {
@@ -11,37 +10,59 @@ export function copyToClipboardResponse(text: string): ResponseWithTalonAction {
 	};
 }
 
-export function copyElementTextContentToClipboard(hintText: string) {
-	const target = getIntersectorWithHint(hintText);
-	const textContent = target.element.textContent;
-	const message = textContent ? "Copied!" : "No text content to copy";
-	showTooltip(target, message, 1500);
-	return textContent ? copyToClipboardResponse(textContent) : undefined;
-}
-
-export function copyLinkToClipboard(hintText: string) {
-	const target = getIntersectorWithHint(hintText);
-	let href;
-	if (target.element instanceof HTMLAnchorElement) {
-		href = target.element.href;
+export function copyElementTextContentToClipboard(
+	intersectors: HintedIntersector[]
+) {
+	const textContents = [];
+	for (const intersector of intersectors) {
+		const textContent = intersector.element.textContent;
+		textContents.push(textContent);
+		const message = textContent ? "Copied!" : "No text content to copy";
+		showTooltip(intersector, message, 1500);
 	}
 
-	const message = href ? "Copied!" : "Not a link";
-	showTooltip(target, message, 1500);
-	return href ? copyToClipboardResponse(href) : undefined;
+	return textContents.length > 1
+		? copyToClipboardResponse(textContents.join("\n"))
+		: undefined;
 }
 
-export function copyMarkdownLinkToClipboard(hintText: string) {
-	const target = getIntersectorWithHint(hintText);
-	let href;
-	let markdown;
-	if (target.element instanceof HTMLAnchorElement) {
-		href = target.element.href;
-		const title = target.element.textContent ?? "";
-		markdown = `[${title}](${href})`;
+export function copyLinkToClipboard(intersectors: HintedIntersector[]) {
+	const hrefs = [];
+
+	for (const intersector of intersectors) {
+		let href;
+		if (intersector.element instanceof HTMLAnchorElement) {
+			href = intersector.element.href;
+			hrefs.push(href);
+		}
+
+		const message = href ? "Copied!" : "Not a link";
+		showTooltip(intersector, message, 1500);
 	}
 
-	const message = markdown ? "Copied!" : "Not a link";
-	showTooltip(target, message, 1500);
-	return markdown ? copyToClipboardResponse(markdown) : undefined;
+	return hrefs.length > 0
+		? copyToClipboardResponse(hrefs.join("\n"))
+		: undefined;
+}
+
+export function copyMarkdownLinkToClipboard(intersectors: HintedIntersector[]) {
+	const markdownLinks = [];
+
+	for (const intersector of intersectors) {
+		let href;
+		let markdownLink;
+		if (intersector.element instanceof HTMLAnchorElement) {
+			href = intersector.element.href;
+			const title = intersector.element.textContent ?? "";
+			markdownLink = `[${title}](${href})`;
+			markdownLinks.push(markdownLink);
+		}
+
+		const message = markdownLink ? "Copied!" : "Not a link";
+		showTooltip(intersector, message, 1500);
+	}
+
+	return markdownLinks.length > 0
+		? copyToClipboardResponse(markdownLinks.join("\n"))
+		: undefined;
 }

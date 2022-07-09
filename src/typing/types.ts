@@ -1,6 +1,6 @@
 import Color from "color";
 
-interface RangoActionWithoutTarget {
+interface RangoActionWithoutTargetWithoutArg {
 	type:
 		| "closeOtherTabsInWindow"
 		| "closeTabsToTheLeftInWindow"
@@ -45,17 +45,22 @@ interface RangoActionWithoutTargetWithNumberArg {
 	arg: number;
 }
 
-interface RangoActionWithOptionalTargetWithOptionalNumberArg {
+interface RangoActionWithTargetWithOptionalNumberArg {
 	type:
 		| "scrollUpAtElement"
 		| "scrollDownAtElement"
 		| "scrollUpPage"
 		| "scrollDownPage";
-	target?: string;
+	target: string;
 	arg?: number;
 }
 
-interface RangoActionWithTarget {
+interface RangoActionWithoutTargetWithOptionalNumberArg {
+	type: "scrollUpPage" | "scrollDownPage";
+	arg?: number;
+}
+
+interface RangoActionWithSingleTarget {
 	type:
 		| "scrollElementToTop"
 		| "scrollElementToBottom"
@@ -76,13 +81,18 @@ interface RangoActionWithMultipleTargets {
 	target: string[];
 }
 
-export type RangoAction =
-	| RangoActionWithoutTarget
-	| RangoActionWithTarget
+export type RangoActionWithTarget =
+	| RangoActionWithSingleTarget
 	| RangoActionWithMultipleTargets
+	| RangoActionWithTargetWithOptionalNumberArg;
+
+export type RangoActionWithoutTarget =
+	| RangoActionWithoutTargetWithoutArg
 	| RangoActionWithoutTargetWithStringArg
 	| RangoActionWithoutTargetWithNumberArg
-	| RangoActionWithOptionalTargetWithOptionalNumberArg;
+	| RangoActionWithoutTargetWithOptionalNumberArg;
+
+export type RangoAction = RangoActionWithTarget | RangoActionWithoutTarget;
 
 export interface RequestFromTalon {
 	version?: number;

@@ -3,7 +3,7 @@ import browser from "webextension-polyfill";
 import { assertDefined, isFocusOnClickInput } from "../typing/typing-utils";
 import { getHintsInTab } from "./utils/get-hints-in-tab";
 import { applyInitialStyles } from "./hints/styles";
-import { getIntersectorWithHint } from "./intersectors";
+import { getIntersectorByHint } from "./intersectors";
 
 let keysPressedBuffer = "";
 let timeoutId: ReturnType<typeof setTimeout>;
@@ -16,7 +16,7 @@ export function markHintsAsKeyboardReachable(letter: string) {
 	);
 	for (const hintElement of hintsToHighlight) {
 		assertDefined(hintElement.textContent);
-		const intersector = getIntersectorWithHint(hintElement.textContent);
+		const intersector = getIntersectorByHint(hintElement.textContent);
 		if (hintElement instanceof HTMLDivElement) {
 			intersector.freezeHintStyle = true;
 			hintElement.style.fontWeight = "bold";
@@ -35,7 +35,7 @@ export function restoreKeyboardReachableHints() {
 
 	for (const hintElement of hintElements) {
 		assertDefined(hintElement.textContent);
-		const intersector = getIntersectorWithHint(hintElement.textContent);
+		const intersector = getIntersectorByHint(hintElement.textContent);
 		intersector.freezeHintStyle = false;
 		applyInitialStyles(intersector);
 	}
