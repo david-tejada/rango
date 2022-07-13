@@ -102,7 +102,7 @@ export interface RequestFromTalon {
 }
 
 export interface TalonAction {
-	type: "noAction" | "copyToClipboard" | "textRetrieved" | "noHintFound";
+	type: "noAction" | "copyToClipboard" | "noHintFound";
 	textToCopy?: string;
 	text?: string;
 }
