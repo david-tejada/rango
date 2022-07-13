@@ -42,7 +42,7 @@ async function getClipboardTabId(): Promise<number | undefined> {
 			// If we need to use the active tab for the clipboard area, we need to make sure
 			// that the tab status is "complete", otherwise the message to the content script will
 			// fail because it won't be loaded. This can happen for example when we click a link
-			// an the new page still hasn't loaded when we try to write the response to the clipboard.
+			// and the new page still hasn't loaded when we try to write the response to the clipboard.
 			// If in about two seconds the page hasn't completed we continue.
 			if (tab === currentTab) {
 				let i = 0;
