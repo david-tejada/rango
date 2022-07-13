@@ -20,6 +20,7 @@
 		"clipboardRead",
 		"clipboardWrite",
 		"notifications",
+		"nativeMessaging",
 		"webNavigation"
 	],
 	"content_scripts": [

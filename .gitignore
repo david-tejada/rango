@@ -9,3 +9,7 @@ workspace.code-workspace
 *.pem
 # macos metadata file
 .DS_Store
+# Xcode
+xcuserdata
+# Emacs
+*~
