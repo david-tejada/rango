@@ -1,4 +1,4 @@
-import { getScrollContainer } from "../utils/get-scroll-container";
+import { getScrollContainer } from "../utils/getScrollContainer";
 
 let scrollContainer: HTMLElement | undefined;
 let lastScrollFactor: number;

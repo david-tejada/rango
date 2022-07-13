@@ -1,22 +1,23 @@
 import browser from "webextension-polyfill";
-import { ContentRequest, ScriptResponse } from "../typing/types";
-import { cacheHintOptions } from "./options/hint-style-options";
+import { ScriptResponse } from "../typings/ScriptResponse";
+import { ContentRequest } from "../typings/ContentRequest";
+import { cacheHintOptions } from "./options/cacheHintOptions";
 import {
 	getClipboardManifestV3,
 	copyToClipboardManifestV3,
-} from "./utils/manifest-v3-clipboard";
-import { triggerHintsUpdate } from "./hints/display-hints";
+} from "./utils/clipboardManifestV3";
+import { triggerHintsUpdate } from "./hints/triggerHintsUpdate";
 import observe from "./observers";
-import { addUrlToTitle } from "./utils/url-in-title";
+import { addUrlToTitle } from "./utils/addUrlToTitle";
 import {
 	markHintsAsKeyboardReachable,
-	initKeyboardNavigation,
+	initKeyboardClicking,
 	restoreKeyboardReachableHints,
-} from "./keyboard-clicking";
-import { updateHintsInTab } from "./utils/get-hints-in-tab";
-import { listenToScrollAndResizeEvents } from "./utils/listen-to-scroll-and-resize-events";
-import { runRangoActionWithTarget } from "./actions/run-rango-action-with-target";
-import { runRangoActionWithoutTarget } from "./actions/run-rango-action-without-target";
+} from "./actions/keyboardClicking";
+import { updateHintsInTab } from "./utils/getHintsInTab";
+import { listenToScrollAndResizeEvents } from "./utils/listenToScrollAndResizeEvents";
+import { runRangoActionWithTarget } from "./actions/runRangoActionWithTarget";
+import { runRangoActionWithoutTarget } from "./actions/runRangoActionWithoutTarget";
 
 cacheHintOptions()
 	.then(addUrlToTitle)
@@ -27,7 +28,7 @@ cacheHintOptions()
 			"keyboardClicking"
 		);
 		if (keyboardClicking) {
-			await initKeyboardNavigation();
+			await initKeyboardClicking();
 		}
 	})
 	.catch((error) => {
@@ -72,7 +73,7 @@ browser.runtime.onMessage.addListener(
 					break;
 
 				case "initKeyboardNavigation":
-					await initKeyboardNavigation();
+					await initKeyboardClicking();
 					break;
 
 				case "checkIfDocumentHasFocus":

@@ -1,20 +1,20 @@
 import browser from "webextension-polyfill";
-import { ResponseToTalon } from "../typing/types";
+import { ResponseToTalon } from "../typings/RequestFromTalon";
 import {
 	getRequestFromClipboard,
 	writeResponseToClipboard,
 	getClipboardIfChanged,
-} from "./clipboard";
-import { dispatchCommand } from "./command-dispatcher";
-import { adaptResponse } from "./adapt-response";
+} from "./utils/clipboard";
+import { dispatchCommand } from "./commands/dispatchCommand";
+import { adaptResponse } from "./utils/adaptResponse";
 import {
 	getCopyToClipboardResponseObject,
 	noActionResponse,
-} from "./response-utils";
-import { initStorage } from "./init-storage";
-import { toggleHints } from "./toggle-hints";
-import { toggleKeyboardClicking } from "./toggle-keyboard-clicking";
-import { isUnintendedDirectClicking } from "./isUnintendedDirectClicking";
+} from "./utils/responseObjects";
+import { initStorage } from "./utils/initStorage";
+import { toggleHints } from "./actions/toggleHints";
+import { toggleKeyboardClicking } from "./actions/toggleKeyboardClicking";
+import { isUnintendedDirectClicking } from "./commands/isUnintendedDirectClicking";
 
 initStorage().catch((error) => {
 	console.error(error);

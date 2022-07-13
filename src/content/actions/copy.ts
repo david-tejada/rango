@@ -1,5 +1,6 @@
-import { HintedIntersector, ResponseWithTalonAction } from "../../typing/types";
-import { showTooltip } from "../hints/tooltip";
+import { HintedIntersector } from "../../typings/Intersector";
+import { ResponseWithTalonAction } from "../../typings/ScriptResponse";
+import { showTooltip } from "../hints/showTooltip";
 
 export function copyToClipboardResponse(text: string): ResponseWithTalonAction {
 	return {
