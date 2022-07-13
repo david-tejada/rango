@@ -1,4 +1,5 @@
 import browser from "webextension-polyfill";
+import { ResponseToTalon } from "../typing/types";
 import {
 	getRequestFromClipboard,
 	writeResponseToClipboard,
@@ -13,6 +14,7 @@ import {
 import { initStorage } from "./init-storage";
 import { toggleHints } from "./toggle-hints";
 import { toggleKeyboardClicking } from "./toggle-keyboard-clicking";
+import { isUnintendedDirectClicking } from "./isUnintendedDirectClicking";
 
 initStorage().catch((error) => {
 	console.error(error);
@@ -40,6 +42,19 @@ browser.commands.onCommand.addListener(async (internalCommand: string) => {
 			}
 
 			if (!request) {
+				return;
+			}
+
+			if (await isUnintendedDirectClicking(request.action)) {
+				const response: ResponseToTalon = {
+					type: "response",
+					action: {
+						type: "noHintFound",
+					},
+				};
+
+				const adaptedResponse = adaptResponse(response, request.version ?? 0);
+				await writeResponseToClipboard(adaptedResponse);
 				return;
 			}
 

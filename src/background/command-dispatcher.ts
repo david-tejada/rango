@@ -7,7 +7,6 @@ import {
 import { sendRequestToCurrentTab } from "./tabs-messaging";
 import { executeBackgroundCommand } from "./background-commands";
 import { noActionResponse } from "./response-utils";
-import { assertDocumentFocused } from "./assert-document-focused";
 
 const backgroundCommands = new Set([
 	"toggleHints",
@@ -44,39 +43,19 @@ export async function dispatchCommand(
 	if (backgroundCommands.has(command.type)) {
 		talonAction = await executeBackgroundCommand(command);
 	} else {
-		try {
-			if (
-				command.type === "directClickElement" &&
-				(typeof command.target === "string" || command.target.length === 1)
-			) {
-				// If there is no document focused (for example, the user is in the address
-				// bar or the devtools) this will throw an AggregateError that will be
-				// handled by the catch below
-				await assertDocumentFocused();
-			}
-
-			const response = (await sendRequestToCurrentTab(command)) as
-				| ResponseWithTalonAction
-				| undefined;
-			if (response?.talonAction) {
-				talonAction = response.talonAction;
-			}
-		} catch (error: unknown) {
-			// This handles when the user says one or two letters in a page where Rango can't run,
-			// for example, a New tab page
-			if (command.type === "directClickElement" && error instanceof Error) {
-				talonAction = {
-					type: "noHintFound",
-				};
-			}
+		const response = (await sendRequestToCurrentTab(command)) as
+			| ResponseWithTalonAction
+			| undefined;
+		if (response?.talonAction) {
+			talonAction = response.talonAction;
 		}
-	}
 
-	if (talonAction) {
-		return {
-			type: "response",
-			action: talonAction,
-		};
+		if (talonAction) {
+			return {
+				type: "response",
+				action: talonAction,
+			};
+		}
 	}
 
 	return noActionResponse;

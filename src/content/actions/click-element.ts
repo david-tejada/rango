@@ -40,7 +40,7 @@ function dispatchClick(element: Element) {
 	element.dispatchEvent(clickEvent);
 }
 
-export async function clickElements(intersectors: HintedIntersector[]) {
+export async function clickElement(intersectors: HintedIntersector[]) {
 	// If there are multiple targets and some of them are anchor elements we open
 	// those in a new background tab
 	if (intersectors.length > 1) {
@@ -69,7 +69,7 @@ export async function clickElements(intersectors: HintedIntersector[]) {
 				element.getAttribute("target") === "_blank" &&
 				linkMainDomain !== locationMainDomain
 			) {
-				void openInNewTab(intersector);
+				void openInNewTab([intersector]);
 			} else {
 				dispatchClick(element);
 			}

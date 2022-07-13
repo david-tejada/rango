@@ -77,7 +77,6 @@ browser.runtime.onMessage.addListener(
 
 				case "checkIfDocumentHasFocus":
 					if (document.hasFocus()) {
-						console.log("Document has focus");
 						return true;
 					}
 
