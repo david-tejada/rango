@@ -9,6 +9,12 @@ export function assertDefined<T>(
 	}
 }
 
+export function isPromiseFulfilledResult<T>(
+	result: PromiseSettledResult<T>
+): result is PromiseFulfilledResult<T> {
+	return result.status === "fulfilled";
+}
+
 // eslint-disable-next-line @typescript-eslint/ban-types
 export function isNotNull<T>(value: T | null): value is T {
 	return value !== null;

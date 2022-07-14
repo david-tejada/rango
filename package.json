@@ -54,7 +54,8 @@
 			],
 			"node/prefer-global/process": "off",
 			"complexity": "off",
-			"no-use-extend-native/no-use-extend-native": "off"
+			"no-use-extend-native/no-use-extend-native": "off",
+			"unicorn/no-array-callback-reference": "off"
 		}
 	},
 	"prettier": {

@@ -1,5 +1,4 @@
 import browser from "webextension-polyfill";
-import { ScriptResponse } from "../typings/ScriptResponse";
 import { ContentRequest } from "../typings/ContentRequest";
 import { cacheHintOptions } from "./options/cacheHintOptions";
 import {
@@ -36,7 +35,9 @@ cacheHintOptions()
 	});
 
 browser.runtime.onMessage.addListener(
-	async (request: ContentRequest): Promise<ScriptResponse | undefined> => {
+	async (
+		request: ContentRequest
+	): Promise<string | string[] | boolean | undefined> => {
 		if ("target" in request) {
 			return runRangoActionWithTarget(request);
 		}
@@ -45,20 +46,19 @@ browser.runtime.onMessage.addListener(
 			switch (request.type) {
 				// SCRIPT REQUESTS
 				case "getClipboardManifestV3":
-					return { text: getClipboardManifestV3() };
+					return getClipboardManifestV3();
 
 				case "copyToClipboardManifestV3": {
-					const text = request.text;
-					copyToClipboardManifestV3(text);
+					copyToClipboardManifestV3(request.text);
 					break;
 				}
 
 				case "getLocation":
-					return {
-						host: window.location.host,
-						origin: window.location.origin,
-						pathname: window.location.pathname,
-					};
+					return [
+						window.location.host,
+						window.location.origin,
+						window.location.pathname,
+					];
 
 				case "updateHintsInTab":
 					updateHintsInTab(request.hints);
@@ -94,8 +94,10 @@ browser.runtime.onMessage.addListener(
 					});
 					break;
 
-				default:
-					return await runRangoActionWithoutTarget(request);
+				default: {
+					const result = await runRangoActionWithoutTarget(request);
+					return result;
+				}
 			}
 		} catch (error: unknown) {
 			console.error(error);

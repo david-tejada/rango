@@ -1,5 +1,4 @@
 import browser from "webextension-polyfill";
-import { ClipboardResponse } from "../../typings/ScriptResponse";
 import {
 	RequestFromTalon,
 	ResponseToTalon,
@@ -78,16 +77,15 @@ async function getClipboardTabId(): Promise<number | undefined> {
 
 async function getClipboardManifestV3(): Promise<string | undefined> {
 	const tabId = await getClipboardTabId();
+
 	if (tabId) {
-		const { text } = (await browser.tabs.sendMessage(
+		return (await browser.tabs.sendMessage(
 			tabId,
 			{
 				type: "getClipboardManifestV3",
 			},
 			{ frameId: 0 }
-		)) as ClipboardResponse;
-
-		return text;
+		)) as string;
 	}
 
 	return undefined;

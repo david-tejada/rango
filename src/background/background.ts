@@ -58,9 +58,7 @@ browser.commands.onCommand.addListener(async (internalCommand: string) => {
 				return;
 			}
 
-			const requiresResponseValue = /^copy|^get|^direct/.test(
-				request.action.type
-			);
+			const requiresResponseValue = request.action.type.startsWith("copy");
 
 			if (navigator.clipboard || requiresResponseValue) {
 				let response = await dispatchCommand(request.action);

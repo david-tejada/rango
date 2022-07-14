@@ -1,19 +1,9 @@
 import { HintedIntersector } from "../../typings/Intersector";
-import { ResponseWithTalonAction } from "../../typings/ScriptResponse";
 import { showTooltip } from "../hints/showTooltip";
-
-export function copyToClipboardResponse(text: string): ResponseWithTalonAction {
-	return {
-		talonAction: {
-			type: "copyToClipboard",
-			textToCopy: text,
-		},
-	};
-}
 
 export function copyElementTextContentToClipboard(
 	intersectors: HintedIntersector[]
-) {
+): string | undefined {
 	const textContents = [];
 	for (const intersector of intersectors) {
 		const textContent = intersector.element.textContent;
@@ -22,12 +12,12 @@ export function copyElementTextContentToClipboard(
 		showTooltip(intersector, message, 1500);
 	}
 
-	return textContents.length > 1
-		? copyToClipboardResponse(textContents.join("\n"))
-		: undefined;
+	return textContents.length > 0 ? textContents.join("\n") : undefined;
 }
 
-export function copyLinkToClipboard(intersectors: HintedIntersector[]) {
+export function copyLinkToClipboard(
+	intersectors: HintedIntersector[]
+): string | undefined {
 	const hrefs = [];
 
 	for (const intersector of intersectors) {
@@ -41,12 +31,12 @@ export function copyLinkToClipboard(intersectors: HintedIntersector[]) {
 		showTooltip(intersector, message, 1500);
 	}
 
-	return hrefs.length > 0
-		? copyToClipboardResponse(hrefs.join("\n"))
-		: undefined;
+	return hrefs.length > 0 ? hrefs.join("\n") : undefined;
 }
 
-export function copyMarkdownLinkToClipboard(intersectors: HintedIntersector[]) {
+export function copyMarkdownLinkToClipboard(
+	intersectors: HintedIntersector[]
+): string | undefined {
 	const markdownLinks = [];
 
 	for (const intersector of intersectors) {
@@ -63,7 +53,5 @@ export function copyMarkdownLinkToClipboard(intersectors: HintedIntersector[]) {
 		showTooltip(intersector, message, 1500);
 	}
 
-	return markdownLinks.length > 0
-		? copyToClipboardResponse(markdownLinks.join("\n"))
-		: undefined;
+	return markdownLinks.length > 0 ? markdownLinks.join("\n") : undefined;
 }

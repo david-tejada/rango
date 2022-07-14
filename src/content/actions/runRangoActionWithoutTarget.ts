@@ -1,17 +1,12 @@
-import {
-	ScriptResponse,
-	WindowLocationKeys,
-} from "../../typings/ScriptResponse";
 import { RangoActionWithoutTarget } from "../../typings/RangoAction";
 import { triggerHintsUpdate } from "../hints/triggerHintsUpdate";
 import { setNavigationToggle } from "../hints/shouldDisplayHints";
-import { copyToClipboardResponse } from "./copy";
 import { unhoverAll } from "./hoverElement";
 import { scrollPageVertically } from "./scroll";
 
 export async function runRangoActionWithoutTarget(
 	request: RangoActionWithoutTarget
-): Promise<ScriptResponse | undefined> {
+): Promise<string | undefined> {
 	switch (request.type) {
 		case "scrollUpPage":
 			scrollPageVertically("up", request.arg);
@@ -22,9 +17,16 @@ export async function runRangoActionWithoutTarget(
 			break;
 
 		case "copyLocationProperty":
-			return copyToClipboardResponse(
-				window.location[request.arg as WindowLocationKeys]
-			);
+			return window.location[
+				request.arg as
+					| "href"
+					| "hostname"
+					| "host"
+					| "origin"
+					| "pathname"
+					| "port"
+					| "protocol"
+			];
 
 		case "unhoverAll":
 			unhoverAll();

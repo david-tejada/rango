@@ -24,7 +24,7 @@ export function getIntersectorByHint(hint: string): HintedIntersector {
 
 export function getIntersectorsByHints(hints: string[]): HintedIntersector[] {
 	return intersectors
-		.filter(isHintedIntersector) // eslint-disable-line unicorn/no-array-callback-reference
+		.filter(isHintedIntersector)
 		.filter((targetIntersector) => hints.includes(targetIntersector.hintText));
 }
 

@@ -1,4 +1,3 @@
-import { ScriptResponse } from "../../typings/ScriptResponse";
 import { RangoActionWithTarget } from "../../typings/RangoAction";
 import { assertDefined } from "../../typings/TypingUtils";
 import { getIntersectorsByHints } from "../intersectors";
@@ -20,7 +19,7 @@ import { showTitleAndHref } from "./showTitleAndHref";
 
 export async function runRangoActionWithTarget(
 	request: RangoActionWithTarget
-): Promise<ScriptResponse | undefined> {
+): Promise<string | undefined> {
 	const hints =
 		typeof request.target === "string" ? [request.target] : request.target;
 	const intersectors = getIntersectorsByHints(hints);

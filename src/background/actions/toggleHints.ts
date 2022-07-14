@@ -4,7 +4,6 @@ import {
 } from "../../common/HintsToggleFromStorable";
 import { getStored, setStored } from "../../lib/getStored";
 import { StorableHintsToggle } from "../../typings/RangoOptions";
-import { ResponseWithLocation } from "../../typings/ScriptResponse";
 import { assertDefined } from "../../typings/TypingUtils";
 import { sendRequestToAllTabs } from "../messaging/sendRequestToAllTabs";
 import { sendRequestToCurrentTab } from "../messaging/sendRequestToCurrentTab";
@@ -16,9 +15,9 @@ export async function toggleHints(level: string, enable?: boolean) {
 	)) as StorableHintsToggle;
 	const hintsToggle = hintsToggleFromStorable(storableHintsToggle);
 	const currentTabId = await getCurrentTabId();
-	const { host, origin, pathname } = (await sendRequestToCurrentTab({
+	const [host, origin, pathname] = (await sendRequestToCurrentTab({
 		type: "getLocation",
-	})) as ResponseWithLocation;
+	})) as string[];
 
 	switch (level) {
 		case "everywhere":

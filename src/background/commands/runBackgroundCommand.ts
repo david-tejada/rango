@@ -1,6 +1,5 @@
 import browser from "webextension-polyfill";
 import { HintsToggle } from "../../typings/RangoOptions";
-import { TalonAction } from "../../typings/RequestFromTalon";
 import { RangoAction } from "../../typings/RangoAction";
 import { getStored, setStored } from "../../lib/getStored";
 import { sendRequestToAllTabs } from "../messaging/sendRequestToAllTabs";
@@ -12,7 +11,7 @@ import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
 
 export async function runBackgroundCommand(
 	command: RangoAction
-): Promise<TalonAction> {
+): Promise<string | undefined> {
 	const currentTab = await getCurrentTab();
 	const currentTabId = await getCurrentTabId();
 
@@ -128,24 +127,16 @@ export async function runBackgroundCommand(
 
 		case "copyCurrentTabMarkdownUrl":
 			if (currentTab.url && currentTab.title) {
-				return {
-					type: "copyToClipboard",
-					textToCopy: `[${currentTab.title.replace(
-						` - ${currentTab.url}`,
-						""
-					)}](${currentTab.url})`,
-				};
+				return `[${currentTab.title.replace(` - ${currentTab.url}`, "")}](${
+					currentTab.url
+				})`;
 			}
 
-			return {
-				type: "noAction",
-			};
+			break;
 
 		default:
 			break;
 	}
 
-	return {
-		type: "noAction",
-	};
+	return undefined;
 }

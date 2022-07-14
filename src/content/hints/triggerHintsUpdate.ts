@@ -163,7 +163,7 @@ async function updateHints() {
 	const hintElements: NodeListOf<HTMLDivElement> =
 		hintsContainer.querySelectorAll(".rango-hint");
 	const hintTexts = intersectors
-		.filter(isHintedIntersector) // eslint-disable-line unicorn/no-array-callback-reference
+		.filter(isHintedIntersector)
 		.map((intersector) => intersector.hintText);
 	const hintsSet = new Set(hintTexts);
 	for (const hintElement of hintElements) {
@@ -179,7 +179,7 @@ async function updateHints() {
 	// with the same hint, so if that happens we just make a full hints refresh
 	const hintsInUse = [...hintsContainer.querySelectorAll(".rango-hint")]
 		.map((hintElement) => hintElement.textContent)
-		.filter(isNotNull); // eslint-disable-line unicorn/no-array-callback-reference
+		.filter(isNotNull);
 	const firstDuplicatedHint = hintsInUse.find(
 		(item, index) => hintsInUse.indexOf(item) !== index
 	);
