@@ -1,20 +1,8 @@
 import browser from "webextension-polyfill";
-import { ResponseToTalon } from "../typings/RequestFromTalon";
-import {
-	getRequestFromClipboard,
-	writeResponseToClipboard,
-	getClipboardIfChanged,
-} from "./utils/clipboard";
 import { dispatchCommand } from "./commands/dispatchCommand";
-import { adaptResponse } from "./utils/adaptResponse";
-import {
-	getCopyToClipboardResponseObject,
-	noActionResponse,
-} from "./utils/responseObjects";
 import { initStorage } from "./utils/initStorage";
 import { toggleHints } from "./actions/toggleHints";
 import { toggleKeyboardClicking } from "./actions/toggleKeyboardClicking";
-import { isUnintendedDirectClicking } from "./commands/isUnintendedDirectClicking";
 import { handleTalonRequest } from "./commands/handleTalonRequest";
 
 initStorage().catch((error) => {
