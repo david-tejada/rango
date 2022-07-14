@@ -1,14 +1,10 @@
 import { ResponseToTalon } from "../../typings/RequestFromTalon";
 import { adaptResponse } from "../utils/adaptResponse";
 import {
-	getClipboardIfChanged,
 	getRequestFromClipboard,
 	writeResponseToClipboard,
 } from "../utils/clipboard";
-import {
-	getCopyToClipboardResponseObject,
-	noActionResponse,
-} from "../utils/responseObjects";
+import { noActionResponse } from "../utils/responseObjects";
 import { dispatchCommand } from "./dispatchCommand";
 import { isUnintendedDirectClicking } from "./isUnintendedDirectClicking";
 
@@ -23,6 +19,7 @@ export async function handleTalonRequest() {
 			return;
 		}
 
+		// We check first if the user intended to type instead of direct clicking
 		if (await isUnintendedDirectClicking(request.action)) {
 			const response: ResponseToTalon = {
 				type: "response",
@@ -36,33 +33,21 @@ export async function handleTalonRequest() {
 			return;
 		}
 
-		const requiresResponseValue = request.action.type.startsWith("copy");
-
-		if (navigator.clipboard || requiresResponseValue) {
-			let response = await dispatchCommand(request.action);
-
-			if (
-				request.action.type === "clickElement" ||
-				request.action.type === "directClickElement"
-			) {
-				const changedClipboard = await getClipboardIfChanged();
-				response = changedClipboard
-					? getCopyToClipboardResponseObject(changedClipboard)
-					: response;
-			}
-
+		// If we are dealing with a copy command we first send the command and store
+		// the response to send back to talon
+		if (request.action.type.startsWith("copy")) {
+			const response = await dispatchCommand(request.action);
 			const adaptedResponse = adaptResponse(response, request.version ?? 0);
+
 			await writeResponseToClipboard(adaptedResponse);
 		} else {
+			// If talon isn't waiting for a response value we can send the responds right away
 			const adaptedResponse = adaptResponse(
 				noActionResponse,
 				request.version ?? 0
 			);
+
 			await writeResponseToClipboard(adaptedResponse);
-			// Because of the way I had to implement copying and pasting to the clipboard in Manifest v3,
-			// sending a response requires focusing the textarea element dedicated for it, which might
-			// close popup elements or have other unintended consequences, therefore I will first send
-			// the response back and then execute the command
 			await dispatchCommand(request.action);
 		}
 	} catch (error: unknown) {
