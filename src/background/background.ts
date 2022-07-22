@@ -4,10 +4,13 @@ import { initStorage } from "./utils/initStorage";
 import { toggleHints } from "./actions/toggleHints";
 import { toggleKeyboardClicking } from "./actions/toggleKeyboardClicking";
 import { handleTalonRequest } from "./commands/handleTalonRequest";
+import { handleContentRequest } from "./messaging/handleContentRequest";
 
 initStorage().catch((error) => {
 	console.error(error);
 });
+
+browser.runtime.onMessage.addListener(handleContentRequest);
 
 if (browser.action) {
 	browser.action.onClicked.addListener(async () => {

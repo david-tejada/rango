@@ -2,7 +2,7 @@ import { FocusOnClickInput } from "./FocusOnClickInput";
 import { HintedIntersector, Intersector } from "./Intersector";
 
 export function assertDefined<T>(
-	value: T | null | undefined // eslint-disable-line @typescript-eslint/ban-types
+	value: T | null | undefined
 ): asserts value is T {
 	if (value === null || value === undefined) {
 		throw new Error(`Fatal error: value must not be null/undefined.`);
@@ -15,7 +15,6 @@ export function isPromiseFulfilledResult<T>(
 	return result.status === "fulfilled";
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 export function isNotNull<T>(value: T | null): value is T {
 	return value !== null;
 }
@@ -36,6 +35,21 @@ export function isFocusOnClickInput(
 			"reset",
 			"submit",
 		].includes(element.type)
+	);
+}
+
+export function isLabelledElement(
+	element: Element
+): element is
+	| HTMLInputElement
+	| HTMLTextAreaElement
+	| HTMLButtonElement
+	| HTMLSelectElement {
+	return (
+		element instanceof HTMLInputElement ||
+		element instanceof HTMLTextAreaElement ||
+		element instanceof HTMLButtonElement ||
+		element instanceof HTMLSelectElement
 	);
 }
 

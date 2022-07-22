@@ -1,6 +1,7 @@
 import { RangoActionWithTarget } from "../../typings/RangoAction";
 import { assertDefined } from "../../typings/TypingUtils";
-import { getIntersectorsByHints } from "../intersectors";
+import { hintables } from "../hints/hintables";
+// import { getHintablesByHint } from "../intersectors";
 import { clickElement } from "./clickElement";
 import {
 	copyElementTextContentToClipboard,
@@ -22,7 +23,7 @@ export async function runRangoActionWithTarget(
 ): Promise<string | undefined> {
 	const hints =
 		typeof request.target === "string" ? [request.target] : request.target;
-	const intersectors = getIntersectorsByHints(hints);
+	const intersectors = hintables.getByHint(hints);
 
 	// Element for scroll, if there's more than one target we take the first and ignore the rest
 	const element = intersectors[0]?.element;

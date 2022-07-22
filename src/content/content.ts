@@ -5,7 +5,7 @@ import {
 	getClipboardManifestV3,
 	copyToClipboardManifestV3,
 } from "./utils/clipboardManifestV3";
-import { triggerHintsUpdate } from "./hints/triggerHintsUpdate";
+// import { triggerHintsUpdate } from "./hints/triggerHintsUpdate";
 import observe from "./observers";
 import { addUrlToTitle } from "./utils/addUrlToTitle";
 import {
@@ -20,8 +20,10 @@ import { runRangoActionWithoutTarget } from "./actions/runRangoActionWithoutTarg
 
 cacheHintOptions()
 	.then(addUrlToTitle)
-	.then(observe)
-	.then(listenToScrollAndResizeEvents)
+	.then(() => {
+		observe();
+	})
+	// .then(listenToScrollAndResizeEvents)
 	.then(async () => {
 		const { keyboardClicking } = await browser.storage.local.get(
 			"keyboardClicking"
@@ -38,6 +40,7 @@ browser.runtime.onMessage.addListener(
 	async (
 		request: ContentRequest
 	): Promise<string | string[] | boolean | undefined> => {
+		console.debug("Incoming content request:", request);
 		if ("target" in request) {
 			return runRangoActionWithTarget(request);
 		}

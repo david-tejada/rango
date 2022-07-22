@@ -12,7 +12,7 @@ function isDisabled(element: Element) {
 }
 
 // We could just return a boolean but I want to have the clickable type for debugging purposes
-export function getClickableType(element: Element): string | undefined {
+export function isClickable(element: Element): boolean {
 	// Ignoring some items that even though they have onclick event they don't do anything
 	// or are redundant
 	if (
@@ -30,12 +30,12 @@ export function getClickableType(element: Element): string | undefined {
 		element.className === "style-scope ytd-guide-entry-renderer" ||
 		element.className === "yt-simple-endpoint style-scope ytd-button-renderer" // Duplicate
 	) {
-		return undefined;
+		return false;
 	}
 
 	// Don't show hints if the element is disabled
 	if (isDisabled(element)) {
-		return "disabled";
+		return false;
 	}
 
 	if (
@@ -43,18 +43,18 @@ export function getClickableType(element: Element): string | undefined {
 		element.control &&
 		isDisabled(element.control)
 	) {
-		return "disabled";
+		return false;
 	}
 
 	const clickableTags = new Set([
-		"BUTTON",
-		"A",
-		"INPUT",
-		"SUMMARY",
-		"TEXTAREA",
-		"SELECT",
-		"OPTION",
-		"LABEL",
+		"button",
+		"a",
+		"input",
+		"summary",
+		"textarea",
+		"select",
+		"option",
+		"label",
 	]);
 	const clickableRoles = new Set([
 		"button",
@@ -70,11 +70,11 @@ export function getClickableType(element: Element): string | undefined {
 	const elementTag = element.tagName;
 	const elementRole = element.getAttribute("role");
 
-	if (clickableTags.has(elementTag)) {
-		return elementTag.toLowerCase();
+	if (clickableTags.has(elementTag.toLowerCase())) {
+		return true;
 	}
 
-	if (elementRole && clickableRoles.has(elementRole)) {
+	if (elementRole && clickableRoles.has(elementRole.toLowerCase())) {
 		let isRedundant = false;
 		for (const child of element.children) {
 			if (clickableTags.has(child.tagName)) {
@@ -83,19 +83,19 @@ export function getClickableType(element: Element): string | undefined {
 		}
 
 		if (!isRedundant) {
-			return elementRole;
+			return true;
 		}
 	}
 
 	if (element.getAttribute("contenteditable") === "true") {
-		return "contenteditable";
+		return true;
 	}
 
 	if ((element as HTMLElement).onclick !== null) {
-		return "onclick";
+		return true;
 	}
 
-	return undefined;
+	return false;
 }
 
 export function focusesOnclick(element: Element): boolean {

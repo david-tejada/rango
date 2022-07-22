@@ -1,9 +1,10 @@
-import { focusesOnclick } from "../utils/getClickableType";
+import { focusesOnclick } from "../utils/isClickable";
 import { flashHint } from "../hints/applyInitialStyles";
 import { triggerHintsUpdate } from "../hints/triggerHintsUpdate";
 import { getMainDomain } from "../utils/getMainDomain";
 import { HintedIntersector } from "../../typings/Intersector";
 import { openInBackgroundTab, openInNewTab } from "./openInNewTab";
+import { Hintable } from "../Hintable";
 
 function dispatchClick(element: Element) {
 	const mousedownEvent = new MouseEvent("mousedown", {
@@ -26,7 +27,7 @@ function dispatchClick(element: Element) {
 	element.dispatchEvent(clickEvent);
 }
 
-export async function clickElement(intersectors: HintedIntersector[]) {
+export async function clickElement(intersectors: Hintable[]) {
 	// If there are multiple targets and some of them are anchor elements we open
 	// those in a new background tab
 	if (intersectors.length > 1) {

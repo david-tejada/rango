@@ -3,7 +3,7 @@ import browser from "webextension-polyfill";
 import { assertDefined, isFocusOnClickInput } from "../../typings/TypingUtils";
 import { getHintsInTab } from "../utils/getHintsInTab";
 import { applyInitialStyles } from "../hints/applyInitialStyles";
-import { getIntersectorByHint } from "../intersectors";
+import { getHintableByHint } from "../intersectors";
 
 let keysPressedBuffer = "";
 let timeoutId: ReturnType<typeof setTimeout>;
@@ -16,7 +16,7 @@ export function markHintsAsKeyboardReachable(letter: string) {
 	);
 	for (const hintElement of hintsToHighlight) {
 		assertDefined(hintElement.textContent);
-		const intersector = getIntersectorByHint(hintElement.textContent);
+		const intersector = getHintableByHint(hintElement.textContent);
 		if (hintElement instanceof HTMLDivElement) {
 			intersector.freezeHintStyle = true;
 			hintElement.style.fontWeight = "bold";
@@ -35,13 +35,12 @@ export function restoreKeyboardReachableHints() {
 
 	for (const hintElement of hintElements) {
 		assertDefined(hintElement.textContent);
-		const intersector = getIntersectorByHint(hintElement.textContent);
+		const intersector = getHintableByHint(hintElement.textContent);
 		intersector.freezeHintStyle = false;
 		applyInitialStyles(intersector);
 	}
 }
 
-// eslint-disable-next-line @typescript-eslint/ban-types
 function isTextField(element: EventTarget | null): boolean {
 	if (element && element instanceof HTMLElement) {
 		return (

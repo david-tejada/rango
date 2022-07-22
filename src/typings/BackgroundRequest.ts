@@ -13,6 +13,10 @@ interface ClaimHints {
 	type: "claimHints";
 	amount: number;
 }
+interface RequestHintsProvision {
+	type: "requestHintsProvision";
+}
+
 interface ReleaseHints {
 	type: "releaseHints";
 	hints: string[];
@@ -42,6 +46,7 @@ export type BackgroundRequest =
 	| OpenInNewTab
 	| InitStack
 	| ClaimHints
+	| RequestHintsProvision
 	| ReleaseHints
 	| ReleaseOrphanHints
 	| OpenInBackgroundTab

@@ -6,7 +6,7 @@ import {
 } from "../../typings/TypingUtils";
 import { elementIsVisible } from "../utils/elementIsVisible";
 import { cacheHintOptions } from "../options/cacheHintOptions";
-import { intersectors, removedIntersectorsHints } from "../intersectors";
+import { hintables, removedIntersectorsHints } from "../intersectors";
 import { getHintsInTab } from "../utils/getHintsInTab";
 import { positionHint } from "./positionHint";
 import { applyInitialStyles } from "./applyInitialStyles";
@@ -83,7 +83,7 @@ async function updateHints() {
 	const toAddHint: Intersector[] = [];
 	const toRefresh: HintedIntersector[] = [];
 
-	for (const intersector of intersectors) {
+	for (const intersector of hintables) {
 		if (
 			hiddenClickableNeedsRemoved(intersector) ||
 			disabledClickableNeedsRemoved(intersector)
@@ -115,7 +115,7 @@ async function updateHints() {
 	// Extra check to make sure all hints in intersectors are already claimed so
 	// that no duplicate hints are assigned
 	const hintsInTab = new Set(getHintsInTab());
-	const intersectorsWithUnclaimedHints = intersectors.filter(
+	const intersectorsWithUnclaimedHints = hintables.filter(
 		(intersector) =>
 			intersector.hintText && !hintsInTab.has(intersector.hintText)
 	);
@@ -162,7 +162,7 @@ async function updateHints() {
 	// Hints cleanup
 	const hintElements: NodeListOf<HTMLDivElement> =
 		hintsContainer.querySelectorAll(".rango-hint");
-	const hintTexts = intersectors
+	const hintTexts = hintables
 		.filter(isHintedIntersector)
 		.map((intersector) => intersector.hintText);
 	const hintsSet = new Set(hintTexts);
@@ -189,7 +189,7 @@ async function updateHints() {
 	}
 
 	if (process.env["NODE_ENV"] !== "production") {
-		const hintedIntersectors = intersectors
+		const hintedIntersectors = hintables
 			.filter((intersector) => intersector.hintText)
 			.sort(
 				(a, b) =>
@@ -200,8 +200,8 @@ async function updateHints() {
 				hint: intersector.hintText,
 				element: intersector.element,
 			}));
-		console.log("intersectors:", intersectors);
-		console.log("hinted intersectors:", hintedIntersectors);
+		console.debug("intersectors:", hintables);
+		console.debug("hinted intersectors:", hintedIntersectors);
 	}
 
 	hintsAreUpdating = false;
@@ -213,7 +213,7 @@ export async function triggerHintsUpdate(fullRefresh = false) {
 		await cacheHintOptions();
 		document.querySelector("#rango-hints-container")?.remove();
 		await initStack();
-		for (const intersector of intersectors) {
+		for (const intersector of hintables) {
 			intersector.hintElement?.remove();
 			intersector.hintElement = undefined;
 			intersector.hintText = undefined;

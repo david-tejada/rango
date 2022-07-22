@@ -6,5 +6,9 @@ export async function getStored(name: string): Promise<unknown> {
 }
 
 export async function setStored(object: Record<string, any>) {
-	await browser.storage.local.set(object);
+	try {
+		await browser.storage.local.set(object);
+	} catch (error: unknown) {
+		console.error(error);
+	}
 }

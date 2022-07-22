@@ -1,49 +1,62 @@
+import { hintables } from "../hints/hintables";
 import { triggerHintsUpdate } from "../hints/triggerHintsUpdate";
-import { intersectors } from "../intersectors";
 import { scrollContainers } from "./containerIsScrolling";
 
-const msToWaitAfterScroll = 750;
+const msToWaitAfterScroll = 150;
 const msToWaitAfterWindowResize = 300;
+let timeout: ReturnType<typeof setTimeout>;
 
 export async function listenToScrollAndResizeEvents() {
 	let hintsUpdateTimeout: ReturnType<typeof setTimeout>;
 
-	window.addEventListener(
-		"scroll",
-		(event) => {
-			if (event.target && !scrollContainers.has(event.target)) {
-				scrollContainers.set(event.target, false);
-				let scrollTimeout: ReturnType<typeof setTimeout>;
+	window.addEventListener("scroll", () => {
+		clearTimeout(timeout);
+		setTimeout(async () => {
+			const running = hintables
+				.getAll({
+					clickable: true,
+				})
+				.map(async (hintable) => hintable.update());
+			await Promise.allSettled(running);
+		}, msToWaitAfterScroll);
+	});
 
-				event.target?.addEventListener("scroll", (event) => {
-					clearTimeout(scrollTimeout);
+	// window.addEventListener(
+	// 	"scroll",
+	// 	(event) => {
+	// 		if (event.target && !scrollContainers.has(event.target)) {
+	// 			scrollContainers.set(event.target, false);
+	// 			let scrollTimeout: ReturnType<typeof setTimeout>;
 
-					if (event.target) {
-						scrollContainers.set(event.target, true);
-					}
+	// 			event.target?.addEventListener("scroll", (event) => {
+	// 				clearTimeout(scrollTimeout);
 
-					// We hide the hints immediately in case the scrolling container is not the whole page
-					for (const intersector of intersectors) {
-						if (
-							intersector.hintElement &&
-							// This next line is always false when scrolling the whole page
-							intersector?.scrollContainer === event.target
-						) {
-							intersector.hintElement.style.display = "none";
-						}
-					}
+	// 				if (event.target) {
+	// 					scrollContainers.set(event.target, true);
+	// 				}
 
-					scrollTimeout = setTimeout(async () => {
-						if (event.target) {
-							scrollContainers.set(event.target, false);
-							await triggerHintsUpdate();
-						}
-					}, msToWaitAfterScroll);
-				});
-			}
-		},
-		true
-	);
+	// 				// We hide the hints immediately in case the scrolling container is not the whole page
+	// 				for (const intersector of hintables) {
+	// 					if (
+	// 						intersector.hintElement &&
+	// 						// This next line is always false when scrolling the whole page
+	// 						intersector?.scrollContainer === event.target
+	// 					) {
+	// 						intersector.hintElement.style.display = "none";
+	// 					}
+	// 				}
+
+	// 				scrollTimeout = setTimeout(async () => {
+	// 					if (event.target) {
+	// 						scrollContainers.set(event.target, false);
+	// 						await triggerHintsUpdate();
+	// 					}
+	// 				}, msToWaitAfterScroll);
+	// 			});
+	// 		}
+	// 	},
+	// 	true
+	// );
 
 	window.addEventListener("resize", async () => {
 		clearTimeout(hintsUpdateTimeout);
