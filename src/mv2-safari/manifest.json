@@ -1,0 +1,80 @@
+{
+	"name": "Rango",
+	"version": "0.2.1",
+	"description": "Extension that allows you to interact with webpages using your voice and talon",
+	"homepage_url": "https://github.com/david-tejada/rango",
+	"manifest_version": 2,
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "rango@david-tejada",
+			"strict_min_version": "80.0"
+		}
+	},
+	"icons": {
+		"48": "../assets/icon48.png",
+		"128": "../assets/icon128.png"
+	},
+	"permissions": [
+		"storage",
+		"activeTab",
+		"clipboardRead",
+		"clipboardWrite",
+		"notifications",
+		"nativeMessaging",
+		"webNavigation"
+	],
+	"content_scripts": [
+		{
+			"matches": ["<all_urls>"],
+			"js": ["../content/content.ts"],
+			"css": ["../styles/hints.css", "../styles/tippy.css"],
+			"all_frames": true,
+			"run_at": "document_idle"
+		}
+	],
+	"background": {
+		"persistent": false,
+		"scripts": ["../background/background.ts"]
+	},
+	"commands": {
+		"get-talon-request": {
+			"suggested_key": {
+				"default": "Ctrl+Shift+3",
+				"mac": "MacCtrl+Shift+3"
+			},
+			"description": "Get the talon request"
+		},
+		"get-talon-request-legacy": {
+			"suggested_key": {
+				"default": "Ctrl+Shift+Insert",
+				"mac": "MacCtrl+Shift+1"
+			},
+			"description": "Get the talon request (legacy)"
+		},
+		"toggle-hints": {
+			"suggested_key": {
+				"default": "Ctrl+Shift+Space",
+				"mac": "MacCtrl+Shift+Space"
+			},
+			"description": "Toggle hints"
+		},
+		"disable-hints": {
+			"suggested_key": {
+				"default": "Ctrl+Shift+4",
+				"mac": "MacCtrl+Shift+4"
+			},
+			"description": "Disable hints"
+		},
+		"toggle-keyboard-clicking": {
+			"suggested_key": {
+				"default": "Ctrl+Shift+5",
+				"mac": "MacCtrl+Shift+5"
+			},
+			"description": "Toggle keyboard clicking"
+		}
+	},
+	"browser_action": {
+		"default_icon": "../assets/icon48.png",
+		"default_title": "Rango"
+	}
+}
