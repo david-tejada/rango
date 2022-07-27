@@ -40,7 +40,6 @@ browser.runtime.onMessage.addListener(
 	async (
 		request: ContentRequest
 	): Promise<string | string[] | boolean | undefined> => {
-		console.debug("Incoming content request:", request);
 		if ("target" in request) {
 			return runRangoActionWithTarget(request);
 		}

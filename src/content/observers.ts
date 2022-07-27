@@ -3,6 +3,9 @@ import { onIntersection, onAttributeMutation } from "./intersectors";
 import { hintables } from "./hints/hintables";
 import { Hintable } from "./Hintable";
 import { cacheHints } from "./hints/hintsCache";
+import { createsStackingContext } from "./utils/createsStackingContext";
+import { getStackContainer } from "./utils/getScrollContainer";
+import { Hint } from "./hints/Hint";
 
 // *** INTERSECTION OBSERVER ***
 
@@ -71,7 +74,24 @@ const mutationCallback: MutationCallback = (mutationList) => {
 			!mutationRecord.target.classList.contains("rango-hints-container") &&
 			!mutationRecord.target.classList.contains("rango-hint")
 		) {
-			onAttributeMutation(mutationRecord.target);
+			if (createsStackingContext(mutationRecord.target)) {
+				console.log(
+					"Stacking context created on mutation",
+					mutationRecord.target
+				);
+				const elements = mutationRecord.target.querySelectorAll("*");
+				for (const element of elements) {
+					const hintable = hintables.get(element);
+					if (hintable) {
+						hintable.scrollContainer = getStackContainer(hintable.element);
+						hintable.hint?.remove();
+						hintable.hint = undefined;
+						hintable.hint = new Hint(element, hintable.scrollContainer);
+					}
+				}
+			} else {
+				onAttributeMutation(mutationRecord.target);
+			}
 		}
 	}
 };
