@@ -6,46 +6,40 @@ import { getInheritedBackgroundColor } from "../utils/getInheritedBackgroundColo
 import { getFirstTextNodeDescendant } from "../utils/nodeUtils";
 import { popHint, pushHint } from "./hintsCache";
 import { setStyleProperties } from "./setStyleProperties";
-import { getElementRelativePosition } from "./getElementRelativePosition";
-import { getZIndex } from "./getZIndex";
 
 export class Hint {
 	hintedElement: Element;
 	element: HTMLDivElement;
 	id: number;
-	stackContainer: Element | null;
+	stackContainer: Element;
 
-	constructor(
-		hintedElement: Element,
-		stackContainer: Element | null,
-		id: number
-	) {
+	constructor(hintedElement: Element, stackContainer: Element, id: number) {
 		this.hintedElement = hintedElement;
 		this.id = id;
 		this.stackContainer = stackContainer;
 
-		const hintsContainerParent =
-			stackContainer && stackContainer !== document.documentElement
-				? stackContainer
-				: document.body;
-
-		let container: HTMLDivElement | null = hintsContainerParent.querySelector(
+		let container: HTMLDivElement | null = stackContainer.querySelector(
 			":scope > .rango-hints-container"
 		);
 
 		if (!container) {
 			container = document.createElement("div");
 			container.className = "rango-hints-container";
+			const position =
+				this.stackContainer &&
+				window.getComputedStyle(this.stackContainer).display === "grid"
+					? "absolute"
+					: "relative";
 
 			setStyleProperties(container, {
-				all: "unset",
-				position: "relative",
+				all: "initial",
+				position,
 				display: "block",
 				width: "0",
 				height: "0",
 			});
 
-			hintsContainerParent.prepend(container);
+			stackContainer.prepend(container);
 		}
 
 		// We create the element for the hint. We create elements for all the hints
@@ -57,7 +51,7 @@ export class Hint {
 
 		// We hide the hint element and only show it when it receives a hint with claim()
 		setStyleProperties(this.element, {
-			all: "unset",
+			all: "initial",
 			display: "none",
 		});
 
@@ -191,10 +185,6 @@ export class Hint {
 		const y =
 			this.hintedElement.getBoundingClientRect().y -
 			hintsContainer.getBoundingClientRect().y;
-		// const [x, y] = getElementRelativePosition(
-		// 	this.hintedElement as HTMLElement,
-		// 	parentContainer
-		// );
 
 		setStyleProperties(this.element, {
 			left: `${x}px`,
