@@ -1,93 +1,51 @@
-interface ScrollContainerDimensions {
-	clientHeight: number;
-	scrollHeight: number;
-	clientWidth: number;
-	scrollWidth: number;
-}
+import { createsStackingContext } from "./createsStackingContext";
 
-function scrollContainerMutated(
-	element: Element,
-	lastKnownDimensions: ScrollContainerDimensions
-): boolean {
-	for (const [key, value] of Object.entries(lastKnownDimensions)) {
-		const previousValue = element[key as keyof ScrollContainerDimensions];
-		if (previousValue !== value) {
-			return true;
-		}
-	}
+const stackContainers: Set<Element> = new Set();
 
-	return false;
-}
-
-const scrollContainers: Map<Element, ScrollContainerDimensions> = new Map();
-
-function addScrollContainer(element: Element) {
-	if (!scrollContainers.has(element)) {
-		scrollContainers.set(element, {
-			clientHeight: element.clientHeight,
-			scrollHeight: element.scrollHeight,
-			clientWidth: element.clientWidth,
-			scrollWidth: element.scrollWidth,
-		});
-	}
-
-	// We sort the containers from bottom to top
-	// const sorted = Array.from(this.items).sort((a, b) => {
-	// 	const comparison = a.compareDocumentPosition(b);
-	// 	if (comparison === 4 || comparison === 20) {
-	// 		return +1;
-	// 	}
-
-	// 	return -1;
-	// });
-
-	// this.items = new Set(sorted);
-}
-
-export function maybeAddScrollContainer(element: Element) {
-	if (scrollContainers.has(element)) {
-		return;
-	}
-
+export function isScrollContainer(element: Element): boolean {
+	// SCROLL CONTAINER
 	if (
 		element === document.body &&
 		document.documentElement.clientHeight !==
 			document.documentElement.scrollHeight
 	) {
 		// https://makandracards.com/makandra/55801-does-html-or-body-scroll-the-page
-		addScrollContainer(document.scrollingElement ?? document.documentElement);
-		return;
+		// addStackContainer(document.scrollingElement ?? document.documentElement);
+		return false;
+	}
+
+	const style = window.getComputedStyle(element);
+
+	if (style.position === "sticky" || style.position === "fixed") {
+		return true;
 	}
 
 	if (
 		(element.scrollHeight > element.clientHeight ||
 			element.scrollWidth > element.clientWidth) &&
-		/scroll|auto/.test(window.getComputedStyle(element).overflow)
+		/scroll|auto/.test(style.overflow)
 	) {
-		addScrollContainer(element);
-		return;
+		return true;
 	}
 
-	if (
-		window.getComputedStyle(element).position === "sticky" ||
-		window.getComputedStyle(element).position === "fixed"
-	) {
-		addScrollContainer(element);
-	}
+	return false;
 }
 
-export function getScrollContainer(element: Element): Element {
-	const reversedScrollContainers = Array.from(scrollContainers)
-		.map((record) => record[0])
-		.reverse();
+export function getStackContainer(element: Element): Element {
+	let node: Element | null = element.parentElement;
 
-	for (const scrollContainer of reversedScrollContainers) {
-		if (scrollContainer.contains(element)) {
-			return scrollContainer;
+	while (node) {
+		if (stackContainers.has(node)) return node;
+
+		if (node === document.documentElement) return document.body;
+
+		if (createsStackingContext(node) || isScrollContainer(node)) {
+			stackContainers.add(node);
+			return node;
 		}
+
+		node = node.parentElement;
 	}
 
-	return document.documentElement;
+	return document.body;
 }
-
-maybeAddScrollContainer(document.body);

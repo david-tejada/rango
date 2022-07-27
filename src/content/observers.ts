@@ -3,7 +3,6 @@ import { onIntersection, onAttributeMutation } from "./intersectors";
 import { hintables } from "./hints/hintables";
 import { Hintable } from "./Hintable";
 import { cacheHints } from "./hints/hintsCache";
-import { maybeAddScrollContainer } from "./utils/getScrollContainer";
 
 // *** INTERSECTION OBSERVER ***
 
@@ -32,6 +31,17 @@ const rootIntersectionObserver = new IntersectionObserver(
 	intersectionCallback,
 	options
 );
+
+// *** RESIZE OBSERVER ***
+const resizeObserver = new ResizeObserver((entries) => {
+	setTimeout(() => {
+		for (const hintable of hintables.getAll({
+			clickable: true,
+		})) {
+			hintable.update();
+		}
+	}, 300);
+});
 
 // *** MUTATION OBSERVER ***
 
@@ -89,16 +99,14 @@ function maybeObserveIntersection(element: Element) {
 	}
 
 	for (const element of elements) {
-		// Since every element is gonna be examined here at least once this is a good
-		// place to check if the element is a scroll container
-		maybeAddScrollContainer(element);
+		// We need to reposition hints when elements change size
+		resizeObserver.observe(element);
 
-		// For the moment with just add clickable elements. When I implement cursorless
+		// For the moment we just add clickable elements. When I implement cursorless
 		// hats I might need to also add element with hasTextNodesChildren(element)
 		if (isClickable(element)) {
 			const hintable = new Hintable(element);
 			const scrollContainer = hintable.scrollContainer;
-			// console.debug(scrollContainer, hintable);
 
 			if (scrollContainer) {
 				const intersectionObserver = intersectionObservers.has(scrollContainer)

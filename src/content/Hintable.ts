@@ -1,15 +1,18 @@
 import { Hint } from "./hints/Hint";
-import { getScrollContainer } from "./utils/getScrollContainer";
+import { getStackContainer } from "./utils/getScrollContainer";
 import { isClickable } from "./utils/isClickable";
 import { getFirstTextNodeDescendant } from "./utils/nodeUtils";
 
+let idCounter = 0;
+
 function isVisible(element: Element): boolean {
+	const style = window.getComputedStyle(element);
 	if (
-		window.getComputedStyle(element).visibility === "hidden" ||
-		window.getComputedStyle(element).display === "none" ||
-		Number.parseFloat(window.getComputedStyle(element).opacity) < 0.1 ||
-		Number.parseFloat(window.getComputedStyle(element).width) < 5 ||
-		Number.parseFloat(window.getComputedStyle(element).height) < 5
+		style.visibility === "hidden" ||
+		style.display === "none" ||
+		Number.parseFloat(style.opacity) < 0.1 ||
+		Number.parseFloat(style.width) < 5 ||
+		Number.parseFloat(style.height) < 5
 	) {
 		return false;
 	}
@@ -19,6 +22,7 @@ function isVisible(element: Element): boolean {
 
 export class Hintable {
 	element: Element;
+	id: number;
 	isClickable: boolean;
 	scrollContainer: Element | null;
 	isIntersecting?: boolean;
@@ -30,21 +34,22 @@ export class Hintable {
 		this.element = element;
 		this.isClickable = isClickable(element);
 		this.firstTextNodeDescendant = getFirstTextNodeDescendant(element);
-		this.scrollContainer = getScrollContainer(element);
+		this.scrollContainer = getStackContainer(element);
+		this.id = idCounter++;
 	}
 
 	intersect(isIntersecting: boolean) {
 		this.isIntersecting = isIntersecting;
 
-		if (!this.hint) {
+		if (!this.hint && !this.willHaveHint) {
 			if (isIntersecting) {
-				this.hint = new Hint(this.element, this.scrollContainer);
-			} else if (!this.willHaveHint) {
-				// this.willHaveHint = true;
-				// window.requestIdleCallback(() => {
-				// 	this.willHaveHint = undefined;
-				// 	this.hint = new Hint(this.element, this.scrollContainer);
-				// });
+				this.hint = new Hint(this.element, this.scrollContainer, this.id);
+			} else {
+				this.willHaveHint = true;
+				window.requestIdleCallback(() => {
+					this.willHaveHint = undefined;
+					this.hint = new Hint(this.element, this.scrollContainer, this.id);
+				});
 			}
 		}
 

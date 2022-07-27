@@ -12,13 +12,21 @@ import { getZIndex } from "./getZIndex";
 export class Hint {
 	hintedElement: Element;
 	element: HTMLDivElement;
+	id: number;
+	stackContainer: Element | null;
 
-	constructor(hintedElement: Element, scrollContainer: Element | null) {
+	constructor(
+		hintedElement: Element,
+		stackContainer: Element | null,
+		id: number
+	) {
 		this.hintedElement = hintedElement;
+		this.id = id;
+		this.stackContainer = stackContainer;
 
 		const hintsContainerParent =
-			scrollContainer && scrollContainer !== document.documentElement
-				? scrollContainer
+			stackContainer && stackContainer !== document.documentElement
+				? stackContainer
 				: document.body;
 
 		let container: HTMLDivElement | null = hintsContainerParent.querySelector(
@@ -45,6 +53,7 @@ export class Hint {
 		// more responsive when the hint needs to be shown.
 		this.element = document.createElement("div");
 		this.element.className = "rango-hint";
+		this.element.dataset["id"] = String(this.id);
 
 		// We hide the hint element and only show it when it receives a hint with claim()
 		setStyleProperties(this.element, {
@@ -154,10 +163,10 @@ export class Hint {
 			fontWeight = `${fontWeightOption}`;
 		}
 
-		const zIndex = getZIndex(this.hintedElement as HTMLElement) + 1;
+		const zIndex = this.stackContainer === document.body ? "1" : "2147483647";
 
 		setStyleProperties(this.element, {
-			"z-index": `${zIndex}`,
+			"z-index": zIndex,
 			position: "absolute",
 			"border-radius": "20%",
 			"line-height": "1.25",
@@ -174,14 +183,14 @@ export class Hint {
 	}
 
 	position() {
-		const parentContainer = this.element.parentElement?.parentElement;
-		assertDefined(parentContainer);
+		const hintsContainer = this.element.parentElement;
+		assertDefined(hintsContainer);
 		const x =
 			this.hintedElement.getBoundingClientRect().x -
-			parentContainer.getBoundingClientRect().x;
+			hintsContainer.getBoundingClientRect().x;
 		const y =
 			this.hintedElement.getBoundingClientRect().y -
-			parentContainer.getBoundingClientRect().y;
+			hintsContainer.getBoundingClientRect().y;
 		// const [x, y] = getElementRelativePosition(
 		// 	this.hintedElement as HTMLElement,
 		// 	parentContainer

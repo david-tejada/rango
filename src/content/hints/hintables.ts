@@ -41,13 +41,13 @@ export const hintables: Hintables = {
 		return allHintables
 			.filter(
 				(hintable) =>
-					Boolean(filters) ||
+					!filters ||
 					filters?.intersecting === undefined ||
 					hintable.isIntersecting === filters.intersecting
 			)
 			.filter(
 				(hintable) =>
-					Boolean(filters) ||
+					!filters ||
 					filters?.clickable === undefined ||
 					hintable.isClickable === filters.clickable
 			);
@@ -73,6 +73,7 @@ setInterval(() => {
 	const all = hintables.getAll();
 	const sorted = all
 		.map((hintable) => ({
+			id: hintable.id,
 			hint: hintable.hint?.element.textContent,
 			element: hintable.element,
 			hintElement: hintable.hint?.element,
@@ -89,4 +90,14 @@ setInterval(() => {
 			return a.hint.length - b.hint.length || a.hint.localeCompare(b.hint);
 		});
 	console.debug(sorted);
+
+	const sortedById = all
+		.map((hintable) => ({
+			id: hintable.id,
+			hint: hintable.hint?.element.textContent,
+			element: hintable.element,
+			hintElement: hintable.hint?.element,
+		}))
+		.sort((a, b) => a.id - b.id);
+	console.debug(sortedById);
 }, 10000);

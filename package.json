@@ -56,10 +56,7 @@
 			"complexity": "off",
 			"no-use-extend-native/no-use-extend-native": "off",
 			"unicorn/no-array-callback-reference": "off",
-			"@typescript-eslint/ban-types": "off",
-			"@typescript-eslint/naming-convention": {
-				"format": "camelCase"
-			}
+			"@typescript-eslint/ban-types": "off"
 		}
 	},
 	"prettier": {

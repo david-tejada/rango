@@ -1,4 +1,4 @@
-import { getScrollContainer } from "../utils/getScrollContainer";
+import { getStackContainer } from "../utils/getScrollContainer";
 
 let scrollContainer: HTMLElement | undefined;
 let lastScrollFactor: number;
@@ -43,7 +43,7 @@ export function scrollVerticallyAtElement(
 	scrollFactor?: number
 ) {
 	scrollFactor = scrollFactor ?? lastScrollFactor ?? 0.66;
-	scrollContainer = getScrollContainer(element);
+	scrollContainer = getStackContainer(element);
 
 	if (scrollContainer) {
 		scrollVertically(scrollContainer, direction, scrollFactor);
@@ -67,7 +67,7 @@ function getElementVisibleRect(element: Element): DOMRect {
 }
 
 export function scrollElementToTop(element: Element) {
-	scrollContainer = getScrollContainer(element);
+	scrollContainer = getStackContainer(element);
 
 	if (scrollContainer) {
 		const containerRect = getElementVisibleRect(scrollContainer);
@@ -111,7 +111,7 @@ export function scrollElementToTop(element: Element) {
 }
 
 export function scrollElementToBottom(element: Element) {
-	scrollContainer = getScrollContainer(element);
+	scrollContainer = getStackContainer(element);
 
 	if (scrollContainer) {
 		const containerRect = getElementVisibleRect(scrollContainer);
@@ -125,7 +125,7 @@ export function scrollElementToBottom(element: Element) {
 }
 
 export function scrollElementToCenter(element: Element) {
-	scrollContainer = getScrollContainer(element);
+	scrollContainer = getStackContainer(element);
 
 	if (scrollContainer) {
 		const containerRect = getElementVisibleRect(scrollContainer);
