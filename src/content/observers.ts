@@ -4,7 +4,7 @@ import { hintables } from "./hints/hintables";
 import { Hintable } from "./Hintable";
 import { cacheHints } from "./hints/hintsCache";
 import { createsStackingContext } from "./utils/createsStackingContext";
-import { getStackContainer } from "./utils/getScrollContainer";
+import { getStackContainer, stackContainers } from "./utils/getStackContainer";
 import { Hint } from "./hints/Hint";
 
 // *** INTERSECTION OBSERVER ***
@@ -74,7 +74,10 @@ const mutationCallback: MutationCallback = (mutationList) => {
 			!mutationRecord.target.classList.contains("rango-hints-container") &&
 			!mutationRecord.target.classList.contains("rango-hint")
 		) {
-			if (createsStackingContext(mutationRecord.target)) {
+			if (
+				!stackContainers.has(mutationRecord.target) &&
+				createsStackingContext(mutationRecord.target)
+			) {
 				console.log(
 					"Stacking context created on mutation",
 					mutationRecord.target

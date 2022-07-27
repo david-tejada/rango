@@ -1,5 +1,5 @@
 import { Hint } from "./hints/Hint";
-import { getStackContainer } from "./utils/getScrollContainer";
+import { getStackContainer } from "./utils/getStackContainer";
 import { isClickable } from "./utils/isClickable";
 import { getFirstTextNodeDescendant } from "./utils/nodeUtils";
 

@@ -1,4 +1,4 @@
-import { getStackContainer } from "../utils/getScrollContainer";
+import { getStackContainer } from "../utils/getStackContainer";
 
 let scrollContainer: HTMLElement | undefined;
 let lastScrollFactor: number;

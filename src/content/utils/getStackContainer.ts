@@ -1,6 +1,6 @@
 import { createsStackingContext } from "./createsStackingContext";
 
-const stackContainers: Set<Element> = new Set();
+export const stackContainers: Set<Element> = new Set();
 
 export function isScrollContainer(element: Element): boolean {
 	// SCROLL CONTAINER
