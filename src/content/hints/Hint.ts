@@ -25,8 +25,10 @@ export class Hint {
 		if (!container) {
 			container = document.createElement("div");
 			container.className = "rango-hints-container";
+
+			// If the stack container is css grid we can't use position relative because
+			// it would occupy one of the positions of the grid
 			const position =
-				this.stackContainer &&
 				window.getComputedStyle(this.stackContainer).display === "grid"
 					? "absolute"
 					: "relative";
@@ -68,20 +70,21 @@ export class Hint {
 			}
 
 			this.element.textContent = text;
-			setStyleProperties(this.element, { display: "block" });
 		}
+
+		setStyleProperties(this.element, { display: "block" });
 	}
 
-	release() {
+	release(keepInCache = false) {
 		if (this.element.textContent) {
-			pushHint(this.element.textContent);
+			pushHint(this.element.textContent, keepInCache);
 			setStyleProperties(this.element, { display: "none" });
 			this.element.textContent = null;
 		}
 	}
 
-	remove() {
-		this.release();
+	remove(keepInCache = false) {
+		this.release(keepInCache);
 		this.element.remove();
 	}
 

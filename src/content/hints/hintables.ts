@@ -9,6 +9,7 @@ interface Hintables {
 	getAll(filters?: { intersecting?: boolean; clickable?: boolean }): Hintable[];
 	getByHint(hints: string): Hintable | undefined;
 	getByHint(hints: string[]): Hintable[];
+	updateTree(element: Element): void;
 }
 
 export const hintables: Hintables = {
@@ -67,6 +68,16 @@ export const hintables: Hintables = {
 				hints.includes(hintable.hint.element.textContent)
 		);
 	},
+
+	updateTree(element: Element): void {
+		const elements = [element, ...element.querySelectorAll("*")];
+		for (const element of elements) {
+			const hintable = this.all.get(element);
+			if (hintable) {
+				hintable.update();
+			}
+		}
+	},
 };
 
 setInterval(() => {
@@ -89,7 +100,9 @@ setInterval(() => {
 
 			return a.hint.length - b.hint.length || a.hint.localeCompare(b.hint);
 		});
-	console.debug(sorted);
+	if (sorted.length > 0) {
+		console.debug(sorted);
+	}
 
 	const sortedById = all
 		.map((hintable) => ({
@@ -97,7 +110,10 @@ setInterval(() => {
 			hint: hintable.hint?.element.textContent,
 			element: hintable.element,
 			hintElement: hintable.hint?.element,
+			isIntersecting: hintable.isIntersecting,
 		}))
 		.sort((a, b) => a.id - b.id);
-	console.debug(sortedById);
-}, 10000);
+	if (sortedById.length > 0) {
+		console.debug(sortedById);
+	}
+}, 10_000);

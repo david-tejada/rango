@@ -26,6 +26,9 @@ async function intersectionCallback(entries: IntersectionObserverEntry[]) {
 	await cacheHints(amountIntersecting);
 
 	for (const entry of entries) {
+		if (entry.target.id === "lZwQje") {
+			debugger;
+		}
 		onIntersection(entry.target, entry.isIntersecting);
 	}
 }
@@ -36,35 +39,27 @@ const rootIntersectionObserver = new IntersectionObserver(
 );
 
 // *** RESIZE OBSERVER ***
-const resizeObserver = new ResizeObserver((entries) => {
-	setTimeout(() => {
-		for (const hintable of hintables.getAll({
-			clickable: true,
-		})) {
-			hintable.update();
-		}
-	}, 300);
+const resizeObserver = new ResizeObserver(() => {
+	for (const hintable of hintables.getAll({
+		clickable: true,
+	})) {
+		hintable.update();
+	}
 });
 
 // *** MUTATION OBSERVER ***
 
 const mutationCallback: MutationCallback = (mutationList) => {
+	const addedNodes = new Set();
+	const deleteNodes = new Set();
 	for (const mutationRecord of mutationList) {
 		if (mutationRecord.type === "childList") {
 			for (const node of mutationRecord.addedNodes) {
-				if (
-					node instanceof Element &&
-					!node.classList.contains("rango-hints-container") &&
-					!node.classList.contains("rango-hint")
-				) {
-					maybeObserveIntersection(node);
-				}
+				addedNodes.add(node);
 			}
 
 			for (const node of mutationRecord.removedNodes) {
-				if (node instanceof Element && hintables.has(node)) {
-					hintables.delete(node);
-				}
+				deleteNodes.add(node);
 			}
 		}
 
@@ -85,15 +80,64 @@ const mutationCallback: MutationCallback = (mutationList) => {
 				const elements = mutationRecord.target.querySelectorAll("*");
 				for (const element of elements) {
 					const hintable = hintables.get(element);
-					if (hintable) {
+
+					// We make sure that if the element was already in the stacking context we don't do anything
+					if (
+						hintable &&
+						(!hintable.hint ||
+							!mutationRecord.target.contains(hintable.hint.element))
+					) {
+						if (hintable.element.id === "lZwQje") {
+							debugger;
+						}
 						hintable.scrollContainer = getStackContainer(hintable.element);
-						hintable.hint?.remove();
+						hintable.hint?.remove(true);
 						hintable.hint = undefined;
 						hintable.hint = new Hint(element, hintable.scrollContainer);
 					}
 				}
-			} else {
+			}
+
+			if (mutationRecord.attributeName === "style") {
 				onAttributeMutation(mutationRecord.target);
+			}
+
+			if (mutationRecord.attributeName === "class") {
+				hintables.updateTree(mutationRecord.target);
+			}
+		}
+	}
+
+	// When an element is moved from one parent to another we get a mutation event
+	// with an entry with the elements in removedNodes and another one with the
+	// element in addedNodes. The issue here is that we don't get any intersection
+	// event, so if we remove the element first from hintables and then we add it
+	// again we are not gonna get any intersection and the hint won't be created.
+	// Here we cancel out element that have been both added and deleted.
+	for (const node of deleteNodes) {
+		if (addedNodes.has(node)) {
+			addedNodes.delete(node);
+			deleteNodes.delete(node);
+		}
+	}
+
+	for (const node of addedNodes) {
+		if (
+			node instanceof Element &&
+			!node.classList.contains("rango-hints-container") &&
+			!node.classList.contains("rango-hint")
+		) {
+			maybeObserveIntersection(node);
+		}
+	}
+
+	for (const node of deleteNodes) {
+		const descendants =
+			node instanceof HTMLElement ? node.querySelectorAll("*") : [];
+		const elements = [node, ...descendants];
+		for (const element of elements) {
+			if (element instanceof Element && hintables.has(element)) {
+				hintables.delete(element);
 			}
 		}
 	}
