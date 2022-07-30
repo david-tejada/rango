@@ -4,16 +4,17 @@ import { assertDefined } from "../../typings/TypingUtils";
 import { getHintOption } from "../options/cacheHintOptions";
 import { getInheritedBackgroundColor } from "../utils/getInheritedBackgroundColor";
 import { getFirstTextNodeDescendant } from "../utils/nodeUtils";
+import { getRequiredZIndex } from "./getRequiredZIndex";
 import { popHint, pushHint } from "./hintsCache";
 import { setStyleProperties } from "./setStyleProperties";
 
 export class Hint {
-	hintedElement: Element;
+	hintedElement: HTMLElement;
 	element: HTMLDivElement;
 	id: number;
 	stackContainer: Element;
 
-	constructor(hintedElement: Element, stackContainer: Element, id: number) {
+	constructor(hintedElement: HTMLElement, stackContainer: Element, id: number) {
 		this.hintedElement = hintedElement;
 		this.id = id;
 		this.stackContainer = stackContainer;
@@ -41,7 +42,7 @@ export class Hint {
 				height: "0",
 			});
 
-			stackContainer.prepend(container);
+			stackContainer.append(container);
 		}
 
 		// We create the element for the hint. We create elements for all the hints
@@ -160,10 +161,10 @@ export class Hint {
 			fontWeight = `${fontWeightOption}`;
 		}
 
-		const zIndex = this.stackContainer === document.body ? "1" : "2147483647";
+		// const zIndex = this.stackContainer === document.body ? "1" : "2147483647";
 
 		setStyleProperties(this.element, {
-			"z-index": zIndex,
+			"z-index": getRequiredZIndex(this.stackContainer),
 			position: "absolute",
 			"border-radius": "20%",
 			"line-height": "1.25",

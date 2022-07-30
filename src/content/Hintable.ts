@@ -1,40 +1,32 @@
+import { getElementToAttachHint } from "./hints/getElementToAttachHint";
+import { getSuitableHintContainer } from "./hints/getSuitableHintContainer";
 import { Hint } from "./hints/Hint";
-import { getStackContainer } from "./utils/getStackContainer";
+import { getScrollContainer } from "./utils/getScrollContainer";
 import { isClickable } from "./utils/isClickable";
+import { isVisible } from "./utils/isVisible";
 import { getFirstTextNodeDescendant } from "./utils/nodeUtils";
 
 let idCounter = 0;
 
-function isVisible(element: Element): boolean {
-	const style = window.getComputedStyle(element);
-	if (
-		style.visibility === "hidden" ||
-		style.display === "none" ||
-		Number.parseFloat(style.opacity) < 0.1 ||
-		Number.parseFloat(style.width) < 5 ||
-		Number.parseFloat(style.height) < 5
-	) {
-		return false;
-	}
-
-	return true;
-}
-
 export class Hintable {
-	element: Element;
+	element: HTMLElement;
 	id: number;
 	isClickable: boolean;
-	scrollContainer: Element | null;
+	stackContainer: HTMLElement;
+	elementToAttachHint: Element;
+	scrollContainer: HTMLElement | null;
 	isIntersecting?: boolean;
 	firstTextNodeDescendant?: Text;
 	hint?: Hint;
 	willHaveHint?: boolean;
 
-	constructor(element: Element) {
+	constructor(element: HTMLElement) {
 		this.element = element;
 		this.isClickable = isClickable(element);
 		this.firstTextNodeDescendant = getFirstTextNodeDescendant(element);
-		this.scrollContainer = getStackContainer(element);
+		this.elementToAttachHint = getElementToAttachHint(element);
+		this.stackContainer = getSuitableHintContainer(this.elementToAttachHint);
+		this.scrollContainer = getScrollContainer(element);
 		this.id = idCounter++;
 	}
 
@@ -43,12 +35,12 @@ export class Hintable {
 
 		if (!this.hint && !this.willHaveHint) {
 			if (isIntersecting) {
-				this.hint = new Hint(this.element, this.scrollContainer, this.id);
+				this.hint = new Hint(this.element, this.stackContainer, this.id);
 			} else {
 				this.willHaveHint = true;
 				window.requestIdleCallback(() => {
 					this.willHaveHint = undefined;
-					this.hint = new Hint(this.element, this.scrollContainer, this.id);
+					this.hint = new Hint(this.element, this.stackContainer, this.id);
 				});
 			}
 		}
@@ -60,6 +52,7 @@ export class Hintable {
 			isVisible(this.element)
 		) {
 			this.hint.claim();
+			this.hint?.position();
 		} else {
 			this.hint?.release();
 		}
@@ -67,12 +60,15 @@ export class Hintable {
 
 	update() {
 		this.isClickable = isClickable(this.element);
-		if (this.isClickable && this.isIntersecting && isVisible(this.element)) {
+		const elementIsVisible = isVisible(this.element);
+
+		if (this.isClickable && this.isIntersecting && elementIsVisible) {
 			// this.hint?.setBackgroundColor();
-			this.hint?.position();
 			this.hint?.claim();
+			this.hint?.position();
 		} else {
-			this.hint?.release();
+			// If the hintable is still intersecting we need to keep the hint in the cache
+			this.isIntersecting ? this.hint?.release(true) : this.hint?.release();
 		}
 	}
 }

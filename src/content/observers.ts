@@ -18,7 +18,6 @@ const options = {
 };
 
 async function intersectionCallback(entries: IntersectionObserverEntry[]) {
-	console.log(entries);
 	const amountIntersecting = entries.filter(
 		(entry) => entry.isIntersecting
 	).length;
@@ -26,9 +25,6 @@ async function intersectionCallback(entries: IntersectionObserverEntry[]) {
 	await cacheHints(amountIntersecting);
 
 	for (const entry of entries) {
-		if (entry.target.id === "lZwQje") {
-			debugger;
-		}
 		onIntersection(entry.target, entry.isIntersecting);
 	}
 }
@@ -39,7 +35,7 @@ const rootIntersectionObserver = new IntersectionObserver(
 );
 
 // *** RESIZE OBSERVER ***
-const resizeObserver = new ResizeObserver(() => {
+const resizeObserver = new ResizeObserver((entries) => {
 	for (const hintable of hintables.getAll({
 		clickable: true,
 	})) {
@@ -55,7 +51,17 @@ const mutationCallback: MutationCallback = (mutationList) => {
 	for (const mutationRecord of mutationList) {
 		if (mutationRecord.type === "childList") {
 			for (const node of mutationRecord.addedNodes) {
-				addedNodes.add(node);
+				// When an element is moved from one parent to another we get a mutation event
+				// with an entry with the elements in removedNodes and another one with the
+				// element in addedNodes. The issue here is that we don't get any intersection
+				// event, so if we remove the element first from hintables and then we add it
+				// again we are not gonna get any intersection and the hint won't be created.
+				// Here we cancel out element that have been both added and deleted.
+				if (deleteNodes.has(node)) {
+					deleteNodes.delete(node);
+				} else {
+					addedNodes.add(node);
+				}
 			}
 
 			for (const node of mutationRecord.removedNodes) {
@@ -73,10 +79,6 @@ const mutationCallback: MutationCallback = (mutationList) => {
 				!stackContainers.has(mutationRecord.target) &&
 				createsStackingContext(mutationRecord.target)
 			) {
-				console.log(
-					"Stacking context created on mutation",
-					mutationRecord.target
-				);
 				const elements = mutationRecord.target.querySelectorAll("*");
 				for (const element of elements) {
 					const hintable = hintables.get(element);
@@ -87,37 +89,17 @@ const mutationCallback: MutationCallback = (mutationList) => {
 						(!hintable.hint ||
 							!mutationRecord.target.contains(hintable.hint.element))
 					) {
-						if (hintable.element.id === "lZwQje") {
-							debugger;
-						}
-						hintable.scrollContainer = getStackContainer(hintable.element);
+						// Todo: Instead of removing and adding the hint it would be better to just
+						// move it to the new destination
+						hintable.stackContainer = getStackContainer(hintable.element);
 						hintable.hint?.remove(true);
 						hintable.hint = undefined;
-						hintable.hint = new Hint(element, hintable.scrollContainer);
+						hintable.hint = new Hint(element, hintable.stackContainer);
 					}
 				}
 			}
 
-			if (mutationRecord.attributeName === "style") {
-				onAttributeMutation(mutationRecord.target);
-			}
-
-			if (mutationRecord.attributeName === "class") {
-				hintables.updateTree(mutationRecord.target);
-			}
-		}
-	}
-
-	// When an element is moved from one parent to another we get a mutation event
-	// with an entry with the elements in removedNodes and another one with the
-	// element in addedNodes. The issue here is that we don't get any intersection
-	// event, so if we remove the element first from hintables and then we add it
-	// again we are not gonna get any intersection and the hint won't be created.
-	// Here we cancel out element that have been both added and deleted.
-	for (const node of deleteNodes) {
-		if (addedNodes.has(node)) {
-			addedNodes.delete(node);
-			deleteNodes.delete(node);
+			onAttributeMutation(mutationRecord.target);
 		}
 	}
 
@@ -173,7 +155,17 @@ function maybeObserveIntersection(element: Element) {
 		// hats I might need to also add element with hasTextNodesChildren(element)
 		if (isClickable(element)) {
 			const hintable = new Hintable(element);
+			const style = window.getComputedStyle(hintable.element);
 			const scrollContainer = hintable.scrollContainer;
+
+			if (style.transitionProperty.includes("opacity")) {
+				hintable.element.addEventListener("transitionend", () => {
+					window.requestAnimationFrame(() => {
+						console.log("hintable update");
+						hintable.update();
+					});
+				});
+			}
 
 			if (scrollContainer) {
 				const intersectionObserver = intersectionObservers.has(scrollContainer)

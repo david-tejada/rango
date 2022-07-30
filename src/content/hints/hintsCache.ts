@@ -25,6 +25,7 @@ export async function cacheHints(amount: number) {
 }
 
 export function popHint(): string | undefined {
+	console.log("hintsCache:", hintsCache);
 	if (document.body.getAttribute("jscontroller") === "pjICDe") {
 		// debugger;
 	}
@@ -33,6 +34,7 @@ export function popHint(): string | undefined {
 }
 
 export function pushHint(hints: string | string[], keepInCache = false) {
+	console.log("hintsCache:", hintsCache);
 	if (document.body.getAttribute("jscontroller") === "pjICDe") {
 		// debugger;
 	}

@@ -8,11 +8,7 @@ export function onIntersection(element: Element, isIntersecting: boolean) {
 }
 
 export function onAttributeMutation(element: Element) {
-	const hintable = hintables.get(element);
-
-	if (hintable) {
-		hintable.update();
-	}
+	hintables.updateTree(element);
 
 	if (isLabelledElement(element)) {
 		const elementLabels = element.labels ?? [];
