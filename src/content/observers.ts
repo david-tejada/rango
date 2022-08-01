@@ -35,12 +35,15 @@ const rootIntersectionObserver = new IntersectionObserver(
 );
 
 // *** RESIZE OBSERVER ***
-const resizeObserver = new ResizeObserver((entries) => {
-	for (const hintable of hintables.getAll({
-		clickable: true,
-	})) {
-		hintable.update();
+export const resizeObserver = new ResizeObserver((entries) => {
+	for (const entry of entries) {
+		console.log(entry);
 	}
+	// for (const hintable of hintables.getAll({
+	// 	clickable: true,
+	// })) {
+	// 	hintable.update();
+	// }
 });
 
 // *** MUTATION OBSERVER ***
@@ -75,29 +78,29 @@ const mutationCallback: MutationCallback = (mutationList) => {
 			!mutationRecord.target.classList.contains("rango-hints-container") &&
 			!mutationRecord.target.classList.contains("rango-hint")
 		) {
-			if (
-				!stackContainers.has(mutationRecord.target) &&
-				createsStackingContext(mutationRecord.target)
-			) {
-				const elements = mutationRecord.target.querySelectorAll("*");
-				for (const element of elements) {
-					const hintable = hintables.get(element);
+			// if (
+			// 	!stackContainers.has(mutationRecord.target) &&
+			// 	createsStackingContext(mutationRecord.target)
+			// ) {
+			// 	const elements = mutationRecord.target.querySelectorAll("*");
+			// 	for (const element of elements) {
+			// 		const hintable = hintables.get(element);
 
-					// We make sure that if the element was already in the stacking context we don't do anything
-					if (
-						hintable &&
-						(!hintable.hint ||
-							!mutationRecord.target.contains(hintable.hint.element))
-					) {
-						// Todo: Instead of removing and adding the hint it would be better to just
-						// move it to the new destination
-						hintable.stackContainer = getStackContainer(hintable.element);
-						hintable.hint?.remove(true);
-						hintable.hint = undefined;
-						hintable.hint = new Hint(element, hintable.stackContainer);
-					}
-				}
-			}
+			// 		// We make sure that if the element was already in the stacking context we don't do anything
+			// 		if (
+			// 			hintable &&
+			// 			(!hintable.hint ||
+			// 				!mutationRecord.target.contains(hintable.hint.element))
+			// 		) {
+			// 			// Todo: Instead of removing and adding the hint it would be better to just
+			// 			// move it to the new destination
+			// 			hintable.stackContainer = getStackContainer(hintable.element);
+			// 			hintable.hint?.remove(true);
+			// 			hintable.hint = undefined;
+			// 			hintable.hint = new Hint(element, hintable.stackContainer);
+			// 		}
+			// 	}
+			// }
 
 			onAttributeMutation(mutationRecord.target);
 		}
@@ -149,23 +152,24 @@ function maybeObserveIntersection(element: Element) {
 
 	for (const element of elements) {
 		// We need to reposition hints when elements change size
-		resizeObserver.observe(element);
+		// resizeObserver.observe(element);
+		const style = window.getComputedStyle(element);
+		if (style.transitionDuration !== "0s" || style.transitionDelay !== "0s") {
+			console.log("Transition element:", element);
+			element.addEventListener("transitionend", () => {
+				window.requestAnimationFrame(() => {
+					console.log("hintables update");
+					hintables.updateTree(element);
+				});
+			});
+		}
 
 		// For the moment we just add clickable elements. When I implement cursorless
 		// hats I might need to also add element with hasTextNodesChildren(element)
 		if (isClickable(element)) {
 			const hintable = new Hintable(element);
-			const style = window.getComputedStyle(hintable.element);
-			const scrollContainer = hintable.scrollContainer;
 
-			if (style.transitionProperty.includes("opacity")) {
-				hintable.element.addEventListener("transitionend", () => {
-					window.requestAnimationFrame(() => {
-						console.log("hintable update");
-						hintable.update();
-					});
-				});
-			}
+			const scrollContainer = hintable.scrollContainer;
 
 			if (scrollContainer) {
 				const intersectionObserver = intersectionObservers.has(scrollContainer)

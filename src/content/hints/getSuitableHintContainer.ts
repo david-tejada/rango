@@ -1,4 +1,7 @@
 // This functions returns the first suitable ancestor to place the hint where it
+
+import { resizeObserver } from "../observers";
+
 // won't be hidden by overflow hidden or auto
 export function getSuitableHintContainer(element: Element): HTMLElement {
 	const elementRect = element.getBoundingClientRect();
@@ -30,6 +33,12 @@ export function getSuitableHintContainer(element: Element): HTMLElement {
 				current.scrollWidth > current.clientWidth) &&
 			/scroll|auto/.test(style.overflow)
 		) {
+			resizeObserver.observe(current);
+			return current;
+		}
+
+		if (style.position === "fixed" || style.position === "sticky") {
+			resizeObserver.observe(current);
 			return current;
 		}
 
@@ -49,6 +58,7 @@ export function getSuitableHintContainer(element: Element): HTMLElement {
 				elementRect.x - rect.x + borderLeft >= minLeft &&
 				elementRect.y - rect.y + borderTop >= minTop
 			) {
+				resizeObserver.observe(candidate);
 				return candidate;
 			}
 
