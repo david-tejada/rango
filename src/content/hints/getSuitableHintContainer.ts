@@ -42,6 +42,11 @@ export function getSuitableHintContainer(element: Element): HTMLElement {
 			return current;
 		}
 
+		// The style.display check doesn't always ensure semantic correctness.
+		// For example, having a div inside a button is not semantically correct
+		// even if the button is display: block. I'm not sure if semantic correctness
+		// is something we should strive for, anyway. I've also tried to place hints inside
+		// inline elements but it breaks some pages (Slack, for example).
 		if (!candidate && /block|grid|flex|root/.test(style.display)) {
 			candidate = current;
 		}
