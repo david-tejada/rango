@@ -95,6 +95,10 @@ export function getClickableType(element: Element): string | undefined {
 		return "onclick";
 	}
 
+	if (element.hasAttribute("jsaction")) {
+		return "jsaction";
+	}
+
 	return undefined;
 }
 
