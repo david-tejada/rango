@@ -4,10 +4,13 @@ import { initStorage } from "./utils/initStorage";
 import { toggleHints } from "./actions/toggleHints";
 import { toggleKeyboardClicking } from "./actions/toggleKeyboardClicking";
 import { handleTalonRequest } from "./commands/handleTalonRequest";
+import { trackRecentTabs } from "./utils/trackRecentTabs";
 
-initStorage().catch((error) => {
-	console.error(error);
-});
+initStorage()
+	.then(trackRecentTabs)
+	.catch((error) => {
+		console.error(error);
+	});
 
 if (browser.action) {
 	browser.action.onClicked.addListener(async () => {

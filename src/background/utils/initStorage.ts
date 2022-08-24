@@ -66,5 +66,8 @@ export async function initStorage() {
 		storing.push(browser.storage.local.set({ hintsToggle }));
 	}
 
+	// Reset tabsByRecency on start
+	await browser.storage.local.set({ tabsByRecency: {} });
+
 	await Promise.all(storing);
 }
