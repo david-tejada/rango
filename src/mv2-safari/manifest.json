@@ -20,13 +20,14 @@
 		"clipboardRead",
 		"clipboardWrite",
 		"notifications",
+		"nativeMessaging",
 		"webNavigation"
 	],
 	"content_scripts": [
 		{
 			"matches": ["<all_urls>"],
 			"js": ["../content/content.ts"],
-			"css": ["../styles/tippy.css"],
+			"css": ["../styles/hints.css", "../styles/tippy.css"],
 			"all_frames": true,
 			"run_at": "document_idle"
 		}
@@ -46,7 +47,7 @@
 		"get-talon-request-legacy": {
 			"suggested_key": {
 				"default": "Ctrl+Shift+Insert",
-				"mac": "MacCtrl+Shift+Insert"
+				"mac": "MacCtrl+Shift+1"
 			},
 			"description": "Get the talon request (legacy)"
 		},

@@ -5,10 +5,13 @@ import { toggleHints } from "./actions/toggleHints";
 import { toggleKeyboardClicking } from "./actions/toggleKeyboardClicking";
 import { handleTalonRequest } from "./commands/handleTalonRequest";
 import { handleContentRequest } from "./messaging/handleContentRequest";
+import { trackRecentTabs } from "./utils/trackRecentTabs";
 
-initStorage().catch((error) => {
-	console.error(error);
-});
+initStorage()
+	.then(trackRecentTabs)
+	.catch((error) => {
+		console.error(error);
+	});
 
 browser.runtime.onMessage.addListener(handleContentRequest);
 

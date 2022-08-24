@@ -8,6 +8,7 @@ import { notify } from "../utils/notify";
 import { toggleHints } from "../actions/toggleHints";
 import { closeTabsInWindow } from "../actions/closeTabsInWindow";
 import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
+import { focusPreviousTab } from "../actions/focusPreviousTab";
 
 export async function runBackgroundCommand(
 	command: RangoAction
@@ -123,6 +124,10 @@ export async function runBackgroundCommand(
 
 		case "moveCurrentTabToNewWindow":
 			await browser.windows.create({ tabId: currentTabId });
+			break;
+
+		case "focusPreviousTab":
+			await focusPreviousTab();
 			break;
 
 		case "copyCurrentTabMarkdownUrl":

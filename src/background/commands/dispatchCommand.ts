@@ -28,6 +28,7 @@ const backgroundCommands = new Set([
 	"cloneCurrentTab",
 	"toggleKeyboardClicking",
 	"moveCurrentTabToNewWindow",
+	"focusPreviousTab",
 ]);
 
 export async function dispatchCommand(

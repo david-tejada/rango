@@ -5,6 +5,7 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "closeTabsToTheRightInWindow"
 		| "cloneCurrentTab"
 		| "moveCurrentTabToNewWindow"
+		| "focusPreviousTab"
 		| "unhoverAll"
 		| "copyCurrentTabMarkdownUrl"
 		| "toggleHints"

@@ -2,6 +2,19 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.2.2](https://github.com/david-tejada/rango/releases/tag/v0.2.2) - 2022-08-24
+
+### Changed
+
+- Avoid direct clicking if the user is in the address bar or in the devtools
+- Most hint commands now accept multiple targets, including direct clicking.
+
+### Added
+
+- Added command `tab split` to move current tab to new window.
+- Added command `tab back` to switch between the two most recent tabs.
+- Added detection of more clickable elements using attribute "jsaction" and style "cursor: pointer".
+
 ## [0.2.1](https://github.com/david-tejada/rango/releases/tag/v0.2.1) - 2022-07-04
 
 ### Changed

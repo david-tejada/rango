@@ -97,6 +97,18 @@ export function isClickable(element: Element): boolean {
 		return true;
 	}
 
+	if (element.hasAttribute("jsaction")) {
+		return true;
+	}
+
+	if (
+		window.getComputedStyle(element).cursor === "pointer" &&
+		element.parentElement &&
+		window.getComputedStyle(element.parentElement).cursor !== "pointer"
+	) {
+		return true;
+	}
+
 	return false;
 }
 
