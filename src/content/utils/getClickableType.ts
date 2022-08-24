@@ -99,6 +99,14 @@ export function getClickableType(element: Element): string | undefined {
 		return "jsaction";
 	}
 
+	if (
+		window.getComputedStyle(element).cursor === "pointer" &&
+		element.parentElement &&
+		window.getComputedStyle(element.parentElement).cursor !== "pointer"
+	) {
+		return "cursor:pointer";
+	}
+
 	return undefined;
 }
 
