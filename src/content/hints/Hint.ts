@@ -2,7 +2,7 @@ import Color from "color";
 import { rgbaToRgb } from "../../lib/rgbaToRgb";
 import { assertDefined } from "../../typings/TypingUtils";
 import { getHintOption } from "../options/cacheHintOptions";
-import { getInheritedBackgroundColor } from "../utils/getInheritedBackgroundColor";
+import { getEffectiveBackgroundColor } from "../utils/getEffectiveBackgroundColor";
 import { getFirstTextNodeDescendant } from "../utils/nodeUtils";
 import { getRequiredZIndex } from "./getRequiredZIndex";
 import { popHint, pushHint } from "./hintsCache";
@@ -91,11 +91,7 @@ export class Hint {
 
 	setBackgroundColor(color?: Color): Color {
 		const backgroundColor =
-			color ??
-			getInheritedBackgroundColor(
-				this.hintedElement,
-				new Color("rgba(0, 0, 0, 0)")
-			);
+			color ?? new Color(getEffectiveBackgroundColor(this.hintedElement));
 
 		setStyleProperties(this.element, {
 			"background-color": backgroundColor.string(),

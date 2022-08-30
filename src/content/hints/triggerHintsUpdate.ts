@@ -9,7 +9,7 @@ import { cacheHintOptions } from "../options/cacheHintOptions";
 import { hintables, removedIntersectorsHints } from "../intersectors";
 import { getHintsInTab } from "../utils/getHintsInTab";
 import { positionHint } from "./positionHint";
-import { applyInitialStyles } from "./applyInitialStyles";
+// import { applyInitialStyles } from "./applyInitialStyles";
 import {
 	initStack,
 	claimHints,
@@ -139,7 +139,7 @@ async function updateHints() {
 		// If there are no more available hints to markup the page, don't
 		// append the element.
 		if (isHintedIntersector(intersector)) {
-			applyInitialStyles(intersector);
+			// applyInitialStyles(intersector);
 			hintsContainer.append(intersector.hintElement);
 			if (shouldPositionHint(intersector)) {
 				positionHint(intersector);
@@ -149,7 +149,7 @@ async function updateHints() {
 
 	for (const intersector of toRefresh) {
 		if (shouldDisplayHint(intersector)) {
-			applyInitialStyles(intersector);
+			// applyInitialStyles(intersector);
 		} else {
 			intersector.hintElement.style.display = "none";
 		}

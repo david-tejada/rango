@@ -1,5 +1,5 @@
 import { focusesOnclick } from "../utils/isClickable";
-import { flashHint } from "../hints/applyInitialStyles";
+// import { flashHint } from "../hints/applyInitialStyles";
 import { triggerHintsUpdate } from "../hints/triggerHintsUpdate";
 import { getMainDomain } from "../utils/getMainDomain";
 import { HintedIntersector } from "../../typings/Intersector";
@@ -42,7 +42,7 @@ export async function clickElement(intersectors: Hintable[]) {
 
 	for (const intersector of intersectors) {
 		const element = intersector.element;
-		flashHint(intersector);
+		// flashHint(intersector);
 		if (element instanceof HTMLElement && focusesOnclick(element)) {
 			element.focus();
 		} else if (element instanceof HTMLAnchorElement) {

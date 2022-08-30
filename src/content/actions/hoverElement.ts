@@ -1,5 +1,5 @@
 import { triggerHintsUpdate } from "../hints/triggerHintsUpdate";
-import { flashHint } from "../hints/applyInitialStyles";
+// import { flashHint } from "../hints/applyInitialStyles";
 import { getElementFromPoint } from "../utils/elementIsVisible";
 import { HintedIntersector } from "../../typings/Intersector";
 
@@ -8,7 +8,7 @@ const hoveredElements: Set<Element> = new Set();
 export async function hoverElement(intersectors: HintedIntersector[]) {
 	unhoverAll();
 	for (const intersector of intersectors) {
-		flashHint(intersector);
+		// flashHint(intersector);
 		const targetElement = intersector.element;
 		const targetElementRect = targetElement.getBoundingClientRect();
 		const elementToDispatchEvent =

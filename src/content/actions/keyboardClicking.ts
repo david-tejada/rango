@@ -2,7 +2,7 @@ import Color from "color";
 import browser from "webextension-polyfill";
 import { assertDefined, isFocusOnClickInput } from "../../typings/TypingUtils";
 import { getHintsInTab } from "../utils/getHintsInTab";
-import { applyInitialStyles } from "../hints/applyInitialStyles";
+// import { applyInitialStyles } from "../hints/applyInitialStyles";
 import { getHintableByHint } from "../intersectors";
 
 let keysPressedBuffer = "";
@@ -37,7 +37,7 @@ export function restoreKeyboardReachableHints() {
 		assertDefined(hintElement.textContent);
 		const intersector = getHintableByHint(hintElement.textContent);
 		intersector.freezeHintStyle = false;
-		applyInitialStyles(intersector);
+		// applyInitialStyles(intersector);
 	}
 }
 

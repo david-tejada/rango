@@ -1,14 +1,14 @@
 import browser from "webextension-polyfill";
 import { HintedIntersector } from "../../typings/Intersector";
 import { assertDefined } from "../../typings/TypingUtils";
-import { flashHint } from "../hints/applyInitialStyles";
+// import { flashHint } from "../hints/applyInitialStyles";
 
 export async function openInNewTab(intersectors: HintedIntersector[]) {
 	const first = intersectors[0];
 	const rest = intersectors.slice(1);
 
 	assertDefined(first);
-	flashHint(first);
+	// flashHint(first);
 	if (first.element instanceof HTMLAnchorElement) {
 		void browser.runtime.sendMessage({
 			type: "openInNewTab",
@@ -34,7 +34,7 @@ export async function openInBackgroundTab(intersectors: HintedIntersector[]) {
 
 	if (links.length > 0) {
 		for (const intersector of anchorIntersectors) {
-			flashHint(intersector);
+			// flashHint(intersector);
 		}
 
 		await browser.runtime.sendMessage({

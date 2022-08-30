@@ -1,6 +1,6 @@
 import tippy from "tippy.js";
 import { Intersector, HintedIntersector } from "../../typings/Intersector";
-import { applyEmphasisStyles, applyInitialStyles } from "./applyInitialStyles";
+// import { applyEmphasisStyles, applyInitialStyles } from "./applyInitialStyles";
 
 export function showTooltip(
 	target: Intersector,
@@ -17,9 +17,9 @@ export function showTooltip(
 		allowHTML: true, // eslint-disable-line @typescript-eslint/naming-convention
 	});
 	instance.show();
-	applyEmphasisStyles(target as HintedIntersector, false);
+	// applyEmphasisStyles(target as HintedIntersector, false);
 	setTimeout(() => {
-		applyInitialStyles(target as HintedIntersector);
+		// applyInitialStyles(target as HintedIntersector);
 		instance.hide();
 		hintElement.removeAttribute("id");
 	}, duration);

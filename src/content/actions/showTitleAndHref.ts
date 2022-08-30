@@ -1,5 +1,5 @@
 import { showTooltip } from "../hints/showTooltip";
-import { flashHint } from "../hints/applyInitialStyles";
+// import { flashHint } from "../hints/applyInitialStyles";
 import { HintedIntersector } from "../../typings/Intersector";
 
 export function showTitleAndHref(intersectors: HintedIntersector[]) {
@@ -30,7 +30,7 @@ export function showTitleAndHref(intersectors: HintedIntersector[]) {
 		if (result) {
 			showTooltip(intersector, result, 5000);
 		} else {
-			flashHint(intersector);
+			// flashHint(intersector);
 		}
 	}
 }
