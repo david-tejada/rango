@@ -1,10 +1,7 @@
 import { focusesOnclick } from "../utils/isClickable";
-// import { flashHint } from "../hints/applyInitialStyles";
-import { triggerHintsUpdate } from "../hints/triggerHintsUpdate";
 import { getMainDomain } from "../utils/getMainDomain";
-import { HintedIntersector } from "../../typings/Intersector";
-import { openInBackgroundTab, openInNewTab } from "./openInNewTab";
 import { Hintable } from "../Hintable";
+import { openInBackgroundTab, openInNewTab } from "./openInNewTab";
 
 function dispatchClick(element: Element) {
 	const mousedownEvent = new MouseEvent("mousedown", {
@@ -27,22 +24,22 @@ function dispatchClick(element: Element) {
 	element.dispatchEvent(clickEvent);
 }
 
-export async function clickElement(intersectors: Hintable[]) {
+export async function clickElement(hintables: Hintable[]) {
 	// If there are multiple targets and some of them are anchor elements we open
 	// those in a new background tab
-	if (intersectors.length > 1) {
-		const anchorIntersectors = intersectors.filter(
-			(intersector) => intersector.element instanceof HTMLAnchorElement
+	if (hintables.length > 1) {
+		const anchorHintables = hintables.filter(
+			(hintable) => hintable.element instanceof HTMLAnchorElement
 		);
-		intersectors = intersectors.filter(
-			(intersector) => !(intersector.element instanceof HTMLAnchorElement)
+		hintables = hintables.filter(
+			(hintable) => !(hintable.element instanceof HTMLAnchorElement)
 		);
-		await openInBackgroundTab(anchorIntersectors);
+		await openInBackgroundTab(anchorHintables);
 	}
 
-	for (const intersector of intersectors) {
-		const element = intersector.element;
-		// flashHint(intersector);
+	for (const hintable of hintables) {
+		const element = hintable.element;
+		hintable.hint?.flash();
 		if (element instanceof HTMLElement && focusesOnclick(element)) {
 			element.focus();
 		} else if (element instanceof HTMLAnchorElement) {
@@ -56,7 +53,7 @@ export async function clickElement(intersectors: Hintable[]) {
 				element.getAttribute("target") === "_blank" &&
 				linkMainDomain !== locationMainDomain
 			) {
-				void openInNewTab([intersector]);
+				void openInNewTab([hintable]);
 			} else {
 				dispatchClick(element);
 			}
@@ -64,8 +61,4 @@ export async function clickElement(intersectors: Hintable[]) {
 			dispatchClick(element);
 		}
 	}
-
-	// On some pages like codepen there are hints remaining after closing a popup panel.
-	// This is not a perfect solution but as long as the user clicks with voice I think we're safe
-	await triggerHintsUpdate();
 }

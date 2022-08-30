@@ -1,14 +1,13 @@
 import browser from "webextension-polyfill";
-import { HintedIntersector } from "../../typings/Intersector";
 import { assertDefined } from "../../typings/TypingUtils";
-// import { flashHint } from "../hints/applyInitialStyles";
+import { Hintable } from "../Hintable";
 
-export async function openInNewTab(intersectors: HintedIntersector[]) {
-	const first = intersectors[0];
-	const rest = intersectors.slice(1);
+export async function openInNewTab(hintables: Hintable[]) {
+	const first = hintables[0];
+	const rest = hintables.slice(1);
 
 	assertDefined(first);
-	// flashHint(first);
+	first.hint?.flash();
 	if (first.element instanceof HTMLAnchorElement) {
 		void browser.runtime.sendMessage({
 			type: "openInNewTab",
@@ -21,20 +20,20 @@ export async function openInNewTab(intersectors: HintedIntersector[]) {
 	}
 }
 
-export async function openInBackgroundTab(intersectors: HintedIntersector[]) {
+export async function openInBackgroundTab(hintables: Hintable[]) {
 	const links = [];
-	const anchorIntersectors = [];
+	const anchorHintables = [];
 
-	for (const intersector of intersectors) {
-		if (intersector.element instanceof HTMLAnchorElement) {
-			anchorIntersectors.push(intersector);
-			links.push(intersector.element.href);
+	for (const hintable of hintables) {
+		if (hintable.element instanceof HTMLAnchorElement) {
+			anchorHintables.push(hintable);
+			links.push(hintable.element.href);
 		}
 	}
 
 	if (links.length > 0) {
-		for (const intersector of anchorIntersectors) {
-			// flashHint(intersector);
+		for (const hintable of anchorHintables) {
+			hintable.hint?.flash();
 		}
 
 		await browser.runtime.sendMessage({
