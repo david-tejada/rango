@@ -191,4 +191,25 @@ export class Hint {
 			top: `${y}px`,
 		});
 	}
+
+	flash(ms = 300) {
+		const backgroundColor = this.element.style.backgroundColor;
+		const color = this.element.style.color;
+
+		const defaultStyles = {
+			color,
+			backgroundColor,
+		};
+
+		const flashedStyles = {
+			color: backgroundColor,
+			backgroundColor: color,
+		};
+
+		Object.assign(this.element.style, flashedStyles);
+
+		setTimeout(() => {
+			Object.assign(this.element.style, defaultStyles);
+		}, ms);
+	}
 }
