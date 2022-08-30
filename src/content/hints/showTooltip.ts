@@ -1,13 +1,12 @@
 import tippy from "tippy.js";
-import { Intersector, HintedIntersector } from "../../typings/Intersector";
-// import { applyEmphasisStyles, applyInitialStyles } from "./applyInitialStyles";
+import { Hintable } from "../Hintable";
 
 export function showTooltip(
-	target: Intersector,
+	hintable: Hintable,
 	text: string,
 	duration: number
 ) {
-	const hintElement = target.hintElement as HTMLElement;
+	const hintElement = hintable.hint?.element as HTMLElement;
 	hintElement.id = "rango-tooltip";
 	hintElement.dataset["tippyContent"] = text;
 	const instance = tippy(hintElement, {
@@ -17,9 +16,9 @@ export function showTooltip(
 		allowHTML: true, // eslint-disable-line @typescript-eslint/naming-convention
 	});
 	instance.show();
-	// applyEmphasisStyles(target as HintedIntersector, false);
+
+	hintable.hint?.flash(duration);
 	setTimeout(() => {
-		// applyInitialStyles(target as HintedIntersector);
 		instance.hide();
 		hintElement.removeAttribute("id");
 	}, duration);
