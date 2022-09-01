@@ -11,6 +11,8 @@ export function isVisible(element: HTMLElement): boolean {
 		return false;
 	}
 
+	// This catches instances where the element has an ancestor with "display: none"
+	// https://drafts.csswg.org/cssom-view/#dom-htmlelement-offsetparent
 	if (element.offsetParent === null && style.position !== "fixed") {
 		return false;
 	}
