@@ -1,99 +1,99 @@
 import Color from "color";
 import { rgbaToRgb } from "../../lib/rgbaToRgb";
 import { assertDefined } from "../../typings/TypingUtils";
+import { zIndexes } from "../getMaximumzIndex";
 import { getHintOption } from "../options/cacheHintOptions";
 import { getEffectiveBackgroundColor } from "../utils/getEffectiveBackgroundColor";
 import { getFirstTextNodeDescendant } from "../utils/nodeUtils";
-import { getRequiredZIndex } from "./getRequiredZIndex";
 import { popHint, pushHint } from "./hintsCache";
 import { setStyleProperties } from "./setStyleProperties";
 
 export class Hint {
 	hintedElement: HTMLElement;
-	element: HTMLDivElement;
-	id: number;
-	stackContainer: Element;
+	hintContainer: HTMLElement;
+	wrapperDiv: HTMLDivElement;
+	innerDiv: HTMLDivElement;
 
-	constructor(hintedElement: HTMLElement, stackContainer: Element, id: number) {
+	constructor(hintedElement: HTMLElement, hintContainer: HTMLElement) {
 		this.hintedElement = hintedElement;
-		this.id = id;
-		this.stackContainer = stackContainer;
+		this.hintContainer = hintContainer;
 
-		let container: HTMLDivElement | null = stackContainer.querySelector(
-			":scope > .rango-hints-container"
-		);
+		const wrapperDiv = document.createElement("div");
+		this.wrapperDiv = wrapperDiv;
+		wrapperDiv.className = "rango-hint-wrapper";
 
-		if (!container) {
-			container = document.createElement("div");
-			container.className = "rango-hints-container";
+		// If the hint container is "display: grid" we can't use position relative
+		// because it would occupy one of the positions of the grid
+		const position =
+			window.getComputedStyle(this.hintContainer).display === "grid"
+				? "absolute"
+				: "relative";
 
-			// If the stack container is css grid we can't use position relative because
-			// it would occupy one of the positions of the grid
-			const position =
-				window.getComputedStyle(this.stackContainer).display === "grid"
-					? "absolute"
-					: "relative";
+		setStyleProperties(wrapperDiv, {
+			all: "initial",
+			position,
+			display: "block",
+			width: "0",
+			height: "0",
+		});
 
-			setStyleProperties(container, {
-				all: "initial",
-				position,
-				display: "block",
-				width: "0",
-				height: "0",
-			});
+		hintContainer.append(wrapperDiv);
 
-			stackContainer.append(container);
-		}
-
-		// We create the element for the hint. We create elements for all the hints
-		// even if their element is not intersecting or not visible. This will make it
-		// more responsive when the hint needs to be shown.
-		this.element = document.createElement("div");
-		this.element.className = "rango-hint";
-		this.element.dataset["id"] = String(this.id);
+		// We create elements for all the hints even if their element is not
+		// intersecting or not visible. This will make it more responsive when the
+		// hint needs to be shown.
+		this.innerDiv = document.createElement("div");
+		this.innerDiv.className = "rango-hint";
 
 		// We hide the hint element and only show it when it receives a hint with claim()
-		setStyleProperties(this.element, {
+		setStyleProperties(this.innerDiv, {
 			all: "initial",
 			display: "none",
 		});
 
-		container.append(this.element);
+		wrapperDiv.append(this.innerDiv);
 		this.applyInitialStyles();
 		this.position();
 	}
 
 	claim() {
-		if (!this.element.textContent) {
+		if (!this.innerDiv.textContent) {
 			const text = popHint();
 			if (!text) {
 				throw new Error("No more hints to claim");
 			}
 
-			this.element.textContent = text;
+			this.innerDiv.textContent = text;
+
+			// This is here for debugging and testing purposes
+			if (process.env["NODE_ENV"] !== "production") {
+				this.wrapperDiv.dataset["hint"] = text;
+				this.innerDiv.dataset["hint"] = text;
+				this.hintedElement.dataset["hint"] = text;
+			}
 		}
 
-		setStyleProperties(this.element, { display: "block" });
+		setStyleProperties(this.innerDiv, { display: "block" });
 	}
 
 	release(keepInCache = false) {
-		if (this.element.textContent) {
-			pushHint(this.element.textContent, keepInCache);
-			setStyleProperties(this.element, { display: "none" });
-			this.element.textContent = null;
+		if (this.innerDiv.textContent) {
+			pushHint(this.innerDiv.textContent, keepInCache);
+			setStyleProperties(this.innerDiv, { display: "none" });
+			this.innerDiv.textContent = null;
 		}
 	}
 
 	remove(keepInCache = false) {
 		this.release(keepInCache);
-		this.element.remove();
+		this.innerDiv.remove();
 	}
 
 	setBackgroundColor(color?: Color): Color {
 		const backgroundColor =
 			color ?? new Color(getEffectiveBackgroundColor(this.hintedElement));
 
-		setStyleProperties(this.element, {
+		setStyleProperties(this.innerDiv, {
 			"background-color": backgroundColor.string(),
 		});
 
@@ -177,7 +177,7 @@ export class Hint {
 	}
 
 	position() {
-		const hintsContainer = this.element.parentElement;
+		const hintsContainer = this.innerDiv.parentElement;
 		assertDefined(hintsContainer);
 		const x =
 			this.hintedElement.getBoundingClientRect().x -
@@ -186,15 +186,15 @@ export class Hint {
 			this.hintedElement.getBoundingClientRect().y -
 			hintsContainer.getBoundingClientRect().y;
 
-		setStyleProperties(this.element, {
+		setStyleProperties(this.innerDiv, {
 			left: `${x}px`,
 			top: `${y}px`,
 		});
 	}
 
 	flash(ms = 300) {
-		const backgroundColor = this.element.style.backgroundColor;
-		const color = this.element.style.color;
+		const backgroundColor = this.innerDiv.style.backgroundColor;
+		const color = this.innerDiv.style.color;
 
 		const defaultStyles = {
 			color,
@@ -206,10 +206,10 @@ export class Hint {
 			backgroundColor: color,
 		};
 
-		Object.assign(this.element.style, flashedStyles);
+		Object.assign(this.innerDiv.style, flashedStyles);
 
 		setTimeout(() => {
-			Object.assign(this.element.style, defaultStyles);
+			Object.assign(this.innerDiv.style, defaultStyles);
 		}, ms);
 	}
 }

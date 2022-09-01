@@ -6,14 +6,14 @@ export function showTooltip(
 	text: string,
 	duration: number
 ) {
-	const hintElement = hintable.hint?.element as HTMLElement;
+	const hintElement = hintable.hint?.innerDiv as HTMLElement;
 	hintElement.id = "rango-tooltip";
 	hintElement.dataset["tippyContent"] = text;
 	const instance = tippy(hintElement, {
 		zIndex: 2_147_483_647,
 		appendTo: hintElement.parentElement!,
 		maxWidth: "none",
-		allowHTML: true, // eslint-disable-line @typescript-eslint/naming-convention
+		allowHTML: true,
 	});
 	instance.show();
 

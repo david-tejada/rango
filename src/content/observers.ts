@@ -75,7 +75,7 @@ const mutationCallback: MutationCallback = (mutationList) => {
 		if (
 			mutationRecord.type === "attributes" &&
 			mutationRecord.target instanceof Element &&
-			!mutationRecord.target.classList.contains("rango-hints-container") &&
+			!mutationRecord.target.classList.contains("rango-hint-wrapper") &&
 			!mutationRecord.target.classList.contains("rango-hint")
 		) {
 			// if (

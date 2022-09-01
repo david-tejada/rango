@@ -1,4 +1,4 @@
-import { getElementToAttachHint } from "./hints/getElementToAttachHint";
+import { getElementToPositionHint } from "./hints/getElementToPositionHint";
 import { getSuitableHintContainer } from "./hints/getSuitableHintContainer";
 import { Hint } from "./hints/Hint";
 import { getScrollContainer } from "./utils/getScrollContainer";
@@ -6,16 +6,16 @@ import { isClickable } from "./utils/isClickable";
 import { isVisible } from "./utils/isVisible";
 import { getFirstTextNodeDescendant } from "./utils/nodeUtils";
 
-let idCounter = 0;
-
 export class Hintable {
 	element: HTMLElement;
-	id: number;
-	isClickable: boolean;
-	stackContainer: HTMLElement;
-	elementToAttachHint: Element;
-	scrollContainer: HTMLElement | null;
+
 	isIntersecting?: boolean;
+	isClickable: boolean;
+	isVisible: boolean;
+
+	hintContainer: HTMLElement;
+	elementToPositionHint: Element;
+	scrollContainer: HTMLElement | null;
 	firstTextNodeDescendant?: Text;
 	hint?: Hint;
 	willHaveHint?: boolean;
@@ -23,11 +23,11 @@ export class Hintable {
 	constructor(element: HTMLElement) {
 		this.element = element;
 		this.isClickable = isClickable(element);
+		this.isVisible = isVisible(element);
 		this.firstTextNodeDescendant = getFirstTextNodeDescendant(element);
-		this.elementToAttachHint = getElementToAttachHint(element);
-		this.stackContainer = getSuitableHintContainer(this.elementToAttachHint);
+		this.elementToPositionHint = getElementToPositionHint(element);
+		this.hintContainer = getSuitableHintContainer(this.elementToPositionHint);
 		this.scrollContainer = getScrollContainer(element);
-		this.id = idCounter++;
 	}
 
 	intersect(isIntersecting: boolean) {
@@ -35,12 +35,12 @@ export class Hintable {
 
 		if (!this.hint && !this.willHaveHint) {
 			if (isIntersecting) {
-				this.hint = new Hint(this.element, this.stackContainer, this.id);
+				this.hint = new Hint(this.element, this.hintContainer);
 			} else {
 				this.willHaveHint = true;
 				window.requestIdleCallback(() => {
 					this.willHaveHint = undefined;
-					this.hint = new Hint(this.element, this.stackContainer, this.id);
+					this.hint = new Hint(this.element, this.hintContainer);
 				});
 			}
 		}
