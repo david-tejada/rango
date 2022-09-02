@@ -79,7 +79,6 @@
 	"dependencies": {
 		"async-mutex": "^0.3.2",
 		"color": "^4.2.3",
-		"parse-domain": "^7.0.0",
 		"tippy.js": "^6.3.7",
 		"webextension-polyfill": "^0.8.0"
 	},
