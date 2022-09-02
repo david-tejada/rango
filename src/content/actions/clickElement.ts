@@ -1,5 +1,4 @@
 import { focusesOnclick } from "../utils/isClickable";
-import { getMainDomain } from "../utils/getMainDomain";
 import { Hintable } from "../Hintable";
 import { openInBackgroundTab, openInNewTab } from "./openInNewTab";
 
@@ -43,15 +42,16 @@ export async function clickElement(hintables: Hintable[]) {
 		if (element instanceof HTMLElement && focusesOnclick(element)) {
 			element.focus();
 		} else if (element instanceof HTMLAnchorElement) {
+			// In Firefox if we click a link with target="_blank" we get a popup message
+			// saying "Firefox prevented this site from opening a popup". In order to
+			// avoid that we open a new tab with the url of the href of the link.
 			// Sometimes websites use links with target="_blank" but don't open a new tab.
 			// They probably prevent the default behavior with javascript. For example Slack
 			// has this for opening a thread in the side panel. So here we make sure that
-			// if the main domains are equal just do a normal click and let the page handle it
-			const linkMainDomain = getMainDomain(element.href);
-			const locationMainDomain = getMainDomain(window.location.href);
+			// there is a href attribute before we open the link in a new tab.
 			if (
 				element.getAttribute("target") === "_blank" &&
-				linkMainDomain !== locationMainDomain
+				element.getAttribute("href")
 			) {
 				void openInNewTab([hintable]);
 			} else {
