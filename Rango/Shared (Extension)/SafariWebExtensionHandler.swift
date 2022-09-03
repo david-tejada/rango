@@ -15,6 +15,8 @@ let RangoExtensionRequestGetTextFromClipboard = "getTextFromClipboard"
 let RangoExtensionError = "error"
 let RangoExtensionTextFromClipboard = "textFromClipboard"
 
+let logger = Logger(subsystem: Bundle.main.bundleIdentifier!, category: "")
+
 class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
 
     func textFromPasteboard() -> String? {
@@ -26,7 +28,7 @@ class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
         var response: Dictionary<String, Any> = [:]
 
         defer {
-            os_log(.default, "Response to Rango browser extension: %{public}@", response as CVarArg)
+            logger.info("Response to Rango browser extension: \(response, privacy: .public)")
             let responseItem = NSExtensionItem()
             responseItem.userInfo = [ SFExtensionMessageKey: response ]
             context.completeRequest(returningItems: [responseItem], completionHandler: nil)
@@ -37,7 +39,8 @@ class SafariWebExtensionHandler: NSObject, NSExtensionRequestHandling {
             response[RangoExtensionError] = "Message from extension of invalid type"
             return
         }
-        os_log(.default, "From Rango browser extension: %{public}@", message as CVarArg)
+
+        logger.info("From Rango browser extension: \(message, privacy: .public)")
 
         guard let request = message[RangoExtensionRequestKey]
         else {
