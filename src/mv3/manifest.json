@@ -41,7 +41,7 @@
 		"get-talon-request-legacy": {
 			"suggested_key": {
 				"default": "Ctrl+Shift+Insert",
-				"mac": "MacCtrl+Shift+1"
+				"mac": "MacCtrl+Shift+Insert"
 			},
 			"description": "Get the talon request (legacy)"
 		},
