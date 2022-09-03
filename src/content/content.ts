@@ -1,22 +1,22 @@
 import browser from "webextension-polyfill";
-import { ContentRequest, ScriptResponse } from "../typing/types";
-import { cacheHintOptions } from "./options/hint-style-options";
+import { ContentRequest } from "../typings/ContentRequest";
+import { cacheHintOptions } from "./options/cacheHintOptions";
 import {
 	getClipboardManifestV3,
 	copyToClipboardManifestV3,
-} from "./utils/manifest-v3-clipboard";
-import { triggerHintsUpdate } from "./hints/display-hints";
+} from "./utils/clipboardManifestV3";
+import { triggerHintsUpdate } from "./hints/triggerHintsUpdate";
 import observe from "./observers";
-import { addUrlToTitle } from "./utils/url-in-title";
+import { addUrlToTitle } from "./utils/addUrlToTitle";
 import {
 	markHintsAsKeyboardReachable,
-	initKeyboardNavigation,
+	initKeyboardClicking,
 	restoreKeyboardReachableHints,
-} from "./keyboard-clicking";
-import { updateHintsInTab } from "./utils/get-hints-in-tab";
-import { listenToScrollAndResizeEvents } from "./utils/listen-to-scroll-and-resize-events";
-import { runRangoActionWithTarget } from "./actions/run-rango-action-with-target";
-import { runRangoActionWithoutTarget } from "./actions/run-rango-action-without-target";
+} from "./actions/keyboardClicking";
+import { updateHintsInTab } from "./utils/getHintsInTab";
+import { listenToScrollAndResizeEvents } from "./utils/listenToScrollAndResizeEvents";
+import { runRangoActionWithTarget } from "./actions/runRangoActionWithTarget";
+import { runRangoActionWithoutTarget } from "./actions/runRangoActionWithoutTarget";
 
 cacheHintOptions()
 	.then(addUrlToTitle)
@@ -27,7 +27,7 @@ cacheHintOptions()
 			"keyboardClicking"
 		);
 		if (keyboardClicking) {
-			await initKeyboardNavigation();
+			await initKeyboardClicking();
 		}
 	})
 	.catch((error) => {
@@ -35,7 +35,9 @@ cacheHintOptions()
 	});
 
 browser.runtime.onMessage.addListener(
-	async (request: ContentRequest): Promise<ScriptResponse | undefined> => {
+	async (
+		request: ContentRequest
+	): Promise<string | string[] | boolean | undefined> => {
 		if ("target" in request) {
 			return runRangoActionWithTarget(request);
 		}
@@ -44,20 +46,19 @@ browser.runtime.onMessage.addListener(
 			switch (request.type) {
 				// SCRIPT REQUESTS
 				case "getClipboardManifestV3":
-					return { text: getClipboardManifestV3() };
+					return getClipboardManifestV3();
 
 				case "copyToClipboardManifestV3": {
-					const text = request.text;
-					copyToClipboardManifestV3(text);
+					copyToClipboardManifestV3(request.text);
 					break;
 				}
 
 				case "getLocation":
-					return {
-						host: window.location.host,
-						origin: window.location.origin,
-						pathname: window.location.pathname,
-					};
+					return [
+						window.location.host,
+						window.location.origin,
+						window.location.pathname,
+					];
 
 				case "updateHintsInTab":
 					updateHintsInTab(request.hints);
@@ -72,12 +73,11 @@ browser.runtime.onMessage.addListener(
 					break;
 
 				case "initKeyboardNavigation":
-					await initKeyboardNavigation();
+					await initKeyboardClicking();
 					break;
 
 				case "checkIfDocumentHasFocus":
 					if (document.hasFocus()) {
-						console.log("Document has focus");
 						return true;
 					}
 
@@ -94,8 +94,10 @@ browser.runtime.onMessage.addListener(
 					});
 					break;
 
-				default:
-					return await runRangoActionWithoutTarget(request);
+				default: {
+					const result = await runRangoActionWithoutTarget(request);
+					return result;
+				}
 			}
 		} catch (error: unknown) {
 			console.error(error);

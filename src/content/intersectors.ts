@@ -1,8 +1,7 @@
-import { HintedIntersector, Intersector } from "../typing/types";
-import { isHintedIntersector } from "../typing/typing-utils";
-import { getClickableType } from "./utils/clickable-type";
-import { NoHintError } from "./classes/errors";
-import { getScrollContainer } from "./utils/get-scroll-container";
+import { Intersector, HintedIntersector } from "../typings/Intersector";
+import { isHintedIntersector } from "../typings/TypingUtils";
+import { getClickableType } from "./utils/getClickableType";
+import { getScrollContainer } from "./utils/getScrollContainer";
 
 export const intersectors: Intersector[] = [];
 export const removedIntersectorsHints: Set<string> = new Set();
@@ -20,12 +19,12 @@ export function getIntersectorByHint(hint: string): HintedIntersector {
 		return intersector;
 	}
 
-	throw new NoHintError("No intersector found with that hint");
+	throw new Error("No intersector found with that hint");
 }
 
 export function getIntersectorsByHints(hints: string[]): HintedIntersector[] {
 	return intersectors
-		.filter(isHintedIntersector) // eslint-disable-line unicorn/no-array-callback-reference
+		.filter(isHintedIntersector)
 		.filter((targetIntersector) => hints.includes(targetIntersector.hintText));
 }
 

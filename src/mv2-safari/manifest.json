@@ -3,8 +3,13 @@
 	"version": "0.2.3",
 	"description": "Extension that allows you to interact with webpages using your voice and talon",
 	"homepage_url": "https://github.com/david-tejada/rango",
-	"manifest_version": 3,
-	"minimum_chrome_version": "100",
+	"manifest_version": 2,
+	"browser_specific_settings": {
+		"gecko": {
+			"id": "rango@david-tejada",
+			"strict_min_version": "80.0"
+		}
+	},
 	"icons": {
 		"48": "../assets/icon48.png",
 		"128": "../assets/icon128.png"
@@ -15,6 +20,7 @@
 		"clipboardRead",
 		"clipboardWrite",
 		"notifications",
+		"nativeMessaging",
 		"webNavigation"
 	],
 	"content_scripts": [
@@ -27,8 +33,8 @@
 		}
 	],
 	"background": {
-		"service_worker": "../background/background.ts",
-		"type": "module"
+		"persistent": false,
+		"scripts": ["../background/background.ts"]
 	},
 	"commands": {
 		"get-talon-request": {
@@ -60,13 +66,15 @@
 			"description": "Disable hints"
 		},
 		"toggle-keyboard-clicking": {
+			"suggested_key": {
+				"default": "Ctrl+Shift+5",
+				"mac": "MacCtrl+Shift+5"
+			},
 			"description": "Toggle keyboard clicking"
 		}
 	},
-	"action": {
-		"default_icon": {
-			"48": "../assets/icon48.png"
-		},
+	"browser_action": {
+		"default_icon": "../assets/icon48.png",
 		"default_title": "Rango"
 	}
 }
