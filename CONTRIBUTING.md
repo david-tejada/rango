@@ -52,7 +52,7 @@ To build for development:
 1. Build the extension for manifest version 2:
 
     ```bash
-    npm run build:mv2
+    npm run build:mv2-safari
     ```
 
 2. Update the project's marketing version from the manifest.
