@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Test page</title>
+	</head>
+	<body>
+		<!-- Test: The hint won't be placed in an element with overflow hidden and insufficient space -->
+		<div id="target-1">
+			<div id="skip-1" style="overflow: hidden">
+				<div>
+					<a id="clickable-1" href="#">Link 1</a>
+				</div>
+			</div>
+		</div>
+
+		<!-- Test: The hint will be placed in an element with overflow hidden but sufficient space -->
+		<div>
+			<div>
+				<div id="target-2" style="overflow: hidden; padding: 12px">
+					<a id="clickable-2" href="#">Link 2</a>
+				</div>
+			</div>
+		</div>
+
+		<!-- Test: The hint for the summary element won't be placed inside the details element -->
+		<div id="target-3">
+			<details id="skip-3">
+				<summary id="clickable-3">Details</summary>
+				Something small enough to escape casual notice.
+			</details>
+		</div>
+
+		<!-- Test: The hint won't be placed beyond its scroll container -->
+		<ul id="target-5" style="height: 100px; overflow: auto">
+			<li id="target-4"><a id="clickable-4" href="#">Item 1</a></li>
+			<li id="skip-5" style="overflow: hidden">
+				<a id="clickable-5" href="#">Item 2</a>
+			</li>
+			<li><a id="clickable-6" href="#">Item 3</a></li>
+			<li>Item 4</li>
+			<li>Item 5</li>
+			<li>Item 6</li>
+			<li>Item 7</li>
+			<li>Item 8</li>
+			<li>Item 9</li>
+			<li>Item 10</li>
+		</ul>
+
+		<!-- Test: The hint won't be placed beyond a fixed container -->
+		<div id="target-8" style="position: fixed; top: 0; right: 0">
+			<div id="target-7">
+				<a id="clickable-7" href="#">Link 7</a>
+			</div>
+			<div id="skip-8" style="overflow: hidden">
+				<a id="clickable-8" href="#">Link 8</a>
+			</div>
+		</div>
+
+		<!-- Test: The hint won't be placed beyond a sticky container -->
+		<ul style="height: 100px; overflow: auto">
+			<li id="target-9" style="position: sticky; top: 10px; overflow: hidden">
+				<a id="clickable-9" href="#">Item 1</a>
+			</li>
+			<li>Item 2</li>
+			<li>Item 3</li>
+			<li>Item 4</li>
+			<li>Item 5</li>
+			<li>Item 6</li>
+			<li>Item 7</li>
+			<li>Item 8</li>
+			<li>Item 9</li>
+			<li>Item 10</li>
+		</ul>
+	</body>
+</html>
