@@ -131,28 +131,19 @@ const mutationCallback: MutationCallback = (mutationList) => {
 const config = { attributes: true, childList: true, subtree: true };
 const mutationObserver = new MutationObserver(mutationCallback);
 
-function maybeObserveIntersection(element: Element) {
-	let descendants = element.querySelectorAll("*");
-	if (element.shadowRoot) {
-		// We need to create a new mutation observer for each shadow root because
-		// the main mutation observer doesn't register changes in those
-		const mutationObserver = new MutationObserver(mutationCallback);
-		mutationObserver.observe(element.shadowRoot, config);
-		descendants = element.shadowRoot.querySelectorAll("*");
-	}
-
-	const elements = [element, ...descendants];
-
-	const shadowOutputs = [...descendants].filter(
-		(element) => element.shadowRoot
-	);
-	for (const shadowOutput of shadowOutputs) {
-		maybeObserveIntersection(shadowOutput);
-	}
+function maybeObserveIntersection(target: Element) {
+	const elements = getAllElements(target);
 
 	for (const element of elements) {
+		// We need to observe shadow root elements because the main mutation observer
+		// doesn't register changes inside the shadow dom
+	if (element.shadowRoot) {
+		mutationObserver.observe(element.shadowRoot, config);
+	}
+
 		// We need to reposition hints when elements change size
 		// resizeObserver.observe(element);
+
 		const style = window.getComputedStyle(element);
 		if (style.transitionDuration !== "0s" || style.transitionDelay !== "0s") {
 			console.log("Transition element:", element);
