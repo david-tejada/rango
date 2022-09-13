@@ -53,8 +53,29 @@ export function isLabelledElement(
 	);
 }
 
+export function hasDisabled(
+	element: Element
+): element is
+	| HTMLInputElement
+	| HTMLTextAreaElement
+	| HTMLOptionElement
+	| HTMLButtonElement
+	| HTMLSelectElement {
+	return (
+		element instanceof HTMLInputElement ||
+		element instanceof HTMLTextAreaElement ||
+		element instanceof HTMLOptionElement ||
+		element instanceof HTMLButtonElement ||
+		element instanceof HTMLSelectElement
+	);
+}
+
 export function isHintedIntersector(
 	intersector: Intersector
 ): intersector is HintedIntersector {
 	return intersector.hintText !== undefined;
+}
+
+export function isHtmlElement(element: Element): element is HTMLElement {
+	return element instanceof HTMLElement;
 }
