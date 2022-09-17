@@ -33,7 +33,7 @@ let a: HTMLAnchorElement;
 let summary: HTMLElement;
 
 beforeAll(() => {
-	document.body.innerHTML = `
+	document.body.innerHTML = `.
     <div>
       <a href="#">Link</a>
       <details>
@@ -97,4 +97,30 @@ test("It skips the parent block container if it's a <summary> element", () => {
 	mockGetComputedStyle(div);
 
 	expect(getSuitableHintContainer(summary)).toBe(div);
+});
+
+test("It won't return and element past its scroll container", () => {
+	document.body.innerHTML = `
+    <ul>
+      <li><button>Item 1</button></li>
+      <li>Item 2</li>
+      <li>Item 3</li>
+      <li>Item 4</li>
+      <li>Item 5</li>
+      <li>Item 6</li>
+    </ul>
+  `;
+
+	const ul = document.querySelector("ul")!;
+	const li = document.querySelector("li")!;
+	const button = document.querySelector("button")!;
+
+	button.getBoundingClientRect = jest.fn().mockReturnValue({ x: 5, y: 5 });
+	mockGetComputedStyle(ul, { overflow: "auto" });
+	mockGetComputedStyle(li);
+
+	jest.spyOn(ul, "clientHeight", "get").mockImplementation(() => 100);
+	jest.spyOn(ul, "scrollHeight", "get").mockImplementation(() => 128);
+
+	expect(getSuitableHintContainer(button)).toBe(li);
 });
