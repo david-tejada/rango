@@ -1,3 +1,5 @@
+import { getElementsFromOrigin } from "./getElementsFromOrigin";
+
 const clickableSelector =
 	// Elements
 	"button, a, input, summary, textarea, select, option, label, " +
@@ -7,14 +9,19 @@ const clickableSelector =
 	// Attributes
 	"[contenteditable='true'], [contenteditable=''], [jsaction]";
 
+const buttonClassSelector = "[class*='button' i]";
+
 // Maximum distance between an element and it's descendent to be considered
-// a redundantc clickable element
+// a redundant clickable element
 const OVERLAP_THRESHOLD = 10;
 
-function isRedundant(element: Element) {
-	const descendantClickables = element.querySelectorAll(clickableSelector);
+function isRedundant(target: Element) {
+	const descendantClickables = getElementsFromOrigin(target, false).filter(
+		(element) => isClickable(element)
+	);
+
 	for (const descendant of descendantClickables) {
-		const elementRect = element.getBoundingClientRect();
+		const elementRect = target.getBoundingClientRect();
 		const descendantRect = descendant.getBoundingClientRect();
 		if (
 			// We have to ignore descendants that aren't visible, for example, an
@@ -31,19 +38,67 @@ function isRedundant(element: Element) {
 	return false;
 }
 
-export function isHintable(element: Element): boolean {
-	if (element.matches(clickableSelector)) {
-		return !isRedundant(element);
+function isClickable(target: Element): boolean {
+	return (
+		target.matches(clickableSelector) ||
+		(target instanceof HTMLElement && target.onclick !== null)
+	);
+}
+
+// Returns true if the element is the first element with "cursor: pointer"
+// that is not a child of a clickable element and its first child element is
+// not a clickable element
+function isFirstCursorPointer(target: Element): boolean {
+	return Boolean(
+		window.getComputedStyle(target).cursor === "pointer" &&
+			target.parentElement &&
+			window.getComputedStyle(target.parentElement).cursor !== "pointer" &&
+			!isClickable(target.parentElement) &&
+			!(!target.firstElementChild || isClickable(target.firstElementChild))
+	);
+}
+
+function isInnermostClassButton(target: Element): boolean {
+	if (
+		!target.matches(buttonClassSelector) ||
+		target.querySelector(buttonClassSelector)
+	) {
+		return false;
+	}
+
+	// Here we ensure that the element or any ascendant with the word "button" in
+	// it's class isn't a child of clickable element
+	let current: Element | null = target.parentElement;
+
+	while (current) {
+		if (isClickable(current)) {
+			return false;
+		}
+
+		if (!current.matches("[class*='button' i]")) {
+			return true;
+		}
+
+		current = current.parentElement;
+	}
+
+	return true;
+}
+
+export function isHintable(target: Element): boolean {
+	if (isClickable(target)) {
+		return !isRedundant(target);
 	}
 
 	if (
-		window.getComputedStyle(element).cursor === "pointer" &&
-		element.parentElement &&
-		window.getComputedStyle(element.parentElement).cursor !== "pointer" &&
-		!element.parentElement.matches(clickableSelector) &&
-		!element.firstElementChild?.matches(clickableSelector)
+		isFirstCursorPointer(target) &&
+		!target.querySelector(buttonClassSelector)
 	) {
-		return !isRedundant(element);
+		return !isRedundant(target);
+	}
+
+	if (isInnermostClassButton(target)) {
+		return !isRedundant(target);
 	}
 
 	return false;

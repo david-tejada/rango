@@ -87,27 +87,145 @@ test("It returns false for redundant elements", () => {
 	expect(isHintable(button)).toBe(true);
 });
 
-test("It returns false if the element is first cursor: pointer but parent element is hintable", () => {
+test("It returns true for the first element with cursor: pointer", () => {
 	document.body.innerHTML = `
-		<div role="treeitem">
+		<div class="wrapper">
+			<div class="pointer">
+				<div class="pointer-inner">Button</div>
+			</div>
+		</div>
+	`;
+
+	const wrapper = document.querySelector(".wrapper")!;
+	const pointer = document.querySelector(".pointer")!;
+	const pointerInner = document.querySelector(".pointer-inner")!;
+
+	when(window.getComputedStyle)
+		.calledWith(wrapper)
+		.mockReturnValue({ cursor: "auto" } as CSSStyleDeclaration);
+
+	when(window.getComputedStyle)
+		.calledWith(pointer)
+		.mockReturnValue({ cursor: "pointer" } as CSSStyleDeclaration);
+
+	when(window.getComputedStyle)
+		.calledWith(pointerInner)
+		.mockReturnValue({ cursor: "pointer" } as CSSStyleDeclaration);
+
+	expect(isHintable(pointer)).toBe(true);
+	expect(isHintable(pointerInner)).toBe(false);
+});
+
+test("It returns false for the first element with cursor: pointer that is the first child of a clickable element", () => {
+	document.body.innerHTML = `
+		<a>
+			<div class="pointer">
+				<div class="pointer-inner">Button</div>
+			</div>
+		</a>
+	`;
+
+	const a = document.querySelector("a")!;
+	const pointer = document.querySelector(".pointer")!;
+	const pointerInner = document.querySelector(".pointer-inner")!;
+
+	when(window.getComputedStyle)
+		.calledWith(a)
+		.mockReturnValue({ cursor: "auto" } as CSSStyleDeclaration);
+
+	when(window.getComputedStyle)
+		.calledWith(pointer)
+		.mockReturnValue({ cursor: "pointer" } as CSSStyleDeclaration);
+
+	when(window.getComputedStyle)
+		.calledWith(pointerInner)
+		.mockReturnValue({ cursor: "pointer" } as CSSStyleDeclaration);
+
+	expect(isHintable(a)).toBe(true);
+	expect(isHintable(pointer)).toBe(false);
+	expect(isHintable(pointerInner)).toBe(false);
+});
+
+test("It returns true for the innermost element with class containing the word button that is not inside a hintable element", () => {
+	document.body.innerHTML = `
+		<div class="button-wrapper">
 			<div class="button">Button</div>
 		</div>
 	`;
 
-	const treeitem = document.querySelector('[role="treeitem"]')!;
+	const buttonWrapper = document.querySelector(".button-wrapper")!;
 	const button = document.querySelector(".button")!;
-	console.log(button);
+
+	when(window.getComputedStyle)
+		.calledWith(document.body)
+		.mockReturnValue({ cursor: "auto" } as CSSStyleDeclaration);
+
+	when(window.getComputedStyle)
+		.calledWith(buttonWrapper)
+		.mockReturnValue({ cursor: "auto" } as CSSStyleDeclaration);
 
 	when(window.getComputedStyle)
 		.calledWith(button)
+		.mockReturnValue({ cursor: "auto" } as CSSStyleDeclaration);
+
+	expect(isHintable(buttonWrapper)).toBe(false);
+	expect(isHintable(button)).toBe(true);
+});
+
+test("It returns false for the elements with class containing the word button that are inside other hintable elements", () => {
+	document.body.innerHTML = `
+		<a>
+			<div class="button-wrapper">
+				<div class="button">Button</div>
+			</div>
+		</a>
+	`;
+
+	const a = document.querySelector("a")!;
+	const buttonWrapper = document.querySelector(".button-wrapper")!;
+	const button = document.querySelector(".button")!;
+
+	when(window.getComputedStyle)
+		.calledWith(buttonWrapper)
+		.mockReturnValue({ cursor: "auto" } as CSSStyleDeclaration);
+
+	when(window.getComputedStyle)
+		.calledWith(button)
+		.mockReturnValue({ cursor: "auto" } as CSSStyleDeclaration);
+
+	expect(isHintable(a)).toBe(true);
+	expect(isHintable(buttonWrapper)).toBe(false);
+	expect(isHintable(button)).toBe(false);
+});
+
+test("It returns false for the elements with cursor: pointer that contain elements with the class containing the word button", () => {
+	document.body.innerHTML = `
+		<div class="pointer">
+			<div class="button-wrapper">
+				<div class="button">Button</div>
+			</div>
+		</div>
+	`;
+
+	const pointer = document.querySelector(".pointer")!;
+	const buttonWrapper = document.querySelector(".button-wrapper")!;
+	const button = document.querySelector(".button")!;
+
+	when(window.getComputedStyle)
+		.calledWith(pointer)
 		.mockReturnValue({ cursor: "pointer" } as CSSStyleDeclaration);
 
 	when(window.getComputedStyle)
-		.calledWith(treeitem)
+		.calledWith(buttonWrapper)
 		.mockReturnValue({ cursor: "auto" } as CSSStyleDeclaration);
 
-	expect(isHintable(treeitem)).toBe(true);
-	expect(isHintable(button)).toBe(false);
+	when(window.getComputedStyle)
+		.calledWith(button)
+		.mockReturnValue({ cursor: "auto" } as CSSStyleDeclaration);
+
+	expect(isHintable(pointer)).toBe(false);
+	expect(isHintable(buttonWrapper)).toBe(false);
+	expect(isHintable(button)).toBe(true);
 });
 
 test("It returns true for nested clickables if they don't overlap", () => {
