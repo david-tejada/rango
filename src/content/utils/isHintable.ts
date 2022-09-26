@@ -54,7 +54,7 @@ function isFirstCursorPointer(target: Element): boolean {
 			target.parentElement &&
 			window.getComputedStyle(target.parentElement).cursor !== "pointer" &&
 			!isClickable(target.parentElement) &&
-			!(!target.firstElementChild || isClickable(target.firstElementChild))
+			!(target.firstElementChild && isClickable(target.firstElementChild))
 	);
 }
 
