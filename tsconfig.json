@@ -3,6 +3,8 @@
 	"compilerOptions": {
 		"outDir": "dist",
 		"esModuleInterop": true,
-		"lib": ["es2021", "ES2021.String", "DOM", "DOM.Iterable"]
-	}
+		"lib": ["es2021", "ES2021.String", "DOM", "DOM.Iterable"],
+		"strictPropertyInitialization": false
+	},
+	"files": ["node_modules/jest-expect-message/types/index.d.ts"]
 }
