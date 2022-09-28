@@ -1,19 +1,18 @@
-export function isVisible(element: HTMLElement): boolean {
-	const style = window.getComputedStyle(element);
-	const rect = element.getBoundingClientRect();
+export function isVisible(element: Element): boolean {
+	const { visibility, opacity } = window.getComputedStyle(element);
+	const { width, height } = element.getBoundingClientRect();
 
 	if (
-		style.visibility === "hidden" ||
-		Number.parseFloat(style.opacity) < 0.1 ||
-		rect.width < 5 ||
-		rect.height < 5
+		visibility === "hidden" ||
+		width < 5 ||
+		height < 5 ||
+		/**
+		 * An element could still be hidden if an ancestor has an opacity set but
+		 * because elements hidden this way are still clickable I don't think
+		 * we should worry too much about it
+		 */
+		Number.parseFloat(opacity) < 0.1
 	) {
-		return false;
-	}
-
-	// This catches instances where the element has an ancestor with "display: none"
-	// https://drafts.csswg.org/cssom-view/#dom-htmlelement-offsetparent
-	if (element.offsetParent === null && style.position !== "fixed") {
 		return false;
 	}
 
