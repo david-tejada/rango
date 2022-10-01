@@ -7,6 +7,36 @@ import { isHintable } from "./isHintable";
 
 window.getComputedStyle = jest.fn();
 
+function mockRendering(origin: HTMLElement) {
+	const elements = origin.querySelectorAll("*");
+
+	for (const element of elements) {
+		when(window.getComputedStyle)
+			.calledWith(element)
+			.mockReturnValue({
+				cursor: element.className === "pointer" ? "pointer" : "auto",
+			} as CSSStyleDeclaration);
+
+		const rect = {
+			x: 0,
+			y: 0,
+			width: 20,
+			height: 50,
+		};
+
+		for (const key of Object.keys(rect)) {
+			const attribute = element.getAttribute(key);
+			if (attribute) {
+				rect[key as keyof typeof rect] = Number.parseInt(attribute, 10);
+			}
+		}
+
+		element.getBoundingClientRect = jest.fn().mockReturnValue(rect);
+	}
+
+	return elements;
+}
+
 const suites = [
 	{
 		description: "Clickable elements",
@@ -47,12 +77,6 @@ const suites = [
 					<p contenteditable="true" hintable>Click to edit</p>
 					<p contenteditable="" hintable>Click to edit</p>
 				`,
-			},
-			{
-				description: "It returns true for elements with attribute jsaction",
-				innerHTML: `
-				<div jsaction="JqEhuc" hintable>Some clickable element</div>
-			`,
 			},
 			{
 				description:
@@ -124,7 +148,7 @@ const suites = [
 			},
 			{
 				description:
-					"It returns false for the elements with class containing the word button that are inside other hintable elements",
+					"It returns false for elements with class containing the word button that are inside other hintable elements",
 				innerHTML: `
 					<a hintable>
 						<div class="button-wrapper">
@@ -137,44 +161,15 @@ const suites = [
 	},
 ];
 
-for (const suite of suites) {
-	describe(suite.description, () => {
-		for (const testCase of suite.cases) {
-			test(testCase.description, () => {
-				document.body.innerHTML = testCase.innerHTML;
+describe.each(suites)("$description", ({ cases }) => {
+	test.each(cases)("$description", ({ innerHTML }) => {
+		document.body.innerHTML = innerHTML;
+		const elements = mockRendering(document.body);
 
-				const elements = document.body.querySelectorAll("*");
-
-				for (const element of elements) {
-					when(window.getComputedStyle)
-						.calledWith(element)
-						.mockReturnValue({
-							cursor: element.className === "pointer" ? "pointer" : "auto",
-						} as CSSStyleDeclaration);
-
-					const rect = {
-						x: 0,
-						y: 0,
-						width: 20,
-						height: 50,
-					};
-
-					for (const key of Object.keys(rect)) {
-						const attribute = element.getAttribute(key);
-						if (attribute) {
-							rect[key as keyof typeof rect] = Number.parseInt(attribute, 10);
-						}
-					}
-
-					element.getBoundingClientRect = jest.fn().mockReturnValue(rect);
-				}
-
-				for (const element of elements) {
-					expect(isHintable(element), element.outerHTML).toBe(
-						element.hasAttribute("hintable")
-					);
-				}
-			});
+		for (const element of elements) {
+			expect(isHintable(element), element.outerHTML).toBe(
+				element.hasAttribute("hintable")
+			);
 		}
 	});
-}
+});

@@ -7,9 +7,14 @@ const clickableSelector =
 	"[role='button'], [role='link'], [role='treeitem'], [role='tab'], [role='option'], " +
 	"[role='radio'], [role='checkbox'], [role='menuitem'], [role='menuitemradio'], " +
 	// Attributes
-	"[contenteditable='true'], [contenteditable=''], [jsaction]";
+	"[contenteditable='true'], [contenteditable=''], [role='toolbar'] > *";
 
-const buttonClassSelector = "[class*='button' i]";
+/**
+ * It matches every div, li, h1, h2, h3, h4, h5 or h6 that has the word button
+ * in its class
+ */
+const buttonClassSelector =
+	"[class*='button' i]:not(:not(div, li, h1, h2, h3, h4, h5, h6))";
 
 // Maximum distance between an element and it's descendent to be considered
 // a redundant clickable element
