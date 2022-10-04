@@ -46,9 +46,21 @@ export async function splitRequestsByFrame(
 	}
 
 	for (const [key, value] of hintsByFrame.entries()) {
+		let arg: number | undefined;
+
+		if (
+			request.type === "scrollUpAtElement" ||
+			request.type === "scrollDownAtElement" ||
+			request.type === "scrollUpPage" ||
+			request.type === "scrollDownPage"
+		) {
+			arg = request.arg;
+		}
+
 		requests.set(key, {
 			type: request.type,
 			target: value,
+			arg,
 		});
 	}
 
