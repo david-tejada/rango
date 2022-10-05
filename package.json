@@ -28,6 +28,9 @@
 		"last 1 Firefox version"
 	],
 	"xo": {
+		"parserOptions": {
+			"project": "./tsconfig.xo.json"
+		},
 		"envs": [
 			"browser"
 		],
