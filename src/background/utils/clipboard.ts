@@ -34,7 +34,7 @@ async function getClipboardTabId(): Promise<number | undefined> {
 		...nonActiveTabs,
 		...activeTabsOtherWindows,
 		...activeTabsCurrentWindow,
-	].filter((tab) => tab.url?.startsWith("http"));
+	].filter((tab) => tab.url?.match(/^(http|file)/));
 
 	for (const tab of possibleClipboardTabsByPriority) {
 		try {
