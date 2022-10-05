@@ -1,14 +1,14 @@
 import { triggerHintsUpdate } from "../hints/triggerHintsUpdate";
 import { getElementFromPoint } from "../utils/elementIsVisible";
-import { Hintable } from "../Hintable";
+import { ElementWrapper } from "../wrappers";
 
 const hoveredElements: Set<Element> = new Set();
 
-export async function hoverElement(hintables: Hintable[]) {
+export async function hoverElement(wrappers: ElementWrapper[]) {
 	unhoverAll();
-	for (const hintable of hintables) {
-		hintable.hint?.flash();
-		const targetElement = hintable.element;
+	for (const wrapper of wrappers) {
+		wrapper.hint?.flash();
+		const targetElement = wrapper.element;
 		const targetElementRect = targetElement.getBoundingClientRect();
 		const elementToDispatchEvent =
 			getElementFromPoint(targetElementRect.x + 5, targetElementRect.y + 5) ??
