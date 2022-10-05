@@ -1,5 +1,5 @@
-import { focusesOnclick } from "../utils/isClickable";
-import { Hintable } from "../Hintable";
+import { focusesOnclick } from "../utils/focusesOnclick";
+import { ElementWrapper } from "../wrappers";
 import { openInBackgroundTab, openInNewTab } from "./openInNewTab";
 
 function dispatchClick(element: Element) {
@@ -23,22 +23,22 @@ function dispatchClick(element: Element) {
 	element.dispatchEvent(clickEvent);
 }
 
-export async function clickElement(hintables: Hintable[]) {
+export async function clickElement(wrappers: ElementWrapper[]) {
 	// If there are multiple targets and some of them are anchor elements we open
 	// those in a new background tab
-	if (hintables.length > 1) {
-		const anchorHintables = hintables.filter(
+	if (wrappers.length > 1) {
+		const anchorWrappers = wrappers.filter(
 			(hintable) => hintable.element instanceof HTMLAnchorElement
 		);
-		hintables = hintables.filter(
+		wrappers = wrappers.filter(
 			(hintable) => !(hintable.element instanceof HTMLAnchorElement)
 		);
-		await openInBackgroundTab(anchorHintables);
+		await openInBackgroundTab(anchorWrappers);
 	}
 
-	for (const hintable of hintables) {
-		const element = hintable.element;
-		hintable.hint?.flash();
+	for (const wrapper of wrappers) {
+		const element = wrapper.element;
+		wrapper.hint?.flash();
 		if (element instanceof HTMLElement && focusesOnclick(element)) {
 			element.focus();
 		} else if (element instanceof HTMLAnchorElement) {
@@ -53,7 +53,7 @@ export async function clickElement(hintables: Hintable[]) {
 				element.getAttribute("target") === "_blank" &&
 				element.getAttribute("href")
 			) {
-				void openInNewTab([hintable]);
+				void openInNewTab([wrapper]);
 			} else {
 				dispatchClick(element);
 			}
