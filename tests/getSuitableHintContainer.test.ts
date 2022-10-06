@@ -1,40 +1,14 @@
-import path from "node:path";
 import puppeteer from "puppeteer";
-// eslint-disable-next-line import/no-unassigned-import
-import "./jest-matchers/toHaveHintIn";
-
-// Using this because I can't find a way to make import.meta.url work in Jest
-/* eslint-disable unicorn/prefer-module */
-const EXTENSION_PATH = path.resolve(__dirname, "..", "dist-mv3");
-const TEST_PAGE_DIR = path.resolve(
-	__dirname,
-	"test-pages",
-	"getSuitableHintContainer.html"
-);
-const TEST_PAGE_PATH = new URL(TEST_PAGE_DIR, "file://").toString();
-/* eslint-enable unicorn/prefer-module */
-
-jest.setTimeout(30_000);
+import { getFileUrlPath } from "./utils/getFileUrlPath";
+import { launchBrowser } from "./utils/launchBrowser";
 
 describe("The hints are placed in the appropriate DOM element", () => {
 	let browser: puppeteer.Browser;
 	let page: puppeteer.Page;
 
 	beforeAll(async () => {
-		browser = await puppeteer.launch({
-			headless: false,
-			devtools: true,
-			args: [
-				`--disable-extensions-except=${EXTENSION_PATH}`,
-				`--load-extension=${EXTENSION_PATH}`,
-			],
-		});
-
-		const pages = await browser.pages();
-		page = pages[0] ?? (await browser.newPage());
-		await page.goto(TEST_PAGE_PATH);
-		await page.bringToFront();
-		await page.waitForSelector(".rango-hint-wrapper");
+		({ browser, page } = await launchBrowser());
+		await page.goto(getFileUrlPath("./test-pages/basic.html"));
 	});
 
 	afterAll(async () => {
@@ -42,32 +16,103 @@ describe("The hints are placed in the appropriate DOM element", () => {
 	});
 
 	test("The hint won't be placed in an element with overflow hidden and insufficient space", async () => {
-		await expect("#clickable-1").not.toHaveHintIn("#skip-1", page);
-		await expect("#clickable-1").toHaveHintIn("#target-1", page);
+		await page.evaluate(() => {
+			document.body.innerHTML = `
+				<div id="target">
+					<div id="skip" style="overflow: hidden">
+						<a href="#">Link</a>
+					</div>
+				</div>
+			`;
+		});
+
+		await page.waitForSelector(".rango-hint");
+		const $hint = await page.$("#target > .rango-hint-wrapper");
+		const $noHint = await page.$("#skip > .rango-hint-wrapper");
+
+		expect($hint).not.toBeNull();
+		expect($noHint).toBeNull();
 	});
 
 	test("The hint will be placed in an element with overflow hidden but sufficient space", async () => {
-		await expect("#clickable-2").toHaveHintIn("#target-2", page);
+		await page.evaluate(() => {
+			document.body.innerHTML = `
+					<div style="overflow: hidden; padding: 15px">
+						<a href="#">Link</a>
+					</div>
+			`;
+		});
+
+		await page.waitForSelector(".rango-hint");
+		const $hint = await page.$("div > .rango-hint-wrapper");
+
+		expect($hint).not.toBeNull();
 	});
 
 	test("The hint for the summary element won't be placed inside the details element", async () => {
-		await expect("#clickable-3").not.toHaveHintIn("#skip-3", page);
-		await expect("#clickable-3").toHaveHintIn("#target-3", page);
+		await page.evaluate(() => {
+			document.body.innerHTML = `
+			<details>
+				<summary>Details</summary>
+				Something small enough to escape casual notice.
+			</details>
+		`;
+		});
+
+		await page.waitForSelector(".rango-hint");
+		const $hint = await page.$("body > .rango-hint-wrapper");
+		const $noHint = await page.$("details > .rango-hint-wrapper");
+
+		expect($hint).not.toBeNull();
+		expect($noHint).toBeNull();
 	});
 
 	test("The hint won't be placed beyond its scroll container", async () => {
-		await expect("#clickable-4").toHaveHintIn("#target-4", page);
-		await expect("#clickable-5").not.toHaveHintIn("#skip-5", page);
-		await expect("#clickable-5").toHaveHintIn("#target-5", page);
+		await page.evaluate(() => {
+			document.body.innerHTML = `
+				<ul style="height: 10px; overflow: auto">
+					<li style="overflow: hidden; font-size: 20px">
+						<a href="#">Link</a>
+					</li>
+				</ul>
+		`;
+		});
+
+		await page.waitForSelector(".rango-hint");
+		const $hint = await page.$("ul > .rango-hint-wrapper");
+
+		expect($hint).not.toBeNull();
 	});
 
-	test("The hint won't be placed beyond a fixed container", async () => {
-		await expect("#clickable-7").toHaveHintIn("#target-7", page);
-		await expect("#clickable-8").not.toHaveHintIn("#skip-8", page);
-		await expect("#clickable-8").toHaveHintIn("#target-8", page);
-	});
+	test("The hint won't be placed beyond a fixed or sticky container", async () => {
+		await page.evaluate(() => {
+			document.body.innerHTML = `
+				<aside style="position: fixed; overflow: hidden">
+					<div style="overflow: hidden">
+						<a href="#">Link</a>
+					</div>
+				</aside>
+			`;
+		});
 
-	test("The hint won't be placed beyond a sticky container", async () => {
-		await expect("#clickable-9").toHaveHintIn("#target-9", page);
+		await page.waitForSelector(".rango-hint");
+		let $hint = await page.$("aside > .rango-hint-wrapper");
+
+		expect($hint).not.toBeNull();
+
+		await page.evaluate(() => {
+			document.body.innerHTML = `
+				<aside style="position: sticky; overflow: hidden">
+					<div style="overflow: hidden">
+						<a href="#">Link</a>
+					</div>
+				</aside>
+			`;
+		});
+
+		await page.waitForSelector(".rango-hint");
+		$hint = await page.$("aside > .rango-hint-wrapper");
+
+		expect($hint).not.toBeNull();
 	});
 });
