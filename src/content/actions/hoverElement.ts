@@ -1,4 +1,3 @@
-import { triggerHintsUpdate } from "../hints/triggerHintsUpdate";
 import { getElementFromPoint } from "../utils/elementIsVisible";
 import { ElementWrapper } from "../wrappers";
 
@@ -29,8 +28,6 @@ export async function hoverElement(wrappers: ElementWrapper[]) {
 
 		hoveredElements.add(targetElement);
 	}
-
-	await triggerHintsUpdate();
 }
 
 function unhoverElement(element: Element) {
