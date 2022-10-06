@@ -1,21 +1,15 @@
 import { RangoActionWithTarget } from "../../typings/RangoAction";
 import { assertDefined } from "../../typings/TypingUtils";
-import { hintables } from "../hints/hintables";
-// import { getHintablesByHint } from "../intersectors";
+import { getWrapper } from "../wrappers";
 import { clickElement } from "./clickElement";
 import {
 	copyElementTextContentToClipboard,
 	copyLinkToClipboard,
 	copyMarkdownLinkToClipboard,
 } from "./copy";
+import { scroll } from "./scroll";
 import { hoverElement } from "./hoverElement";
 import { openInBackgroundTab, openInNewTab } from "./openInNewTab";
-import {
-	scrollElementToBottom,
-	scrollElementToCenter,
-	scrollElementToTop,
-	scrollVerticallyAtElement,
-} from "./scroll";
 import { showTitleAndHref } from "./showTitleAndHref";
 
 export async function runRangoActionWithTarget(
@@ -23,62 +17,62 @@ export async function runRangoActionWithTarget(
 ): Promise<string | undefined> {
 	const hints =
 		typeof request.target === "string" ? [request.target] : request.target;
-	const intersectors = hintables.getByHint(hints);
+	const wrappers = getWrapper(hints);
 
-	// Element for scroll, if there's more than one target we take the first and ignore the rest
-	const element = intersectors[0]?.element;
-	assertDefined(element);
+	// Wrapper for scroll, if there's more than one target we take the first and ignore the rest
+	const wrapper = wrappers[0];
+	assertDefined(wrapper);
 
 	switch (request.type) {
 		case "clickElement":
 		case "directClickElement":
-			await clickElement(intersectors);
+			await clickElement(wrappers);
 			break;
 
 		case "showLink":
-			showTitleAndHref(intersectors);
+			showTitleAndHref(wrappers);
 			break;
 
 		case "openInNewTab":
-			await openInNewTab(intersectors);
+			await openInNewTab(wrappers);
 			break;
 
 		case "openInBackgroundTab":
-			await openInBackgroundTab(intersectors);
+			await openInBackgroundTab(wrappers);
 			break;
 
 		case "hoverElement":
-			await hoverElement(intersectors);
+			await hoverElement(wrappers);
 			break;
 
 		case "copyLink":
-			return copyLinkToClipboard(intersectors);
+			return copyLinkToClipboard(wrappers);
 
 		case "copyMarkdownLink":
-			return copyMarkdownLinkToClipboard(intersectors);
+			return copyMarkdownLinkToClipboard(wrappers);
 
 		case "copyElementTextContent":
-			return copyElementTextContentToClipboard(intersectors);
+			return copyElementTextContentToClipboard(wrappers);
 
 		case "scrollUpAtElement":
-			scrollVerticallyAtElement("up", element, request.arg);
+			scroll({ dir: "up", target: wrapper, factor: request.arg });
 			break;
 
 		case "scrollDownAtElement":
-			scrollVerticallyAtElement("down", element, request.arg);
+			scroll({ dir: "down", target: wrapper, factor: request.arg });
 			break;
 
-		case "scrollElementToTop":
-			scrollElementToTop(element);
-			break;
+		// case "scrollElementToTop":
+		// 	scrollElementToTop(wrapper);
+		// 	break;
 
-		case "scrollElementToBottom":
-			scrollElementToBottom(element);
-			break;
+		// case "scrollElementToBottom":
+		// 	scrollElementToBottom(wrapper);
+		// 	break;
 
-		case "scrollElementToCenter":
-			scrollElementToCenter(element);
-			break;
+		// case "scrollElementToCenter":
+		// 	scrollElementToCenter(wrapper);
+		// 	break;
 
 		default:
 			break;

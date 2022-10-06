@@ -1,163 +1,109 @@
-import { getStackContainer } from "../utils/getStackContainer";
+/* eslint-disable capitalized-comments */
+import { ElementWrapper } from "../wrappers";
 
-let scrollContainer: HTMLElement | undefined;
+const DEFAULT_SCROLL_FACTOR = 0.66;
+
+let lastScrollContainer: HTMLElement | undefined;
 let lastScrollFactor: number;
 
-function isPageScroll(container: Element) {
-	return container === document.body || container === document.documentElement;
+interface ScrollOptions {
+	dir: "up" | "down" | "left" | "right";
+	target?: ElementWrapper;
+	repeatLastScroll?: boolean;
+	factor?: number;
 }
 
-function scrollVerticallyAmount(
-	scrollContainer: HTMLElement,
-	scrollAmount: number
+/**
+ * Since the scroll container could be spanning beyond the viewport we need
+ * the rectangle that it's actually intersecting the viewport
+ */
+function getIntersectionWithViewport(element: Element): DOMRect {
+	const { left, right, top, bottom } = element.getBoundingClientRect();
+	const viewportHeight = document.documentElement.clientHeight;
+	const viewportWidth = document.documentElement.clientWidth;
+
+	const intersectionLeft = Math.max(0, left);
+	const intersectionRight = Math.min(right, viewportWidth);
+	const intersectionTop = Math.max(0, top);
+
+	const intersectionBottom = Math.min(viewportHeight, bottom);
+
+	return new DOMRect(
+		intersectionLeft, // x
+		intersectionTop, // y
+		intersectionRight - intersectionLeft, // width
+		intersectionBottom - intersectionTop // height
+	);
+}
+
+export function snapScroll(
+	target: ElementWrapper,
+	position: "top" | "center" | "bottom"
 ) {
+	const scrollContainer = target.scrollContainer;
+
+	if (!scrollContainer) {
+		// I should probably notify the user that the element doesn't scroll
+		throw new Error("Selected element doesn't scroll");
+	}
+
+	const isPageScroll = scrollContainer.matches("body, head");
+}
+
+export function scroll(options: ScrollOptions) {
+	const { dir, target, repeatLastScroll } = options;
+	let factor = options.factor;
+	let scrollContainer;
+
+	if (target && repeatLastScroll) {
+		throw new Error("Can't specify both a target and repeatLastTarget.");
+	}
+
+	if (repeatLastScroll && (!lastScrollContainer || !lastScrollFactor)) {
+		throw new Error("Unable to repeat the last scroll");
+	}
+
+	if (target) {
+		scrollContainer = target.scrollContainer;
+		if (!scrollContainer) {
+			// I should probably notify the user that the element doesn't scroll
+			throw new Error("Selected element doesn't scroll");
+		}
+
+		// We store the values for future use
+		lastScrollContainer = scrollContainer;
+	}
+
+	if (repeatLastScroll) {
+		scrollContainer = lastScrollContainer;
+		factor = lastScrollFactor;
+	}
+
+	// Page scroll
+	if (!target && !repeatLastScroll) {
+		const { clientHeight, scrollHeight } = document.documentElement;
+		scrollContainer =
+			clientHeight === scrollHeight ? document.body : document.documentElement;
+	}
+
+	const { width: scrollWidth, height: scrollHeight } =
+		getIntersectionWithViewport(scrollContainer);
+
+	let left = 0;
+	let top = 0;
+	factor ??= DEFAULT_SCROLL_FACTOR;
+	lastScrollFactor = factor;
+
+	if (dir === "up") top = -scrollHeight * factor;
+	if (dir === "down") top = scrollHeight * factor;
+	if (dir === "left") left = -scrollWidth * factor;
+	if (dir === "right") left = scrollWidth * factor;
+
+	//
 	const previousScrollBehavior =
 		window.getComputedStyle(scrollContainer).scrollBehavior;
 	scrollContainer.style.scrollBehavior = "auto";
 
-	scrollContainer.scrollBy({ left: 0, top: scrollAmount, behavior: "auto" });
+	scrollContainer.scrollBy({ left, top, behavior: "auto" });
 	scrollContainer.style.scrollBehavior = previousScrollBehavior;
-}
-
-function scrollVertically(
-	scrollContainer: HTMLElement,
-	direction: "up" | "down",
-	scrollFactor: number
-) {
-	lastScrollFactor = scrollFactor;
-	const scrollHeight = Math.min(
-		scrollContainer.clientHeight,
-		document.documentElement.clientHeight
-	);
-	const scrollAmount =
-		direction === "up"
-			? -scrollHeight * scrollFactor
-			: scrollHeight * scrollFactor;
-
-	scrollVerticallyAmount(scrollContainer, scrollAmount);
-}
-
-export function scrollVerticallyAtElement(
-	direction: "up" | "down",
-	element: Element,
-	scrollFactor?: number
-) {
-	scrollFactor = scrollFactor ?? lastScrollFactor ?? 0.66;
-	scrollContainer = getStackContainer(element);
-
-	if (scrollContainer) {
-		scrollVertically(scrollContainer, direction, scrollFactor);
-	}
-}
-
-function getElementVisibleRect(element: Element): DOMRect {
-	const rect = element.getBoundingClientRect();
-	const viewportHeight = document.documentElement.clientHeight;
-	const viewportWidth = document.documentElement.clientWidth;
-	const elementTop = Math.max(0, rect.top);
-	const elementBottom = Math.min(viewportHeight, rect.bottom);
-	const elementLeft = Math.max(0, rect.left);
-	const elementRight = Math.min(0, viewportWidth);
-	return new DOMRect(
-		elementLeft,
-		elementTop,
-		elementRight - elementLeft,
-		elementBottom - elementTop
-	);
-}
-
-export function scrollElementToTop(element: Element) {
-	scrollContainer = getStackContainer(element);
-
-	if (scrollContainer) {
-		const containerRect = getElementVisibleRect(scrollContainer);
-		const elementTop = element.getBoundingClientRect().top;
-		const scrollAmount = isPageScroll(scrollContainer)
-			? elementTop
-			: elementTop - containerRect.top;
-
-		scrollVerticallyAmount(scrollContainer, scrollAmount);
-
-		// After scrolling we need to check if were the element sits now there is a
-		// sticky or fixed element obscuring the element. If that's the case we scroll
-		// down the height of that sticky element
-		const elementRect = element.getBoundingClientRect();
-		const elementsAt = document.elementsFromPoint(
-			elementRect.x + 5,
-			elementRect.y + 5
-		);
-		let outerSticky;
-
-		for (const elementAt of elementsAt) {
-			if (elementAt === element || elementAt.contains(element)) {
-				break;
-			}
-
-			const elementPosition = window.getComputedStyle(elementAt).position;
-			if (
-				(elementPosition === "sticky" || elementPosition === "fixed") &&
-				(!outerSticky ||
-					outerSticky.compareDocumentPosition(elementAt) === 4 || // ElementAt precedes outerSticky
-					outerSticky.compareDocumentPosition(elementAt) === 10) // ElementAt precedes and contains outerSticky
-			) {
-				outerSticky = elementAt;
-			}
-		}
-
-		if (outerSticky) {
-			scrollVerticallyAmount(scrollContainer, -outerSticky.clientHeight);
-		}
-	}
-}
-
-export function scrollElementToBottom(element: Element) {
-	scrollContainer = getStackContainer(element);
-
-	if (scrollContainer) {
-		const containerRect = getElementVisibleRect(scrollContainer);
-		const elementBottom = element.getBoundingClientRect().bottom;
-		const scrollAmount = isPageScroll(scrollContainer)
-			? scrollContainer.clientHeight - elementBottom
-			: containerRect.bottom - elementBottom;
-
-		scrollVerticallyAmount(scrollContainer, -scrollAmount);
-	}
-}
-
-export function scrollElementToCenter(element: Element) {
-	scrollContainer = getStackContainer(element);
-
-	if (scrollContainer) {
-		const containerRect = getElementVisibleRect(scrollContainer);
-		const containerCenter = isPageScroll(scrollContainer)
-			? scrollContainer.clientHeight / 2
-			: containerRect.top + containerRect.height / 2;
-		const elementCenter =
-			element.getBoundingClientRect().top + element.clientHeight / 2;
-		const scrollAmount =
-			Math.max(containerCenter, elementCenter) -
-			Math.min(containerCenter, elementCenter);
-
-		// If the container center is greater than the element center, that means that
-		// the element is below the center of the container. In that case the scroll
-		// amount needs to be negative to move the element upwards.
-		if (containerCenter > elementCenter) {
-			scrollVerticallyAmount(scrollContainer, -scrollAmount);
-		} else {
-			scrollVerticallyAmount(scrollContainer, scrollAmount);
-		}
-	}
-}
-
-export function scrollPageVertically(
-	direction: "up" | "down",
-	scrollAmount = 0.66
-) {
-	const scrollContainer =
-		document.documentElement.clientHeight ===
-		document.documentElement.scrollHeight
-			? document.body
-			: document.documentElement;
-
-	scrollVertically(scrollContainer, direction, scrollAmount);
 }

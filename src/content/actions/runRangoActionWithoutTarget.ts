@@ -1,20 +1,26 @@
 import { RangoActionWithoutTarget } from "../../typings/RangoAction";
-import { triggerHintsUpdate } from "../hints/triggerHintsUpdate";
 import { setNavigationToggle } from "../hints/shouldDisplayHints";
-import { hintables } from "../hints/hintables";
 import { unhoverAll } from "./hoverElement";
-import { scrollPageVertically } from "./scroll";
+import { scroll } from "./scroll";
 
 export async function runRangoActionWithoutTarget(
 	request: RangoActionWithoutTarget
 ): Promise<string | undefined> {
 	switch (request.type) {
 		case "scrollUpPage":
-			scrollPageVertically("up", request.arg);
+			scroll({ dir: "up", factor: request.arg });
 			break;
 
 		case "scrollDownPage":
-			scrollPageVertically("down", request.arg);
+			scroll({ dir: "down", factor: request.arg });
+			break;
+
+		case "scrollUpAtElement":
+			scroll({ dir: "up", repeatLastScroll: true });
+			break;
+
+		case "scrollDownAtElement":
+			scroll({ dir: "down", repeatLastScroll: true });
 			break;
 
 		case "copyLocationProperty":
@@ -33,24 +39,24 @@ export async function runRangoActionWithoutTarget(
 			unhoverAll();
 			break;
 
-		case "refreshHints": {
-			const running = hintables
-				.getAll({
-					clickable: true,
-				})
-				.map(async (hintable) => hintable.update());
-			await Promise.allSettled(running);
-			break;
-		}
+		// case "refreshHints": {
+		// 	const running = hintables
+		// 		.getAll({
+		// 			clickable: true,
+		// 		})
+		// 		.map(async (hintable) => hintable.update());
+		// 	await Promise.allSettled(running);
+		// 	break;
+		// }
 
 		case "enableHintsNavigation":
 			setNavigationToggle(true);
-			await triggerHintsUpdate(true);
+			// await triggerHintsUpdate(true);
 			break;
 
 		case "disableHintsNavigation":
 			setNavigationToggle(false);
-			await triggerHintsUpdate(true);
+			// await triggerHintsUpdate(true);
 			break;
 
 		default:
