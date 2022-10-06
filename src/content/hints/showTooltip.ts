@@ -1,25 +1,31 @@
 import tippy from "tippy.js";
-import { Hintable } from "../Hintable";
+import { assertDefined } from "../../typings/TypingUtils";
+import { ElementWrapper } from "../wrappers";
 
 export function showTooltip(
-	hintable: Hintable,
+	wrapper: ElementWrapper,
 	text: string,
 	duration: number
 ) {
-	const hintElement = hintable.hint?.innerDiv as HTMLElement;
-	hintElement.id = "rango-tooltip";
-	hintElement.dataset["tippyContent"] = text;
-	const instance = tippy(hintElement, {
+	assertDefined(wrapper.hint);
+
+	const hintInner = wrapper.hint.inner;
+	hintInner.id = "rango-tooltip";
+	hintInner.dataset["tippyContent"] = text;
+
+	const instance = tippy(hintInner, {
 		zIndex: 2_147_483_647,
-		appendTo: hintElement.parentElement!,
+		appendTo: hintInner.parentElement!,
 		maxWidth: "none",
 		allowHTML: true,
 	});
+
 	instance.show();
 
-	hintable.hint?.flash(duration);
+	wrapper.hint.flash(duration);
+
 	setTimeout(() => {
 		instance.hide();
-		hintElement.removeAttribute("id");
+		hintInner.removeAttribute("id");
 	}, duration);
 }
