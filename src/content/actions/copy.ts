@@ -1,54 +1,63 @@
-import { Hintable } from "../Hintable";
 import { showTooltip } from "../hints/showTooltip";
+import { ElementWrapper } from "../wrappers";
 
 export function copyElementTextContentToClipboard(
-	hintables: Hintable[]
+	wrappers: ElementWrapper[]
 ): string | undefined {
-	const textContents = [];
-	for (const hintable of hintables) {
-		const textContent = hintable.element.textContent;
-		textContents.push(textContent);
+	const textContents: string[] = [];
+
+	for (const wrapper of wrappers) {
+		const textContent = wrapper.element.textContent;
+
+		if (textContent) {
+			textContents.push(textContent);
+		}
+
 		const message = textContent ? "Copied!" : "No text content to copy";
-		showTooltip(hintable, message, 1500);
+		showTooltip(wrapper, message, 1500);
 	}
 
 	return textContents.length > 0 ? textContents.join("\n") : undefined;
 }
 
-export function copyLinkToClipboard(hintables: Hintable[]): string | undefined {
-	const hrefs = [];
+export function copyLinkToClipboard(
+	wrappers: ElementWrapper[]
+): string | undefined {
+	const hrefs: string[] = [];
 
-	for (const hintable of hintables) {
+	for (const wrapper of wrappers) {
 		let href;
-		if (hintable.element instanceof HTMLAnchorElement) {
-			href = hintable.element.href;
+
+		if (wrapper.element instanceof HTMLAnchorElement) {
+			href = wrapper.element.href;
 			hrefs.push(href);
 		}
 
 		const message = href ? "Copied!" : "Not a link";
-		showTooltip(hintable, message, 1500);
+		showTooltip(wrapper, message, 1500);
 	}
 
 	return hrefs.length > 0 ? hrefs.join("\n") : undefined;
 }
 
 export function copyMarkdownLinkToClipboard(
-	hintables: Hintable[]
+	wrappers: ElementWrapper[]
 ): string | undefined {
-	const markdownLinks = [];
+	const markdownLinks: string[] = [];
 
-	for (const hintable of hintables) {
+	for (const wrapper of wrappers) {
 		let href;
 		let markdownLink;
-		if (hintable.element instanceof HTMLAnchorElement) {
-			href = hintable.element.href;
-			const title = hintable.element.textContent ?? "";
+
+		if (wrapper.element instanceof HTMLAnchorElement) {
+			href = wrapper.element.href;
+			const title = wrapper.element.textContent ?? "";
 			markdownLink = `[${title}](${href})`;
 			markdownLinks.push(markdownLink);
 		}
 
 		const message = markdownLink ? "Copied!" : "Not a link";
-		showTooltip(hintable, message, 1500);
+		showTooltip(wrapper, message, 1500);
 	}
 
 	return markdownLinks.length > 0 ? markdownLinks.join("\n") : undefined;
