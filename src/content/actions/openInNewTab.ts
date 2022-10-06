@@ -1,10 +1,10 @@
 import browser from "webextension-polyfill";
 import { assertDefined } from "../../typings/TypingUtils";
-import { Hintable } from "../Hintable";
+import { ElementWrapper } from "../wrappers";
 
-export async function openInNewTab(hintables: Hintable[]) {
-	const first = hintables[0];
-	const rest = hintables.slice(1);
+export async function openInNewTab(wrappers: ElementWrapper[]) {
+	const first = wrappers[0];
+	const rest = wrappers.slice(1);
 
 	assertDefined(first);
 	first.hint?.flash();
@@ -20,20 +20,20 @@ export async function openInNewTab(hintables: Hintable[]) {
 	}
 }
 
-export async function openInBackgroundTab(hintables: Hintable[]) {
-	const links = [];
-	const anchorHintables = [];
+export async function openInBackgroundTab(wrappers: ElementWrapper[]) {
+	const links: string[] = [];
+	const anchorWrappers: ElementWrapper[] = [];
 
-	for (const hintable of hintables) {
-		if (hintable.element instanceof HTMLAnchorElement) {
-			anchorHintables.push(hintable);
-			links.push(hintable.element.href);
+	for (const wrapper of wrappers) {
+		if (wrapper.element instanceof HTMLAnchorElement) {
+			anchorWrappers.push(wrapper);
+			links.push(wrapper.element.href);
 		}
 	}
 
 	if (links.length > 0) {
-		for (const hintable of anchorHintables) {
-			hintable.hint?.flash();
+		for (const wrapper of anchorWrappers) {
+			wrapper.hint?.flash();
 		}
 
 		await browser.runtime.sendMessage({
