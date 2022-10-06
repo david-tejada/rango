@@ -8,6 +8,8 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "focusPreviousTab"
 		| "unhoverAll"
 		| "copyCurrentTabMarkdownUrl"
+		| "scrollUpAtElement"
+		| "scrollDownAtElement"
 		| "toggleHints"
 		| "toggleKeyboardClicking"
 		| "enableHintsNavigation"
@@ -32,7 +34,7 @@ interface RangoActionWithoutTargetWithStringArg {
 		| "resetToggleLevel";
 	arg: string;
 }
-interface RangoActionWithoutTargetWithNumberArg {
+export interface RangoActionWithoutTargetWithNumberArg {
 	type:
 		| "closeTabsLeftEndInWindow"
 		| "closeTabsRightEndInWindow"
