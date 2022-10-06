@@ -5,9 +5,6 @@ const returnedHints: string[] = [];
 
 // This function is called from the intersection observer callback on every intersection.
 export async function cacheHints(amount: number) {
-	if (document.body.getAttribute("jscontroller") === "pjICDe") {
-		// debugger;
-	}
 	const returnedHintsAmount = returnedHints.length;
 	if (returnedHintsAmount > 0) {
 		hintsCache.push(...returnedHints.splice(0, returnedHintsAmount));
@@ -25,19 +22,11 @@ export async function cacheHints(amount: number) {
 }
 
 export function popHint(): string | undefined {
-	console.log("hintsCache:", hintsCache);
-	if (document.body.getAttribute("jscontroller") === "pjICDe") {
-		// debugger;
-	}
 	const hint = hintsCache.pop();
 	return hint;
 }
 
 export function pushHint(hints: string | string[], keepInCache = false) {
-	console.log("hintsCache:", hintsCache);
-	if (document.body.getAttribute("jscontroller") === "pjICDe") {
-		// debugger;
-	}
 	hints = typeof hints === "string" ? [hints] : hints;
 
 	if (keepInCache) {
