@@ -225,9 +225,12 @@ export class Hint {
 		setStyleProperties(this.inner, { display: "none" });
 
 		if (process.env["NODE_ENV"] !== "production") {
-			delete this.outer.dataset.hint;
-			delete this.inner.dataset.hint;
-			if (this.target instanceof HTMLElement) delete this.target.dataset.hint;
+			/* eslint-disable @typescript-eslint/no-dynamic-delete */
+			delete this.outer.dataset["hint"];
+			delete this.inner.dataset["hint"];
+			if (this.target instanceof HTMLElement)
+				delete this.target.dataset["hint"];
+			/* eslint-enable @typescript-eslint/no-dynamic-delete */
 		}
 	}
 }
