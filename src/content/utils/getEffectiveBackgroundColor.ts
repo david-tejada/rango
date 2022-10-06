@@ -24,7 +24,7 @@ function isRgb(color: string) {
 	return true;
 }
 
-function getAscendantRgb(element: HTMLElement) {
+function getAscendantRgb(element: Element) {
 	let current = element.parentElement;
 
 	while (current) {
@@ -40,8 +40,8 @@ function getAscendantRgb(element: HTMLElement) {
 	return "rgb(255, 255, 255)";
 }
 
-export function getEffectiveBackgroundColor(element: HTMLElement) {
-	let current: HTMLElement | null = element;
+export function getEffectiveBackgroundColor(element: Element) {
+	let current: Element | null = element;
 
 	while (current) {
 		const backgroundColor = window.getComputedStyle(current).backgroundColor;
