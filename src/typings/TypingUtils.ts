@@ -1,5 +1,4 @@
 import { FocusOnClickInput } from "./FocusOnClickInput";
-import { HintedIntersector, Intersector } from "./Intersector";
 
 export function assertDefined<T>(
 	value: T | null | undefined
@@ -68,12 +67,6 @@ export function hasDisabled(
 		element instanceof HTMLButtonElement ||
 		element instanceof HTMLSelectElement
 	);
-}
-
-export function isHintedIntersector(
-	intersector: Intersector
-): intersector is HintedIntersector {
-	return intersector.hintText !== undefined;
 }
 
 export function isHtmlElement(element: Element): element is HTMLElement {
