@@ -1,5 +1,5 @@
 import { assertDefined } from "../../typings/TypingUtils";
-import { isClickable } from "./isClickable";
+import { isHintable } from "./isHintable";
 
 export function hasTextNodesChildren(element: Element) {
 	return [...element.childNodes].some(
@@ -63,7 +63,7 @@ export function getFirstTextNodeDescendant(element: Node): Text | undefined {
 			// in the YouTube search suggestions every item is an element with role="option" and inside
 			// those that represent previous searches a link element to remove said search,
 			// positioned at the right end
-			if (isClickable(childNode)) {
+			if (isHintable(childNode)) {
 				continue;
 			}
 
