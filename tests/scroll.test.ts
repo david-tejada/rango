@@ -5,7 +5,6 @@ import {
 	rangoCommandWithoutTarget,
 	rangoCommandWithTarget,
 } from "./utils/rangoCommands";
-import { getAttribute } from "./utils/puppeteerHelpers";
 import { sleep } from "./utils/testHelpers";
 
 let page: puppeteer.Page;
@@ -46,19 +45,25 @@ async function executeCommandAndGetScrolledFactor(options: {
 		(element) => element.scrollTop
 	);
 
-	let hint;
+	let hint: string | undefined;
 
 	if (getHintFrom) {
 		// We need to insert a prudent wait here so that the hints have had time to
 		// update after the initial setup scrolling
 		await sleep(100);
 		await page.waitForSelector(`${getHintFrom} a[data-hint]`);
-		hint = await getAttribute(`${getHintFrom} a[data-hint]`, "data-hint", page);
+		hint = await page.$eval(
+			`${getHintFrom} a[data-hint]`,
+			(element) => (element as HTMLAnchorElement).dataset["hint"]
+		);
 	}
 
 	await (hint
 		? rangoCommandWithTarget(action, [hint], arg)
 		: rangoCommandWithoutTarget(action, arg));
+
+	// We insert a wait to make sure the command has enough time to be executed
+	await sleep(250);
 
 	const containerHeight = await $container.evaluate(
 		(element) => element.clientHeight
@@ -71,215 +76,471 @@ async function executeCommandAndGetScrolledFactor(options: {
 	const scrollTop = await $container.evaluate((element) => element.scrollTop);
 
 	return {
-		scrolledLeftFactor: (scrollLeft - scrollLeftBefore) / containerWidth,
-		scrolledTopFactor: (scrollTop - scrollTopBefore) / containerHeight,
+		scrolledRightFactor: (scrollLeft - scrollLeftBefore) / containerWidth,
+		scrolledDownFactor: (scrollTop - scrollTopBefore) / containerHeight,
 	};
 }
 
 beforeAll(async () => {
 	({ browser, page } = await launchBrowser());
-	await page.goto(getFileUrlPath("./test-pages/verticalScrolling.html"));
 });
 
 afterAll(async () => {
 	await browser.close();
 });
 
-describe("DOWN", () => {
-	describe("Default factor (0.66)", () => {
-		test("At element", async () => {
-			const { scrolledTopFactor } = await executeCommandAndGetScrolledFactor({
-				action: "scrollDownAtElement",
-				getHintFrom: ".scroll",
-				shouldScroll: ".scroll",
+describe("Vertical", () => {
+	beforeAll(async () => {
+		await page.goto(getFileUrlPath("./test-pages/verticalScrolling.html"));
+	});
+
+	describe("DOWN", () => {
+		describe("Default factor (0.66)", () => {
+			test("At element", async () => {
+				const { scrolledDownFactor } = await executeCommandAndGetScrolledFactor(
+					{
+						action: "scrollDownAtElement",
+						getHintFrom: ".scroll",
+						shouldScroll: ".scroll",
+					}
+				);
+
+				expect(scrolledDownFactor).toBeCloseTo(0.66);
 			});
 
-			expect(scrolledTopFactor).toBe(0.66);
+			test("At element again", async () => {
+				// We first scroll once so that it can store the last scrolled container
+				await executeCommandAndGetScrolledFactor({
+					action: "scrollDownAtElement",
+					getHintFrom: ".scroll",
+					shouldScroll: ".scroll",
+				});
+
+				const { scrolledDownFactor } = await executeCommandAndGetScrolledFactor(
+					{
+						action: "scrollDownAtElement",
+						shouldScroll: ".scroll",
+					}
+				);
+
+				expect(scrolledDownFactor).toBeCloseTo(0.66);
+			});
+
+			test("At element (page scroll)", async () => {
+				const { scrolledDownFactor } = await executeCommandAndGetScrolledFactor(
+					{
+						action: "scrollDownAtElement",
+						getHintFrom: ".no-scroll",
+						shouldScroll: "html",
+					}
+				);
+
+				expect(scrolledDownFactor).toBeCloseTo(0.66);
+			});
+
+			test("Page", async () => {
+				const { scrolledDownFactor } = await executeCommandAndGetScrolledFactor(
+					{
+						action: "scrollDownPage",
+						shouldScroll: "html",
+					}
+				);
+
+				expect(scrolledDownFactor).toBeCloseTo(0.66);
+			});
 		});
 
-		test("At element again", async () => {
-			// We first scroll once so that it can store the last scrolled container
-			await executeCommandAndGetScrolledFactor({
-				action: "scrollDownAtElement",
-				getHintFrom: ".scroll",
-				shouldScroll: ".scroll",
+		describe("Custom factor", () => {
+			test("At element", async () => {
+				const { scrolledDownFactor } = await executeCommandAndGetScrolledFactor(
+					{
+						action: "scrollDownAtElement",
+						getHintFrom: ".scroll",
+						shouldScroll: ".scroll",
+						arg: 0.4,
+					}
+				);
+
+				expect(scrolledDownFactor).toBeCloseTo(0.4);
 			});
 
-			const { scrolledTopFactor } = await executeCommandAndGetScrolledFactor({
-				action: "scrollDownAtElement",
-				shouldScroll: ".scroll",
+			test("At element again", async () => {
+				// We first scroll once so that it can store the last scrolled container
+				await executeCommandAndGetScrolledFactor({
+					action: "scrollDownAtElement",
+					getHintFrom: ".scroll",
+					shouldScroll: ".scroll",
+					arg: 0.6,
+				});
+
+				const { scrolledDownFactor } = await executeCommandAndGetScrolledFactor(
+					{
+						action: "scrollDownAtElement",
+						shouldScroll: ".scroll",
+					}
+				);
+
+				expect(scrolledDownFactor).toBeCloseTo(0.6);
 			});
 
-			expect(scrolledTopFactor).toBe(0.66);
-		});
+			test("At element (page scroll)", async () => {
+				const { scrolledDownFactor } = await executeCommandAndGetScrolledFactor(
+					{
+						action: "scrollDownAtElement",
+						getHintFrom: ".no-scroll",
+						shouldScroll: "html",
+						arg: 1.8,
+					}
+				);
 
-		test("At element (page scroll)", async () => {
-			const { scrolledTopFactor } = await executeCommandAndGetScrolledFactor({
-				action: "scrollDownAtElement",
-				getHintFrom: ".no-scroll",
-				shouldScroll: "html",
+				await sleep(500);
+				await page.$eval("html", (element) => element.scrollTop);
+
+				expect(scrolledDownFactor).toBeCloseTo(1.8);
 			});
 
-			expect(scrolledTopFactor).toBe(0.66);
-		});
+			test("Page", async () => {
+				const { scrolledDownFactor } = await executeCommandAndGetScrolledFactor(
+					{
+						action: "scrollDownPage",
+						shouldScroll: "html",
+						arg: 0.7,
+					}
+				);
 
-		test("Page", async () => {
-			const { scrolledTopFactor } = await executeCommandAndGetScrolledFactor({
-				action: "scrollDownPage",
-				shouldScroll: "html",
+				expect(scrolledDownFactor).toBeCloseTo(0.7);
 			});
-
-			expect(scrolledTopFactor).toBe(0.66);
 		});
 	});
 
-	describe("Custom factor", () => {
-		test("At element", async () => {
-			const { scrolledTopFactor } = await executeCommandAndGetScrolledFactor({
-				action: "scrollDownAtElement",
-				getHintFrom: ".scroll",
-				shouldScroll: ".scroll",
-				arg: 0.4,
+	describe("UP", () => {
+		describe("Default factor (0.66)", () => {
+			test("At element", async () => {
+				const { scrolledDownFactor } = await executeCommandAndGetScrolledFactor(
+					{
+						action: "scrollUpAtElement",
+						getHintFrom: ".scroll",
+						shouldScroll: ".scroll",
+					}
+				);
+				expect(scrolledDownFactor).toBeCloseTo(-0.66);
 			});
 
-			expect(scrolledTopFactor).toBe(0.4);
+			test("At element again", async () => {
+				// We first scroll once so that it can store the last scrolled container
+				await executeCommandAndGetScrolledFactor({
+					action: "scrollUpAtElement",
+					getHintFrom: ".scroll",
+					shouldScroll: ".scroll",
+				});
+
+				const { scrolledDownFactor } = await executeCommandAndGetScrolledFactor(
+					{
+						action: "scrollUpAtElement",
+						shouldScroll: ".scroll",
+					}
+				);
+
+				expect(scrolledDownFactor).toBeCloseTo(-0.66);
+			});
+
+			test("At element, (page scroll)", async () => {
+				const { scrolledDownFactor } = await executeCommandAndGetScrolledFactor(
+					{
+						action: "scrollUpAtElement",
+						getHintFrom: ".no-scroll",
+						shouldScroll: "html",
+					}
+				);
+				expect(scrolledDownFactor).toBeCloseTo(-0.66);
+			});
+
+			test("Page", async () => {
+				const { scrolledDownFactor } = await executeCommandAndGetScrolledFactor(
+					{
+						action: "scrollUpPage",
+						shouldScroll: "html",
+					}
+				);
+
+				expect(scrolledDownFactor).toBeCloseTo(-0.66);
+			});
 		});
 
-		test("At element again", async () => {
-			// We first scroll once so that it can store the last scrolled container
-			await executeCommandAndGetScrolledFactor({
-				action: "scrollDownAtElement",
-				getHintFrom: ".scroll",
-				shouldScroll: ".scroll",
-				arg: 0.6,
+		describe("Custom factor", () => {
+			test("At element", async () => {
+				const { scrolledDownFactor } = await executeCommandAndGetScrolledFactor(
+					{
+						action: "scrollUpAtElement",
+						getHintFrom: ".scroll",
+						shouldScroll: ".scroll",
+						arg: 2,
+					}
+				);
+				expect(scrolledDownFactor).toBeCloseTo(-2);
 			});
 
-			const { scrolledTopFactor } = await executeCommandAndGetScrolledFactor({
-				action: "scrollDownAtElement",
-				shouldScroll: ".scroll",
+			test("At element again", async () => {
+				// We first scroll once so that it can store the last scrolled container
+				await executeCommandAndGetScrolledFactor({
+					action: "scrollUpAtElement",
+					getHintFrom: ".scroll",
+					shouldScroll: ".scroll",
+					arg: 2,
+				});
+
+				const { scrolledDownFactor } = await executeCommandAndGetScrolledFactor(
+					{
+						action: "scrollUpAtElement",
+						shouldScroll: ".scroll",
+					}
+				);
+
+				expect(scrolledDownFactor).toBeCloseTo(-2);
 			});
 
-			expect(scrolledTopFactor).toBe(0.6);
-		});
-
-		test("At element (page scroll)", async () => {
-			const { scrolledTopFactor } = await executeCommandAndGetScrolledFactor({
-				action: "scrollDownAtElement",
-				getHintFrom: ".no-scroll",
-				shouldScroll: "html",
-				arg: 1.8,
+			test("At element (page scroll)", async () => {
+				const { scrolledDownFactor } = await executeCommandAndGetScrolledFactor(
+					{
+						action: "scrollUpAtElement",
+						getHintFrom: ".no-scroll",
+						shouldScroll: "html",
+						arg: 1.5,
+					}
+				);
+				expect(scrolledDownFactor).toBeCloseTo(-1.5);
 			});
 
-			await sleep(500);
-			await page.$eval("html", (element) => element.scrollTop);
+			test("Page", async () => {
+				const { scrolledDownFactor } = await executeCommandAndGetScrolledFactor(
+					{
+						action: "scrollUpPage",
+						shouldScroll: "html",
+						arg: 2,
+					}
+				);
 
-			expect(scrolledTopFactor).toBe(1.8);
-		});
-
-		test("Page", async () => {
-			const { scrolledTopFactor } = await executeCommandAndGetScrolledFactor({
-				action: "scrollDownPage",
-				shouldScroll: "html",
-				arg: 0.7,
+				expect(scrolledDownFactor).toBeCloseTo(-2);
 			});
-
-			expect(scrolledTopFactor).toBe(0.7);
 		});
 	});
 });
 
-describe("UP", () => {
-	describe("Default factor (0.66)", () => {
-		test("At element", async () => {
-			const { scrolledTopFactor } = await executeCommandAndGetScrolledFactor({
-				action: "scrollUpAtElement",
-				getHintFrom: ".scroll",
-				shouldScroll: ".scroll",
+describe("Horizontal", () => {
+	beforeAll(async () => {
+		await page.goto(getFileUrlPath("./test-pages/horizontalScrolling.html"));
+		await page.waitForSelector(".rango-hint");
+	});
+
+	describe("RIGHT", () => {
+		describe("Default factor (0.66)", () => {
+			test("At element", async () => {
+				const { scrolledRightFactor } =
+					await executeCommandAndGetScrolledFactor({
+						action: "scrollRightAtElement",
+						getHintFrom: ".scroll",
+						shouldScroll: ".scroll",
+					});
+
+				expect(scrolledRightFactor).toBeCloseTo(0.66);
 			});
-			expect(scrolledTopFactor).toBe(-0.66);
+
+			test("At element again", async () => {
+				// We first scroll once so that it can store the last scrolled container
+				await executeCommandAndGetScrolledFactor({
+					action: "scrollRightAtElement",
+					getHintFrom: ".scroll",
+					shouldScroll: ".scroll",
+				});
+
+				const { scrolledRightFactor } =
+					await executeCommandAndGetScrolledFactor({
+						action: "scrollRightAtElement",
+						shouldScroll: ".scroll",
+					});
+
+				expect(scrolledRightFactor).toBeCloseTo(0.66);
+			});
+
+			test("At element (page scroll)", async () => {
+				const { scrolledRightFactor } =
+					await executeCommandAndGetScrolledFactor({
+						action: "scrollRightAtElement",
+						getHintFrom: ".no-scroll",
+						shouldScroll: "html",
+					});
+
+				expect(scrolledRightFactor).toBeCloseTo(0.66);
+			});
+
+			test("Page", async () => {
+				const { scrolledRightFactor } =
+					await executeCommandAndGetScrolledFactor({
+						action: "scrollRightPage",
+						shouldScroll: "html",
+					});
+
+				expect(scrolledRightFactor).toBeCloseTo(0.66);
+			});
 		});
 
-		test("At element again", async () => {
-			// We first scroll once so that it can store the last scrolled container
-			await executeCommandAndGetScrolledFactor({
-				action: "scrollUpAtElement",
-				getHintFrom: ".scroll",
-				shouldScroll: ".scroll",
+		describe("Custom factor", () => {
+			test("At element", async () => {
+				const { scrolledRightFactor } =
+					await executeCommandAndGetScrolledFactor({
+						action: "scrollRightAtElement",
+						getHintFrom: ".scroll",
+						shouldScroll: ".scroll",
+						arg: 0.4,
+					});
+
+				expect(scrolledRightFactor).toBeCloseTo(0.4);
 			});
 
-			const { scrolledTopFactor } = await executeCommandAndGetScrolledFactor({
-				action: "scrollUpAtElement",
-				shouldScroll: ".scroll",
+			test("At element again", async () => {
+				// We first scroll once so that it can store the last scrolled container
+				await executeCommandAndGetScrolledFactor({
+					action: "scrollRightAtElement",
+					getHintFrom: ".scroll",
+					shouldScroll: ".scroll",
+					arg: 0.6,
+				});
+
+				const { scrolledRightFactor } =
+					await executeCommandAndGetScrolledFactor({
+						action: "scrollRightAtElement",
+						shouldScroll: ".scroll",
+					});
+
+				expect(scrolledRightFactor).toBeCloseTo(0.6);
 			});
 
-			expect(scrolledTopFactor).toBe(-0.66);
-		});
+			test("At element (page scroll)", async () => {
+				const { scrolledRightFactor } =
+					await executeCommandAndGetScrolledFactor({
+						action: "scrollRightAtElement",
+						getHintFrom: ".no-scroll",
+						shouldScroll: "html",
+						arg: 1.8,
+					});
 
-		test("At element, (page scroll)", async () => {
-			const { scrolledTopFactor } = await executeCommandAndGetScrolledFactor({
-				action: "scrollUpAtElement",
-				getHintFrom: ".no-scroll",
-				shouldScroll: "html",
-			});
-			expect(scrolledTopFactor).toBe(-0.66);
-		});
-
-		test("Page", async () => {
-			const { scrolledTopFactor } = await executeCommandAndGetScrolledFactor({
-				action: "scrollUpPage",
-				shouldScroll: "html",
+				expect(scrolledRightFactor).toBeCloseTo(1.8);
 			});
 
-			expect(scrolledTopFactor).toBe(-0.66);
+			test("Page", async () => {
+				const { scrolledRightFactor } =
+					await executeCommandAndGetScrolledFactor({
+						action: "scrollRightPage",
+						shouldScroll: "html",
+						arg: 0.7,
+					});
+
+				expect(scrolledRightFactor).toBeCloseTo(0.7);
+			});
 		});
 	});
 
-	describe("Custom factor", () => {
-		test("At element", async () => {
-			const { scrolledTopFactor } = await executeCommandAndGetScrolledFactor({
-				action: "scrollUpAtElement",
-				getHintFrom: ".scroll",
-				shouldScroll: ".scroll",
-				arg: 2,
+	describe("LEFT", () => {
+		describe("Default factor (0.66)", () => {
+			test("At element", async () => {
+				const { scrolledRightFactor } =
+					await executeCommandAndGetScrolledFactor({
+						action: "scrollLeftAtElement",
+						getHintFrom: ".scroll",
+						shouldScroll: ".scroll",
+					});
+				expect(scrolledRightFactor).toBeCloseTo(-0.66);
 			});
-			expect(scrolledTopFactor).toBe(-2);
+
+			test("At element again", async () => {
+				// We first scroll once so that it can store the last scrolled container
+				await executeCommandAndGetScrolledFactor({
+					action: "scrollLeftAtElement",
+					getHintFrom: ".scroll",
+					shouldScroll: ".scroll",
+				});
+
+				const { scrolledRightFactor } =
+					await executeCommandAndGetScrolledFactor({
+						action: "scrollLeftAtElement",
+						shouldScroll: ".scroll",
+					});
+
+				expect(scrolledRightFactor).toBeCloseTo(-0.66);
+			});
+
+			test("At element, (page scroll)", async () => {
+				const { scrolledRightFactor } =
+					await executeCommandAndGetScrolledFactor({
+						action: "scrollLeftAtElement",
+						getHintFrom: ".no-scroll",
+						shouldScroll: "html",
+					});
+				expect(scrolledRightFactor).toBeCloseTo(-0.66);
+			});
+
+			test("Page", async () => {
+				const { scrolledRightFactor } =
+					await executeCommandAndGetScrolledFactor({
+						action: "scrollLeftPage",
+						shouldScroll: "html",
+					});
+
+				expect(scrolledRightFactor).toBeCloseTo(-0.66);
+			});
 		});
 
-		test("At element again", async () => {
-			// We first scroll once so that it can store the last scrolled container
-			await executeCommandAndGetScrolledFactor({
-				action: "scrollUpAtElement",
-				getHintFrom: ".scroll",
-				shouldScroll: ".scroll",
-				arg: 2,
+		describe("Custom factor", () => {
+			test("At element", async () => {
+				const { scrolledRightFactor } =
+					await executeCommandAndGetScrolledFactor({
+						action: "scrollLeftAtElement",
+						getHintFrom: ".scroll",
+						shouldScroll: ".scroll",
+						arg: 2,
+					});
+				expect(scrolledRightFactor).toBeCloseTo(-2);
 			});
 
-			const { scrolledTopFactor } = await executeCommandAndGetScrolledFactor({
-				action: "scrollUpAtElement",
-				shouldScroll: ".scroll",
+			test("At element again", async () => {
+				// We first scroll once so that it can store the last scrolled container
+				await executeCommandAndGetScrolledFactor({
+					action: "scrollLeftAtElement",
+					getHintFrom: ".scroll",
+					shouldScroll: ".scroll",
+					arg: 2,
+				});
+
+				const { scrolledRightFactor } =
+					await executeCommandAndGetScrolledFactor({
+						action: "scrollLeftAtElement",
+						shouldScroll: ".scroll",
+					});
+
+				expect(scrolledRightFactor).toBeCloseTo(-2);
 			});
 
-			expect(scrolledTopFactor).toBe(-2);
-		});
-
-		test("At element (page scroll)", async () => {
-			const { scrolledTopFactor } = await executeCommandAndGetScrolledFactor({
-				action: "scrollUpAtElement",
-				getHintFrom: ".no-scroll",
-				shouldScroll: "html",
-				arg: 1.5,
-			});
-			expect(scrolledTopFactor).toBe(-1.5);
-		});
-
-		test("Page", async () => {
-			const { scrolledTopFactor } = await executeCommandAndGetScrolledFactor({
-				action: "scrollUpPage",
-				shouldScroll: "html",
-				arg: 2,
+			test("At element (page scroll)", async () => {
+				const { scrolledRightFactor } =
+					await executeCommandAndGetScrolledFactor({
+						action: "scrollLeftAtElement",
+						getHintFrom: ".no-scroll",
+						shouldScroll: "html",
+						arg: 1.5,
+					});
+				expect(scrolledRightFactor).toBeCloseTo(-1.5);
 			});
 
-			expect(scrolledTopFactor).toBe(-2);
+			test("Page", async () => {
+				const { scrolledRightFactor } =
+					await executeCommandAndGetScrolledFactor({
+						action: "scrollLeftPage",
+						shouldScroll: "html",
+						arg: 2,
+					});
+
+				expect(scrolledRightFactor).toBeCloseTo(-2);
+			});
 		});
 	});
 });

@@ -10,6 +10,8 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "copyCurrentTabMarkdownUrl"
 		| "scrollUpAtElement"
 		| "scrollDownAtElement"
+		| "scrollLeftAtElement"
+		| "scrollRightAtElement"
 		| "toggleHints"
 		| "toggleKeyboardClicking"
 		| "enableHintsNavigation"
@@ -46,13 +48,17 @@ interface RangoActionWithTargetWithOptionalNumberArg {
 	type:
 		| "scrollUpAtElement"
 		| "scrollDownAtElement"
-		| "scrollUpPage"
-		| "scrollDownPage";
+		| "scrollLeftAtElement"
+		| "scrollRightAtElement";
 	target: string;
 	arg?: number;
 }
 interface RangoActionWithoutTargetWithOptionalNumberArg {
-	type: "scrollUpPage" | "scrollDownPage";
+	type:
+		| "scrollUpPage"
+		| "scrollDownPage"
+		| "scrollLeftPage"
+		| "scrollRightPage";
 	arg?: number;
 }
 interface RangoActionWithSingleTarget {

@@ -1,5 +1,4 @@
 import { keyboard, Key, clipboard } from "@nut-tree/nut-js";
-import { sleep } from "./testHelpers";
 
 export async function rangoCommandWithTarget(
 	actionType: string,
@@ -20,9 +19,6 @@ export async function rangoCommandWithTarget(
 
 	await clipboard.copy(commandString);
 	await keyboard.pressKey(Key.LeftControl, Key.LeftShift, Key.Num3);
-
-	// We insert a wait to make sure the command has enough time to be executed
-	await sleep(100);
 }
 
 export async function rangoCommandWithoutTarget(
@@ -42,7 +38,4 @@ export async function rangoCommandWithoutTarget(
 
 	await clipboard.copy(commandString);
 	await keyboard.pressKey(Key.LeftControl, Key.LeftShift, Key.Num3);
-
-	// We insert a wait to make sure the command has enough time to be executed
-	await sleep(100);
 }

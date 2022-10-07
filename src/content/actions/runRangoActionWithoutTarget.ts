@@ -15,12 +15,28 @@ export async function runRangoActionWithoutTarget(
 			scroll({ dir: "down", factor: request.arg });
 			break;
 
+		case "scrollLeftPage":
+			scroll({ dir: "left", factor: request.arg });
+			break;
+
+		case "scrollRightPage":
+			scroll({ dir: "right", factor: request.arg });
+			break;
+
 		case "scrollUpAtElement":
 			scroll({ dir: "up", repeatLastScroll: true });
 			break;
 
 		case "scrollDownAtElement":
 			scroll({ dir: "down", repeatLastScroll: true });
+			break;
+
+		case "scrollRightAtElement":
+			scroll({ dir: "right", repeatLastScroll: true });
+			break;
+
+		case "scrollLeftAtElement":
+			scroll({ dir: "left", repeatLastScroll: true });
 			break;
 
 		case "copyLocationProperty":

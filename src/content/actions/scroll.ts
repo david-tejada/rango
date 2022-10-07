@@ -18,22 +18,28 @@ interface ScrollOptions {
  * the rectangle that it's actually intersecting the viewport
  */
 function getIntersectionWithViewport(element: Element): DOMRect {
-	const { left, right, top, bottom } = element.getBoundingClientRect();
+	const isScrollingElement = element === document.scrollingElement;
+
 	const viewportHeight = document.documentElement.clientHeight;
 	const viewportWidth = document.documentElement.clientWidth;
+
+	const { left, right, top, bottom } = element.getBoundingClientRect();
 
 	const intersectionLeft = Math.max(0, left);
 	const intersectionRight = Math.min(right, viewportWidth);
 	const intersectionTop = Math.max(0, top);
-
 	const intersectionBottom = Math.min(viewportHeight, bottom);
 
-	return new DOMRect(
-		intersectionLeft, // x
-		intersectionTop, // y
-		intersectionRight - intersectionLeft, // width
-		intersectionBottom - intersectionTop // height
-	);
+	const x = isScrollingElement ? 0 : intersectionLeft;
+	const y = isScrollingElement ? 0 : intersectionTop;
+	const width = isScrollingElement
+		? viewportWidth
+		: intersectionRight - intersectionLeft;
+	const height = isScrollingElement
+		? viewportHeight
+		: intersectionBottom - intersectionTop;
+
+	return new DOMRect(x, y, width, height);
 }
 
 export function snapScroll(
@@ -81,13 +87,17 @@ export function scroll(options: ScrollOptions) {
 
 	// Page scroll
 	if (!target && !repeatLastScroll) {
-		const { clientHeight, scrollHeight } = document.documentElement;
+		const { clientHeight, clientWidth, scrollHeight, scrollWidth } =
+			document.documentElement;
+
 		scrollContainer =
-			clientHeight === scrollHeight ? document.body : document.documentElement;
+			clientHeight === scrollHeight && clientWidth === scrollWidth
+				? document.body
+				: document.documentElement;
 	}
 
-	const { width: scrollWidth, height: scrollHeight } =
-		getIntersectionWithViewport(scrollContainer);
+	const containerRect = getIntersectionWithViewport(scrollContainer);
+	const { width: scrollWidth, height: scrollHeight } = containerRect;
 
 	let left = 0;
 	let top = 0;

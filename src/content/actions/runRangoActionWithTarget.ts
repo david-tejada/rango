@@ -62,6 +62,14 @@ export async function runRangoActionWithTarget(
 			scroll({ dir: "down", target: wrapper, factor: request.arg });
 			break;
 
+		case "scrollLeftAtElement":
+			scroll({ dir: "left", target: wrapper, factor: request.arg });
+			break;
+
+		case "scrollRightAtElement":
+			scroll({ dir: "right", target: wrapper, factor: request.arg });
+			break;
+
 		// case "scrollElementToTop":
 		// 	scrollElementToTop(wrapper);
 		// 	break;

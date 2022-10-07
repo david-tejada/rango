@@ -13,7 +13,8 @@ export async function launchBrowser(): Promise<{
 }> {
 	const browser = await puppeteer.launch({
 		headless: false,
-		devtools: true,
+		// devtools: true,
+		defaultViewport: null,
 		args: [
 			`--disable-extensions-except=${EXTENSION_PATH}`,
 			`--load-extension=${EXTENSION_PATH}`,

@@ -51,8 +51,8 @@ export async function splitRequestsByFrame(
 		if (
 			request.type === "scrollUpAtElement" ||
 			request.type === "scrollDownAtElement" ||
-			request.type === "scrollUpPage" ||
-			request.type === "scrollDownPage"
+			request.type === "scrollLeftAtElement" ||
+			request.type === "scrollRightAtElement"
 		) {
 			arg = request.arg;
 		}

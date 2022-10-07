@@ -1,11 +1,13 @@
-export function getScrollContainer(element: HTMLElement): HTMLElement | null {
-	let current: HTMLElement | null = element;
+export function getScrollContainer(element: Element): HTMLElement | null {
+	let current: Element | null = element;
 
 	while (current) {
 		if (
 			current === document.body &&
-			document.documentElement.clientHeight !==
-				document.documentElement.scrollHeight
+			(document.documentElement.clientHeight !==
+				document.documentElement.scrollHeight ||
+				document.documentElement.clientWidth !==
+					document.documentElement.scrollWidth)
 		) {
 			return document.documentElement;
 		}
@@ -13,7 +15,9 @@ export function getScrollContainer(element: HTMLElement): HTMLElement | null {
 		const style = window.getComputedStyle(current);
 
 		if (
-			current.scrollHeight > current.clientHeight &&
+			current instanceof HTMLElement &&
+			(current.scrollHeight > current.clientHeight ||
+				current.scrollWidth > current.clientWidth) &&
 			(style.overflowY === "auto" || style.overflowY === "scroll")
 		) {
 			return current;

@@ -7,6 +7,7 @@ let page: puppeteer.Page;
 
 beforeAll(async () => {
 	({ browser, page } = await launchBrowser());
+	await page.setViewport({ width: 800, height: 600 });
 });
 
 beforeEach(async () => {
