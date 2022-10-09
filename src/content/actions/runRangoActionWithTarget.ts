@@ -7,7 +7,7 @@ import {
 	copyLinkToClipboard,
 	copyMarkdownLinkToClipboard,
 } from "./copy";
-import { scroll } from "./scroll";
+import { scroll, snapScroll } from "./scroll";
 import { hoverElement } from "./hoverElement";
 import { openInBackgroundTab, openInNewTab } from "./openInNewTab";
 import { showTitleAndHref } from "./showTitleAndHref";
@@ -70,17 +70,17 @@ export async function runRangoActionWithTarget(
 			scroll({ dir: "right", target: wrapper, factor: request.arg });
 			break;
 
-		// case "scrollElementToTop":
-		// 	scrollElementToTop(wrapper);
-		// 	break;
+		case "scrollElementToTop":
+			snapScroll("top", wrapper);
+			break;
 
-		// case "scrollElementToBottom":
-		// 	scrollElementToBottom(wrapper);
-		// 	break;
+		case "scrollElementToBottom":
+			snapScroll("bottom", wrapper);
+			break;
 
-		// case "scrollElementToCenter":
-		// 	scrollElementToCenter(wrapper);
-		// 	break;
+		case "scrollElementToCenter":
+			snapScroll("center", wrapper);
+			break;
 
 		default:
 			break;
