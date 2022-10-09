@@ -28,7 +28,7 @@ function getAscendantRgb(element: Element) {
 	let current = element.parentElement;
 
 	while (current) {
-		const backgroundColor = window.getComputedStyle(current).backgroundColor;
+		const { backgroundColor } = window.getComputedStyle(current);
 
 		if (isRgb(backgroundColor)) {
 			return backgroundColor;
@@ -44,9 +44,9 @@ export function getEffectiveBackgroundColor(element: Element) {
 	let current: Element | null = element;
 
 	while (current) {
-		const backgroundColor = window.getComputedStyle(current).backgroundColor;
+		const { backgroundColor } = window.getComputedStyle(current);
 
-		if (backgroundColor !== "rgba(0, 0, 0, 0)") {
+		if (backgroundColor && backgroundColor !== "rgba(0, 0, 0, 0)") {
 			if (isRgb(backgroundColor)) {
 				return backgroundColor;
 			}
