@@ -675,7 +675,7 @@ describe("Snap", () => {
 		test("Page", async () => {
 			await page.waitForSelector("[data-hint]");
 			// Here we have to select an element that's able to scroll to the center
-			const $target = await page.$(".no-scroll li:nth-child(30) a[data-hint]");
+			const $target = await page.$(".no-scroll li:nth-child(15) a[data-hint]");
 			const hint = await $target!.evaluate(getHint);
 			await rangoCommandWithTarget("scrollElementToCenter", [hint]);
 			await sleep(300);
@@ -711,7 +711,7 @@ describe("Snap", () => {
 		test("Page", async () => {
 			await page.waitForSelector("[data-hint]");
 			// Here we have to select an element that's able to scroll to the bottom
-			const $target = await page.$(".no-scroll li:nth-child(30) a[data-hint]");
+			const $target = await page.$(".no-scroll li:nth-child(15) a[data-hint]");
 			const hint = await $target!.evaluate(getHint);
 			await rangoCommandWithTarget("scrollElementToBottom", [hint]);
 			await sleep(300);
@@ -725,5 +725,38 @@ describe("Snap", () => {
 
 			expect(bottom).toBeCloseTo(cBottom);
 		});
+	});
+});
+
+describe("Find scrolling container", () => {
+	beforeAll(async () => {
+		await page.goto(getFileUrlPath("./test-pages/scrollingContainers.html"));
+	});
+
+	test("Left aside", async () => {
+		const { scrolledDownFactor } = await executeCommandAndGetScrolledFactor({
+			action: "scrollDownLeftAside",
+			shouldScroll: ".left-aside",
+		});
+
+		expect(scrolledDownFactor).toBeCloseTo(0.66);
+	});
+
+	test("Main content (center)", async () => {
+		const { scrolledDownFactor } = await executeCommandAndGetScrolledFactor({
+			action: "scrollDownPage",
+			shouldScroll: ".main",
+		});
+
+		expect(scrolledDownFactor).toBeCloseTo(0.66);
+	});
+
+	test("Right aside", async () => {
+		const { scrolledDownFactor } = await executeCommandAndGetScrolledFactor({
+			action: "scrollDownRightAside",
+			shouldScroll: ".right-aside",
+		});
+
+		expect(scrolledDownFactor).toBeCloseTo(0.66);
 	});
 });

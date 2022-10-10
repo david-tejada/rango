@@ -58,7 +58,11 @@ interface RangoActionWithoutTargetWithOptionalNumberArg {
 		| "scrollUpPage"
 		| "scrollDownPage"
 		| "scrollLeftPage"
-		| "scrollRightPage";
+		| "scrollRightPage"
+		| "scrollUpLeftAside"
+		| "scrollDownLeftAside"
+		| "scrollUpRightAside"
+		| "scrollDownRightAside";
 	arg?: number;
 }
 interface RangoActionWithSingleTarget {
