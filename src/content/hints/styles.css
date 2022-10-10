@@ -1,0 +1,19 @@
+/* This selectors ensure a high specificity (10-1-0) so that our styles aren't 
+overwritten by external rules */
+.rango-hint-wrapper:not(#a#a#a#a#a#a#a#a#a#a) {
+	all: initial;
+	position: relative;
+	width: 0;
+	height: 0;
+	display: none;
+}
+
+.rango-hint:not(#a#a#a#a#a#a#a#a#a#a) {
+	all: initial;
+	display: none;
+	position: absolute;
+	border-radius: 20%;
+	line-height: 1.25;
+	font-family: monospace;
+	padding: 0 0.15em;
+}

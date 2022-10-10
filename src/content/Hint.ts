@@ -33,19 +33,12 @@ export class Hint {
 
 		this.positioned = false;
 
-		// Initial styles for outer
-		const position =
-			window.getComputedStyle(this.container).display === "grid"
-				? "absolute"
-				: "relative";
-
-		setStyleProperties(this.outer, {
-			all: "initial",
-			position,
-			width: "0",
-			height: "0",
-			display: "none",
-		});
+		// If display is grid we need to set position absolute so that the hint
+		// wrapper doesn't occupy a grid children space
+		const { display } = window.getComputedStyle(this.container);
+		if (display === "grid") {
+			setStyleProperties(this.outer, { position: "absolute" });
+		}
 
 		// Initial styles for inner
 
@@ -74,19 +67,8 @@ export class Hint {
 			fontWeight = `${fontWeightOption}`;
 		}
 
-		// We do this first as setStyleProperties doesn't guarantee going over the
-		// properties in order
 		setStyleProperties(this.inner, {
-			all: "initial",
-		});
-
-		setStyleProperties(this.inner, {
-			display: "none",
 			"z-index": "7000",
-			position: "absolute",
-			"border-radius": "20%",
-			"line-height": "1.25",
-			"font-family": "monospace",
 			"background-color": subtleBackground
 				? "transparent"
 				: this.backgroundColor.string(),
@@ -94,7 +76,6 @@ export class Hint {
 			outline: subtleHints ? "0" : `1px solid ${outlineColor.string()}`,
 			"font-size": `${hintFontSize}px`,
 			"font-weight": fontWeight,
-			padding: "0 0.15em",
 		});
 	}
 
