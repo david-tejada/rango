@@ -80,6 +80,8 @@ const mutationCallback: MutationCallback = (mutationList) => {
 		}
 	}
 
+	updatePositionAll();
+
 	if (stylesMightHaveChanged) {
 		updateStyleAll();
 		updateShouldBeHintedAll();
@@ -90,10 +92,8 @@ export const mutationObserver = new MutationObserver(mutationCallback);
 
 // RESIZE OBSERVER
 
-const hintContainerResizeObserver = new ResizeObserver((entries) => {
-	for (const entry of entries) {
-		positionHintsInContainer(entry.target);
-	}
+const hintContainerResizeObserver = new ResizeObserver(() => {
+	updatePositionAll();
 });
 
 const hintablesResizeObserver = new ResizeObserver((entries) => {
@@ -101,6 +101,10 @@ const hintablesResizeObserver = new ResizeObserver((entries) => {
 		getWrapper(entry.target).updateShouldBeHinted();
 	}
 });
+
+// =============================================================================
+// WRAPPERS
+// =============================================================================
 
 const wrappersAll: Map<Element, ElementWrapper> = new Map();
 const wrappersHinted: Map<string, ElementWrapper> = new Map();
@@ -121,10 +125,6 @@ export function addWrapper(target: Element) {
 		}
 	}
 }
-
-// =============================================================================
-// WRAPPERS
-// =============================================================================
 
 export function getWrapper(key: Element | string): ElementWrapper;
 export function getWrapper(key: string[]): ElementWrapper[];
@@ -177,32 +177,31 @@ function deleteWrapper(target: Element) {
 	}
 }
 
-function updateStyleAll() {
+// =============================================================================
+// UPDATE
+// =============================================================================
+
+const updateStyleAll = debounce(() => {
 	for (const wrapper of wrappersHinted.values()) {
 		wrapper.hint?.updateColors();
 	}
-}
+}, 50);
+
+const updatePositionAll = debounce(() => {
+	for (const wrapper of wrappersHinted.values()) {
+		wrapper.hint?.position();
+	}
+}, 50);
 
 const updateShouldBeHintedAll = debounce(() => {
+	const hinted = wrappersAll.values();
+	console.log({ hinted });
 	for (const wrapper of wrappersAll.values()) {
 		if (wrapper.isHintable) {
 			wrapper.updateShouldBeHinted();
 		}
 	}
 }, 50);
-
-function positionHintsInContainer(container: Element) {
-	const hints: NodeListOf<HTMLDivElement> = container.querySelectorAll(
-		":scope > .rango-hint-wrapper > .rango-hint"
-	);
-
-	const strings = [...hints].map((hint) => hint.dataset["hint"]) as string[];
-	const wrappers = getWrapper(strings);
-
-	for (const wrapper of wrappers) {
-		wrapper.hint?.position();
-	}
-}
 
 // =============================================================================
 // ELEMENT WRAPPER
