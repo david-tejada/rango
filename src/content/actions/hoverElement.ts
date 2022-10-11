@@ -1,4 +1,3 @@
-import { getElementFromPoint } from "../utils/elementIsVisible";
 import { ElementWrapper } from "../wrappers";
 
 const hoveredElements: Set<Element> = new Set();
@@ -7,11 +6,7 @@ export async function hoverElement(wrappers: ElementWrapper[]) {
 	unhoverAll();
 	for (const wrapper of wrappers) {
 		wrapper.hint?.flash();
-		const targetElement = wrapper.element;
-		const targetElementRect = targetElement.getBoundingClientRect();
-		const elementToDispatchEvent =
-			getElementFromPoint(targetElementRect.x + 5, targetElementRect.y + 5) ??
-			targetElement;
+		const targetElement = wrapper.topmost;
 
 		const mouseenterEvent = new MouseEvent("mouseenter", {
 			view: window,
@@ -23,8 +18,8 @@ export async function hoverElement(wrappers: ElementWrapper[]) {
 			bubbles: true,
 			cancelable: true,
 		});
-		elementToDispatchEvent.dispatchEvent(mouseenterEvent);
-		elementToDispatchEvent.dispatchEvent(mouseoverEvent);
+		targetElement.dispatchEvent(mouseenterEvent);
+		targetElement.dispatchEvent(mouseoverEvent);
 
 		hoveredElements.add(targetElement);
 	}

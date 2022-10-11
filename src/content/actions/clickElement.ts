@@ -37,7 +37,7 @@ export async function clickElement(wrappers: ElementWrapper[]) {
 	}
 
 	for (const wrapper of wrappers) {
-		const element = wrapper.element;
+		const element = wrapper.topmost;
 		wrapper.hint?.flash();
 		if (element instanceof HTMLElement && focusesOnclick(element)) {
 			element.focus();

@@ -227,6 +227,7 @@ function positionHintsInContainer(container: Element) {
 
 export class ElementWrapper {
 	readonly element: Element;
+	readonly topmost: Element;
 
 	isIntersecting: boolean;
 	isHintable: boolean;
@@ -245,6 +246,20 @@ export class ElementWrapper {
 
 	constructor(element: Element) {
 		this.element = element;
+
+		// Get topmost element
+		const { x, y } = element.getBoundingClientRect();
+		const elementsAtPoint = document.elementsFromPoint(x + 5, y + 5);
+
+		for (const elementAt of elementsAtPoint) {
+			if (elementAt === element || element.contains(elementAt)) {
+				this.topmost = elementAt;
+				break;
+			}
+		}
+
+		this.topmost ??= this.element;
+
 		this.isIntersecting = false;
 
 		this.isHintable = isHintable(this.element);
@@ -333,7 +348,7 @@ export class ElementWrapper {
 		this.isIntersecting = isIntersecting;
 
 		if (this.isIntersecting && this.shouldBeHinted) {
-			this.hint ??= new Hint(this.element);
+			this.hint ??= new Hint(this.topmost);
 			hintContainerResizeObserver.observe(this.hint.container);
 			wrappersHinted.set(this.hint.claim(), this);
 		} else if (this.hint?.string) {
