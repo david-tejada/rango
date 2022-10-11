@@ -9,9 +9,11 @@ import { getScrollContainer } from "./utils/getScrollContainer";
 import { BoundedIntersectionObserver } from "./BoundedIntersectionObserver";
 import { Hint } from "./Hint";
 
-// *** OBSERVERS ***
+// =============================================================================
+// OBSERVERS
+// =============================================================================
 
-// *** INTERSECTION OBSERVER ***
+// INTERSECTION OBSERVER
 
 export const scrollIntersectionObservers: Map<
 	Element | null,
@@ -32,7 +34,7 @@ export async function intersectionCallback(
 	}
 }
 
-// *** MUTATION OBSERVER ***
+// MUTATION OBSERVER
 
 const mutationObserverConfig = {
 	attributes: true,
@@ -40,51 +42,35 @@ const mutationObserverConfig = {
 	subtree: true,
 };
 
-const filterSelector = ":not(head, head *, .rango-hint-wrapper, .rango-hint)";
+const selectorFilter =
+	":not(head, head *, .rango-hint-wrapper, .rango-hint, #rango-copy-paste-area)";
 
 const mutationCallback: MutationCallback = (mutationList) => {
-	const addedElements: Set<Element> = new Set();
-	const removedElements: Set<Element> = new Set();
-	const movedElements: Set<Element> = new Set();
 	let stylesMightHaveChanged = false;
 
 	for (const mutationRecord of mutationList) {
 		for (const node of mutationRecord.addedNodes) {
-			/**
-			 * When an element is moved from one parent to another we get a mutation
-			 * event with an entry with the elements in removedNodes and another one
-			 * with the	element in addedNodes. The issue here is that we don't get
-			 * any intersection event, so if we remove the element first from hintables
-			 * and then we add it again we are not gonna get any intersection and the
-			 * hint won't be created. Here we cancel out element that have been both
-			 * added and deleted.
-			 */
-			if (node instanceof Element && node.matches(filterSelector)) {
-				if (removedElements.has(node)) {
-					removedElements.delete(node);
-					movedElements.add(node);
-				} else {
-					addedElements.add(node);
-				}
+			if (node instanceof Element && node.matches(selectorFilter)) {
+				addWrapper(node);
 			}
 		}
 
 		for (const node of mutationRecord.removedNodes) {
-			if (node instanceof Element && node.matches(filterSelector)) {
-				removedElements.add(node);
+			if (node instanceof Element && node.matches(selectorFilter)) {
+				deleteWrapper(node);
 			}
 		}
 
 		if (
 			mutationRecord.attributeName &&
 			mutationRecord.target instanceof Element &&
-			mutationRecord.target.matches(filterSelector)
+			mutationRecord.target.matches(selectorFilter)
 		) {
 			stylesMightHaveChanged = true;
 
 			// We need to check if the element has changed its isHintable status
 			if (
-				["role", "contenteditable", "jsaction", "disabled"].includes(
+				["role", "contenteditable", "disabled"].includes(
 					mutationRecord.attributeName
 				)
 			) {
@@ -92,18 +78,6 @@ const mutationCallback: MutationCallback = (mutationList) => {
 				getWrapper(mutationRecord.target).updateShouldBeHinted();
 			}
 		}
-	}
-
-	for (const element of addedElements) {
-		addWrapper(element);
-	}
-
-	for (const element of removedElements) {
-		deleteWrapper(element);
-	}
-
-	for (const element of movedElements) {
-		getWrapper(element).elementWasMoved();
 	}
 
 	if (stylesMightHaveChanged) {
@@ -114,7 +88,7 @@ const mutationCallback: MutationCallback = (mutationList) => {
 
 export const mutationObserver = new MutationObserver(mutationCallback);
 
-// *** RESIZE OBSERVER ***
+// RESIZE OBSERVER
 
 const hintContainerResizeObserver = new ResizeObserver((entries) => {
 	for (const entry of entries) {
@@ -147,6 +121,10 @@ export function addWrapper(target: Element) {
 		}
 	}
 }
+
+// =============================================================================
+// WRAPPERS
+// =============================================================================
 
 export function getWrapper(key: Element | string): ElementWrapper;
 export function getWrapper(key: string[]): ElementWrapper[];
@@ -189,9 +167,10 @@ function deleteWrapper(target: Element) {
 	for (const element of elements) {
 		const wrapper = wrappersAll.get(element);
 
+		wrapper?.remove();
+
 		if (wrapper?.hint?.string) {
 			wrappersHinted.delete(wrapper.hint.string);
-			wrapper.hint.release();
 		}
 
 		wrappersAll.delete(element);
@@ -225,11 +204,15 @@ function positionHintsInContainer(container: Element) {
 	}
 }
 
+// =============================================================================
+// ELEMENT WRAPPER
+// =============================================================================
+
 export class ElementWrapper {
 	readonly element: Element;
 	readonly topmost: Element;
 
-	isIntersecting: boolean;
+	isIntersecting?: boolean;
 	isHintable: boolean;
 	shouldBeHinted: boolean;
 
@@ -259,8 +242,6 @@ export class ElementWrapper {
 		}
 
 		this.topmost ??= this.element;
-
-		this.isIntersecting = false;
 
 		this.isHintable = isHintable(this.element);
 
@@ -375,41 +356,13 @@ export class ElementWrapper {
 		return undefined;
 	}
 
-	recomputeStackingContext(isStackingContext: boolean) {
-		this.createsStackingContext = isStackingContext;
-
-		if (isStackingContext) {
-			this.childrenStackingContexts = new Set();
-			const parentStackingContext = this.getParentStackingContext();
-			if (parentStackingContext?.childrenStackingContexts) {
-				for (const childrenStackingContext of parentStackingContext.childrenStackingContexts) {
-					if (this.element.contains(childrenStackingContext.element)) {
-						this.childrenStackingContexts.add(childrenStackingContext);
-						parentStackingContext.childrenStackingContexts.delete(
-							childrenStackingContext
-						);
-					}
-				}
-			}
-		}
-	}
-
-	elementWasMoved() {
-		this.scrollContainer = getScrollContainer(this.element);
+	remove() {
+		this.unobserveIntersection();
 
 		if (this.hint?.string) {
 			this.hint.release();
 		}
 
-		// if (this.createsStackingContext) {
-		// 	if (this.childrenStackingContexts) {
-		// 		for (const child of this.childrenStackingContexts) {
-		// 			this.parentStackingContext?.childrenStackingContexts?.add(child);
-		// 			this.childrenStackingContexts.delete(child);
-		// 		}
-		// 	}
-
-		// 	this.parentStackingContext = undefined;
-		// }
+		this.parentStackingContext?.childrenStackingContexts?.delete(this);
 	}
 }
