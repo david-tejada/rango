@@ -13,10 +13,9 @@ export class Hint {
 	readonly inner: HTMLDivElement;
 	readonly container: Element;
 	positioned: boolean;
-	x?: number;
-	y?: number;
 	color: Color;
 	backgroundColor: Color;
+	freezeColors?: boolean;
 	firstTextNodeDescendant?: Text;
 	string?: string;
 
@@ -126,10 +125,12 @@ export class Hint {
 
 	updateColors() {
 		this.computeColors();
-		setStyleProperties(this.inner, {
-			"background-color": this.backgroundColor.string(),
-			color: this.color.string(),
-		});
+		if (!this.freezeColors) {
+			setStyleProperties(this.inner, {
+				"background-color": this.backgroundColor.string(),
+				color: this.color.string(),
+			});
+		}
 	}
 
 	position() {
@@ -141,9 +142,6 @@ export class Hint {
 		const { x: outerX, y: outerY } = this.outer.getBoundingClientRect();
 		const x = targetX - outerX;
 		const y = targetY - outerY;
-
-		this.x = x;
-		this.y = y;
 
 		setStyleProperties(this.inner, {
 			left: `${x}px`,
@@ -157,8 +155,11 @@ export class Hint {
 			color: this.backgroundColor.string(),
 		});
 
+		this.freezeColors = true;
+
 		setTimeout(() => {
-			this.computeColors();
+			this.freezeColors = false;
+			this.updateColors();
 		}, ms);
 	}
 
