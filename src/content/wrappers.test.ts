@@ -11,6 +11,8 @@ import { addWrapper, getWrapper } from "./wrappers";
 
 jest.mock("webextension-polyfill", () => ({}));
 
+document.elementsFromPoint = jest.fn().mockReturnValue([]);
+
 describe("wrappers.get", () => {
 	test("It creates a wrapper for the parent if it doesn't exist", () => {
 		document.body.innerHTML = `
