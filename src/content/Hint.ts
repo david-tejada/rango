@@ -172,7 +172,7 @@ export class Hint {
 
 		this.inner.textContent = string;
 		this.string = string;
-		this.container.append(this.outer);
+		this.container.prepend(this.outer);
 
 		setStyleProperties(this.outer, { display: "block" });
 
