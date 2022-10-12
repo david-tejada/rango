@@ -195,7 +195,6 @@ const updatePositionAll = debounce(() => {
 
 const updateShouldBeHintedAll = debounce(() => {
 	const hinted = wrappersAll.values();
-	console.log({ hinted });
 	for (const wrapper of wrappersAll.values()) {
 		if (wrapper.isHintable) {
 			wrapper.updateShouldBeHinted();
