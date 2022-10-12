@@ -7,14 +7,14 @@ const clickableSelector =
 	"[role='button'], [role='link'], [role='treeitem'], [role='tab'], [role='option'], " +
 	"[role='radio'], [role='checkbox'], [role='menuitem'], [role='menuitemradio'], " +
 	// Attributes
-	"[contenteditable='true'], [contenteditable=''], [role='toolbar'] > *";
+	"[contenteditable='true'], [contenteditable='']";
 
 /**
  * It matches every div, li, h1, h2, h3, h4, h5 or h6 that has the word button
  * in its class
  */
 const buttonClassSelector =
-	"[class*='button' i]:not(:not(div, li, h1, h2, h3, h4, h5, h6))";
+	"[class*='button' i]:not([class*='buttons' i]):not(:not(div, li, h1, h2, h3, h4, h5, h6))";
 
 // Maximum distance between an element and it's descendent to be considered
 // a redundant clickable element
@@ -44,10 +44,20 @@ function isRedundant(target: Element) {
 }
 
 function isClickable(target: Element): boolean {
-	return (
+	if (
 		target.matches(clickableSelector) ||
 		(target instanceof HTMLElement && target.onclick !== null)
-	);
+	) {
+		return true;
+	}
+
+	const { cursor } = window.getComputedStyle(target);
+
+	if (target.matches("[role='toolbar'] > *") && cursor === "pointer") {
+		return true;
+	}
+
+	return false;
 }
 
 // Returns true if the element is the first element with "cursor: pointer"
