@@ -14,7 +14,7 @@ function mockRendering(origin: HTMLElement) {
 		when(window.getComputedStyle)
 			.calledWith(element)
 			.mockReturnValue({
-				cursor: element.className === "pointer" ? "pointer" : "auto",
+				cursor: element.className.includes("pointer") ? "pointer" : "auto",
 			} as CSSStyleDeclaration);
 
 		const rect = {
@@ -142,7 +142,7 @@ const suites = [
 					"It returns true for the innermost element with class containing the word button that is not inside a hintable element",
 				innerHTML: `
 					<div class="button-wrapper">
-						<div class="button" hintable>Button</div>
+						<div class="button pointer" hintable>Button</div>
 					</div>
 				`,
 			},
