@@ -209,7 +209,7 @@ const updateShouldBeHintedAll = debounce(() => {
 
 export class ElementWrapper {
 	readonly element: Element;
-	readonly topmost: Element;
+	readonly clickTarget: Element;
 
 	isIntersecting?: boolean;
 	isHintable: boolean;
@@ -229,18 +229,26 @@ export class ElementWrapper {
 	constructor(element: Element) {
 		this.element = element;
 
-		// Get topmost element
-		const { x, y } = element.getBoundingClientRect();
-		const elementsAtPoint = document.elementsFromPoint(x + 5, y + 5);
+		// Get clickTarget element
+		if (
+			element.matches(
+				"button, a, input, summary, textarea, select, option, label"
+			)
+		) {
+			this.clickTarget = this.element;
+		} else {
+			const { x, y } = element.getBoundingClientRect();
+			const elementsAtPoint = document.elementsFromPoint(x + 5, y + 5);
 
-		for (const elementAt of elementsAtPoint) {
-			if (elementAt === element || element.contains(elementAt)) {
-				this.topmost = elementAt;
-				break;
+			for (const elementAt of elementsAtPoint) {
+				if (elementAt === element || element.contains(elementAt)) {
+					this.clickTarget = elementAt;
+					break;
+				}
 			}
 		}
 
-		this.topmost ??= this.element;
+		this.clickTarget ??= this.element;
 
 		this.isHintable = isHintable(this.element);
 
@@ -328,7 +336,7 @@ export class ElementWrapper {
 		this.isIntersecting = isIntersecting;
 
 		if (this.isIntersecting && this.shouldBeHinted) {
-			this.hint ??= new Hint(this.topmost);
+			this.hint ??= new Hint(this.clickTarget);
 			hintContainerResizeObserver.observe(this.hint.container);
 			wrappersHinted.set(this.hint.claim(), this);
 		} else if (this.hint?.string) {

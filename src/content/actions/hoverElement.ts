@@ -6,7 +6,7 @@ export async function hoverElement(wrappers: ElementWrapper[]) {
 	unhoverAll();
 	for (const wrapper of wrappers) {
 		wrapper.hint?.flash();
-		const targetElement = wrapper.topmost;
+		const targetElement = wrapper.clickTarget;
 
 		const mouseenterEvent = new MouseEvent("mouseenter", {
 			view: window,
