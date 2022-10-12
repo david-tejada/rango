@@ -1,6 +1,7 @@
 import puppeteer from "puppeteer";
 import { getFileUrlPath } from "./utils/getFileUrlPath";
 import { launchBrowser } from "./utils/launchBrowser";
+import { sleep } from "./utils/testHelpers";
 
 let browser: puppeteer.Browser;
 let page: puppeteer.Page;
@@ -42,6 +43,9 @@ describe("Background color", () => {
 			const innerDiv: HTMLDivElement = document.querySelector("div > div")!;
 			innerDiv.style.backgroundColor = "rgba(0, 0, 255, 0.25)";
 		});
+
+		// We need to wait here as there's a debounce for updating styles
+		await sleep(100);
 
 		const backgroundColor = await page.$eval(".rango-hint", (hint) => {
 			return window.getComputedStyle(hint).backgroundColor;
