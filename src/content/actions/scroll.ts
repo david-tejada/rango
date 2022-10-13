@@ -83,8 +83,8 @@ function getScrollableAtCenter() {
 }
 
 function getLeftmostScrollable() {
-	const scrollables = [...document.querySelectorAll("*")].filter((element) =>
-		isScrollable(element)
+	const scrollables = [...document.querySelectorAll("*")].filter(
+		(element) => isScrollable(element) && element.matches(":not(html, body)")
 	);
 
 	let leftScrollable;
@@ -102,8 +102,8 @@ function getLeftmostScrollable() {
 }
 
 function getRightmostScrollable() {
-	const scrollables = [...document.querySelectorAll("*")].filter((element) =>
-		isScrollable(element)
+	const scrollables = [...document.querySelectorAll("*")].filter(
+		(element) => isScrollable(element) && element.matches(":not(html, body)")
 	);
 
 	let rightScrollable;
