@@ -289,6 +289,7 @@ export class ElementWrapper {
 				this.observeIntersection();
 			} else {
 				if (this.hint?.string) {
+					wrappersHinted.delete(this.hint.string);
 					this.hint.release();
 				}
 
