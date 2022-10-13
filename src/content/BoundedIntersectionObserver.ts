@@ -107,8 +107,15 @@ export class BoundedIntersectionObserver implements IntersectionObserver {
 	}
 
 	unobserve(target: Element) {
-		this.observationTargets.delete(target);
+		//
+		/**
+		 * We need to clean the records here before removing the target from
+		 * observationTargets. If not we could get an intersection entry of an
+		 * element that is not in observationTargets anymore
+		 */
+		this.onIntersection(this.trueObserver.takeRecords(), this.trueObserver);
 		this.trueObserver.unobserve(target);
+		this.observationTargets.delete(target);
 	}
 
 	onIntersection(
