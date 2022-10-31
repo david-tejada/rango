@@ -11,7 +11,7 @@ export function isVisible(element: Element): boolean {
 		 * because elements hidden this way are still clickable I don't think
 		 * we should worry too much about it
 		 */
-		Number.parseFloat(opacity) < 0.1
+		Number.parseFloat(opacity) === 0
 	) {
 		return false;
 	}
