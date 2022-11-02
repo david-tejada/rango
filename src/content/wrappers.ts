@@ -5,7 +5,7 @@ import { isDisabled } from "./utils/isDisabled";
 import { isVisible } from "./utils/isVisible";
 import { getElementsFromOrigin } from "./utils/getElementsFromOrigin";
 import { cacheHints } from "./hints/hintsCache";
-import { getScrollContainer } from "./utils/getScrollContainer";
+import { getUserScrollableContainer } from "./utils/getUserScrollableContainer";
 import { BoundedIntersectionObserver } from "./BoundedIntersectionObserver";
 import { Hint } from "./Hint";
 
@@ -215,7 +215,7 @@ export class ElementWrapper {
 
 	// These properties are only needed for hintables
 	intersectionObserver?: BoundedIntersectionObserver;
-	scrollContainer?: HTMLElement | null;
+	userScrollableContainer?: HTMLElement;
 	effectiveBackgroundColor?: string;
 	hint?: Hint;
 
@@ -301,14 +301,14 @@ export class ElementWrapper {
 	}
 
 	observeIntersection() {
-		this.scrollContainer = getScrollContainer(this.element);
+		this.userScrollableContainer = getUserScrollableContainer(this.element);
 
 		const root =
-			this.scrollContainer === document.documentElement ||
-			this.scrollContainer === document.body ||
-			!this.scrollContainer
+			this.userScrollableContainer === document.documentElement ||
+			this.userScrollableContainer === document.body ||
+			!this.userScrollableContainer
 				? null
-				: this.scrollContainer;
+				: this.userScrollableContainer;
 
 		const options: IntersectionObserverInit = {
 			root,
@@ -335,7 +335,7 @@ export class ElementWrapper {
 		this.isIntersecting = isIntersecting;
 
 		if (this.isIntersecting && this.shouldBeHinted) {
-			this.hint ??= new Hint(this.clickTarget);
+			this.hint ??= new Hint(this.element);
 			hintContainerResizeObserver.observe(this.hint.container);
 			wrappersHinted.set(this.hint.claim(), this);
 		} else if (this.hint?.string) {

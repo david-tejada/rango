@@ -124,12 +124,10 @@ export function snapScroll(
 	position: "top" | "center" | "bottom",
 	target: ElementWrapper
 ) {
-	const scrollContainer = target.scrollContainer;
+	const scrollContainer = target.userScrollableContainer;
 
 	if (!scrollContainer) {
-		// I should probably notify the user that the element doesn't scroll when I
-		// implement toast notifications
-		throw new Error("Selected element doesn't scroll");
+		throw new Error("Couldn't find userScrollableContainer for element");
 	}
 
 	const isPageScroll = scrollContainer.matches("body, html");
@@ -206,10 +204,9 @@ export function scroll(options: ScrollOptions) {
 	}
 
 	if (target instanceof ElementWrapper) {
-		scrollContainer = target.scrollContainer;
+		scrollContainer = target.userScrollableContainer;
 		if (!scrollContainer) {
-			// I should probably notify the user that the element doesn't scroll
-			throw new Error("Selected element doesn't scroll");
+			throw new Error("Couldn't find userScrollableContainer for element");
 		}
 	}
 
