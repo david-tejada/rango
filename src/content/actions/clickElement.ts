@@ -2,23 +2,40 @@ import { focusesOnclick } from "../utils/focusesOnclick";
 import { ElementWrapper } from "../wrappers";
 import { openInBackgroundTab, openInNewTab } from "./openInNewTab";
 
-function dispatchClick(element: Element) {
+async function dispatchClick(element: Element) {
+	const rect = element.getBoundingClientRect();
+	const clientX = rect.x + 3;
+	const clientY = rect.y + 3;
+
 	const mousedownEvent = new MouseEvent("mousedown", {
 		view: window,
+		clientX,
+		clientY,
+		composed: true,
+		buttons: 1,
 		bubbles: true,
 		cancelable: true,
 	});
 	const mouseupEvent = new MouseEvent("mouseup", {
 		view: window,
+		clientX,
+		clientY,
+		composed: true,
 		bubbles: true,
 		cancelable: true,
 	});
 	const clickEvent = new MouseEvent("click", {
 		view: window,
+		clientX,
+		clientY,
+		composed: true,
 		bubbles: true,
 		cancelable: true,
 	});
 	element.dispatchEvent(mousedownEvent);
+	await new Promise((r) => {
+		setTimeout(r, 100);
+	});
 	element.dispatchEvent(mouseupEvent);
 	element.dispatchEvent(clickEvent);
 }
@@ -55,10 +72,10 @@ export async function clickElement(wrappers: ElementWrapper[]) {
 			) {
 				void openInNewTab([wrapper]);
 			} else {
-				dispatchClick(element);
+				void dispatchClick(element);
 			}
 		} else {
-			dispatchClick(element);
+			void dispatchClick(element);
 		}
 	}
 }
