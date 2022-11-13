@@ -1,5 +1,4 @@
 import { debounce } from "../lib/debounceAndThrottle";
-import { createsStackingContext } from "./utils/createsStackingContext";
 import { isHintable } from "./utils/isHintable";
 import { isDisabled } from "./utils/isDisabled";
 import { isVisible } from "./utils/isVisible";
@@ -219,11 +218,6 @@ export class ElementWrapper {
 	effectiveBackgroundColor?: string;
 	hint?: Hint;
 
-	// Stacking contexts
-	createsStackingContext: boolean;
-	parentStackingContext?: ElementWrapper;
-	childrenStackingContexts?: Set<ElementWrapper>;
-
 	constructor(element: Element) {
 		this.element = element;
 
@@ -259,17 +253,6 @@ export class ElementWrapper {
 
 		if (this.shouldBeHinted) {
 			this.observeIntersection();
-		}
-
-		this.createsStackingContext = createsStackingContext(element);
-
-		if (this.createsStackingContext) {
-			this.parentStackingContext = this.getParentStackingContext();
-
-			if (this.createsStackingContext) {
-				this.childrenStackingContexts = new Set();
-				this.parentStackingContext?.childrenStackingContexts?.add(this);
-			}
 		}
 	}
 
@@ -349,26 +332,11 @@ export class ElementWrapper {
 		return parentElement ? wrappersAll.get(parentElement) : undefined;
 	}
 
-	getParentStackingContext(): ElementWrapper | undefined {
-		let current = this.getParent();
-		while (current) {
-			if (current.createsStackingContext) {
-				return current;
-			}
-
-			current = current.getParent();
-		}
-
-		return undefined;
-	}
-
 	remove() {
 		this.unobserveIntersection();
 
 		if (this.hint?.string) {
 			this.hint.release();
 		}
-
-		this.parentStackingContext?.childrenStackingContexts?.delete(this);
 	}
 }
