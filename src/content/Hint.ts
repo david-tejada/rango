@@ -163,7 +163,6 @@ export class Hint {
 		}
 
 		setStyleProperties(this.inner, {
-			"z-index": "100",
 			"background-color": subtleBackground
 				? "transparent"
 				: this.backgroundColor.string(),
