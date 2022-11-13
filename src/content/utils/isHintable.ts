@@ -16,9 +16,44 @@ const clickableSelector =
 const buttonClassSelector =
 	"[class*='button' i]:not([class*='buttons' i]):not(:not(div, li, h1, h2, h3, h4, h5, h6))";
 
-// Maximum distance between an element and it's descendent to be considered
-// a redundant clickable element
-const OVERLAP_THRESHOLD = 10;
+function elementsOverlap(element0: Element, element1: Element) {
+	const {
+		left: l0,
+		right: r0,
+		top: t0,
+		bottom: b0,
+		width: w0,
+		height: h0,
+	} = element0.getBoundingClientRect();
+	const {
+		left: l1,
+		right: r1,
+		top: t1,
+		bottom: b1,
+	} = element1.getBoundingClientRect();
+
+	const overlap =
+		(Math.max(l0, l1) - Math.min(r0, r1)) *
+		(Math.max(t0, t1) - Math.min(b0, b1));
+
+	let factor = 0.9;
+
+	// For small elements we require a smaller overlap. The numbers chosen for the
+	// area are estimative and might need tweaking
+	if (w0 * h0 < 6400) {
+		factor = 0.8;
+	}
+
+	if (w0 * h0 < 2500) {
+		factor = 0.7;
+	}
+
+	if (w0 * h0 < 900) {
+		factor = 0.6;
+	}
+
+	return overlap / (w0 * h0) > factor;
+}
 
 function isRedundant(target: Element) {
 	const descendantClickables = getElementsFromOrigin(target, false).filter(
@@ -26,15 +61,20 @@ function isRedundant(target: Element) {
 	);
 
 	for (const descendant of descendantClickables) {
-		const elementRect = target.getBoundingClientRect();
-		const descendantRect = descendant.getBoundingClientRect();
+		if (
+			target.childNodes.length === 1 &&
+			descendant?.parentElement === target
+		) {
+			return true;
+		}
+
+		const { width, height } = descendant.getBoundingClientRect();
 		if (
 			// We have to ignore descendants that aren't visible, for example, an
 			// <option> inside a <select>
-			descendantRect.width !== 0 &&
-			descendantRect.height !== 0 &&
-			Math.abs(descendantRect.x - elementRect.x) < OVERLAP_THRESHOLD &&
-			Math.abs(descendantRect.y - elementRect.y) < OVERLAP_THRESHOLD
+			width !== 0 &&
+			height !== 0 &&
+			elementsOverlap(target, descendant)
 		) {
 			return true;
 		}
@@ -76,7 +116,8 @@ function isFirstCursorPointer(target: Element): boolean {
 function isInnermostClassButton(target: Element): boolean {
 	if (
 		!target.matches(buttonClassSelector) ||
-		target.querySelector(buttonClassSelector)
+		// We also make sure the element doesn't contain any clickable
+		target.querySelector(clickableSelector + buttonClassSelector)
 	) {
 		return false;
 	}
