@@ -1,17 +1,106 @@
 import Color from "color";
 import { rgbaToRgb } from "../lib/rgbaToRgb";
-import { getSuitableHintContainer } from "./hints/getSuitableHintContainer";
+import { getElementToPositionHint } from "./hints/getElementToPositionHint";
+import { getContextForHint } from "./hints/getContextForHint";
 import { popHint, pushHint } from "./hints/hintsCache";
 import { setStyleProperties } from "./hints/setStyleProperties";
 import { getHintOption } from "./options/cacheHintOptions";
 import { getEffectiveBackgroundColor } from "./utils/getEffectiveBackgroundColor";
-import { getFirstTextNodeDescendant } from "./utils/nodeUtils";
+import {
+	getFirstCharacterRect,
+	getFirstTextNodeDescendant,
+} from "./utils/nodeUtils";
+import { createsStackingContext } from "./utils/createsStackingContext";
+
+function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {
+	const descendants = target.querySelectorAll("*");
+	let zIndex = 1;
+	for (const descendant of descendants) {
+		if (createsStackingContext(descendant)) {
+			const descendantIndex = Number.parseInt(
+				window.getComputedStyle(descendant).zIndex,
+				10
+			);
+			if (!Number.isNaN(descendantIndex)) {
+				zIndex = Math.max(zIndex, descendantIndex);
+			}
+		}
+	}
+
+	let current: Element | null = target;
+
+	while (current) {
+		if (current.contains(hintOuter)) {
+			return zIndex;
+		}
+
+		if (createsStackingContext(current)) {
+			const currentIndex = Number.parseInt(
+				window.getComputedStyle(current).zIndex,
+				10
+			);
+			zIndex = Number.isNaN(currentIndex) ? 1 : currentIndex + 1;
+		}
+
+		current = current.parentElement;
+	}
+
+	return zIndex;
+}
+
+/** Sometimes the hint is cut off because a neighboring element has a superior
+ * stacking context. If that's the case this takes care to move the hint to
+ * within its element so it doesn't get obscured */
+// const intersectionObserver = new IntersectionObserver(
+// 	(entries, observer) => {
+// 		for (const entry of entries) {
+// 			if (entry.intersectionRatio < 1) {
+// 				continue;
+// 			}
+
+// 			const { top, bottom, left, right } = entry.target.getBoundingClientRect();
+// 			let visibleCorners = 0;
+
+// 			if (document.elementFromPoint(left + 2, top + 2) === entry.target) {
+// 				visibleCorners++;
+// 			}
+
+// 			if (document.elementFromPoint(right - 2, top + 2) === entry.target) {
+// 				visibleCorners++;
+// 			}
+
+// 			if (document.elementFromPoint(right - 2, bottom - 2) === entry.target) {
+// 				visibleCorners++;
+// 			}
+
+// 			if (document.elementFromPoint(left + 2, bottom - 2) === entry.target) {
+// 				visibleCorners++;
+// 			}
+
+// 			if (visibleCorners > 0 && visibleCorners < 4) {
+// 				(entry.target as HTMLDivElement).dataset.placeWithin = "true";
+// 			}
+
+// 			observer.unobserve(entry.target);
+// 		}
+// 	},
+// 	{
+// 		root: null,
+// 		rootMargin: "0px",
+// 		threshold: 1,
+// 	}
+// );
 
 export class Hint {
 	readonly target: Element;
 	readonly outer: HTMLDivElement;
 	readonly inner: HTMLDivElement;
-	readonly container: Element;
+	container: Element;
+	outermostPossibleContainer: Element;
+	availableSpaceLeft?: number;
+	availableSpaceTop?: number;
+	elementToPositionHint: Element | SVGElement | Text;
+	zIndex?: number;
 	positioned: boolean;
 	color: Color;
 	backgroundColor: Color;
@@ -21,23 +110,30 @@ export class Hint {
 
 	constructor(target: Element) {
 		this.target = target;
-		this.container = getSuitableHintContainer(target);
+		this.elementToPositionHint = getElementToPositionHint(this.target);
+		let makeHintRelative;
+		({
+			container: this.container,
+			outermostPossibleContainer: this.outermostPossibleContainer,
+			makeHintRelative,
+			availableSpaceLeft: this.availableSpaceLeft,
+			availableSpaceTop: this.availableSpaceTop,
+		} = getContextForHint(target, this.elementToPositionHint));
 
 		this.outer = document.createElement("div");
 		this.outer.className = "rango-hint-wrapper";
+
+		if (makeHintRelative) {
+			this.outer.style.position = "relative";
+		}
 
 		this.inner = document.createElement("div");
 		this.inner.className = "rango-hint";
 		this.outer.append(this.inner);
 
-		this.positioned = false;
+		// intersectionObserver.observe(this.inner);
 
-		// If display is grid we need to set position absolute so that the hint
-		// wrapper doesn't occupy a grid children space
-		const { display } = window.getComputedStyle(this.container);
-		if (display === "grid") {
-			setStyleProperties(this.outer, { position: "absolute" });
-		}
+		this.positioned = false;
 
 		// Initial styles for inner
 
@@ -67,7 +163,7 @@ export class Hint {
 		}
 
 		setStyleProperties(this.inner, {
-			"z-index": "7000",
+			"z-index": "100",
 			"background-color": subtleBackground
 				? "transparent"
 				: this.backgroundColor.string(),
@@ -134,14 +230,39 @@ export class Hint {
 	}
 
 	position() {
-		if (!this.outer.isConnected) {
-			throw new Error("Trying to position an unconnected hint.");
+		if (!this.elementToPositionHint.isConnected) {
+			this.elementToPositionHint = getElementToPositionHint(this.target);
 		}
 
-		const { x: targetX, y: targetY } = this.target.getBoundingClientRect();
+		const { x: targetX, y: targetY } =
+			this.elementToPositionHint instanceof Text
+				? getFirstCharacterRect(this.elementToPositionHint)
+				: this.elementToPositionHint.getBoundingClientRect();
 		const { x: outerX, y: outerY } = this.outer.getBoundingClientRect();
-		const x = targetX - outerX;
-		const y = targetY - outerY;
+
+		const nudgeX = this.elementToPositionHint instanceof Text ? 0.2 : 0.6;
+		const nudgeY = 0.6;
+
+		const hintOffsetX = this.inner.offsetWidth * (1 - nudgeX);
+		const hintOffsetY = this.inner.offsetHeight * (1 - nudgeY);
+
+		let x =
+			targetX -
+			outerX -
+			(this.availableSpaceLeft === undefined
+				? hintOffsetX
+				: Math.min(hintOffsetX, this.availableSpaceLeft - 1));
+		let y =
+			targetY -
+			outerY -
+			(this.availableSpaceTop === undefined
+				? hintOffsetY
+				: Math.min(hintOffsetY, this.availableSpaceTop - 1));
+
+		if (this.inner.dataset.placeWithin === "true") {
+			x = targetX - outerX + 1;
+			y = targetY - outerY + 1;
+		}
 
 		setStyleProperties(this.inner, {
 			left: `${x}px`,
@@ -172,20 +293,26 @@ export class Hint {
 
 		this.inner.textContent = string;
 		this.string = string;
-		this.container.prepend(this.outer);
+		this.container.append(this.outer);
 
-		setStyleProperties(this.outer, { display: "block" });
+		if (this.zIndex === undefined) {
+			this.zIndex = calculateZIndex(this.target, this.outer);
+			setStyleProperties(this.outer, { "z-index": `${this.zIndex}` });
+		}
+
+		// setStyleProperties(this.outer, { display: "block" });
+		setStyleProperties(this.inner, { display: "block" });
 
 		if (!this.positioned) {
 			this.position();
 			this.positioned = true;
 		}
 
-		setStyleProperties(this.inner, { display: "block" });
+		// setStyleProperties(this.inner, { visibility: "visible" });
 
 		// This is here for debugging and testing purposes
 		if (process.env["NODE_ENV"] !== "production") {
-			this.outer.dataset["hint"] = string;
+			// this.outer.dataset["hint"] = string;
 			this.inner.dataset["hint"] = string;
 			if (this.target instanceof HTMLElement)
 				this.target.dataset["hint"] = string;
@@ -200,15 +327,15 @@ export class Hint {
 		}
 
 		pushHint(this.string, keepInCache);
-		this.outer.remove();
+		// this.outer.remove();
 		this.inner.textContent = "";
 		this.string = undefined;
-		setStyleProperties(this.outer, { display: "none" });
+		// setStyleProperties(this.outer, { display: "none" });
 		setStyleProperties(this.inner, { display: "none" });
 
 		if (process.env["NODE_ENV"] !== "production") {
 			/* eslint-disable @typescript-eslint/no-dynamic-delete */
-			delete this.outer.dataset["hint"];
+			// delete this.outer.dataset["hint"];
 			delete this.inner.dataset["hint"];
 			if (this.target instanceof HTMLElement)
 				delete this.target.dataset["hint"];
