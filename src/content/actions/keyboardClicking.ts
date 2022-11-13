@@ -53,7 +53,7 @@ async function keydownHandler(event: KeyboardEvent) {
 
 	// If the user types one character and then changes its mind, they can use Escape
 	// to restart the buffer
-	if (keysPressedBuffer.length === 1 && event.key === "Escape") {
+	if (keysPressedBuffer.length === 1 && !/^[A-Za-z]$/.test(event.key)) {
 		keysPressedBuffer = "";
 		await browser.runtime.sendMessage({
 			type: "restoreKeyboardReachableHints",
