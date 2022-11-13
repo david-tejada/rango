@@ -11,6 +11,16 @@ function elementsOverlap(a: Element, b: Element) {
 	const aRect = a.getBoundingClientRect();
 	const bRect = b.getBoundingClientRect();
 
+	// If any of the elements doesn't occupy any space we return false
+	if (
+		aRect.width === 0 ||
+		aRect.height === 0 ||
+		bRect.width === 0 ||
+		bRect.height === 0
+	) {
+		return false;
+	}
+
 	if (
 		aRect.right < bRect.left ||
 		bRect.right < aRect.left ||
@@ -112,54 +122,71 @@ export function getFirstIconOrTextElement(
 	let firstImage;
 
 	for (const element of elements) {
+		if (
+			allowMultipleBlocks &&
+			(firstImage || firstTextBlockElement) &&
+			// We want to break once we have exited the first text block element because
+			// said element could have an image in it that comes before any text node.
+			// Example: <button><img src="path.jpg">click me!</button>
+			!firstTextBlockElement?.contains(element)
+		) {
+			break;
+		}
+
 		const { opacity } = window.getComputedStyle(element);
 
-		if (
-			isImage(element) &&
-			elementsOverlap(target, element) &&
-			opacity !== "0"
-		) {
-			if (
-				// Check if we already found an element that contains text that doesn't contain
-				// this same element
-				(firstTextBlockElement && !firstTextBlockElement.contains(element)) ||
-				firstImage
-			) {
+		if (opacity === "0" || !elementsOverlap(target, element)) {
+			continue;
+		}
+
+		if (isImage(element)) {
+			if (firstImage && !allowMultipleBlocks) {
 				// There is more than one logo or icon in the element
 				return undefined;
 			}
 
-			if (!firstImage && !withinDifferentHintable(element, target)) {
+			const differentHintable = withinDifferentHintable(element, target);
+
+			if (differentHintable && !allowMultipleBlocks) {
+				return undefined;
+			}
+
+			if (!firstImage && !differentHintable) {
 				firstImage = element;
 			}
 		}
 
-		if (
-			hasSignificantTextNodeChild(element) &&
-			elementsOverlap(target, element) &&
-			opacity !== "0"
-		) {
+		if (hasSignificantTextNodeChild(element)) {
 			if (firstTextBlockElement && !firstTextBlockElement.contains(element)) {
 				// There is more than one significant block of text
 				return undefined;
 			}
 
-			if (!firstTextBlockElement && !withinDifferentHintable(element, target)) {
+			const differentHintable = withinDifferentHintable(element, target);
+
+			if (differentHintable && !allowMultipleBlocks) {
+				return undefined;
+			}
+
+			if (!firstTextBlockElement && !differentHintable) {
 				firstTextBlockElement = element;
 			}
 		}
-
-		if (allowMultipleBlocks && (firstImage || firstTextBlockElement)) {
-			break;
-		}
 	}
 
-	return (
-		firstImage ??
-		(firstTextBlockElement
-			? getFirstSignificantTextNode(firstTextBlockElement)
-			: undefined)
-	);
+	const firstText = firstTextBlockElement
+		? getFirstSignificantTextNode(firstTextBlockElement)
+		: undefined;
+
+	// If there is both a first image and a first text we return the one that
+	// let picomHerecomes first in the document
+	if (firstImage && firstText) {
+		return firstImage.compareDocumentPosition(firstText) === 4
+			? firstImage
+			: firstText;
+	}
+
+	return firstImage ?? firstText;
 }
 
 // This functions returns the element where the hint should be positioned
