@@ -1,9 +1,7 @@
-import Color from "color";
 import browser from "webextension-polyfill";
 import { assertDefined, isFocusOnClickInput } from "../../typings/TypingUtils";
 import { getHintsInTab } from "../utils/getHintsInTab";
-// import { applyInitialStyles } from "../hints/applyInitialStyles";
-import { getHintableByHint } from "../intersectors";
+import { getWrapper } from "../wrappers";
 
 let keysPressedBuffer = "";
 let timeoutId: ReturnType<typeof setTimeout>;
@@ -16,17 +14,8 @@ export function markHintsAsKeyboardReachable(letter: string) {
 	);
 	for (const hintElement of hintsToHighlight) {
 		assertDefined(hintElement.textContent);
-		const intersector = getHintableByHint(hintElement.textContent);
-		if (hintElement instanceof HTMLDivElement) {
-			intersector.freezeHintStyle = true;
-			hintElement.style.fontWeight = "bold";
-			hintElement.style.outlineWidth = "2px";
-			hintElement.style.outlineColor = new Color(
-				window.getComputedStyle(hintElement).outlineColor
-			)
-				.alpha(0.7)
-				.string();
-		}
+		const wrapper = getWrapper(hintElement.textContent);
+		wrapper.hint?.emphasize();
 	}
 }
 
@@ -34,10 +23,10 @@ export function restoreKeyboardReachableHints() {
 	const hintElements = document.querySelectorAll(".rango-hint");
 
 	for (const hintElement of hintElements) {
-		assertDefined(hintElement.textContent);
-		const intersector = getHintableByHint(hintElement.textContent);
-		intersector.freezeHintStyle = false;
-		// applyInitialStyles(intersector);
+		if (hintElement.textContent) {
+			const wrapper = getWrapper(hintElement.textContent);
+			wrapper?.hint?.applyDefaultStyle();
+		}
 	}
 }
 

@@ -137,40 +137,7 @@ export class Hint {
 
 		// Initial styles for inner
 
-		// Retrieve options
-		const hintFontSize = getHintOption("hintFontSize") as number;
-		const fontWeightOption = getHintOption("hintWeight") as
-			| "auto"
-			| "normal"
-			| "bold";
-		const subtleHints = getHintOption("hintStyle") === "subtle";
-		const subtleBackground =
-			subtleHints &&
-			window.getComputedStyle(this.target).display.includes("inline");
-
-		this.computeColors();
-
-		const outlineColor = new Color(this.color).alpha(0.3);
-
-		let fontWeight;
-		if (fontWeightOption === "auto") {
-			fontWeight =
-				this.backgroundColor.contrast(this.color) < 7 && hintFontSize < 14
-					? "bold"
-					: "normal";
-		} else {
-			fontWeight = `${fontWeightOption}`;
-		}
-
-		setStyleProperties(this.inner, {
-			"background-color": subtleBackground
-				? "transparent"
-				: this.backgroundColor.string(),
-			color: this.color.string(),
-			outline: subtleHints ? "0" : `1px solid ${outlineColor.string()}`,
-			"font-size": `${hintFontSize}px`,
-			"font-weight": fontWeight,
-		});
+		this.applyDefaultStyle();
 	}
 
 	setBackgroundColor(color?: string) {
@@ -340,5 +307,50 @@ export class Hint {
 				delete this.target.dataset["hint"];
 			/* eslint-enable @typescript-eslint/no-dynamic-delete */
 		}
+	}
+
+	applyDefaultStyle() {
+		// Retrieve options
+		const hintFontSize = getHintOption("hintFontSize") as number;
+		const fontWeightOption = getHintOption("hintWeight") as
+			| "auto"
+			| "normal"
+			| "bold";
+		const subtleHints = getHintOption("hintStyle") === "subtle";
+		const subtleBackground =
+			subtleHints &&
+			window.getComputedStyle(this.target).display.includes("inline");
+
+		this.computeColors();
+
+		const outlineColor = new Color(this.color).alpha(0.3);
+
+		let fontWeight;
+		if (fontWeightOption === "auto") {
+			fontWeight =
+				this.backgroundColor.contrast(this.color) < 7 && hintFontSize < 14
+					? "bold"
+					: "normal";
+		} else {
+			fontWeight = `${fontWeightOption}`;
+		}
+
+		setStyleProperties(this.inner, {
+			"background-color": subtleBackground
+				? "transparent"
+				: this.backgroundColor.string(),
+			color: this.color.string(),
+			outline: subtleHints ? "0" : `1px solid ${outlineColor.string()}`,
+			"font-size": `${hintFontSize}px`,
+			"font-weight": fontWeight,
+		});
+	}
+
+	emphasize() {
+		const outlineColor = new Color(this.color).alpha(0.7).string();
+		setStyleProperties(this.inner, {
+			outline: `2px solid ${outlineColor}`,
+			"font-weight": "bold",
+		});
 	}
 }
