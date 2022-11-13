@@ -14,10 +14,11 @@ function isFlexOrGridChild(element: Element) {
 }
 
 export function createsStackingContext(element: Element) {
-	const style = getComputedStyle(element);
-
 	// https://developer.mozilla.org/en-US/docs/Web/CSS/CSS_Positioning/Understanding_z_index/The_stacking_context
 	if (element === document.documentElement) return true;
+
+	const style = getComputedStyle(element);
+
 	if (
 		style.zIndex !== "auto" &&
 		(style.position !== "static" || isFlexOrGridChild(element))
