@@ -1,10 +1,9 @@
+import { ElementWrapper } from "../../typings/ElementWrapper";
 import { showTooltip } from "../hints/showTooltip";
-// import { flashHint } from "../hints/applyInitialStyles";
-import { HintedIntersector } from "../../typings/Intersector";
 
-export function showTitleAndHref(intersectors: HintedIntersector[]) {
-	for (const intersector of intersectors) {
-		const element = intersector.element;
+export function showTitleAndHref(wrappers: ElementWrapper[]) {
+	for (const wrapper of wrappers) {
+		const element = wrapper.element;
 		let result = "";
 		let title = "";
 
@@ -28,9 +27,9 @@ export function showTitleAndHref(intersectors: HintedIntersector[]) {
 		}
 
 		if (result) {
-			showTooltip(intersector, result, 5000);
+			showTooltip(wrapper, result, 5000);
 		} else {
-			// flashHint(intersector);
+			wrapper.hint?.flash();
 		}
 	}
 }
