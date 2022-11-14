@@ -212,6 +212,7 @@ describe("Vertical", () => {
 				);
 
 				await sleep(300);
+				// eslint-disable-next-line max-nested-callbacks
 				await page.$eval("html", (element) => element.scrollTop);
 
 				expect(scrolledDownFactor).toBeCloseTo(1.8);
@@ -692,7 +693,7 @@ describe("Snap", () => {
 	describe("Bottom", () => {
 		test("Scroll container", async () => {
 			await page.waitForSelector("[data-hint]");
-			const $target = await page.$(".scroll li:nth-child(7) a[data-hint]");
+			const $target = await page.$(".scroll li:nth-child(10) a[data-hint]");
 			const hint = await $target!.evaluate(getHint);
 			await rangoCommandWithTarget("scrollElementToBottom", [hint]);
 			await sleep(300);
@@ -711,7 +712,7 @@ describe("Snap", () => {
 		test("Page", async () => {
 			await page.waitForSelector("[data-hint]");
 			// Here we have to select an element that's able to scroll to the bottom
-			const $target = await page.$(".no-scroll li:nth-child(15) a[data-hint]");
+			const $target = await page.$(".no-scroll li:nth-child(35) a[data-hint]");
 			const hint = await $target!.evaluate(getHint);
 			await rangoCommandWithTarget("scrollElementToBottom", [hint]);
 			await sleep(300);

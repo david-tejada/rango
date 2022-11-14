@@ -6,19 +6,24 @@
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>Document</title>
 		<style>
-			li {
-				margin: 1em 0;
-				list-style-type: none;
-			}
-
 			body {
 				display: grid;
 				grid-template-columns: 1fr 2fr 1fr;
 			}
+
+			body,
+			ul {
+				margin: 0;
+			}
+
+			li {
+				margin: 1em 0;
+				list-style-type: none;
+			}
 		</style>
 	</head>
 	<body>
-		<ul class="scroll left-aside" style="height: 500px; overflow: auto">
+		<ul class="scroll left-aside" style="height: 100vh; overflow: auto">
 			<li id="item1"><a href="">Link 1</a></li>
 			<li id="item2"><a href="">Link 2</a></li>
 			<li id="item3"><a href="">Link 3</a></li>
@@ -121,7 +126,7 @@
 			<li id="item100"><a href="">Link 100</a></li>
 		</ul>
 
-		<ul class="scroll main" style="height: 500px; overflow: auto">
+		<ul class="scroll main" style="height: 100vh; overflow: auto">
 			<li id="item1"><a href="">Link 1</a></li>
 			<li id="item2"><a href="">Link 2</a></li>
 			<li id="item3"><a href="">Link 3</a></li>
@@ -224,7 +229,7 @@
 			<li id="item100"><a href="">Link 100</a></li>
 		</ul>
 
-		<ul class="scroll right-aside" style="height: 500px; overflow: auto">
+		<ul class="scroll right-aside" style="height: 100vh; overflow: auto">
 			<li id="item1"><a href="">Link 1</a></li>
 			<li id="item2"><a href="">Link 2</a></li>
 			<li id="item3"><a href="">Link 3</a></li>
