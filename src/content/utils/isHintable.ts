@@ -142,6 +142,10 @@ function isInnermostClassButton(target: Element): boolean {
 }
 
 export function isHintable(target: Element): boolean {
+	if (target.closest("[aria-hidden='true']")) {
+		return false;
+	}
+
 	if (isClickable(target)) {
 		return !isRedundant(target);
 	}

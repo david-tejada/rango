@@ -6,10 +6,6 @@ export function isVisible(element: Element): boolean {
 		return false;
 	}
 
-	if (element.closest("[aria-hidden='true']")) {
-		return false;
-	}
-
 	// Check if an element is hidden by a close ancestor having opacity: 0
 	let current = element.parentElement;
 	let counter = 0;
