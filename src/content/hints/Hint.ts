@@ -1,16 +1,16 @@
 import Color from "color";
-import { rgbaToRgb } from "../lib/rgbaToRgb";
-import { getElementToPositionHint } from "./hints/getElementToPositionHint";
-import { getContextForHint } from "./hints/getContextForHint";
-import { popHint, pushHint } from "./hints/hintsCache";
-import { setStyleProperties } from "./hints/setStyleProperties";
-import { getHintOption } from "./options/cacheHintOptions";
-import { getEffectiveBackgroundColor } from "./utils/getEffectiveBackgroundColor";
+import { rgbaToRgb } from "../../lib/rgbaToRgb";
+import { getHintOption } from "../options/cacheHintOptions";
+import { getEffectiveBackgroundColor } from "../utils/getEffectiveBackgroundColor";
 import {
 	getFirstCharacterRect,
 	getFirstTextNodeDescendant,
-} from "./utils/nodeUtils";
-import { createsStackingContext } from "./utils/createsStackingContext";
+} from "../utils/nodeUtils";
+import { createsStackingContext } from "../utils/createsStackingContext";
+import { getElementToPositionHint } from "./getElementToPositionHint";
+import { getContextForHint } from "./getContextForHint";
+import { popHint, pushHint } from "./hintsCache";
+import { setStyleProperties } from "./setStyleProperties";
 
 function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {
 	const descendants = target.querySelectorAll("*");

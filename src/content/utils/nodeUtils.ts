@@ -1,12 +1,6 @@
 import { assertDefined } from "../../typings/TypingUtils";
 import { isHintable } from "./isHintable";
 
-export function hasTextNodesChildren(element: Element) {
-	return [...element.childNodes].some(
-		(node) => node.nodeType === 3 && /\S/.test(node.textContent!)
-	);
-}
-
 // Inside some elements you can't get the coordinates of a text node with Range and
 // instead you get the characters offset
 function rangeGivesCoordinates(textNode: Text): boolean {

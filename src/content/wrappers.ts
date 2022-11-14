@@ -6,7 +6,7 @@ import { getElementsFromOrigin } from "./utils/getElementsFromOrigin";
 import { cacheHints } from "./hints/hintsCache";
 import { getUserScrollableContainer } from "./utils/getUserScrollableContainer";
 import { BoundedIntersectionObserver } from "./BoundedIntersectionObserver";
-import { Hint } from "./Hint";
+import { Hint } from "./hints/Hint";
 
 // =============================================================================
 // OBSERVERS
