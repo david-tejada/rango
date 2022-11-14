@@ -44,10 +44,9 @@ function hasSignificantText(element: Text): boolean {
 
 // Returns true if any of the children is a Text node that is not all white space
 function hasSignificantTextNodeChild(target: Element) {
-	const significantTextNode = [...target.childNodes].find(
+	return [...target.childNodes].some(
 		(child) => child instanceof Text && hasSignificantText(child)
 	);
-	return Boolean(significantTextNode);
 }
 
 // Returns true if the element is an image or an element that we think is an icon
