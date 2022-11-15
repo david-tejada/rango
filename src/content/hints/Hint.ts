@@ -267,7 +267,6 @@ export class Hint implements HintableMark {
 			setStyleProperties(this.outer, { "z-index": `${this.zIndex}` });
 		}
 
-		// setStyleProperties(this.outer, { display: "block" });
 		setStyleProperties(this.inner, { display: "block" });
 
 		if (!this.positioned) {
@@ -275,11 +274,9 @@ export class Hint implements HintableMark {
 			this.positioned = true;
 		}
 
-		// setStyleProperties(this.inner, { visibility: "visible" });
-
 		// This is here for debugging and testing purposes
 		if (process.env["NODE_ENV"] !== "production") {
-			// this.outer.dataset["hint"] = string;
+			this.outer.dataset["hint"] = string;
 			this.inner.dataset["hint"] = string;
 			if (this.target instanceof HTMLElement)
 				this.target.dataset["hint"] = string;
@@ -289,20 +286,25 @@ export class Hint implements HintableMark {
 	}
 
 	release(keepInCache = false) {
-		if (!this.inner.textContent || !this.string) {
-			throw new Error("HintError: Trying to release a null hint");
+		// Checking this.string is safer than check in this.inner.textContent as the
+		// latter could be removed by a page script
+		if (!this.string) {
+			throw new Error("HintError: Trying to release an empty hint");
 		}
 
 		pushHint(this.string, keepInCache);
-		// this.outer.remove();
 		this.inner.textContent = "";
 		this.string = undefined;
-		// setStyleProperties(this.outer, { display: "none" });
+
 		setStyleProperties(this.inner, { display: "none" });
+
+		if (!this.target.isConnected) {
+			this.outer.remove();
+		}
 
 		if (process.env["NODE_ENV"] !== "production") {
 			/* eslint-disable @typescript-eslint/no-dynamic-delete */
-			// delete this.outer.dataset["hint"];
+			delete this.outer.dataset["hint"];
 			delete this.inner.dataset["hint"];
 			if (this.target instanceof HTMLElement)
 				delete this.target.dataset["hint"];
