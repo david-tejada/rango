@@ -1,4 +1,4 @@
-import { ElementWrapper } from "../wrappers";
+import { ElementWrapper } from "../../typings/ElementWrapper";
 
 const hoveredElements: Set<Element> = new Set();
 

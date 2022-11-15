@@ -6,8 +6,16 @@ export function getElementsFromOrigin(
 ): Element[] {
 	const result = getOrigin ? [origin] : [];
 	const elements = origin.shadowRoot
-		? [...origin.shadowRoot.querySelectorAll("*")]
-		: [...origin.querySelectorAll("*")];
+		? [
+				...origin.shadowRoot.querySelectorAll(
+					":not(.rango-hint-wrapper, .rango-hint, #rango-copy-paste-area"
+				),
+		  ]
+		: [
+				...origin.querySelectorAll(
+					":not(.rango-hint-wrapper, .rango-hint, #rango-copy-paste-area"
+				),
+		  ];
 
 	for (const element of elements) {
 		if (element.shadowRoot) {

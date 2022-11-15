@@ -5,7 +5,7 @@
 // most of the time, we want the hint next to the text of the hinted element.
 
 import { getElementsFromOrigin } from "../utils/getElementsFromOrigin";
-import { isHintable } from "../utils/isHintable";
+import { getWrapper } from "../wrappers";
 
 function elementsOverlap(a: Element, b: Element) {
 	const aRect = a.getBoundingClientRect();
@@ -91,9 +91,7 @@ function withinDifferentHintable(node: Element, hintable: Element) {
 	let current: Element | null = node;
 
 	while (current && current !== hintable) {
-		// TODO: Use getWrapper(current).isHintable once I have separated wrappers
-		// to its own module to avoid cyclic dependencies
-		if (isHintable(current)) {
+		if (getWrapper(current)?.isHintable) {
 			return true;
 		}
 

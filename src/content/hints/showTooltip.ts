@@ -1,6 +1,6 @@
 import tippy from "tippy.js";
+import { ElementWrapper } from "../../typings/ElementWrapper";
 import { assertDefined } from "../../typings/TypingUtils";
-import { ElementWrapper } from "../wrappers";
 
 export function showTooltip(
 	wrapper: ElementWrapper,

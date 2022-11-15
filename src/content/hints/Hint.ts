@@ -7,6 +7,7 @@ import {
 	getFirstTextNodeDescendant,
 } from "../utils/nodeUtils";
 import { createsStackingContext } from "../utils/createsStackingContext";
+import { HintableMark } from "../../typings/ElementWrapper";
 import { getElementToPositionHint } from "./getElementToPositionHint";
 import { getContextForHint } from "./getContextForHint";
 import { popHint, pushHint } from "./hintsCache";
@@ -91,7 +92,7 @@ function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {
 // 	}
 // );
 
-export class Hint {
+export class Hint implements HintableMark {
 	readonly target: Element;
 	readonly outer: HTMLDivElement;
 	readonly inner: HTMLDivElement;
@@ -225,7 +226,7 @@ export class Hint {
 				? hintOffsetY
 				: Math.min(hintOffsetY, this.availableSpaceTop - 1));
 
-		if (this.inner.dataset.placeWithin === "true") {
+		if (this.inner.dataset["placeWithin"] === "true") {
 			x = targetX - outerX + 1;
 			y = targetY - outerY + 1;
 		}

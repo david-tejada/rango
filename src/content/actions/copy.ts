@@ -1,5 +1,5 @@
+import { ElementWrapper } from "../../typings/ElementWrapper";
 import { showTooltip } from "../hints/showTooltip";
-import { ElementWrapper } from "../wrappers";
 
 export function copyElementTextContentToClipboard(
 	wrappers: ElementWrapper[]

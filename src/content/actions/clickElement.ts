@@ -1,5 +1,5 @@
+import { ElementWrapper } from "../../typings/ElementWrapper";
 import { focusesOnclick } from "../utils/focusesOnclick";
-import { ElementWrapper } from "../wrappers";
 import { openInBackgroundTab, openInNewTab } from "./openInNewTab";
 
 async function dispatchClick(element: Element) {
