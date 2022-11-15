@@ -267,12 +267,14 @@ export class Hint implements HintableMark {
 			setStyleProperties(this.outer, { "z-index": `${this.zIndex}` });
 		}
 
-		setStyleProperties(this.inner, { display: "block" });
+		setStyleProperties(this.inner, { display: "block", visibility: "hidden" });
 
 		if (!this.positioned) {
 			this.position();
 			this.positioned = true;
 		}
+
+		setStyleProperties(this.inner, { visibility: "visible" });
 
 		// This is here for debugging and testing purposes
 		if (process.env["NODE_ENV"] !== "production") {
