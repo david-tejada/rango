@@ -8,7 +8,6 @@ export async function cacheHints(amount: number) {
 	const returnedHintsAmount = returnedHints.length;
 	if (returnedHintsAmount > 0) {
 		hintsCache.push(...returnedHints.splice(0, returnedHintsAmount));
-		hintsCache.sort((a, b) => b.length - a.length || b.localeCompare(a));
 	}
 
 	const hintsToRequest = amount - returnedHintsAmount;
@@ -19,6 +18,8 @@ export async function cacheHints(amount: number) {
 	} else {
 		await releaseHints(hintsCache.splice(0, hintsToRequest));
 	}
+
+	hintsCache.sort((a, b) => b.length - a.length || b.localeCompare(a));
 }
 
 export function popHint(): string | undefined {
