@@ -1,13 +1,6 @@
 /* eslint-disable max-depth */
 import { getFirstCharacterRect } from "../utils/nodeUtils";
 
-// We can't place hints inside self closing elements
-function isSelfClosing(element: Element) {
-	// prettier-ignore
-	const selfClosingTags = [ "area", "base", "br", "col", "command", "embed", "hr", "img", "input", "keygen", "link", "meta", "param", "source", "track", "wbr", ];
-	return selfClosingTags.includes(element.tagName.toLowerCase());
-}
-
 function getPaddingRect(element: Element): DOMRect {
 	const {
 		borderLeftWidth,
@@ -59,7 +52,10 @@ export function getContextForHint(
 	// space around so that the hint isn't hidden
 	let candidate: Element | undefined;
 
-	let current = isSelfClosing(element) ? element.parentElement : element;
+	// The first element where we can place the hint is the parent element. I tried
+	// placing it inside the element itself but there were issues were the hint would
+	// get deleted while the element itself remained
+	let current = element.parentElement;
 
 	let goneThroughPositioned = false;
 
