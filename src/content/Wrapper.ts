@@ -1,4 +1,4 @@
-import { debounce } from "../lib/debounceAndThrottle";
+import { throttle } from "../lib/debounceAndThrottle";
 import { ElementWrapper } from "../typings/ElementWrapper";
 import { isHintable } from "./utils/isHintable";
 import { isDisabled } from "./utils/isDisabled";
@@ -125,25 +125,25 @@ const hintablesResizeObserver = new ResizeObserver((entries) => {
 // UPDATE
 // =============================================================================
 
-const updateStyleAll = debounce(() => {
+const updateStyleAll = throttle(() => {
 	for (const wrapper of wrappersHinted.values()) {
 		wrapper.hint?.updateColors();
 	}
 }, 50);
 
-const updatePositionAll = debounce(() => {
+const updatePositionAll = throttle(() => {
 	for (const wrapper of wrappersHinted.values()) {
 		wrapper.hint?.position();
 	}
 }, 50);
 
-const updateShouldBeHintedAll = debounce(() => {
+const updateShouldBeHintedAll = throttle(() => {
 	for (const wrapper of wrappersAll.values()) {
 		if (wrapper.isHintable) {
 			wrapper.updateShouldBeHinted();
 		}
 	}
-}, 50);
+}, 300);
 
 // =============================================================================
 // ELEMENT WRAPPER
