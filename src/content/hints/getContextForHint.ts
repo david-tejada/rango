@@ -31,16 +31,18 @@ function getPaddingRect(element: Element): DOMRect {
 	);
 }
 
-export function getContextForHint(
-	element: Element,
-	elementToPositionHint: Element | SVGElement | Text
-): {
+interface HintContext {
 	container: Element;
 	outermostPossibleContainer: Element;
 	makeHintRelative: boolean;
 	availableSpaceLeft?: number;
 	availableSpaceTop?: number;
-} {
+}
+
+export function getContextForHint(
+	element: Element,
+	elementToPositionHint: Element | SVGElement | Text
+): HintContext {
 	let container: Element | undefined;
 
 	const targetRect =
