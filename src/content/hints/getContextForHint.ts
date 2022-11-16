@@ -34,7 +34,7 @@ interface HintContext {
 
 export function getContextForHint(
 	element: Element,
-	elementToPositionHint: Element | SVGElement | Text
+	elementToPositionHint: Element | Text
 ): HintContext {
 	let container: Element | undefined;
 
