@@ -5,6 +5,7 @@
 // most of the time, we want the hint next to the text of the hinted element.
 
 import { getElementsFromOrigin } from "../utils/getElementsFromOrigin";
+import { getFirstCharacterRect } from "../utils/nodeUtils";
 import { getWrapper } from "../wrappers";
 
 function elementsOverlap(a: Element, b: Element) {
@@ -36,7 +37,8 @@ function elementsOverlap(a: Element, b: Element) {
 // Returns true if the Text element is not all white space
 function hasSignificantText(element: Text): boolean {
 	if (element.textContent && /\S/.test(element.textContent)) {
-		return true;
+		const rect = getFirstCharacterRect(element);
+		return rect.width !== 0 && rect.height !== 0;
 	}
 
 	return false;
