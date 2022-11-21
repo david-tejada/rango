@@ -21,9 +21,11 @@ export function getTextNodeRect(textNode: Text): DOMRect {
 }
 
 export function getFirstCharacterRect(textNode: Text): DOMRect {
+	const firstNonWhiteSpaceCharacter = textNode.textContent?.search(/\S/) ?? 0;
+
 	const range = document.createRange();
-	range.setStart(textNode, 0);
-	range.setEnd(textNode, 1);
+	range.setStart(textNode, firstNonWhiteSpaceCharacter);
+	range.setEnd(textNode, firstNonWhiteSpaceCharacter + 1);
 	const rect = range.getBoundingClientRect();
 	return rect;
 }
