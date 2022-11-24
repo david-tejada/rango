@@ -37,6 +37,18 @@ export function getWrapper(
 	return result;
 }
 
+export function getWrappersWithin(element: Element): ElementWrapper[] {
+	const result: ElementWrapper[] = [];
+
+	for (const wrapper of wrappersAll.values()) {
+		if (element.contains(wrapper.element)) {
+			result.push(wrapper);
+		}
+	}
+
+	return result;
+}
+
 export function deleteWrapper(target: Element) {
 	const elements = getElementsFromOrigin(target);
 	for (const element of elements) {

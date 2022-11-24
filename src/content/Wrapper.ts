@@ -13,6 +13,7 @@ import {
 	deleteWrapper,
 	wrappersHinted,
 	wrappersAll,
+	getWrappersWithin,
 } from "./wrappers";
 import { getElementsFromOrigin } from "./utils/getElementsFromOrigin";
 
@@ -93,6 +94,15 @@ const mutationCallback: MutationCallback = (mutationList) => {
 			) {
 				getWrapper(mutationRecord.target)?.updateIsHintable();
 				getWrapper(mutationRecord.target)?.updateShouldBeHinted();
+			}
+
+			if (mutationRecord.attributeName === "aria-hidden") {
+				const wrappers = getWrappersWithin(mutationRecord.target);
+
+				for (const wrapper of wrappers) {
+					wrapper.updateIsHintable();
+					wrapper.updateShouldBeHinted();
+				}
 			}
 		}
 	}
