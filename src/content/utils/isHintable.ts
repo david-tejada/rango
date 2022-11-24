@@ -12,10 +12,11 @@ const clickableSelector =
 
 /**
  * It matches every div, li, h1, h2, h3, h4, h5 or h6 that has the word button
- * in its class
+ * in its class. It only matches the word button when it appears before a space
+ * or at the end. This is to avoid matching things like "buttons" or "button-wrapper"
  */
 const buttonClassSelector =
-	"[class*='button' i]:not([class*='buttons' i]):not(:not(div, li, h1, h2, h3, h4, h5, h6))";
+	"[class*='button ' i]:not(:not(div, li, h1, h2, h3, h4, h5, h6)),[class$='button' i]:not(:not(div, li, h1, h2, h3, h4, h5, h6))";
 
 function elementsOverlap(element0: Element, element1: Element) {
 	const {
