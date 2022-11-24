@@ -1,4 +1,5 @@
 import { getElementsFromOrigin } from "./getElementsFromOrigin";
+import { isVisible } from "./isVisible";
 
 const clickableSelector =
 	// Elements
@@ -63,7 +64,8 @@ function isRedundant(target: Element) {
 	for (const descendant of descendantClickables) {
 		if (
 			target.childNodes.length === 1 &&
-			descendant?.parentElement === target
+			descendant?.parentElement === target &&
+			isVisible(descendant)
 		) {
 			return true;
 		}
@@ -74,7 +76,8 @@ function isRedundant(target: Element) {
 			// <option> inside a <select>
 			width !== 0 &&
 			height !== 0 &&
-			elementsOverlap(target, descendant)
+			elementsOverlap(target, descendant) &&
+			isVisible(descendant)
 		) {
 			return true;
 		}
