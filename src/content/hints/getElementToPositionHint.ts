@@ -46,6 +46,13 @@ function hasSignificantText(element: Text): boolean {
 
 // Returns true if any of the children is a Text node that is not all white space
 function hasSignificantTextNodeChild(target: Element) {
+	if (
+		typeof target.className === "string" &&
+		target.className.includes("hidden")
+	) {
+		return false;
+	}
+
 	return [...target.childNodes].some(
 		(child) => child instanceof Text && hasSignificantText(child)
 	);

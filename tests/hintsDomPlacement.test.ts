@@ -15,7 +15,7 @@ describe("The hints are placed in the appropriate DOM element", () => {
 		await browser.close();
 	});
 
-	test("The hint won't be placed in an element with overflow hidden and insufficient space", async () => {
+	test("The hint won't be placed in an element with overflow hidden and insufficient space if another ancestor has sufficient space", async () => {
 		await page.evaluate(() => {
 			document.body.innerHTML = `
 				<div id="target">
@@ -37,7 +37,7 @@ describe("The hints are placed in the appropriate DOM element", () => {
 	test("The hint will be placed in an element with overflow hidden but sufficient space", async () => {
 		await page.evaluate(() => {
 			document.body.innerHTML = `
-					<div style="overflow: hidden; padding: 15px">
+					<div style="overflow: hidden; padding: 20px">
 						<a href="#">Link</a>
 					</div>
 			`;
@@ -79,7 +79,7 @@ describe("The hints are placed in the appropriate DOM element", () => {
 		});
 
 		await page.waitForSelector(".rango-hint");
-		const $hint = await page.$("ul > .rango-hint-wrapper");
+		const $hint = await page.$("li > .rango-hint-wrapper");
 
 		expect($hint).not.toBeNull();
 	});
@@ -96,7 +96,7 @@ describe("The hints are placed in the appropriate DOM element", () => {
 		});
 
 		await page.waitForSelector(".rango-hint");
-		let $hint = await page.$("aside > .rango-hint-wrapper");
+		let $hint = await page.$("div > .rango-hint-wrapper");
 
 		expect($hint).not.toBeNull();
 
@@ -111,7 +111,7 @@ describe("The hints are placed in the appropriate DOM element", () => {
 		});
 
 		await page.waitForSelector(".rango-hint");
-		$hint = await page.$("aside > .rango-hint-wrapper");
+		$hint = await page.$("div > .rango-hint-wrapper");
 
 		expect($hint).not.toBeNull();
 	});

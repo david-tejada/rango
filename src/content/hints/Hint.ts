@@ -97,9 +97,10 @@ export class Hint implements HintableMark {
 	readonly outer: HTMLDivElement;
 	readonly inner: HTMLDivElement;
 	container: Element;
-	outermostPossibleContainer: Element;
+	limitParent: Element;
 	availableSpaceLeft?: number;
 	availableSpaceTop?: number;
+	wrapperRelative?: boolean;
 	elementToPositionHint: Element | SVGElement | Text;
 	zIndex?: number;
 	positioned: boolean;
@@ -112,21 +113,15 @@ export class Hint implements HintableMark {
 	constructor(target: Element) {
 		this.target = target;
 		this.elementToPositionHint = getElementToPositionHint(this.target);
-		let makeHintRelative;
 		({
 			container: this.container,
-			outermostPossibleContainer: this.outermostPossibleContainer,
-			makeHintRelative,
+			limitParent: this.limitParent,
 			availableSpaceLeft: this.availableSpaceLeft,
 			availableSpaceTop: this.availableSpaceTop,
 		} = getContextForHint(target, this.elementToPositionHint));
 
 		this.outer = document.createElement("div");
 		this.outer.className = "rango-hint-wrapper";
-
-		if (makeHintRelative) {
-			this.outer.style.position = "relative";
-		}
 
 		this.inner = document.createElement("div");
 		this.inner.className = "rango-hint";
@@ -261,6 +256,23 @@ export class Hint implements HintableMark {
 		this.inner.textContent = string;
 		this.string = string;
 		this.container.append(this.outer);
+
+		// We need to calculate this here the first time the hint is appended
+		if (this.wrapperRelative === undefined) {
+			const { display } = window.getComputedStyle(this.container);
+
+			if (
+				!this.limitParent.contains(this.outer.offsetParent) &&
+				// We can't use position: relative inside display: grid because it distorts
+				// layouts. This seems to work fine but I have to see if it breaks somewhere.
+				display !== "grid"
+			) {
+				this.wrapperRelative = true;
+				setStyleProperties(this.outer, { position: "relative" });
+			} else {
+				this.wrapperRelative = false;
+			}
+		}
 
 		if (this.zIndex === undefined) {
 			this.zIndex = calculateZIndex(this.target, this.outer);

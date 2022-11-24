@@ -29,9 +29,10 @@ export interface HintableMark {
 	readonly outer: HTMLDivElement;
 	readonly inner: HTMLDivElement;
 	container: Element;
-	outermostPossibleContainer: Element;
+	limitParent: Element;
 	availableSpaceLeft?: number;
 	availableSpaceTop?: number;
+	wrapperRelative?: boolean;
 	elementToPositionHint: Element | SVGElement | Text;
 	zIndex?: number;
 	positioned: boolean;
