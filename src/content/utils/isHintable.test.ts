@@ -8,13 +8,14 @@ import { isHintable } from "./isHintable";
 window.getComputedStyle = jest.fn();
 
 function mockRendering(origin: HTMLElement) {
-	const elements = origin.querySelectorAll("*");
+	const elements = [origin, ...origin.querySelectorAll("*")];
 
 	for (const element of elements) {
 		when(window.getComputedStyle)
 			.calledWith(element)
 			.mockReturnValue({
 				cursor: element.className.includes("pointer") ? "pointer" : "auto",
+				opacity: "1",
 			} as CSSStyleDeclaration);
 
 		const rect = {
@@ -82,7 +83,14 @@ const suites = [
 				description:
 					"It returns true for nested clickables if they don't overlap",
 				innerHTML: `
-					<a href="#" hintable><button x="15" y="15" hintable>Click me!</button></a>
+					<a href="#" hintable><button x="15" y="15" hintable>Click me!</button><p>Paragraph</p></a>
+				`,
+			},
+			{
+				description:
+					"It returns false for nested clickables with only one child",
+				innerHTML: `
+					<a href="#"><button x="15" y="15" hintable>Click me!</button></a>
 				`,
 			},
 		],
@@ -164,7 +172,7 @@ const suites = [
 describe.each(suites)("$description", ({ cases }) => {
 	test.each(cases)("$description", ({ innerHTML }) => {
 		document.body.innerHTML = innerHTML;
-		const elements = mockRendering(document.body);
+		const elements = mockRendering(document.documentElement);
 
 		for (const element of elements) {
 			expect(isHintable(element), element.outerHTML).toBe(
