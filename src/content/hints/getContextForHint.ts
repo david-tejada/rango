@@ -128,7 +128,10 @@ function getSpaceAvailable(
 }
 
 function getAptContainer(origin: Element) {
-	let current: Element | null = origin.parentElement;
+	let current: Element | null =
+		window.getComputedStyle(origin).position === "sticky"
+			? origin
+			: origin.parentElement;
 
 	while (current) {
 		const { display } = window.getComputedStyle(current);
@@ -164,7 +167,12 @@ export function getContextForHint(
 	// position: fixed|sticky.
 	const clipAncestors: Element[] = [];
 
-	let current = element.parentElement;
+	// If the hintable itself is sticky we need to place the hint inside it or it
+	// will jump up and down when scrolling
+	let current =
+		window.getComputedStyle(element).position === "sticky"
+			? element
+			: element.parentElement;
 
 	while (current) {
 		const { overflow, contain, clipPath, position, transform, willChange } =
