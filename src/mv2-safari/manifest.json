@@ -29,6 +29,7 @@
 			"js": ["../content/content.ts"],
 			"css": ["../content/hints/styles.css", "../styles/tippy.css"],
 			"all_frames": true,
+			"match_about_blank": true,
 			"run_at": "document_idle"
 		}
 	],
