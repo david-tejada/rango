@@ -98,6 +98,7 @@ export class Hint implements HintableMark {
 	readonly inner: HTMLDivElement;
 	container: Element;
 	limitParent: Element;
+	firstNonShadow: Element;
 	availableSpaceLeft?: number;
 	availableSpaceTop?: number;
 	wrapperRelative?: boolean;
@@ -116,6 +117,7 @@ export class Hint implements HintableMark {
 		({
 			container: this.container,
 			limitParent: this.limitParent,
+			firstNonShadow: this.firstNonShadow,
 			availableSpaceLeft: this.availableSpaceLeft,
 			availableSpaceTop: this.availableSpaceTop,
 		} = getContextForHint(target, this.elementToPositionHint));
@@ -275,7 +277,7 @@ export class Hint implements HintableMark {
 		}
 
 		if (this.zIndex === undefined) {
-			this.zIndex = calculateZIndex(this.target, this.outer);
+			this.zIndex = calculateZIndex(this.firstNonShadow, this.outer);
 			setStyleProperties(this.outer, { "z-index": `${this.zIndex}` });
 		}
 

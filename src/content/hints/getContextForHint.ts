@@ -147,9 +147,37 @@ function getAptContainer(origin: Element) {
 	return document.body;
 }
 
+//
+function getFirstNonShadow(element: Element) {
+	let current: Node | null = element;
+	let lastNonShadow: Element = element;
+	let goneThroughShadow = false;
+
+	while (current) {
+		if (
+			current instanceof HTMLElement &&
+			goneThroughShadow &&
+			!(current instanceof ShadowRoot) &&
+			!current.shadowRoot
+		) {
+			lastNonShadow = current;
+			goneThroughShadow = false;
+		}
+
+		if (current instanceof ShadowRoot) {
+			goneThroughShadow = true;
+		}
+
+		current = current instanceof ShadowRoot ? current.host : current.parentNode;
+	}
+
+	return lastNonShadow;
+}
+
 interface HintContext {
 	container: Element;
 	limitParent: Element;
+	firstNonShadow: Element;
 	availableSpaceLeft?: number;
 	availableSpaceTop?: number;
 }
@@ -167,12 +195,14 @@ export function getContextForHint(
 	// position: fixed|sticky.
 	const clipAncestors: Element[] = [];
 
+	const firstNonShadow = getFirstNonShadow(element);
+
 	// If the hintable itself is sticky we need to place the hint inside it or it
 	// will jump up and down when scrolling
 	let current =
 		window.getComputedStyle(element).position === "sticky"
-			? element
-			: element.parentElement;
+			? firstNonShadow
+			: firstNonShadow.parentElement;
 
 	while (current) {
 		const { overflow, contain, clipPath, position, transform, willChange } =
@@ -211,7 +241,7 @@ export function getContextForHint(
 
 	let previousClipAncestor: Element | undefined;
 	let container: Element;
-	let candidate = getAptContainer(element);
+	let candidate = getAptContainer(firstNonShadow);
 	let previousSpaceLeft;
 	let previousSpaceTop;
 
@@ -288,6 +318,7 @@ export function getContextForHint(
 	return {
 		container,
 		limitParent,
+		firstNonShadow: firstNonShadow ?? element,
 		availableSpaceLeft: previousSpaceLeft,
 		availableSpaceTop: previousSpaceTop,
 	};
