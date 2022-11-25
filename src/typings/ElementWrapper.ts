@@ -38,6 +38,7 @@ export interface HintableMark {
 	positioned: boolean;
 	color: Color;
 	backgroundColor: Color;
+	outlineColor: Color;
 	freezeColors?: boolean;
 	firstTextNodeDescendant?: Text;
 	string?: string;

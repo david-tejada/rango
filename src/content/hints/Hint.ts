@@ -143,6 +143,7 @@ export class Hint implements HintableMark {
 	positioned: boolean;
 	color: Color;
 	backgroundColor: Color;
+	outlineColor: Color;
 	freezeColors?: boolean;
 	firstTextNodeDescendant?: Text;
 	string?: string;
@@ -218,14 +219,17 @@ export class Hint implements HintableMark {
 
 		this.backgroundColor = backgroundColor;
 		this.color = color;
+		this.outlineColor = new Color(this.color).alpha(0.3);
 	}
 
 	updateColors() {
 		this.computeColors();
+		const subtleHints = getHintOption("hintStyle") === "subtle";
 		if (!this.freezeColors) {
 			setStyleProperties(this.inner, {
 				"background-color": this.backgroundColor.string(),
 				color: this.color.string(),
+				outline: subtleHints ? "0" : `1px solid ${this.outlineColor.string()}`,
 			});
 		}
 	}
@@ -383,8 +387,6 @@ export class Hint implements HintableMark {
 
 		this.computeColors();
 
-		const outlineColor = new Color(this.color).alpha(0.3);
-
 		let fontWeight;
 		if (fontWeightOption === "auto") {
 			fontWeight =
@@ -400,7 +402,7 @@ export class Hint implements HintableMark {
 				? "transparent"
 				: this.backgroundColor.string(),
 			color: this.color.string(),
-			outline: subtleHints ? "0" : `1px solid ${outlineColor.string()}`,
+			outline: subtleHints ? "0" : `1px solid ${this.outlineColor.string()}`,
 			"font-size": `${hintFontSize}px`,
 			"font-weight": fontWeight,
 		});
