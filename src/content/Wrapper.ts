@@ -35,7 +35,9 @@ export async function intersectionCallback(
 		(entry) => entry.isIntersecting
 	).length;
 
+	if (amountIntersecting) {
 	await cacheHints(amountIntersecting);
+	}
 
 	for (const entry of entries) {
 		getWrapper(entry.target)?.intersect(entry.isIntersecting);
