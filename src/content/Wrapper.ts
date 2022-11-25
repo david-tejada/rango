@@ -18,6 +18,30 @@ import {
 import { getElementsFromOrigin } from "./utils/getElementsFromOrigin";
 
 // =============================================================================
+// HELPER FUNCTIONS
+// =============================================================================
+
+function getWrapperProxy(element: Element) {
+	let wrapper = getWrapper(element);
+	if (!wrapper) {
+		wrapper = new Wrapper(element);
+		addWrapper(wrapper);
+	}
+
+	return wrapper;
+}
+
+export function addWrappersFromOrigin(origin: Element) {
+	const elements = getElementsFromOrigin(origin);
+	for (const element of elements) {
+		addWrapper(new Wrapper(element));
+		if (element.shadowRoot) {
+			mutationObserver.observe(element.shadowRoot, mutationObserverConfig);
+		}
+	}
+}
+
+// =============================================================================
 // OBSERVERS
 // =============================================================================
 
@@ -36,25 +60,15 @@ export async function intersectionCallback(
 	).length;
 
 	if (amountIntersecting) {
-	await cacheHints(amountIntersecting);
+		await cacheHints(amountIntersecting);
 	}
 
 	for (const entry of entries) {
-		getWrapper(entry.target)?.intersect(entry.isIntersecting);
+		getWrapperProxy(entry.target).intersect(entry.isIntersecting);
 	}
 }
 
 // MUTATION OBSERVER
-
-export function addWrappersFromOrigin(origin: Element) {
-	const elements = getElementsFromOrigin(origin);
-	for (const element of elements) {
-		addWrapper(new Wrapper(element));
-		if (element.shadowRoot) {
-			mutationObserver.observe(element.shadowRoot, mutationObserverConfig);
-		}
-	}
-}
 
 export const mutationObserverConfig = {
 	attributes: true,
@@ -94,8 +108,8 @@ const mutationCallback: MutationCallback = (mutationList) => {
 					mutationRecord.attributeName
 				)
 			) {
-				getWrapper(mutationRecord.target)?.updateIsHintable();
-				getWrapper(mutationRecord.target)?.updateShouldBeHinted();
+				getWrapperProxy(mutationRecord.target).updateIsHintable();
+				getWrapperProxy(mutationRecord.target).updateShouldBeHinted();
 			}
 
 			if (mutationRecord.attributeName === "aria-hidden") {
@@ -128,7 +142,7 @@ const hintContainerResizeObserver = new ResizeObserver(() => {
 const hintablesResizeObserver = new ResizeObserver((entries) => {
 	for (const entry of entries) {
 		if (entry.target.isConnected) {
-			getWrapper(entry.target)?.updateShouldBeHinted();
+			getWrapperProxy(entry.target).updateShouldBeHinted();
 		}
 	}
 });
