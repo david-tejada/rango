@@ -28,8 +28,8 @@ export interface HintableMark {
 	readonly target: Element;
 	readonly outer: HTMLDivElement;
 	readonly inner: HTMLDivElement;
-	container: Element;
-	limitParent: Element;
+	container: HTMLElement | ShadowRoot;
+	limitParent: HTMLElement;
 	availableSpaceLeft?: number;
 	availableSpaceTop?: number;
 	wrapperRelative?: boolean;

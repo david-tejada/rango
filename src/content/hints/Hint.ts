@@ -92,12 +92,49 @@ function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {
 // 	}
 // );
 
+function injectShadowStyles(node: Node) {
+	let current: Node | null = node;
+
+	while (current) {
+		if (
+			current instanceof ShadowRoot &&
+			!current.querySelector(".rango-styles")
+		) {
+			const style = document.createElement("style");
+			style.className = "rango-styles";
+			style.textContent = `
+			.rango-hint-wrapper:not(#a#a#a#a#a#a#a#a#a#a) {
+				all: initial;
+				position: absolute;
+				inset: auto;
+				display: block;
+			}
+
+			.rango-hint:not(#a#a#a#a#a#a#a#a#a#a) {
+				all: initial;
+				display: none;
+				user-select: none;
+				position: absolute;
+				border-radius: 20%;
+				line-height: 1.25;
+				font-family: monospace;
+				padding: 0 0.15em;
+			}
+			`;
+			current.append(style);
+			break;
+		}
+
+		current = current.parentNode;
+	}
+}
+
 export class Hint implements HintableMark {
 	readonly target: Element;
 	readonly outer: HTMLDivElement;
 	readonly inner: HTMLDivElement;
-	container: Element;
-	limitParent: Element;
+	container: HTMLElement | ShadowRoot;
+	limitParent: HTMLElement;
 	availableSpaceLeft?: number;
 	availableSpaceTop?: number;
 	wrapperRelative?: boolean;
@@ -119,6 +156,8 @@ export class Hint implements HintableMark {
 			availableSpaceLeft: this.availableSpaceLeft,
 			availableSpaceTop: this.availableSpaceTop,
 		} = getContextForHint(target, this.elementToPositionHint));
+
+		injectShadowStyles(this.container);
 
 		this.outer = document.createElement("div");
 		this.outer.className = "rango-hint-wrapper";
@@ -259,7 +298,11 @@ export class Hint implements HintableMark {
 
 		// We need to calculate this here the first time the hint is appended
 		if (this.wrapperRelative === undefined) {
-			const { display } = window.getComputedStyle(this.container);
+			const { display } = window.getComputedStyle(
+				this.container instanceof HTMLElement
+					? this.container
+					: this.container.host
+			);
 
 			if (
 				!this.limitParent.contains(this.outer.offsetParent) &&

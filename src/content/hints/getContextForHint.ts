@@ -40,7 +40,7 @@ function isUserScrollable(element: Element) {
 }
 
 function getSpaceAvailable(
-	container: Element,
+	container: HTMLElement | ShadowRoot,
 	elementToPositionHint: Element | Text
 ) {
 	const targetRect =
@@ -48,13 +48,16 @@ function getSpaceAvailable(
 			? getFirstCharacterRect(elementToPositionHint)
 			: elementToPositionHint.getBoundingClientRect();
 
+	const containerForRect =
+		container instanceof HTMLElement ? container : container.host;
+
 	// To use when overflow: visible;
-	const borderRect = container.getBoundingClientRect();
+	const borderRect = containerForRect.getBoundingClientRect();
 	const borderInnerLeft = targetRect.left - borderRect.left;
 	const borderInnerTop = targetRect.top - borderRect.top;
 
 	// To use when overflow: hidden|clip|scroll|auto;
-	const paddingRect = getPaddingRect(container);
+	const paddingRect = getPaddingRect(containerForRect);
 	const paddingInnerLeft = targetRect.left - paddingRect.left;
 	const paddingInnerTop = targetRect.top - paddingRect.top;
 
@@ -64,20 +67,20 @@ function getSpaceAvailable(
 		clipPath,
 		left: styleLeft,
 		top: styleTop,
-	} = window.getComputedStyle(container);
+	} = window.getComputedStyle(containerForRect);
 
 	// We make sure to return 0 if any of the values are negative. This could
 	// happen if the element to position hint is not within the container. For example,
 	// if the element is hidden by making it unreachable
 
-	if (isUserScrollable(container)) {
+	if (isUserScrollable(containerForRect)) {
 		// We do Math.max to handle hidden elements that are unreachable (they remain
 		// outside of the bounds of the container no matter how much we scroll)
 		// We could return a negative value of available space but that messes up
 		// calculations when positioning the hint
 		return {
-			left: Math.max(container.scrollLeft + paddingInnerLeft, 0),
-			top: Math.max(container.scrollTop + paddingInnerTop, 0),
+			left: Math.max(containerForRect.scrollLeft + paddingInnerLeft, 0),
+			top: Math.max(containerForRect.scrollTop + paddingInnerTop, 0),
 		};
 	}
 
@@ -128,12 +131,21 @@ function getSpaceAvailable(
 }
 
 function getAptContainer(origin: Element) {
-	let current: Element | null =
+	let current: Node | null =
 		window.getComputedStyle(origin).position === "sticky"
 			? origin
-			: origin.parentElement;
+			: origin.parentNode;
 
 	while (current) {
+		if (current instanceof ShadowRoot) {
+			return current;
+		}
+
+		if (!(current instanceof HTMLElement) || current.shadowRoot) {
+			current = current.parentNode;
+			continue;
+		}
+
 		const { display } = window.getComputedStyle(current);
 
 		if (current.tagName !== "DETAILS" && display !== "contents") {
@@ -148,8 +160,8 @@ function getAptContainer(origin: Element) {
 }
 
 interface HintContext {
-	container: Element;
-	limitParent: Element;
+	container: HTMLElement | ShadowRoot;
+	limitParent: HTMLElement;
 	availableSpaceLeft?: number;
 	availableSpaceTop?: number;
 }
@@ -165,16 +177,26 @@ export function getContextForHint(
 	// clip-path other than "none", contain: paint|content|strict) or can limit the
 	// visibility of inner elements moved outside of its bounds, for example, with
 	// position: fixed|sticky.
-	const clipAncestors: Element[] = [];
+	const clipAncestors: HTMLElement[] = [];
 
 	// If the hintable itself is sticky we need to place the hint inside it or it
 	// will jump up and down when scrolling
 	let current =
 		window.getComputedStyle(element).position === "sticky"
 			? element
-			: element.parentElement;
+			: element.parentNode;
 
 	while (current) {
+		if (current instanceof ShadowRoot) {
+			current = current.host;
+			continue;
+		}
+
+		if (!(current instanceof HTMLElement) || current.shadowRoot) {
+			current = current.parentNode;
+			continue;
+		}
+
 		const { overflow, contain, clipPath, position, transform, willChange } =
 			window.getComputedStyle(current);
 
@@ -206,11 +228,11 @@ export function getContextForHint(
 			}
 		}
 
-		current = current.parentElement;
+		current = current.parentNode;
 	}
 
 	let previousClipAncestor: Element | undefined;
-	let container: Element;
+	let container: HTMLElement | ShadowRoot;
 	let candidate = getAptContainer(element);
 	let previousSpaceLeft;
 	let previousSpaceTop;
