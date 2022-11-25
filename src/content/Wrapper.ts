@@ -291,7 +291,11 @@ export class Wrapper implements ElementWrapper {
 		if (this.isIntersecting && this.shouldBeHinted) {
 			this.hint ??= new Hint(this.element);
 			hintContainerResizeObserver.observe(this.hint.container);
-			wrappersHinted.set(this.hint.claim(), this);
+			try {
+				wrappersHinted.set(this.hint.claim(), this);
+			} catch (error: unknown) {
+				console.error(error);
+			}
 		} else if (this.hint?.string) {
 			wrappersHinted.delete(this.hint.string);
 			this.hint.release();
