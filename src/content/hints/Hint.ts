@@ -103,23 +103,35 @@ function injectShadowStyles(node: Node) {
 			const style = document.createElement("style");
 			style.className = "rango-styles";
 			style.textContent = `
-			.rango-hint-wrapper:not(#a#a#a#a#a#a#a#a#a#a) {
-				all: initial;
-				position: absolute;
-				inset: auto;
-				display: block;
-			}
+				.rango-hint-wrapper:not(#a#a#a#a#a#a#a#a#a#a) {
+					all: initial !important;
+					position: absolute !important;
+					inset: auto !important;
+					display: block !important;
+				}
 
-			.rango-hint:not(#a#a#a#a#a#a#a#a#a#a) {
-				all: initial;
-				display: none;
-				user-select: none;
-				position: absolute;
-				border-radius: 20%;
-				line-height: 1.25;
-				font-family: monospace;
-				padding: 0 0.15em;
-			}
+				.rango-hint:not(#a#a#a#a#a#a#a#a#a#a) {
+					all: initial !important;
+					display: none !important;
+					user-select: none !important;
+					position: absolute !important;
+					border-radius: 20% !important;
+					line-height: 1.25 !important;
+					font-family: monospace !important;
+					padding: 0 0.15em !important;
+					opacity: 0% !important;
+				}
+
+				.rango-hint.hidden:not(#a#a#a#a#a#a#a#a#a#a) {
+					display: block !important;
+				}
+
+				.rango-hint.visible:not(#a#a#a#a#a#a#a#a#a#a) {
+					display: block !important;
+					opacity: 100% !important;
+					transition: opacity 0.3s !important;
+				}
+
 			`;
 			current.append(style);
 			break;
@@ -298,7 +310,10 @@ export class Hint implements HintableMark {
 
 		this.inner.textContent = string;
 		this.string = string;
-		this.container.append(this.outer);
+
+		if (!this.outer.isConnected) {
+			this.container.append(this.outer);
+		}
 
 		// We need to calculate this here the first time the hint is appended
 		if (this.wrapperRelative === undefined) {
@@ -326,14 +341,30 @@ export class Hint implements HintableMark {
 			setStyleProperties(this.outer, { "z-index": `${this.zIndex}` });
 		}
 
-		setStyleProperties(this.inner, { display: "block", visibility: "hidden" });
+		// We can't have a transition effect if the element has display: none, thus
+		// not rendered. That's why we need nested requestAnimationFrame
+		// https://stackoverflow.com/questions/32481972/transition-not-working-when-changing-from-display-none-to-block
+		requestAnimationFrame(() => {
+			// We need to render the hint but hide it so we can calculate its size for
+			// positioning it and so we can have a transition.
+			this.inner.classList.add("hidden");
 
-		if (!this.positioned) {
-			this.position();
-			this.positioned = true;
-		}
+			if (!this.positioned) {
+				this.position();
+				this.positioned = true;
+			}
 
-		setStyleProperties(this.inner, { visibility: "visible" });
+			requestAnimationFrame(() => {
+				this.inner.classList.remove("hidden");
+
+				// This is to make sure that we don't make visible a hint that was
+				// released and causing layouts to break. Since release could be called
+				// before this callback is called
+				if (this.string) {
+					this.inner.classList.add("visible");
+				}
+			});
+		});
 
 		// This is here for debugging and testing purposes
 		if (process.env["NODE_ENV"] !== "production") {
@@ -353,11 +384,11 @@ export class Hint implements HintableMark {
 			throw new Error("HintError: Trying to release an empty hint");
 		}
 
+		this.inner.classList.remove("visible");
+
 		pushHint(this.string, keepInCache);
 		this.inner.textContent = "";
 		this.string = undefined;
-
-		setStyleProperties(this.inner, { display: "none" });
 
 		if (!this.target.isConnected) {
 			this.outer.remove();
