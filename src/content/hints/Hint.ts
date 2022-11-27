@@ -1,3 +1,6 @@
+/* eslint-disable unicorn/prefer-node-protocol */
+import fs from "fs";
+import path from "path";
 import Color from "color";
 import { rgbaToRgb } from "../../lib/rgbaToRgb";
 import { getHintOption } from "../options/cacheHintOptions";
@@ -91,52 +94,24 @@ function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {
 // 	}
 // );
 
-function injectShadowStyles(node: Node) {
-	let current: Node | null = node;
+// eslint-disable-next-line unicorn/prefer-module
+const css = fs.readFileSync(path.join(__dirname, "styles.css"), "utf8");
 
-	while (current) {
-		if (
-			current instanceof ShadowRoot &&
-			!current.querySelector(".rango-styles")
-		) {
-			const style = document.createElement("style");
-			style.className = "rango-styles";
-			style.textContent = `
-				.rango-hint-wrapper:not(#a#a#a#a#a#a#a#a#a#a) {
-					all: initial !important;
-					position: absolute !important;
-					inset: auto !important;
-					display: block !important;
-				}
+function injectShadowStyles(rootNode: ShadowRoot) {
+	let stylesPresent = false;
 
-				.rango-hint:not(#a#a#a#a#a#a#a#a#a#a) {
-					all: initial !important;
-					display: none !important;
-					user-select: none !important;
-					position: absolute !important;
-					border-radius: 20% !important;
-					line-height: 1.25 !important;
-					font-family: monospace !important;
-					padding: 0 0.15em !important;
-					opacity: 0% !important;
-				}
+	// This is more performant than using querySelector, especially if there are
+	// multiple shadowRoots
+	for (const child of rootNode.children) {
+		if (child.className === "rango-styles") stylesPresent = true;
+	}
 
-				.rango-hint.hidden:not(#a#a#a#a#a#a#a#a#a#a) {
-					display: block !important;
-				}
+	if (!stylesPresent) {
+		const style = document.createElement("style");
+		style.className = "rango-styles";
+		style.textContent = css;
 
-				.rango-hint.visible:not(#a#a#a#a#a#a#a#a#a#a) {
-					display: block !important;
-					opacity: 100% !important;
-					transition: opacity 0.3s !important;
-				}
-
-			`;
-			current.append(style);
-			break;
-		}
-
-		current = current.parentNode;
+		rootNode.append(style);
 	}
 }
 
@@ -169,7 +144,8 @@ export class Hint implements HintableMark {
 			availableSpaceTop: this.availableSpaceTop,
 		} = getContextForHint(target, this.elementToPositionHint));
 
-		injectShadowStyles(this.container);
+		const rootNode = this.container.getRootNode();
+		if (rootNode instanceof ShadowRoot) injectShadowStyles(rootNode);
 
 		this.outer = document.createElement("div");
 		this.outer.className = "rango-hint-wrapper";
