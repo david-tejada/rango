@@ -16,6 +16,7 @@ import { setStyleProperties } from "./setStyleProperties";
 function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {
 	const descendants = target.querySelectorAll("*");
 	let zIndex = 1;
+
 	for (const descendant of descendants) {
 		if (createsStackingContext(descendant)) {
 			const descendantIndex = Number.parseInt(
@@ -31,9 +32,7 @@ function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {
 	let current: Element | null = target;
 
 	while (current) {
-		if (current.contains(hintOuter)) {
-			return zIndex;
-		}
+		if (current.contains(hintOuter)) return zIndex;
 
 		if (createsStackingContext(current)) {
 			const currentIndex = Number.parseInt(
@@ -237,6 +236,7 @@ export class Hint implements HintableMark {
 	updateColors() {
 		this.computeColors();
 		const subtleHints = getHintOption("hintStyle") === "subtle";
+
 		if (!this.freezeColors) {
 			setStyleProperties(this.inner, {
 				"background-color": this.backgroundColor.string(),
@@ -285,6 +285,8 @@ export class Hint implements HintableMark {
 			left: `${x}px`,
 			top: `${y}px`,
 		});
+
+		this.positioned = true;
 	}
 
 	flash(ms = 300) {
@@ -304,16 +306,12 @@ export class Hint implements HintableMark {
 	claim() {
 		const string = popHint();
 
-		if (!string) {
-			throw new Error("No more hint strings available");
-		}
+		if (!string) throw new Error("No more hint strings available");
 
 		this.inner.textContent = string;
 		this.string = string;
 
-		if (!this.outer.isConnected) {
-			this.container.append(this.outer);
-		}
+		if (!this.outer.isConnected) this.container.append(this.outer);
 
 		// We need to calculate this here the first time the hint is appended
 		if (this.wrapperRelative === undefined) {
@@ -349,10 +347,7 @@ export class Hint implements HintableMark {
 			// positioning it and so we can have a transition.
 			this.inner.classList.add("hidden");
 
-			if (!this.positioned) {
-				this.position();
-				this.positioned = true;
-			}
+			if (!this.positioned) this.position();
 
 			requestAnimationFrame(() => {
 				this.inner.classList.remove("hidden");
@@ -360,9 +355,7 @@ export class Hint implements HintableMark {
 				// This is to make sure that we don't make visible a hint that was
 				// released and causing layouts to break. Since release could be called
 				// before this callback is called
-				if (this.string) {
-					this.inner.classList.add("visible");
-				}
+				if (this.string) this.inner.classList.add("visible");
 			});
 		});
 
@@ -390,9 +383,7 @@ export class Hint implements HintableMark {
 		this.inner.textContent = "";
 		this.string = undefined;
 
-		if (!this.target.isConnected) {
-			this.outer.remove();
-		}
+		if (!this.target.isConnected) this.outer.remove();
 
 		if (process.env["NODE_ENV"] !== "production") {
 			/* eslint-disable @typescript-eslint/no-dynamic-delete */
