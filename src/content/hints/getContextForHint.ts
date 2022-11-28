@@ -131,10 +131,9 @@ function getSpaceAvailable(
 }
 
 function getAptContainer(origin: Element) {
+	const { position } = window.getComputedStyle(origin);
 	let current: Node | null =
-		window.getComputedStyle(origin).position === "sticky"
-			? origin
-			: origin.parentNode;
+		position === "fixed" || position === "sticky" ? origin : origin.parentNode;
 
 	while (current) {
 		if (current instanceof ShadowRoot) {
