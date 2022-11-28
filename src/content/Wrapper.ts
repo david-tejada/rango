@@ -192,6 +192,14 @@ export class Wrapper implements ElementWrapper {
 	constructor(element: Element) {
 		this.element = element;
 
+		// Sometimes the entire body gets stored and then replaced when you hit
+		// the back button. For example, in GitHub. We need to delete the hints
+		// that were stored with the body or any other element.
+		const staleHints = element.querySelectorAll(".rango-hint-wrapper");
+		for (const staleHint of staleHints) {
+			staleHint.remove();
+		}
+
 		// Get clickTarget element
 		if (
 			element.matches(
