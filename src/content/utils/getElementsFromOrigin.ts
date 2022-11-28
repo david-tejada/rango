@@ -8,12 +8,12 @@ export function getElementsFromOrigin(
 	const elements = origin.shadowRoot
 		? [
 				...origin.shadowRoot.querySelectorAll(
-					":not(.rango-hint-wrapper, .rango-hint, #rango-copy-paste-area"
+					":not(.rango-hint-wrapper, .rango-hint, #rango-copy-paste-area)"
 				),
 		  ]
 		: [
 				...origin.querySelectorAll(
-					":not(.rango-hint-wrapper, .rango-hint, #rango-copy-paste-area"
+					":not(.rango-hint-wrapper, .rango-hint, #rango-copy-paste-area)"
 				),
 		  ];
 
