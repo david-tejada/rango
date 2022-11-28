@@ -54,11 +54,9 @@ export function deleteWrapper(target: Element) {
 	for (const element of elements) {
 		const wrapper = wrappersAll.get(element);
 
-		wrapper?.remove();
+		if (wrapper?.hint?.string) wrappersHinted.delete(wrapper.hint.string);
 
-		if (wrapper?.hint?.string) {
-			wrappersHinted.delete(wrapper.hint.string);
-		}
+		wrapper?.remove();
 
 		wrappersAll.delete(element);
 	}
