@@ -41,6 +41,21 @@ export function addWrappersFromOrigin(origin: Element) {
 	}
 }
 
+// Sometimes the entire body gets stored and then replaced when you hit
+// the back button. For example, in GitHub. We need to delete the hints
+// that were stored with the body.clearDomHints();
+function clearDomHints() {
+	const hintWrappers = deepGetElements(
+		document.body,
+		false,
+		".rango-hint-wrapper"
+	);
+
+	for (const hintWrapper of hintWrappers) {
+		hintWrapper.remove();
+	}
+}
+
 // =============================================================================
 // OBSERVERS
 // =============================================================================
@@ -84,6 +99,8 @@ const mutationCallback: MutationCallback = (mutationList) => {
 
 	for (const mutationRecord of mutationList) {
 		for (const node of mutationRecord.addedNodes) {
+			if (node instanceof HTMLBodyElement) clearDomHints();
+
 			if (node instanceof Element && node.matches(selectorFilter)) {
 				addWrappersFromOrigin(node);
 			}
@@ -191,14 +208,6 @@ export class Wrapper implements ElementWrapper {
 
 	constructor(element: Element) {
 		this.element = element;
-
-		// Sometimes the entire body gets stored and then replaced when you hit
-		// the back button. For example, in GitHub. We need to delete the hints
-		// that were stored with the body or any other element.
-		const staleHints = element.querySelectorAll(".rango-hint-wrapper");
-		for (const staleHint of staleHints) {
-			staleHint.remove();
-		}
 
 		// Get clickTarget element
 		if (
