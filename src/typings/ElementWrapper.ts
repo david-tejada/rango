@@ -3,7 +3,6 @@ import { BoundedIntersectionObserver } from "../content/BoundedIntersectionObser
 
 export interface ElementWrapper {
 	readonly element: Element;
-	readonly clickTarget: Element;
 
 	isIntersecting?: boolean;
 	isHintable: boolean;
@@ -21,6 +20,8 @@ export interface ElementWrapper {
 	observeIntersection(): void;
 	unobserveIntersection(): void;
 	intersect(isIntersecting: boolean): void;
+	click(): void;
+	hover(): Element;
 	remove(): void;
 }
 

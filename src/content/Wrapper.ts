@@ -16,6 +16,10 @@ import {
 	getWrappersWithin,
 } from "./wrappers";
 import { deepGetElements } from "./utils/deepGetElements";
+import { getPointerTarget } from "./utils/getPointerTarget";
+import { focusesOnclick } from "./utils/focusesOnclick";
+import { openInNewTab } from "./actions/openInNewTab";
+import { dispatchClick, dispatchHover } from "./utils/dispatchEvents";
 
 // =============================================================================
 // HELPER FUNCTIONS
@@ -194,7 +198,6 @@ const updateShouldBeHintedAll = throttle(() => {
 
 export class Wrapper implements ElementWrapper {
 	readonly element: Element;
-	readonly clickTarget: Element;
 
 	isIntersecting?: boolean;
 	isHintable: boolean;
@@ -208,27 +211,6 @@ export class Wrapper implements ElementWrapper {
 
 	constructor(element: Element) {
 		this.element = element;
-
-		// Get clickTarget element
-		if (
-			element.matches(
-				"button, a, input, summary, textarea, select, option, label"
-			)
-		) {
-			this.clickTarget = this.element;
-		} else {
-			const { x, y } = element.getBoundingClientRect();
-			const elementsAtPoint = document.elementsFromPoint(x + 5, y + 5);
-
-			for (const elementAt of elementsAtPoint) {
-				if (elementAt === element || element.contains(elementAt)) {
-					this.clickTarget = elementAt;
-					break;
-				}
-			}
-		}
-
-		this.clickTarget ??= this.element;
 
 		this.isHintable = isHintable(this.element);
 
@@ -321,6 +303,43 @@ export class Wrapper implements ElementWrapper {
 			wrappersHinted.delete(this.hint.string);
 			this.hint.release();
 		}
+	}
+
+	click() {
+		const pointerTarget = getPointerTarget(this.element);
+		this.hint?.flash();
+
+		if (pointerTarget instanceof HTMLElement && focusesOnclick(pointerTarget)) {
+			pointerTarget.focus();
+		} else if (pointerTarget instanceof HTMLAnchorElement) {
+			// In Firefox if we click a link with target="_blank" we get a popup message
+			// saying "Firefox prevented this site from opening a popup". In order to
+			// avoid that we open a new tab with the url of the href of the link.
+			// Sometimes websites use links with target="_blank" but don't open a new tab.
+			// They probably prevent the default behavior with javascript. For example Slack
+			// has this for opening a thread in the side panel. So here we make sure that
+			// there is a href attribute before we open the link in a new tab.
+			if (
+				pointerTarget.getAttribute("target") === "_blank" &&
+				pointerTarget.getAttribute("href")
+			) {
+				void openInNewTab([this]);
+			} else {
+				void dispatchClick(pointerTarget);
+			}
+		} else {
+			void dispatchClick(pointerTarget);
+		}
+	}
+
+	hover() {
+		const pointerTarget = getPointerTarget(this.element);
+		this.hint?.flash();
+		dispatchHover(pointerTarget);
+
+		// We need to return the pointerTarget to add to the list of hoveredElements
+		// so that later we can unhover all hovered elements
+		return pointerTarget;
 	}
 
 	remove() {
