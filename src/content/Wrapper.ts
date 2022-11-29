@@ -15,7 +15,7 @@ import {
 	wrappersAll,
 	getWrappersWithin,
 } from "./wrappers";
-import { getElementsFromOrigin } from "./utils/getElementsFromOrigin";
+import { deepGetElements } from "./utils/deepGetElements";
 
 // =============================================================================
 // HELPER FUNCTIONS
@@ -32,7 +32,7 @@ function getWrapperProxy(element: Element) {
 }
 
 export function addWrappersFromOrigin(origin: Element) {
-	const elements = getElementsFromOrigin(origin);
+	const elements = deepGetElements(origin);
 	for (const element of elements) {
 		addWrapper(new Wrapper(element));
 		if (element.shadowRoot) {

@@ -4,7 +4,7 @@
 // case it would make more sense to place the hint next to the SVG. Similarly,
 // most of the time, we want the hint next to the text of the hinted element.
 
-import { getElementsFromOrigin } from "../utils/getElementsFromOrigin";
+import { deepGetElements } from "../utils/deepGetElements";
 import { getFirstCharacterRect } from "../utils/nodeUtils";
 import { getWrapper } from "../wrappers";
 
@@ -116,7 +116,7 @@ function withinDifferentHintable(node: Element, hintable: Element) {
 export function getFirstIconOrTextElement(
 	target: Element
 ): Element | Text | undefined {
-	const elements = getElementsFromOrigin(target, true).filter(
+	const elements = deepGetElements(target, true).filter(
 		(element) => !element.matches(".rango-hint-wrapper, .rango-hint")
 	);
 	// For some elements that are highly likely to have an icon plus text we can

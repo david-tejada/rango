@@ -1,4 +1,4 @@
-import { getElementsFromOrigin } from "./getElementsFromOrigin";
+import { deepGetElements } from "./deepGetElements";
 import { isVisible } from "./isVisible";
 
 const clickableSelector =
@@ -58,7 +58,7 @@ function elementsOverlap(element0: Element, element1: Element) {
 }
 
 function isRedundant(target: Element) {
-	const descendantClickables = getElementsFromOrigin(target, false).filter(
+	const descendantClickables = deepGetElements(target, false).filter(
 		(element) => isClickable(element)
 	);
 

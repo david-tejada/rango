@@ -1,5 +1,5 @@
 import { ElementWrapper } from "../typings/ElementWrapper";
-import { getElementsFromOrigin } from "./utils/getElementsFromOrigin";
+import { deepGetElements } from "./utils/deepGetElements";
 
 export const wrappersAll: Map<Element, ElementWrapper> = new Map();
 export const wrappersHinted: Map<string, ElementWrapper> = new Map();
@@ -50,7 +50,7 @@ export function getWrappersWithin(element: Element): ElementWrapper[] {
 }
 
 export function deleteWrapper(target: Element) {
-	const elements = getElementsFromOrigin(target);
+	const elements = deepGetElements(target);
 	for (const element of elements) {
 		const wrapper = wrappersAll.get(element);
 
