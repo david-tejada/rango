@@ -178,10 +178,11 @@ export function getContextForHint(
 	// position: fixed|sticky.
 	const clipAncestors: HTMLElement[] = [];
 
-	// If the hintable itself is sticky we need to place the hint inside it or it
-	// will jump up and down when scrolling
+	// If the hintable itself is sticky or fixed we need to place the hint inside
+	// it or it will jump up and down when scrolling
+	const { position } = window.getComputedStyle(element);
 	let current =
-		window.getComputedStyle(element).position === "sticky"
+		position === "sticky" || position === "fixed"
 			? element
 			: element.parentNode;
 
