@@ -46,6 +46,13 @@ function hasSignificantText(element: Text): boolean {
 
 // Returns true if any of the children is a Text node that is not all white space
 function hasSignificantTextNodeChild(target: Element) {
+	const { textIndent } = window.getComputedStyle(target);
+	const textIndentNumber = Number.parseInt(textIndent, 10);
+
+	if (Math.abs(textIndentNumber) > 100) {
+		return false;
+	}
+
 	if (
 		typeof target.className === "string" &&
 		target.className.includes("hidden")
