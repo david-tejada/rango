@@ -350,7 +350,8 @@ export class Hint implements HintableMark {
 		// Checking this.string is safer than check in this.inner.textContent as the
 		// latter could be removed by a page script
 		if (!this.string) {
-			throw new Error("HintError: Trying to release an empty hint");
+			console.warn("Releasing an empty hint");
+			return;
 		}
 
 		this.inner.classList.remove("visible");
