@@ -12,6 +12,8 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "scrollDownAtElement"
 		| "scrollLeftAtElement"
 		| "scrollRightAtElement"
+		| "displayMoreHints"
+		| "displayLessHints"
 		| "toggleHints"
 		| "toggleKeyboardClicking"
 		| "enableHintsNavigation"

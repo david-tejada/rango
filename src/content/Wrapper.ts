@@ -21,6 +21,8 @@ import { focusesOnclick } from "./utils/focusesOnclick";
 import { openInNewTab } from "./actions/openInNewTab";
 import { dispatchClick, dispatchHover } from "./utils/dispatchEvents";
 
+let includeExtraHintables = false;
+
 // =============================================================================
 // HELPER FUNCTIONS
 // =============================================================================
@@ -192,6 +194,22 @@ const updateShouldBeHintedAll = throttle(() => {
 	}
 }, 300);
 
+export function displayMoreHints() {
+	includeExtraHintables = true;
+	for (const wrapper of wrappersAll.values()) {
+		wrapper.updateIsHintable();
+		wrapper.updateShouldBeHinted();
+	}
+}
+
+export function displayLessHints() {
+	includeExtraHintables = false;
+	for (const wrapper of wrappersAll.values()) {
+		wrapper.updateIsHintable();
+		wrapper.updateShouldBeHinted();
+	}
+}
+
 // =============================================================================
 // ELEMENT WRAPPER
 // =============================================================================
@@ -212,7 +230,7 @@ export class Wrapper implements ElementWrapper {
 	constructor(element: Element) {
 		this.element = element;
 
-		this.isHintable = isHintable(this.element);
+		this.isHintable = isHintable(this.element, includeExtraHintables);
 
 		if (this.isHintable) {
 			hintablesResizeObserver.observe(this.element);
@@ -227,7 +245,7 @@ export class Wrapper implements ElementWrapper {
 	}
 
 	updateIsHintable() {
-		this.isHintable = isHintable(this.element);
+		this.isHintable = isHintable(this.element, includeExtraHintables);
 		if (this.isHintable) {
 			hintablesResizeObserver.observe(this.element);
 		}

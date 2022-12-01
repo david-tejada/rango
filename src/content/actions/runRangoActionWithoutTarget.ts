@@ -1,5 +1,6 @@
 import { RangoActionWithoutTarget } from "../../typings/RangoAction";
 import { setNavigationToggle } from "../hints/shouldDisplayHints";
+import { displayLessHints, displayMoreHints } from "../Wrapper";
 import { unhoverAll } from "./hoverElement";
 import { scroll } from "./scroll";
 
@@ -53,6 +54,14 @@ export async function runRangoActionWithoutTarget(
 
 		case "scrollLeftAtElement":
 			scroll({ dir: "left", target: "repeatLast" });
+			break;
+
+		case "displayMoreHints":
+			displayMoreHints();
+			break;
+
+		case "displayLessHints":
+			displayLessHints();
 			break;
 
 		case "copyLocationProperty":

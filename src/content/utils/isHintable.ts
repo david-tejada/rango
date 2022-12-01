@@ -46,7 +46,8 @@ function hasSignificantSiblings(target: Node) {
 		...target.parentNode.childNodes,
 	].filter(
 		(node) =>
-			node instanceof Element ||
+			// We need to exclude hint divs for when we display/remove extra hints
+			(node instanceof Element && node.className !== "rango-hint-wrapper") ||
 			(node instanceof Text && node.textContent && /\S/.test(node.textContent))
 	);
 
@@ -65,6 +66,23 @@ function isRedundant(target: Element) {
 	return false;
 }
 
-export function isHintable(target: Element): boolean {
-	return target.matches(hintableSelector) && !isRedundant(target);
+function isHintableExtra(target: Element): boolean {
+	const { cursor } = window.getComputedStyle(target);
+
+	if (
+		(cursor === "pointer" ||
+			target.matches("[class*='button' i], [class*='btn' i]")) &&
+		target.matches("div, span")
+	) {
+		return true;
+	}
+
+	return false;
+}
+
+export function isHintable(target: Element, extra: boolean): boolean {
+	return (
+		(target.matches(hintableSelector) && !isRedundant(target)) ||
+		(extra && isHintableExtra(target))
+	);
 }
