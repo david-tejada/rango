@@ -132,7 +132,6 @@ const mutationCallback: MutationCallback = (mutationList) => {
 				)
 			) {
 				getWrapperProxy(mutationRecord.target).updateIsHintable();
-				getWrapperProxy(mutationRecord.target).updateShouldBeHinted();
 			}
 
 			if (mutationRecord.attributeName === "aria-hidden") {
@@ -140,7 +139,6 @@ const mutationCallback: MutationCallback = (mutationList) => {
 
 				for (const wrapper of wrappers) {
 					wrapper.updateIsHintable();
-					wrapper.updateShouldBeHinted();
 				}
 			}
 		}
@@ -194,20 +192,20 @@ const updateShouldBeHintedAll = throttle(() => {
 	}
 }, 300);
 
-export function displayMoreHints() {
-	includeExtraHintables = true;
+function updateIsHintableAll() {
 	for (const wrapper of wrappersAll.values()) {
 		wrapper.updateIsHintable();
-		wrapper.updateShouldBeHinted();
 	}
+}
+
+export function displayMoreHints() {
+	includeExtraHintables = true;
+	updateIsHintableAll();
 }
 
 export function displayLessHints() {
 	includeExtraHintables = false;
-	for (const wrapper of wrappersAll.values()) {
-		wrapper.updateIsHintable();
-		wrapper.updateShouldBeHinted();
-	}
+	updateIsHintableAll();
 }
 
 // =============================================================================
@@ -229,19 +227,7 @@ export class Wrapper implements ElementWrapper {
 
 	constructor(element: Element) {
 		this.element = element;
-
-		this.isHintable = isHintable(this.element, includeExtraHintables);
-
-		if (this.isHintable) {
-			hintablesResizeObserver.observe(this.element);
-		}
-
-		this.shouldBeHinted =
-			this.isHintable && isVisible(this.element) && !isDisabled(this.element);
-
-		if (this.shouldBeHinted) {
-			this.observeIntersection();
-		}
+		this.updateIsHintable();
 	}
 
 	updateIsHintable() {
@@ -249,6 +235,8 @@ export class Wrapper implements ElementWrapper {
 		if (this.isHintable) {
 			hintablesResizeObserver.observe(this.element);
 		}
+
+		this.updateShouldBeHinted();
 	}
 
 	updateShouldBeHinted() {
