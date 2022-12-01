@@ -360,7 +360,11 @@ export class Hint implements HintableMark {
 		this.inner.textContent = "";
 		this.string = undefined;
 
-		if (!this.target.isConnected) this.outer.remove();
+		// We need to remove the hint from the dom once it's not needed. This
+		// minimizes the possibility of something weird happening. Like in the
+		// YouTube search suggestions where the page inserts elements within the
+		// hints if they are not removed.
+		this.outer.remove();
 
 		if (process.env["NODE_ENV"] !== "production") {
 			/* eslint-disable @typescript-eslint/no-dynamic-delete */
