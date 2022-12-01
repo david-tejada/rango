@@ -3,7 +3,7 @@ const defaultSelector =
 	"button, a, input, summary, textarea, select, option, label, " +
 	// Roles
 	"[role='button'], [role='link'], [role='treeitem'], [role='tab'], [role='option'], " +
-	"[role='radio'], [role='checkbox'], [role='menuitem'], [role='menuitemradio'], " +
+	"[role='radio'], [role='checkbox'], [role='menuitem'], [role='menuitemradio'], [role='menuitemcheckbox'], " +
 	// Attributes
 	"[contenteditable='true'], [contenteditable='']";
 
