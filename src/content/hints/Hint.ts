@@ -51,49 +51,6 @@ function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {
 	return zIndex;
 }
 
-/** Sometimes the hint is cut off because a neighboring element has a superior
- * stacking context. If that's the case this takes care to move the hint to
- * within its element so it doesn't get obscured */
-// const intersectionObserver = new IntersectionObserver(
-// 	(entries, observer) => {
-// 		for (const entry of entries) {
-// 			if (entry.intersectionRatio < 1) {
-// 				continue;
-// 			}
-
-// 			const { top, bottom, left, right } = entry.target.getBoundingClientRect();
-// 			let visibleCorners = 0;
-
-// 			if (document.elementFromPoint(left + 2, top + 2) === entry.target) {
-// 				visibleCorners++;
-// 			}
-
-// 			if (document.elementFromPoint(right - 2, top + 2) === entry.target) {
-// 				visibleCorners++;
-// 			}
-
-// 			if (document.elementFromPoint(right - 2, bottom - 2) === entry.target) {
-// 				visibleCorners++;
-// 			}
-
-// 			if (document.elementFromPoint(left + 2, bottom - 2) === entry.target) {
-// 				visibleCorners++;
-// 			}
-
-// 			if (visibleCorners > 0 && visibleCorners < 4) {
-// 				(entry.target as HTMLDivElement).dataset.placeWithin = "true";
-// 			}
-
-// 			observer.unobserve(entry.target);
-// 		}
-// 	},
-// 	{
-// 		root: null,
-// 		rootMargin: "0px",
-// 		threshold: 1,
-// 	}
-// );
-
 // eslint-disable-next-line unicorn/prefer-module
 const css = fs.readFileSync(path.join(__dirname, "styles.css"), "utf8");
 
@@ -153,8 +110,6 @@ export class Hint implements HintableMark {
 		this.inner = document.createElement("div");
 		this.inner.className = "rango-hint";
 		this.outer.append(this.inner);
-
-		// intersectionObserver.observe(this.inner);
 
 		this.positioned = false;
 
