@@ -11,6 +11,7 @@ import {
 } from "../utils/nodeUtils";
 import { createsStackingContext } from "../utils/createsStackingContext";
 import { HintableMark } from "../../typings/ElementWrapper";
+import { getWrapper } from "../wrappers";
 import { getElementToPositionHint } from "./getElementToPositionHint";
 import { getContextForHint } from "./getContextForHint";
 import { popHint, pushHint } from "./hintsCache";
@@ -72,6 +73,24 @@ function injectShadowStyles(rootNode: ShadowRoot) {
 	}
 }
 
+// This mutation observer takes care of reattaching the hints when they are
+// deleted by the page
+const mutationObserver = new MutationObserver((entries) => {
+	for (const entry of entries) {
+		for (const node of entry.removedNodes) {
+			if (
+				node instanceof HTMLDivElement &&
+				node.className === "rango-hint-wrapper" &&
+				node.textContent
+			) {
+				const wrapper = getWrapper(node.textContent);
+
+				if (wrapper?.hint?.string) wrapper.hint.reattach();
+			}
+		}
+	}
+});
+
 export class Hint implements HintableMark {
 	readonly target: Element;
 	readonly outer: HTMLDivElement;
@@ -100,6 +119,8 @@ export class Hint implements HintableMark {
 			availableSpaceLeft: this.availableSpaceLeft,
 			availableSpaceTop: this.availableSpaceTop,
 		} = getContextForHint(target, this.elementToPositionHint));
+
+		mutationObserver.observe(this.container, { childList: true });
 
 		const rootNode = this.container.getRootNode();
 		if (rootNode instanceof ShadowRoot) injectShadowStyles(rootNode);
@@ -329,6 +350,10 @@ export class Hint implements HintableMark {
 				delete this.target.dataset["hint"];
 			/* eslint-enable @typescript-eslint/no-dynamic-delete */
 		}
+	}
+
+	reattach() {
+		this.container.append(this.outer);
 	}
 
 	applyDefaultStyle() {
