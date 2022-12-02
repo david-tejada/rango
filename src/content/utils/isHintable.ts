@@ -71,7 +71,9 @@ function isHintableExtra(target: Element): boolean {
 
 	if (
 		(cursor === "pointer" ||
-			target.matches("[class*='button' i], [class*='btn' i]")) &&
+			target.matches(
+				"[class*='button' i], [class*='btn' i], [class*='select']"
+			)) &&
 		target.matches("div, span")
 	) {
 		return true;
