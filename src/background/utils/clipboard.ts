@@ -5,8 +5,14 @@ import {
 	ResponseToTalonVersion0,
 } from "../../typings/RequestFromTalon";
 import { notify } from "./notify";
+import browser from "webextension-polyfill";
 
 let lastRequestText: string | undefined;
+
+function isSafari(): boolean {
+	if (!navigator.vendor) return false;
+	return navigator.vendor.indexOf('Apple') != -1;
+}
 
 async function timer(ms: number) {
 	return new Promise((resolve) => {
@@ -106,6 +112,14 @@ async function copyToClipboardManifestV3(text: string) {
 }
 
 async function getTextFromClipboard(): Promise<string | undefined> {
+	if (isSafari()) {
+		return browser.runtime.sendNativeMessage("", {
+			request: "getTextFromClipboard"
+		}).then(
+			function (response: any): string {
+				return response["textFromClipboard"];
+			});
+	}
 	if (navigator.clipboard) {
 		return navigator.clipboard.readText();
 	}
@@ -159,7 +173,21 @@ export async function writeResponseToClipboard(
 	// and to tell talon to execute any actions
 	const jsonResponse = JSON.stringify(response);
 	if (navigator.clipboard) {
-		return navigator.clipboard.writeText(jsonResponse);
+		if (isSafari()) {
+			const copyPasteArea =
+				document.querySelector("#copy-paste-area") ??
+				document.createElement("textarea");
+			copyPasteArea.id = "copy-paste-area";
+			document.body.append(copyPasteArea);
+			if (copyPasteArea instanceof HTMLTextAreaElement) {
+				copyPasteArea.value = jsonResponse;
+				copyPasteArea.select();
+				document.execCommand("copy");
+				copyPasteArea.value = "";
+			}
+		} else {
+			return navigator.clipboard.writeText(jsonResponse);
+		}
 	}
 
 	return copyToClipboardManifestV3(jsonResponse);
