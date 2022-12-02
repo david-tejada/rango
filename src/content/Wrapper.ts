@@ -193,7 +193,6 @@ const updateShouldBeHintedAll = throttle(() => {
 }, 300);
 
 function updateIsHintableAll() {
-	console.log([...wrappersAll.values()]);
 	for (const wrapper of wrappersAll.values()) {
 		wrapper.updateIsHintable();
 	}
