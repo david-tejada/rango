@@ -1,6 +1,6 @@
 import { RangoActionWithoutTarget } from "../../typings/RangoAction";
 import { setNavigationToggle } from "../hints/shouldDisplayHints";
-import { displayLessHints, displayMoreHints } from "../Wrapper";
+import { displayLessHints, displayMoreHints, refreshHints } from "../Wrapper";
 import { unhoverAll } from "./hoverElement";
 import { scroll } from "./scroll";
 
@@ -80,15 +80,10 @@ export async function runRangoActionWithoutTarget(
 			unhoverAll();
 			break;
 
-		// case "refreshHints": {
-		// 	const running = hintables
-		// 		.getAll({
-		// 			clickable: true,
-		// 		})
-		// 		.map(async (hintable) => hintable.update());
-		// 	await Promise.allSettled(running);
-		// 	break;
-		// }
+		case "refreshHints": {
+			refreshHints();
+			break;
+		}
 
 		case "enableHintsNavigation":
 			setNavigationToggle(true);

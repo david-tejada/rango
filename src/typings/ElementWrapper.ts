@@ -6,7 +6,7 @@ export interface ElementWrapper {
 
 	isIntersecting?: boolean;
 	isHintable: boolean;
-	shouldBeHinted: boolean;
+	shouldBeHinted?: boolean;
 
 	// These properties are only needed for hintables
 	intersectionObserver?: BoundedIntersectionObserver;

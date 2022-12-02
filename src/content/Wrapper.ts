@@ -193,9 +193,19 @@ const updateShouldBeHintedAll = throttle(() => {
 }, 300);
 
 function updateIsHintableAll() {
+	console.log([...wrappersAll.values()]);
 	for (const wrapper of wrappersAll.values()) {
 		wrapper.updateIsHintable();
 	}
+}
+
+export function refreshHints() {
+	includeExtraHintables = false;
+	for (const wrapper of wrappersHinted.values()) {
+		wrapper.remove();
+	}
+
+	updateIsHintableAll();
 }
 
 export function displayMoreHints() {
@@ -217,7 +227,7 @@ export class Wrapper implements ElementWrapper {
 
 	isIntersecting?: boolean;
 	isHintable: boolean;
-	shouldBeHinted: boolean;
+	shouldBeHinted?: boolean;
 
 	// These properties are only needed for hintables
 	intersectionObserver?: BoundedIntersectionObserver;
@@ -350,6 +360,7 @@ export class Wrapper implements ElementWrapper {
 
 	remove() {
 		this.unobserveIntersection();
+		this.shouldBeHinted = undefined;
 
 		if (this.hint?.string) {
 			this.hint.release();
