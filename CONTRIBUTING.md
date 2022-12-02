@@ -42,3 +42,30 @@ _This example is for launching Brave on MacOS_
 ```bash
 npm run-script start:chromium -- --chromium-binary /Applications/Brave\ Browser.app/Contents/MacOS/Brave\ Browser
 ```
+
+### Safari
+
+Safari [only supports web extensions](https://developer.apple.com/documentation/safariservices/safari_web_extensions) bundled inside a native Mac app. If you are *not* building for development, Safari [only loads web extensions if their containing apps are distributed via the Mac App Store](https://developer.apple.com/documentation/safariservices/safari_web_extensions/distributing_your_safari_web_extension), or [if you select “Allow unsigned extensionsʺ from the Debug menu on each launch](https://developer.apple.com/documentation/safariservices/safari_web_extensions/running_your_safari_web_extension) (requires authentication).
+
+To build for development:
+
+1. Build the extension for manifest version 2:
+
+    ```bash
+    npm run build:mv2-safari
+    ```
+
+2. Update the project's marketing version from the manifest.
+
+    ```bash
+    swift Rango/Build/UpdateRangoVersion.swift
+    ```
+
+3. Open the Rango project in Xcode.
+    ```bash
+    xed Rango
+    ```
+
+4. Build and run the project.
+
+5. Enable the extension in Safari’s Preferences.
