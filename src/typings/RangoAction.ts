@@ -21,10 +21,11 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "excludeSingleLetterHints"
 		| "includeSingleLetterHints"
 		| "refreshHints"
+		| "refreshHintsOnIdle"
+		| "updateHintsStyle"
+		| "updateHintsStyleOnIdle"
 		| "enableUrlInTitle"
 		| "disableUrlInTitle"
-		| "fullHintsUpdate"
-		| "fullHintsUpdateOnIdle"
 		| "increaseHintSize"
 		| "decreaseHintSize";
 }

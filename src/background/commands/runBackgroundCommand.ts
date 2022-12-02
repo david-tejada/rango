@@ -21,7 +21,7 @@ export async function runBackgroundCommand(
 			const hintsToggle = (await getStored("hintsToggle")) as HintsToggle;
 			hintsToggle.global = !hintsToggle.global;
 			await setStored({ hintsToggle });
-			await sendRequestToAllTabs({ type: "fullHintsUpdate" });
+			await sendRequestToAllTabs({ type: "refreshHints" });
 			break;
 		}
 
@@ -47,36 +47,36 @@ export async function runBackgroundCommand(
 
 		case "includeSingleLetterHints":
 			await setStored({ includeSingleLetterHints: true });
-			await sendRequestToAllTabs({ type: "fullHintsUpdate" });
+			await sendRequestToAllTabs({ type: "refreshHints" });
 			break;
 
 		case "excludeSingleLetterHints":
 			await setStored({ includeSingleLetterHints: false });
-			await sendRequestToAllTabs({ type: "fullHintsUpdate" });
+			await sendRequestToAllTabs({ type: "refreshHints" });
 			break;
 
 		case "increaseHintSize": {
 			const hintFontSize = (await getStored("hintFontSize")) as number;
 			await setStored({ hintFontSize: hintFontSize + 1 });
-			await sendRequestToAllTabs({ type: "fullHintsUpdate" });
+			await sendRequestToAllTabs({ type: "updateHintsStyle" });
 			break;
 		}
 
 		case "decreaseHintSize": {
 			const hintFontSize = (await getStored("hintFontSize")) as number;
 			await setStored({ hintFontSize: hintFontSize - 1 });
-			await sendRequestToAllTabs({ type: "fullHintsUpdate" });
+			await sendRequestToAllTabs({ type: "updateHintsStyle" });
 			break;
 		}
 
 		case "setHintStyle":
 			await setStored({ hintStyle: command.arg });
-			await sendRequestToAllTabs({ type: "fullHintsUpdate" });
+			await sendRequestToAllTabs({ type: "updateHintsStyle" });
 			break;
 
 		case "setHintWeight":
 			await setStored({ hintWeight: command.arg });
-			await sendRequestToAllTabs({ type: "fullHintsUpdate" });
+			await sendRequestToAllTabs({ type: "updateHintsStyle" });
 			break;
 
 		case "enableUrlInTitle":

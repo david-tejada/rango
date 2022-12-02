@@ -83,16 +83,6 @@ browser.runtime.onMessage.addListener(
 					// eslint-disable-next-line unicorn/no-useless-promise-resolve-reject, @typescript-eslint/return-await
 					return Promise.reject();
 
-				case "fullHintsUpdate":
-					// await triggerHintsUpdate(true);
-					break;
-
-				case "fullHintsUpdateOnIdle":
-					window.requestIdleCallback(async () => {
-						// await triggerHintsUpdate(true);
-					});
-					break;
-
 				default: {
 					const result = await runRangoActionWithoutTarget(request);
 					return result;

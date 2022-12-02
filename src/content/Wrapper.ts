@@ -207,6 +207,12 @@ export function refreshHints() {
 	updateIsHintableAll();
 }
 
+export function updateHintsStyle() {
+	for (const wrapper of wrappersHinted.values()) {
+		wrapper.hint!.applyDefaultStyle();
+	}
+}
+
 export function displayMoreHints() {
 	includeExtraHintables = true;
 	updateIsHintableAll();
