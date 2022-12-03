@@ -3,7 +3,7 @@ import { ElementWrapper } from "../typings/ElementWrapper";
 import { isHintable } from "./utils/isHintable";
 import { isDisabled } from "./utils/isDisabled";
 import { isVisible } from "./utils/isVisible";
-import { cacheHints } from "./hints/hintsCache";
+import { cacheHints, clearHintsCache } from "./hints/hintsCache";
 import { getUserScrollableContainer } from "./utils/getUserScrollableContainer";
 import { BoundedIntersectionObserver } from "./BoundedIntersectionObserver";
 import { Hint } from "./hints/Hint";
@@ -198,12 +198,13 @@ function updateIsHintableAll() {
 	}
 }
 
-export function refreshHints() {
+export async function refreshHints() {
 	includeExtraHintables = false;
 	for (const wrapper of wrappersHinted.values()) {
 		wrapper.remove();
 	}
 
+	await clearHintsCache();
 	updateIsHintableAll();
 }
 

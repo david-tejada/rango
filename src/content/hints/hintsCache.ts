@@ -1,7 +1,7 @@
-import { claimHints, releaseHints } from "./hintsRequests";
+import { claimHints, initStack, releaseHints } from "./hintsRequests";
 
-const hintsCache: string[] = [];
-const returnedHints: string[] = [];
+let hintsCache: string[] = [];
+let returnedHints: string[] = [];
 
 // This function is called from the intersection observer callback on every intersection.
 export async function cacheHints(amount: number) {
@@ -35,4 +35,10 @@ export function pushHint(hints: string | string[], keepInCache = false) {
 	} else {
 		returnedHints.push(...hints);
 	}
+}
+
+export async function clearHintsCache() {
+	hintsCache = [];
+	returnedHints = [];
+	await initStack();
 }

@@ -88,13 +88,13 @@ export async function runRangoActionWithoutTarget(
 
 		case "refreshHints":
 			await cacheHintOptions();
-			refreshHints();
+			await refreshHints();
 			break;
 
 		case "refreshHintsOnIdle":
 			await cacheHintOptions();
 			window.requestIdleCallback(async () => {
-				refreshHints();
+				await refreshHints();
 			});
 			break;
 
