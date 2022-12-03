@@ -1,7 +1,8 @@
-class mockResizeObserver {
+/* eslint-disable @typescript-eslint/no-empty-function */
+class MockResizeObserver {
 	observe() {}
 	unobserve() {}
 	disconnect() {}
 }
 
-window.ResizeObserver = mockResizeObserver;
+window.ResizeObserver = MockResizeObserver;
