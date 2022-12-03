@@ -1,5 +1,6 @@
 import { RangoActionWithoutTarget } from "../../typings/RangoAction";
 import { setNavigationToggle } from "../hints/shouldDisplayHints";
+import { updateHintsEnabled } from "../observe";
 import { cacheHintOptions } from "../options/cacheHintOptions";
 import {
 	displayLessHints,
@@ -110,14 +111,23 @@ export async function runRangoActionWithoutTarget(
 			});
 			break;
 
+		case "updateHintsEnabled":
+			await updateHintsEnabled();
+			break;
+
+		case "updateHintsEnabledOnIdle":
+			window.requestIdleCallback(async () => {
+				await updateHintsEnabled();
+			});
+
+			break;
+
 		case "enableHintsNavigation":
 			setNavigationToggle(true);
-			// await triggerHintsUpdate(true);
 			break;
 
 		case "disableHintsNavigation":
 			setNavigationToggle(false);
-			// await triggerHintsUpdate(true);
 			break;
 
 		default:

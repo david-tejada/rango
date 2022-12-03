@@ -24,6 +24,8 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "refreshHintsOnIdle"
 		| "updateHintsStyle"
 		| "updateHintsStyleOnIdle"
+		| "updateHintsEnabled"
+		| "updateHintsEnabledOnIdle"
 		| "enableUrlInTitle"
 		| "disableUrlInTitle"
 		| "increaseHintSize"

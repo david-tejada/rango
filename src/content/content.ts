@@ -18,9 +18,7 @@ import { runRangoActionWithoutTarget } from "./actions/runRangoActionWithoutTarg
 
 cacheHintOptions()
 	.then(addUrlToTitle)
-	.then(() => {
-		observe();
-	})
+	.then(observe)
 	.then(async () => {
 		const { keyboardClicking } = await browser.storage.local.get(
 			"keyboardClicking"

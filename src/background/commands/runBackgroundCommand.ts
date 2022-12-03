@@ -21,7 +21,7 @@ export async function runBackgroundCommand(
 			const hintsToggle = (await getStored("hintsToggle")) as HintsToggle;
 			hintsToggle.global = !hintsToggle.global;
 			await setStored({ hintsToggle });
-			await sendRequestToAllTabs({ type: "refreshHints" });
+			await sendRequestToAllTabs({ type: "updateHintsEnabled" });
 			break;
 		}
 

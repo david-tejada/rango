@@ -61,3 +61,12 @@ export function deleteWrapper(target: Element) {
 		wrappersAll.delete(element);
 	}
 }
+
+export function clearWrappersAll() {
+	for (const wrapper of wrappersAll.values()) {
+		wrapper?.remove();
+	}
+
+	wrappersAll.clear();
+	wrappersHinted.clear();
+}

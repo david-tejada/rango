@@ -84,5 +84,5 @@ export async function toggleHints(level: string, enable?: boolean) {
 	}
 
 	await setStored({ hintsToggle: hintsToggleToStorable(hintsToggle) });
-	await sendRequestToAllTabs({ type: "fullHintsUpdate" });
+	await sendRequestToAllTabs({ type: "updateHintsEnabled" });
 }
