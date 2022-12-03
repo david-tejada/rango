@@ -49,7 +49,7 @@ export function addWrappersFromOrigin(origin: Element) {
 
 // Sometimes the entire body gets stored and then replaced when you hit
 // the back button. For example, in GitHub. We need to delete the hints
-// that were stored with the body.clearDomHints();
+// that were stored with the body.
 function clearDomHints() {
 	const hintWrappers = deepGetElements(
 		document.body,
