@@ -362,6 +362,10 @@ export class Wrapper implements ElementWrapper {
 		} else {
 			void dispatchClick(pointerTarget);
 		}
+
+		if (includeExtraHintables) {
+			displayLessHints();
+		}
 	}
 
 	hover() {
