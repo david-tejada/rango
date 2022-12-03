@@ -30,6 +30,6 @@ export async function toggleKeyboardClicking() {
 	])) as { includeSingleLetterHints: boolean };
 
 	if (includeSingleLetterHints) {
-		await sendRequestToAllTabs({ type: "fullHintsUpdate" });
+		await sendRequestToAllTabs({ type: "refreshHints" });
 	}
 }
