@@ -226,6 +226,7 @@ export class Wrapper implements ElementWrapper {
 
 	isIntersecting?: boolean;
 	isHintable: boolean;
+	isActiveFocusable: boolean;
 	shouldBeHinted?: boolean;
 
 	// These properties are only needed for hintables
@@ -236,12 +237,25 @@ export class Wrapper implements ElementWrapper {
 
 	constructor(element: Element) {
 		this.element = element;
+		this.isActiveFocusable =
+			focusesOnclick(this.element) && this.element === document.activeElement;
 		this.updateIsHintable();
 	}
 
 	updateIsHintable() {
 		this.isHintable = isHintable(this.element, includeExtraHintables);
 		if (this.isHintable) {
+			if (focusesOnclick(this.element)) {
+				this.element.addEventListener("focus", () => {
+					this.isActiveFocusable = true;
+					this.updateShouldBeHinted();
+				});
+				this.element.addEventListener("blur", () => {
+					this.isActiveFocusable = false;
+					this.updateShouldBeHinted();
+				});
+			}
+
 			hintablesResizeObserver.observe(this.element);
 		}
 
@@ -250,7 +264,10 @@ export class Wrapper implements ElementWrapper {
 
 	updateShouldBeHinted() {
 		const newShouldBeHinted =
-			this.isHintable && isVisible(this.element) && !isDisabled(this.element);
+			this.isHintable &&
+			!this.isActiveFocusable &&
+			isVisible(this.element) &&
+			!isDisabled(this.element);
 
 		if (newShouldBeHinted !== this.shouldBeHinted) {
 			if (newShouldBeHinted) {
