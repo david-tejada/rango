@@ -5,13 +5,12 @@ import {
 	ResponseToTalonVersion0,
 } from "../../typings/RequestFromTalon";
 import { notify } from "./notify";
-import browser from "webextension-polyfill";
 
 let lastRequestText: string | undefined;
 
 function isSafari(): boolean {
 	if (!navigator.vendor) return false;
-	return navigator.vendor.indexOf('Apple') != -1;
+	return navigator.vendor.includes("Apple");
 }
 
 async function timer(ms: number) {
@@ -113,13 +112,13 @@ async function copyToClipboardManifestV3(text: string) {
 
 async function getTextFromClipboard(): Promise<string | undefined> {
 	if (isSafari()) {
-		return browser.runtime.sendNativeMessage("", {
-			request: "getTextFromClipboard"
-		}).then(
-			function (response: any): string {
-				return response["textFromClipboard"];
-			});
+		const response = (await browser.runtime.sendNativeMessage("", {
+			request: "getTextFromClipboard",
+		})) as { textFromClipboard: string };
+
+		return response.textFromClipboard;
 	}
+
 	if (navigator.clipboard) {
 		return navigator.clipboard.readText();
 	}
