@@ -2,7 +2,7 @@
  * @jest-environment jsdom
  */
 
-import { getElementsFromOrigin } from "./getElementsFromOrigin";
+import { deepGetElements } from "./deepGetElements";
 
 describe("getDescendantElements", () => {
 	beforeEach(() => {
@@ -17,7 +17,7 @@ describe("getDescendantElements", () => {
 	});
 
 	test("It returns the right amount of elements", () => {
-		expect(getElementsFromOrigin(document.body).length).toBe(5);
+		expect(deepGetElements(document.body).length).toBe(5);
 	});
 
 	test("It returns shadow dom elements", () => {
@@ -26,7 +26,7 @@ describe("getDescendantElements", () => {
 		const p = document.createElement("p");
 		shadow?.append(p);
 
-		const allElements = getElementsFromOrigin(document.body);
+		const allElements = deepGetElements(document.body);
 		expect(allElements.includes(p)).toBe(true);
 		expect(allElements.length).toBe(6);
 	});
@@ -45,8 +45,8 @@ describe("getDescendantElements", () => {
 		const h1 = document.createElement("h1");
 		nestedShadow?.append(h1);
 
-		const allElements = getElementsFromOrigin(document.body);
-		const descendants = getElementsFromOrigin(document.body, false);
+		const allElements = deepGetElements(document.body);
+		const descendants = deepGetElements(document.body, false);
 
 		expect(allElements.includes(p)).toBe(true);
 		expect(allElements.includes(h1)).toBe(true);
@@ -55,7 +55,7 @@ describe("getDescendantElements", () => {
 	});
 
 	test("It doesn't return the origin element if getOrigin is set to false", () => {
-		const descendants = getElementsFromOrigin(document.body, false);
+		const descendants = deepGetElements(document.body, false);
 		expect(descendants.includes(document.body)).toBe(false);
 		expect(descendants.length).toBe(4);
 	});
