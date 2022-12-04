@@ -6,6 +6,7 @@ export interface ElementWrapper {
 
 	isIntersecting?: boolean;
 	isHintable: boolean;
+	isActiveFocusable: boolean;
 	shouldBeHinted?: boolean;
 
 	// These properties are only needed for hintables
