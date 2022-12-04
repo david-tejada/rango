@@ -18,7 +18,7 @@ let PROJECT_DIR = FilePath(CommandLine.arguments[0])
 
 let manifestPath = PROJECT_DIR
     .appending("..")
-    .appending("dist-mv2")
+    .appending("dist-mv2-safari")
     .appending("manifest.json")
     .string
 
