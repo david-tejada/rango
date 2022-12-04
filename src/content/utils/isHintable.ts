@@ -1,5 +1,3 @@
-import { isVisible } from "./isVisible";
-
 const defaultSelector =
 	// Elements
 	"button, a, input, summary, textarea, select, option, label, " +
@@ -61,14 +59,6 @@ function isRedundant(target: Element) {
 		!hasSignificantSiblings(target) &&
 		target.parentElement!.matches(hintableSelector) &&
 		!(includeSelectorAll && target.matches(includeSelectorAll))
-	) {
-		return true;
-	}
-
-	if (
-		target instanceof HTMLLabelElement &&
-		target.control &&
-		isVisible(target.control)
 	) {
 		return true;
 	}
