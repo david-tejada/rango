@@ -11,6 +11,7 @@ workspace.code-workspace
 # macos metadata file
 .DS_Store
 # Xcode
+RangoVersion.xcconfig
 xcuserdata
 # Emacs
 *~
