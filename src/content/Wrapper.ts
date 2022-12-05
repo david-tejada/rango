@@ -1,9 +1,8 @@
-import { throttle } from "../lib/debounceAndThrottle";
 import { ElementWrapper } from "../typings/ElementWrapper";
 import { isHintable } from "./utils/isHintable";
 import { isDisabled } from "./utils/isDisabled";
 import { isVisible } from "./utils/isVisible";
-import { cacheHints, clearHintsCache } from "./hints/hintsCache";
+import { cacheHints } from "./hints/hintsCache";
 import { getUserScrollableContainer } from "./utils/getUserScrollableContainer";
 import { BoundedIntersectionObserver } from "./BoundedIntersectionObserver";
 import { Hint } from "./hints/Hint";
@@ -12,7 +11,6 @@ import {
 	addWrapper,
 	deleteWrapper,
 	wrappersHinted,
-	wrappersAll,
 	getWrappersWithin,
 } from "./wrappers";
 import { deepGetElements } from "./utils/deepGetElements";
@@ -20,8 +18,12 @@ import { getPointerTarget } from "./utils/getPointerTarget";
 import { focusesOnclick } from "./utils/focusesOnclick";
 import { openInNewTab } from "./actions/openInNewTab";
 import { dispatchClick, dispatchHover } from "./utils/dispatchEvents";
-
-let includeExtraHintables = false;
+import {
+	displayExtraHints,
+	updatePositionAll,
+	updateShouldBeHintedAll,
+	updateStyleAll,
+} from "./updateWrappers";
 
 // =============================================================================
 // HELPER FUNCTIONS
@@ -162,62 +164,6 @@ const hintablesResizeObserver = new ResizeObserver((entries) => {
 });
 
 // =============================================================================
-// UPDATE
-// =============================================================================
-
-const updateStyleAll = throttle(() => {
-	for (const wrapper of wrappersHinted.values()) {
-		wrapper.hint?.updateColors();
-	}
-}, 50);
-
-const updatePositionAll = throttle(() => {
-	for (const wrapper of wrappersHinted.values()) {
-		wrapper.hint?.position();
-	}
-}, 50);
-
-const updateShouldBeHintedAll = throttle(() => {
-	for (const wrapper of wrappersAll.values()) {
-		if (wrapper.isHintable) {
-			wrapper.updateShouldBeHinted();
-		}
-	}
-}, 300);
-
-function updateIsHintableAll() {
-	for (const wrapper of wrappersAll.values()) {
-		wrapper.updateIsHintable();
-	}
-}
-
-export async function refreshHints() {
-	includeExtraHintables = false;
-	for (const wrapper of wrappersHinted.values()) {
-		wrapper.remove();
-	}
-
-	await clearHintsCache();
-	updateIsHintableAll();
-}
-
-export function updateHintsStyle() {
-	for (const wrapper of wrappersHinted.values()) {
-		wrapper.hint!.applyDefaultStyle();
-	}
-}
-
-export function displayMoreHints() {
-	includeExtraHintables = true;
-	updateIsHintableAll();
-}
-
-export function displayLessHints() {
-	includeExtraHintables = false;
-	updateIsHintableAll();
-}
-
-// =============================================================================
 // ELEMENT WRAPPER
 // =============================================================================
 
@@ -243,7 +189,7 @@ export class Wrapper implements ElementWrapper {
 	}
 
 	updateIsHintable() {
-		this.isHintable = isHintable(this.element, includeExtraHintables);
+		this.isHintable = isHintable(this.element, displayExtraHints());
 		if (this.isHintable) {
 			if (focusesOnclick(this.element)) {
 				this.element.addEventListener("focus", () => {
