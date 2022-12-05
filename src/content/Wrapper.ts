@@ -39,17 +39,17 @@ function getWrapperProxy(element: Element) {
 	return wrapper;
 }
 
-export function addWrappersFromOrigin(origin: Element) {
+export function addWrappersFrom(root: Element) {
 	// Sometimes an element gets stored and then replaced when you hit
 	// the back button. For example, in GitHub. We need to delete the hints
 	// that were stored with the body or another element.
-	const staleHints = deepGetElements(origin, true, ".rango-hint-wrapper");
+	const staleHints = deepGetElements(root, true, ".rango-hint-wrapper");
 
 	for (const hint of staleHints) {
 		hint.remove();
 	}
 
-	const elements = deepGetElements(origin);
+	const elements = deepGetElements(root);
 
 	for (const element of elements) {
 		addWrapper(new Wrapper(element));
@@ -103,7 +103,7 @@ const mutationCallback: MutationCallback = (mutationList) => {
 	for (const mutationRecord of mutationList) {
 		for (const node of mutationRecord.addedNodes) {
 			if (node instanceof Element && node.matches(selectorFilter)) {
-				addWrappersFromOrigin(node);
+				addWrappersFrom(node);
 			}
 		}
 
