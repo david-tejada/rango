@@ -1,5 +1,5 @@
 import { shouldDisplayHints } from "./hints/shouldDisplayHints";
-import { addWrappersFromOrigin, mutationObserver } from "./Wrapper";
+import { addWrappersFrom, mutationObserver } from "./Wrapper";
 import { clearWrappersAll } from "./wrappers";
 
 let enabled = false;
@@ -24,7 +24,7 @@ export default async function observe() {
 
 	if (enabled) {
 		// We observe all the initial elements before any mutation
-		addWrappersFromOrigin(document.body);
+		addWrappersFrom(document.body);
 
 		// We observe document instead of document.body in case the body gets replaced
 		mutationObserver.observe(document, config);
