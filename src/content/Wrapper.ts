@@ -122,7 +122,7 @@ const mutationCallback: MutationCallback = (mutationList) => {
 
 			// We need to check if the element has changed its isHintable status
 			if (
-				["role", "contenteditable", "disabled"].includes(
+				["role", "contenteditable", "disabled", "aria-hidden"].includes(
 					mutationRecord.attributeName
 				)
 			) {
