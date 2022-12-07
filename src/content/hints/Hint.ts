@@ -167,14 +167,7 @@ export class Hint implements HintableMark {
 			}
 		}
 
-		/**
-		 * A contrast value of 2.5 might seem low but it is necessary to match the
-		 * look of some pages. Some pages use low contrast with big text and, in my
-		 * experience, it's more pleasant to keep the aspect of the page. Having in
-		 * mind that the text of the hints is not something that the user would need
-		 * to read continuously it might be acceptable to allow such a low contrast
-		 */
-		if (backgroundColor.contrast(color) < 2.5) {
+		if (backgroundColor.contrast(color) < 4) {
 			color = backgroundColor.isLight()
 				? new Color("black")
 				: new Color("white");
@@ -391,11 +384,44 @@ export class Hint implements HintableMark {
 		});
 	}
 
-	emphasize() {
-		const outlineColor = new Color(this.color).alpha(0.7).string();
-		setStyleProperties(this.inner, {
-			outline: `2px solid ${outlineColor}`,
-			"font-weight": "bold",
-		});
+	emphasize(mode: "keyboard" | "include" | "exclude") {
+		switch (mode) {
+			case "keyboard":
+				{
+					const outlineColor = new Color(this.color).alpha(0.7).string();
+					setStyleProperties(this.inner, {
+						outline: `2px solid ${outlineColor}`,
+						"font-weight": "bold",
+					});
+				}
+
+				break;
+
+			case "include":
+				setStyleProperties(this.inner, {
+					"background-color": "green",
+					color: "white",
+					outline: "1px solid white",
+				});
+				this.freezeColors = true;
+				break;
+
+			case "exclude":
+				setStyleProperties(this.inner, {
+					"background-color": "red",
+					color: "white",
+					outline: "1px solid white",
+				});
+				this.freezeColors = true;
+				break;
+
+			default:
+				break;
+		}
+	}
+
+	unfreeze() {
+		this.freezeColors = false;
+		this.computeColors();
 	}
 }
