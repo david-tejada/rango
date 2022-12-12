@@ -57,9 +57,12 @@ function hasSignificantSiblings(target: Node) {
 }
 
 function isRedundant(target: Element) {
+	const includeSelectorAll = getIncludeSelectorAll();
+	const hintableSelector = getHintableSelector();
 	if (
 		!hasSignificantSiblings(target) &&
-		target.parentElement!.matches(hintableSelector) &&
+		target.parentElement &&
+		target.parentElement.matches(hintableSelector) &&
 		!(includeSelectorAll && target.matches(includeSelectorAll))
 	) {
 		return true;
