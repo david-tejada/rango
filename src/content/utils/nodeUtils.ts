@@ -13,7 +13,7 @@ function rangeGivesCoordinates(textNode: Text): boolean {
 	return true;
 }
 
-export function getTextNodeRect(textNode: Text): DOMRect {
+function getTextNodeRect(textNode: Text): DOMRect {
 	const range = document.createRange();
 	range.setStart(textNode, 0);
 	range.setEnd(textNode, textNode.length);

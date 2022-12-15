@@ -64,14 +64,12 @@ export function addWrappersFrom(root: Element) {
 
 // INTERSECTION OBSERVER
 
-export const scrollIntersectionObservers: Map<
+const scrollIntersectionObservers: Map<
 	Element | null,
 	BoundedIntersectionObserver
 > = new Map();
 
-export async function intersectionCallback(
-	entries: IntersectionObserverEntry[]
-) {
+async function intersectionCallback(entries: IntersectionObserverEntry[]) {
 	const amountIntersecting = entries.filter(
 		(entry) => entry.isIntersecting
 	).length;
@@ -87,7 +85,7 @@ export async function intersectionCallback(
 
 // MUTATION OBSERVER
 
-export const mutationObserverConfig = {
+const mutationObserverConfig = {
 	attributes: true,
 	childList: true,
 	subtree: true,

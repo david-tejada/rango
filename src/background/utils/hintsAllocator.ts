@@ -104,19 +104,6 @@ export async function releaseHints(hints: string[], tabId: number) {
 	await saveStack(stack, tabId);
 }
 
-export async function releaseOrphanHints(
-	activeHints: string[],
-	tabId: number,
-	frameId: number
-) {
-	const stack = await getStack(tabId);
-	const orphanHints = Array.from(stack.assigned.keys()).filter(
-		(hint) =>
-			!activeHints.includes(hint) && stack.assigned.get(hint) === frameId
-	);
-	await releaseHints(orphanHints, tabId);
-}
-
 // We use onCommitted because onBeforeNavigate can sometimes be received repeated times.
 // onCommitted is also guaranteed to be received before any of the subframes onBeforeNavigate
 browser.webNavigation.onCommitted.addListener(async ({ frameId, tabId }) => {

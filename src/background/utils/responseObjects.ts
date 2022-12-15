@@ -6,15 +6,3 @@ export const noActionResponse: ResponseToTalon = {
 		type: "noAction",
 	},
 };
-
-export function getCopyToClipboardResponseObject(
-	text: string
-): ResponseToTalon {
-	return {
-		type: "response",
-		action: {
-			type: "copyToClipboard",
-			textToCopy: text,
-		},
-	};
-}

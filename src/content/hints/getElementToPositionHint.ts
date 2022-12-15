@@ -120,7 +120,7 @@ function withinDifferentHintable(node: Element, hintable: Element) {
 // Returns the first image or text element ignoring some cases where the element
 // has multiple of those, for example, a clickable div block with an avatar and
 // some blocks of text.
-export function getFirstIconOrTextElement(
+function getFirstIconOrTextElement(
 	target: Element
 ): Element | Text | undefined {
 	const elements = deepGetElements(target, true).filter(

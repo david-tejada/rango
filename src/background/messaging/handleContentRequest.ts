@@ -2,12 +2,7 @@ import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
 import { BackgroundRequest } from "../../typings/BackgroundRequest";
 import { assertDefined } from "../../typings/TypingUtils";
-import {
-	claimHints,
-	initStack,
-	releaseHints,
-	releaseOrphanHints,
-} from "../utils/hintsAllocator";
+import { claimHints, initStack, releaseHints } from "../utils/hintsAllocator";
 import { sendRequestToCurrentTab } from "./sendRequestToCurrentTab";
 
 const mutex = new Mutex();
@@ -21,15 +16,7 @@ export async function handleContentRequest(
 	assertDefined(tabId);
 	const frameId = sender.frameId ?? 0;
 
-	if (
-		[
-			"initStack",
-			"claimHints",
-			"requestHintsProvision",
-			"releaseHints",
-			"releaseOrphanHints",
-		].includes(request.type)
-	) {
+	if (["initStack", "claimHints", "releaseHints"].includes(request.type)) {
 		return mutex.runExclusive(async () => {
 			switch (request.type) {
 				case "initStack":
@@ -38,20 +25,8 @@ export async function handleContentRequest(
 				case "claimHints":
 					return claimHints(request.amount, tabId, frameId);
 
-				case "requestHintsProvision": {
-					const initialAmount = frameId === 0 ? 80 : 40;
-
-					return {
-						hints: await claimHints(initialAmount, tabId, frameId),
-						initialAmount,
-					};
-				}
-
 				case "releaseHints":
 					return releaseHints(request.hints, tabId);
-
-				case "releaseOrphanHints":
-					return releaseOrphanHints(request.activeHints, tabId, frameId);
 
 				default:
 					break;

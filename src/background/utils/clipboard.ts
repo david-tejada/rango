@@ -6,8 +6,6 @@ import {
 } from "../../typings/RequestFromTalon";
 import { notify } from "./notify";
 
-let lastRequestText: string | undefined;
-
 function isSafari(): boolean {
 	if (!navigator.vendor) return false;
 	return navigator.vendor.includes("Apple");
@@ -141,7 +139,6 @@ export async function getRequestFromClipboard(): Promise<
 				);
 			}
 
-			lastRequestText = clipText;
 			return request;
 		} catch (error: unknown) {
 			// We already check that we are sending valid json in rango-talon, but
@@ -158,11 +155,6 @@ export async function getRequestFromClipboard(): Promise<
 	}
 
 	return undefined;
-}
-
-export async function getClipboardIfChanged(): Promise<string | undefined> {
-	const clipboardText = await getTextFromClipboard();
-	return lastRequestText === clipboardText ? undefined : clipboardText;
 }
 
 export async function writeResponseToClipboard(

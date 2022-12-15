@@ -36,6 +36,7 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "confirmSelectorsCustomization"
 		| "resetCustomSelectors";
 }
+
 interface RangoActionWithoutTargetWithStringArg {
 	type:
 		| "copyLocationProperty"
@@ -46,7 +47,8 @@ interface RangoActionWithoutTargetWithStringArg {
 		| "resetToggleLevel";
 	arg: string;
 }
-export interface RangoActionWithoutTargetWithNumberArg {
+
+interface RangoActionWithoutTargetWithNumberArg {
 	type:
 		| "closeTabsLeftEndInWindow"
 		| "closeTabsRightEndInWindow"
@@ -54,6 +56,7 @@ export interface RangoActionWithoutTargetWithNumberArg {
 		| "closeNextTabsInWindow";
 	arg: number;
 }
+
 interface RangoActionWithTargetWithOptionalNumberArg {
 	type:
 		| "scrollUpAtElement"
@@ -63,6 +66,7 @@ interface RangoActionWithTargetWithOptionalNumberArg {
 	target: string;
 	arg?: number;
 }
+
 interface RangoActionWithoutTargetWithOptionalNumberArg {
 	type:
 		| "scrollUpPage"
@@ -75,6 +79,7 @@ interface RangoActionWithoutTargetWithOptionalNumberArg {
 		| "scrollDownRightAside";
 	arg?: number;
 }
+
 interface RangoActionWithSingleTarget {
 	type:
 		| "scrollElementToTop"
@@ -82,6 +87,7 @@ interface RangoActionWithSingleTarget {
 		| "scrollElementToCenter";
 	target: string;
 }
+
 interface RangoActionWithMultipleTargets {
 	type:
 		| "openInBackgroundTab"

@@ -11,6 +11,7 @@
 		"package": "run-p package:*",
 		"build-and-package": "run-s build package",
 		"check-types": "tsc --noemit",
+		"unused-exports": "ts-unused-exports ./tsconfig.json",
 		"lint": "run-p lint:* check-types",
 		"lint-fix": "run-p 'lint:* -- --fix'",
 		"lint:css": "stylelint src/**/*.css",
@@ -159,6 +160,7 @@
 		"stylelint": "^14.6.0",
 		"stylelint-config-xo": "^0.21.0",
 		"ts-jest": "^27.1.4",
+		"ts-unused-exports": "^8.0.5",
 		"typescript": "^4.6.3",
 		"web-ext": "^7.1.0",
 		"xo": "^0.48.0"

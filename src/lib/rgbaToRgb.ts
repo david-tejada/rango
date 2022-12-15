@@ -20,8 +20,3 @@ export function rgbaToRgb(rgba: Color, backgroundRgb: Color): Color {
 		b: Math.round((1 - a) * backgroundB + a * b),
 	});
 }
-
-export function isRgb(color: Color): boolean {
-	const alpha = color.object().alpha;
-	return alpha === 1 || alpha === undefined;
-}

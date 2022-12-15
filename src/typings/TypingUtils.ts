@@ -14,10 +14,6 @@ export function isPromiseFulfilledResult<T>(
 	return result.status === "fulfilled";
 }
 
-export function isNotNull<T>(value: T | null): value is T {
-	return value !== null;
-}
-
 export function isFocusOnClickInput(
 	element: Element
 ): element is FocusOnClickInput {
@@ -37,21 +33,6 @@ export function isFocusOnClickInput(
 	);
 }
 
-export function isLabelledElement(
-	element: Element
-): element is
-	| HTMLInputElement
-	| HTMLTextAreaElement
-	| HTMLButtonElement
-	| HTMLSelectElement {
-	return (
-		element instanceof HTMLInputElement ||
-		element instanceof HTMLTextAreaElement ||
-		element instanceof HTMLButtonElement ||
-		element instanceof HTMLSelectElement
-	);
-}
-
 export function hasDisabled(
 	element: Element
 ): element is
@@ -67,8 +48,4 @@ export function hasDisabled(
 		element instanceof HTMLButtonElement ||
 		element instanceof HTMLSelectElement
 	);
-}
-
-export function isHtmlElement(element: Element): element is HTMLElement {
-	return element instanceof HTMLElement;
 }

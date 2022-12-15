@@ -13,18 +13,12 @@ interface ClaimHints {
 	type: "claimHints";
 	amount: number;
 }
-interface RequestHintsProvision {
-	type: "requestHintsProvision";
-}
 
 interface ReleaseHints {
 	type: "releaseHints";
 	hints: string[];
 }
-interface ReleaseOrphanHints {
-	type: "releaseOrphanHints";
-	activeHints: string[];
-}
+
 interface GetTabId {
 	type: "getTabId";
 }
@@ -46,9 +40,7 @@ export type BackgroundRequest =
 	| OpenInNewTab
 	| InitStack
 	| ClaimHints
-	| RequestHintsProvision
 	| ReleaseHints
-	| ReleaseOrphanHints
 	| OpenInBackgroundTab
 	| GetTabId
 	| ClickHintInFrame
