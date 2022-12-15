@@ -25,7 +25,7 @@ async function clearUnusedStacks() {
 	const tabs = await browser.tabs.query({});
 	const tabIds = new Set(tabs.map((tab) => tab.id));
 	const storage = await browser.storage.local.get(null);
-	const deletingStacks = [];
+	const deletingStacks: Array<Promise<void>> = [];
 	for (const key in storage) {
 		if (key.startsWith("hints-stack-")) {
 			const stackTabId = Number.parseInt(key.replace("hints-stack-", ""), 10);
@@ -51,7 +51,7 @@ export async function initStorage() {
 	}
 
 	let key: keyof RangoOptions;
-	const storing = [];
+	const storing: Array<Promise<void>> = [];
 
 	for (key in defaultOptions) {
 		if (localStorage[key] === undefined) {
