@@ -1,4 +1,5 @@
 import browser from "webextension-polyfill";
+import { assertDefined } from "../../typings/TypingUtils";
 
 interface CustomSelectors {
 	include: string[];
@@ -25,6 +26,8 @@ export async function updateCustomSelectors() {
 	const { customSelectors } = (await browser.storage.local.get(
 		"customSelectors"
 	)) as Record<string, Record<string, CustomSelectors>>;
+
+	assertDefined(customSelectors);
 
 	let includeSelectors: string[] = [];
 	let excludeSelectors: string[] = [];

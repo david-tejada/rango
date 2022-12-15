@@ -49,3 +49,7 @@ export function hasDisabled(
 		element instanceof HTMLSelectElement
 	);
 }
+
+export function isHtmlElement(element: Element): element is HTMLElement {
+	return element instanceof HTMLElement;
+}

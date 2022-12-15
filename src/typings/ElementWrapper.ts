@@ -52,7 +52,7 @@ export interface HintableMark {
 	computeColors(): void;
 	updateColors(): void;
 	position(): void;
-	flash(): void;
+	flash(ms?: number): void;
 	claim(): string;
 	release(keepInCache?: boolean): void;
 	reattach(): void;

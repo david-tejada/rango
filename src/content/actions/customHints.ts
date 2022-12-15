@@ -79,7 +79,7 @@ function getSelectorAlternatives(selectorList: string[]) {
 	const alternatives: SelectorAlternative[] = [];
 
 	for (const selector of possibleSelectors) {
-		let amountOfElementsMatching;
+		let amountOfElementsMatching = 0;
 
 		try {
 			// We use querySelectorAll here for speed as deepGetElements is much
@@ -139,7 +139,8 @@ function getCommonSelectors(targets: Element[]) {
 	const targetSelectors: Set<string> = new Set();
 
 	for (const list of selectorLists) {
-		targetSelectors.add(list[list.length - 1]);
+		const targetSelector = list[list.length - 1];
+		if (targetSelector) targetSelectors.add(targetSelector);
 	}
 
 	let commonTargetSelectors: string[] | undefined;
@@ -158,7 +159,9 @@ function getCommonSelectors(targets: Element[]) {
 
 	// If all the target elements are the same child number we can narrow down the
 	// selector even more
-	const firstTargetChildNumber = getChildNumber(targets[0]);
+	const firstTargetChildNumber = targets[0]
+		? getChildNumber(targets[0])
+		: undefined;
 
 	if (
 		firstTargetChildNumber &&

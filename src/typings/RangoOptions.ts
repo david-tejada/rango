@@ -11,15 +11,6 @@ export interface StorableHintsToggle {
 	hosts: Array<[string, boolean]>;
 	paths: Array<[string, boolean]>;
 }
-export interface RangoOptions {
-	hintFontSize: number;
-	hintsToggle: HintsToggle;
-	hintWeight: "auto" | "normal" | "bold";
-	hintStyle: "boxed" | "subtle";
-	includeSingleLetterHints: boolean;
-	urlInTitle: boolean;
-	keyboardClicking: boolean;
-}
 
 export interface StorableRangoOptions {
 	hintFontSize: number;

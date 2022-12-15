@@ -1,4 +1,5 @@
 import browser from "webextension-polyfill";
+import { assertDefined } from "../../typings/TypingUtils";
 
 interface CustomSelectors {
 	include: string[];
@@ -68,7 +69,7 @@ export function pickSelectorAlternative(options: {
 		return;
 	}
 
-	const selector = selectorAlternatives[index].selector;
+	const selector = selectorAlternatives[index]!.selector;
 
 	if (mode === "include") {
 		includeSelectors.push(selector);
@@ -85,6 +86,8 @@ export async function storeCustomSelectors() {
 	const { customSelectors } = (await browser.storage.local.get(
 		"customSelectors"
 	)) as Record<string, Record<string, CustomSelectors>>;
+
+	assertDefined(customSelectors);
 
 	const customForPattern = customSelectors[pattern] ?? {
 		include: [],
@@ -117,12 +120,13 @@ export async function resetCustomSelectors() {
 		"customSelectors"
 	)) as Record<string, Record<string, CustomSelectors>>;
 
+	assertDefined(customSelectors);
+
 	const customForPattern = customSelectors[pattern];
 
-	const toUpdateSelector = [
-		...customForPattern.include,
-		...customForPattern.exclude,
-	].join(", ");
+	const toUpdateSelector = customForPattern
+		? [...customForPattern.include, ...customForPattern.exclude].join(", ")
+		: "";
 
 	customSelectors[pattern] = { include: [], exclude: [] };
 

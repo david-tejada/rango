@@ -24,12 +24,12 @@ export function generatePossibleSelectors(
 	// We need to reverse the selectors because we want to keep the selector parts
 	// closest to the target
 	for (const selector of [...selectors].reverse()) {
-		const parts = calculate(selector)[0].parts;
+		const parts = calculate(selector)[0]!.parts;
 		const selectorParts = parts.map((part) => part.selector);
 
 		// If the selector is just the tag we included it
 		if (selectorParts.length === 1) {
-			selectorsTrimmed.unshift(selectorParts[0]);
+			selectorsTrimmed.unshift(selectorParts[0]!);
 		} else {
 			let filteredSelector = "";
 			for (const part of selectorParts) {
@@ -88,7 +88,7 @@ export function generatePossibleSelectors(
 		// (value that we get from selectorCombined)
 		const selectorListCombined: string[][] = [];
 		for (const [index, selector] of selectorList.entries()) {
-			const parts = calculate(selector)[0].parts;
+			const parts = calculate(selector)[0]!.parts;
 			const selectors = parts.map((part) => part.selector);
 
 			let selectorCombined: string[];

@@ -1,3 +1,4 @@
+import { assertDefined } from "../../typings/TypingUtils";
 import { getFirstCharacterRect } from "../utils/nodeUtils";
 
 // Minimum space that needs to be available so that we can place the hint in the
@@ -231,6 +232,10 @@ export function getContextForHint(
 		current = current.parentNode;
 	}
 
+	// At this point limitParent has to be defined but we place this check here to
+	// please the linter
+	assertDefined(limitParent);
+
 	let previousClipAncestor: Element | undefined;
 	let container: HTMLElement | ShadowRoot;
 	let candidate = getAptContainer(element);
@@ -250,10 +255,8 @@ export function getContextForHint(
 		const spaceTop = spaceAvailable.top;
 
 		// Initial calculation of space available for the first clipAncestor
-		if (previousSpaceLeft === undefined) {
-			previousSpaceLeft = spaceLeft;
-			previousSpaceTop = spaceTop;
-		}
+		previousSpaceLeft ??= spaceLeft;
+		previousSpaceTop ??= spaceTop;
 
 		if (spaceLeft > ENOUGH_LEFT && spaceTop > ENOUGH_TOP) {
 			// For example, with the following clipAncestors:

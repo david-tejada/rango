@@ -1,3 +1,4 @@
+import { isHtmlElement } from "../../typings/TypingUtils";
 import { Wrapper } from "../Wrapper";
 
 const DEFAULT_SCROLL_FACTOR = 0.66;
@@ -48,7 +49,7 @@ function getIntersectionWithViewport(element: Element): DOMRect {
 	return new DOMRect(x, y, width, height);
 }
 
-function isScrollable(element: Element) {
+function isScrollable(element: HTMLElement) {
 	const { clientHeight, clientWidth, scrollHeight, scrollWidth } = element;
 	const { overflowX, overflowY } = window.getComputedStyle(element);
 
@@ -72,7 +73,7 @@ function getScrollableAtCenter() {
 	let current = document.elementFromPoint(x, y);
 
 	while (current) {
-		if (isScrollable(current)) {
+		if (current instanceof HTMLElement && isScrollable(current)) {
 			outerScrollable = current;
 		}
 
@@ -83,16 +84,18 @@ function getScrollableAtCenter() {
 }
 
 function getLeftmostScrollable() {
-	const scrollables = [...document.querySelectorAll("*")].filter(
-		(element) => isScrollable(element) && element.matches(":not(html, body)")
-	);
+	const scrollables = [...document.querySelectorAll("*")]
+		.filter(isHtmlElement)
+		.filter(
+			(element) => isScrollable(element) && element.matches(":not(html, body)")
+		);
 
 	let leftScrollable;
 	let leftScrollableX;
 
 	for (const scrollable of scrollables) {
 		const { x } = scrollable.getBoundingClientRect();
-		if (!leftScrollable || x < leftScrollableX) {
+		if (!leftScrollableX || x < leftScrollableX) {
 			leftScrollable = scrollable;
 			leftScrollableX = x;
 		}
@@ -102,18 +105,23 @@ function getLeftmostScrollable() {
 }
 
 function getRightmostScrollable() {
-	const scrollables = [...document.querySelectorAll("*")].filter(
-		(element) => isScrollable(element) && element.matches(":not(html, body)")
-	);
+	const scrollables = [...document.querySelectorAll("*")]
+		.filter(isHtmlElement)
+		.filter(
+			(element) =>
+				element instanceof HTMLElement &&
+				isScrollable(element) &&
+				element.matches(":not(html, body)")
+		);
 
 	let rightScrollable;
-	let rightScrollableRight;
+	let rightScrollableX;
 
 	for (const scrollable of scrollables) {
 		const { right } = scrollable.getBoundingClientRect();
-		if (!rightScrollable || right > rightScrollableRight) {
+		if (!rightScrollableX || right > rightScrollableX) {
 			rightScrollable = scrollable;
-			rightScrollableRight = right;
+			rightScrollableX = right;
 		}
 	}
 
@@ -142,7 +150,7 @@ export function snapScroll(
 	const { top, bottom, height } = target.element.getBoundingClientRect();
 	const center = top + height / 2;
 
-	let scrollAmount;
+	let scrollAmount = 0;
 
 	if (position === "top") {
 		scrollAmount = isPageScroll ? top : top - cTop;
@@ -197,7 +205,7 @@ export function snapScroll(
 export function scroll(options: ScrollOptions) {
 	const { dir, target } = options;
 	let factor = options.factor;
-	let scrollContainer;
+	let scrollContainer: HTMLElement | undefined;
 
 	if (target === "repeatLast" && (!lastScrollContainer || !lastScrollFactor)) {
 		throw new Error("Unable to repeat the last scroll");
@@ -224,10 +232,6 @@ export function scroll(options: ScrollOptions) {
 		} else {
 			scrollContainer = getScrollableAtCenter();
 		}
-
-		if (!scrollContainer) {
-			throw new Error("No element found to scroll");
-		}
 	}
 
 	if (target === "leftAside") {
@@ -236,6 +240,10 @@ export function scroll(options: ScrollOptions) {
 
 	if (target === "rightAside") {
 		scrollContainer = getRightmostScrollable();
+	}
+
+	if (!scrollContainer) {
+		throw new Error("No element found to scroll");
 	}
 
 	const containerRect = getIntersectionWithViewport(scrollContainer);

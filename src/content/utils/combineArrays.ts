@@ -49,7 +49,7 @@ function formCombination<T>(odometer: number[], arrayOfArrays: T[][]): T[] {
 	const output: T[] = [];
 
 	for (const [i, element] of odometer.entries()) {
-		output.push(arrayOfArrays[i][element]);
+		output.push(arrayOfArrays[i]![element]!);
 	}
 
 	return output;
@@ -67,10 +67,9 @@ function odometerIncrement<T>(odometer: number[], arrayOfArrays: T[][]) {
 		iOdometerDigit >= 0;
 		iOdometerDigit--
 	) {
-		const maxee = arrayOfArrays[iOdometerDigit].length - 1;
+		const maxee = arrayOfArrays[iOdometerDigit]!.length - 1;
 
-		// No idea why I need to cast to number here. The linter kept complaining.
-		if (Number(odometer[iOdometerDigit]) + 1 <= maxee) {
+		if (odometer[iOdometerDigit]! + 1 <= maxee) {
 			// Increment, and you're done...
 			odometer[iOdometerDigit]++;
 			return true;
@@ -85,4 +84,6 @@ function odometerIncrement<T>(odometer: number[], arrayOfArrays: T[][]) {
 		// the loop to go over to the next digit...
 		odometer[iOdometerDigit] = 0;
 	}
+
+	return false;
 }

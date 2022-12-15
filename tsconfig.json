@@ -7,5 +7,5 @@
 		"strictPropertyInitialization": false
 	},
 	"files": ["node_modules/jest-expect-message/types/index.d.ts"],
-	"include": ["src/**/*"]
+	"include": ["src/**/*", "tests/**/*"]
 }
