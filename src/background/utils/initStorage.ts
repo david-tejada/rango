@@ -19,6 +19,7 @@ const defaultOptions: StorableRangoOptions = {
 	includeSingleLetterHints: true,
 	urlInTitle: true,
 	keyboardClicking: false,
+	customSelectors: {},
 };
 
 async function clearUnusedStacks() {

@@ -18,5 +18,17 @@ export function deepGetElements(
 		}
 	}
 
-	return result.filter((element) => element.matches(selector));
+	return result.filter((element) => {
+		let matches;
+		try {
+			matches = element.matches(selector);
+		} catch (error: unknown) {
+			// This handles cases of invalid selectors
+			if (error instanceof DOMException) {
+				matches = false;
+			}
+		}
+
+		return matches;
+	});
 }

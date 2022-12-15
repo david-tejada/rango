@@ -3,11 +3,17 @@ import { setNavigationToggle } from "../hints/shouldDisplayHints";
 import { updateHintsEnabled } from "../observe";
 import { cacheHintOptions } from "../options/cacheHintOptions";
 import {
-	displayLessHints,
-	displayMoreHints,
+	displayMoreOrLessHints,
 	refreshHints,
+	updateHintablesBySelector,
 	updateHintsStyle,
-} from "../Wrapper";
+} from "../updateWrappers";
+import { updateCustomSelectors } from "../hints/selectors";
+import { resetCustomSelectors } from "../hints/customHintsEdit";
+import {
+	includeOrExcludeMoreOrLessSelectors,
+	saveCustomSelectors,
+} from "./customHints";
 import { unhoverAll } from "./hoverElement";
 import { scroll } from "./scroll";
 
@@ -63,13 +69,28 @@ export async function runRangoActionWithoutTarget(
 			scroll({ dir: "left", target: "repeatLast" });
 			break;
 
-		case "displayMoreHints":
-			displayMoreHints();
+		case "displayExtraHints":
+			displayMoreOrLessHints({ extra: true });
+			break;
+
+		case "displayExcludedHints":
+			displayMoreOrLessHints({ excluded: true });
 			break;
 
 		case "displayLessHints":
-			displayLessHints();
+			displayMoreOrLessHints({ extra: false, excluded: false });
 			break;
+
+		case "confirmSelectorsCustomization":
+			await saveCustomSelectors();
+			break;
+
+		case "resetCustomSelectors": {
+			const toUpdateSelector = await resetCustomSelectors();
+			await updateCustomSelectors();
+			updateHintablesBySelector(toUpdateSelector);
+			break;
+		}
 
 		case "copyLocationProperty":
 			return window.location[
@@ -128,6 +149,14 @@ export async function runRangoActionWithoutTarget(
 
 		case "disableHintsNavigation":
 			setNavigationToggle(false);
+			break;
+
+		case "includeOrExcludeMoreSelectors":
+			includeOrExcludeMoreOrLessSelectors(true);
+			break;
+
+		case "includeOrExcludeLessSelectors":
+			includeOrExcludeMoreOrLessSelectors(false);
 			break;
 
 		default:

@@ -11,6 +11,7 @@ import { scroll, snapScroll } from "./scroll";
 import { hoverElement } from "./hoverElement";
 import { openInBackgroundTab, openInNewTab } from "./openInNewTab";
 import { showTitleAndHref } from "./showTitleAndHref";
+import { includeOrExcludeExtraSelectors } from "./customHints";
 
 export async function runRangoActionWithTarget(
 	request: RangoActionWithTarget
@@ -80,6 +81,14 @@ export async function runRangoActionWithTarget(
 
 		case "scrollElementToCenter":
 			snapScroll("center", wrapper);
+			break;
+
+		case "includeExtraSelectors":
+			includeOrExcludeExtraSelectors(wrappers, "include");
+			break;
+
+		case "excludeExtraSelectors":
+			includeOrExcludeExtraSelectors(wrappers, "exclude");
 			break;
 
 		default:

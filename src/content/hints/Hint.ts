@@ -12,6 +12,10 @@ import {
 import { createsStackingContext } from "../utils/createsStackingContext";
 import { HintableMark } from "../../typings/ElementWrapper";
 import { getWrapper } from "../wrappers";
+import {
+	matchesMarkedForInclusion,
+	matchesMarkedForExclusion,
+} from "./customHintsEdit";
 import { getElementToPositionHint } from "./getElementToPositionHint";
 import { getContextForHint } from "./getContextForHint";
 import { popHint, pushHint } from "./hintsCache";
@@ -106,6 +110,8 @@ export class Hint implements HintableMark {
 	color: Color;
 	backgroundColor: Color;
 	outlineColor: Color;
+	outlineWidth: number;
+	keyEmphasis?: boolean;
 	freezeColors?: boolean;
 	firstTextNodeDescendant?: Text;
 	string?: string;
@@ -124,6 +130,8 @@ export class Hint implements HintableMark {
 
 		const rootNode = this.container.getRootNode();
 		if (rootNode instanceof ShadowRoot) injectShadowStyles(rootNode);
+
+		this.outlineWidth = 1;
 
 		this.outer = document.createElement("div");
 		this.outer.className = "rango-hint-wrapper";
@@ -148,34 +156,54 @@ export class Hint implements HintableMark {
 	}
 
 	computeColors() {
-		this.firstTextNodeDescendant = getFirstTextNodeDescendant(this.target);
-		const backgroundColor = new Color(getEffectiveBackgroundColor(this.target));
+		let backgroundColor;
+		let color;
 
-		const elementToGetColorFrom = this.firstTextNodeDescendant?.parentElement;
-		const colorString = window.getComputedStyle(
-			elementToGetColorFrom ?? this.target
-		).color;
-		let color = rgbaToRgb(new Color(colorString || "black"), backgroundColor);
+		if (matchesMarkedForExclusion(this.target)) {
+			backgroundColor = new Color("red");
+			color = new Color("white");
+			this.outlineColor = new Color("white");
+		} else if (matchesMarkedForInclusion(this.target)) {
+			backgroundColor = new Color("green");
+			color = new Color("white");
+			this.outlineColor = new Color("white");
+		} else {
+			this.firstTextNodeDescendant = getFirstTextNodeDescendant(this.target);
+			backgroundColor = new Color(getEffectiveBackgroundColor(this.target));
 
-		if (!elementToGetColorFrom) {
-			if (backgroundColor.isDark() && color.isDark()) {
-				color = new Color("white");
+			const elementToGetColorFrom = this.firstTextNodeDescendant?.parentElement;
+			const colorString = window.getComputedStyle(
+				elementToGetColorFrom ?? this.target
+			).color;
+			color = rgbaToRgb(new Color(colorString || "black"), backgroundColor);
+
+			if (!elementToGetColorFrom) {
+				if (backgroundColor.isDark() && color.isDark()) {
+					color = new Color("white");
+				}
+
+				if (backgroundColor.isLight() && color.isLight()) {
+					color = new Color("black");
+				}
 			}
 
-			if (backgroundColor.isLight() && color.isLight()) {
-				color = new Color("black");
+			if (backgroundColor.contrast(color) < 4) {
+				color = backgroundColor.isLight()
+					? new Color("black")
+					: new Color("white");
 			}
+
+			this.outlineWidth = 1;
+			this.outlineColor = new Color(color).alpha(0.3);
 		}
 
-		if (backgroundColor.contrast(color) < 4) {
-			color = backgroundColor.isLight()
-				? new Color("black")
-				: new Color("white");
+		if (this.keyEmphasis) {
+			this.outlineColor = new Color(this.color).alpha(0.7);
+			this.outlineWidth = 2;
 		}
 
 		this.backgroundColor = backgroundColor;
 		this.color = color;
-		this.outlineColor = new Color(this.color).alpha(0.3);
 	}
 
 	updateColors() {
@@ -186,7 +214,9 @@ export class Hint implements HintableMark {
 			setStyleProperties(this.inner, {
 				"background-color": this.backgroundColor.string(),
 				color: this.color.string(),
-				outline: subtleHints ? "0" : `1px solid ${this.outlineColor.string()}`,
+				outline: subtleHints
+					? "0"
+					: `${this.outlineWidth}px solid ${this.outlineColor.string()}`,
 			});
 		}
 	}
@@ -384,44 +414,13 @@ export class Hint implements HintableMark {
 		});
 	}
 
-	emphasize(mode: "keyboard" | "include" | "exclude") {
-		switch (mode) {
-			case "keyboard":
-				{
-					const outlineColor = new Color(this.color).alpha(0.7).string();
-					setStyleProperties(this.inner, {
-						outline: `2px solid ${outlineColor}`,
-						"font-weight": "bold",
-					});
-				}
-
-				break;
-
-			case "include":
-				setStyleProperties(this.inner, {
-					"background-color": "green",
-					color: "white",
-					outline: "1px solid white",
-				});
-				this.freezeColors = true;
-				break;
-
-			case "exclude":
-				setStyleProperties(this.inner, {
-					"background-color": "red",
-					color: "white",
-					outline: "1px solid white",
-				});
-				this.freezeColors = true;
-				break;
-
-			default:
-				break;
-		}
+	keyHighlight() {
+		this.keyEmphasis = true;
+		this.updateColors();
 	}
 
-	unfreeze() {
-		this.freezeColors = false;
-		this.computeColors();
+	clearKeyHighlight() {
+		this.keyEmphasis = false;
+		this.updateColors();
 	}
 }

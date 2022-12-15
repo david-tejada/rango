@@ -15,9 +15,11 @@ import {
 import { updateHintsInTab } from "./utils/getHintsInTab";
 import { runRangoActionWithTarget } from "./actions/runRangoActionWithTarget";
 import { runRangoActionWithoutTarget } from "./actions/runRangoActionWithoutTarget";
+import { updateCustomSelectors } from "./hints/selectors";
 
 cacheHintOptions()
 	.then(addUrlToTitle)
+	.then(updateCustomSelectors)
 	.then(observe)
 	.then(async () => {
 		const { keyboardClicking } = await browser.storage.local.get(

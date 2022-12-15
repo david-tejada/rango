@@ -15,7 +15,7 @@ export function markHintsAsKeyboardReachable(letter: string) {
 	for (const hintElement of hintsToHighlight) {
 		assertDefined(hintElement.textContent);
 		const wrapper = getWrapper(hintElement.textContent);
-		wrapper?.hint?.emphasize();
+		wrapper?.hint?.keyHighlight();
 	}
 }
 

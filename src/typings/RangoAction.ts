@@ -12,7 +12,8 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "scrollDownAtElement"
 		| "scrollLeftAtElement"
 		| "scrollRightAtElement"
-		| "displayMoreHints"
+		| "displayExtraHints"
+		| "displayExcludedHints"
 		| "displayLessHints"
 		| "toggleHints"
 		| "toggleKeyboardClicking"
@@ -29,7 +30,11 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "enableUrlInTitle"
 		| "disableUrlInTitle"
 		| "increaseHintSize"
-		| "decreaseHintSize";
+		| "decreaseHintSize"
+		| "includeOrExcludeMoreSelectors"
+		| "includeOrExcludeLessSelectors"
+		| "confirmSelectorsCustomization"
+		| "resetCustomSelectors";
 }
 interface RangoActionWithoutTargetWithStringArg {
 	type:
@@ -87,7 +92,9 @@ interface RangoActionWithMultipleTargets {
 		| "copyMarkdownLink"
 		| "copyElementTextContent"
 		| "showLink"
-		| "hoverElement";
+		| "hoverElement"
+		| "includeExtraSelectors"
+		| "excludeExtraSelectors";
 	target: string[];
 }
 

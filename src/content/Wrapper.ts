@@ -19,7 +19,6 @@ import { focusesOnclick } from "./utils/focusesOnclick";
 import { openInNewTab } from "./actions/openInNewTab";
 import { dispatchClick, dispatchHover } from "./utils/dispatchEvents";
 import {
-	displayExtraHints,
 	updatePositionAll,
 	updateShouldBeHintedAll,
 	updateStyleAll,
@@ -189,7 +188,7 @@ export class Wrapper implements ElementWrapper {
 	}
 
 	updateIsHintable() {
-		this.isHintable = isHintable(this.element, displayExtraHints());
+		this.isHintable = isHintable(this.element);
 		if (this.isHintable) {
 			if (focusesOnclick(this.element)) {
 				this.element.addEventListener("focus", () => {

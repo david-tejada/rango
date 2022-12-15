@@ -124,6 +124,9 @@
 	"dependencies": {
 		"async-mutex": "^0.3.2",
 		"color": "^4.2.3",
+		"combinations": "^1.0.0",
+		"intersect": "^1.0.1",
+		"specificity": "^0.4.1",
 		"tippy.js": "^6.3.7",
 		"webextension-polyfill": "^0.8.0"
 	},
@@ -134,6 +137,8 @@
 		"@parcel/transformer-inline-string": "^2.7.0",
 		"@sindresorhus/tsconfig": "^2.0.0",
 		"@types/color": "^3.0.3",
+		"@types/combinations": "^1.0.0",
+		"@types/intersect": "^1.0.0",
 		"@types/jest": "^27.4.1",
 		"@types/jest-expect-message": "^1.1.0",
 		"@types/jest-when": "^3.5.2",

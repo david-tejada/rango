@@ -41,6 +41,8 @@ export interface HintableMark {
 	color: Color;
 	backgroundColor: Color;
 	outlineColor: Color;
+	outlineWidth: number;
+	keyEmphasis?: boolean;
 	freezeColors?: boolean;
 	firstTextNodeDescendant?: Text;
 	string?: string;
@@ -55,5 +57,6 @@ export interface HintableMark {
 	release(keepInCache?: boolean): void;
 	reattach(): void;
 	applyDefaultStyle(): void;
-	emphasize(): void;
+	keyHighlight(): void;
+	clearKeyHighlight(): void;
 }

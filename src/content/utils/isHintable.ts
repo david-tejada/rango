@@ -1,45 +1,12 @@
+import { matchesMarkedForInclusion } from "../hints/customHintsEdit";
+import { getExtraHintsToggle, getShowExcludedToggle } from "../updateWrappers";
+import {
+	matchesCustomExclude,
+	matchesCustomInclude,
+	matchesExtraSelector,
+	matchesHintableSelector,
+} from "../hints/selectors";
 import { isVisible } from "./isVisible";
-
-const defaultSelector =
-	// Elements
-	"button, a, input, summary, textarea, select, option, label, " +
-	// Roles
-	"[role='button'], [role='link'], [role='treeitem'], [role='tab'], [role='option'], " +
-	"[role='radio'], [role='checkbox'], [role='menuitem'], [role='menuitemradio'], [role='menuitemcheckbox'], " +
-	// Attributes
-	"[contenteditable='true'], [contenteditable='']";
-
-// To be populated from local storage
-const includeSelectors: string[] = [];
-const excludeSelectors: string[] = [];
-
-let includeSelectorAll = "";
-let excludeSelectorAll = "";
-
-for (const [index, selector] of includeSelectors.entries()) {
-	if (index !== 0) {
-		includeSelectorAll += ", ";
-	}
-
-	includeSelectorAll += selector;
-}
-
-for (const [index, selector] of excludeSelectors.entries()) {
-	if (index !== 0) {
-		excludeSelectorAll += ", ";
-	}
-
-	excludeSelectorAll += selector;
-}
-
-const notSelector =
-	":not([aria-hidden='true']" +
-	(excludeSelectorAll ? `, ${excludeSelectorAll}` : "") +
-	")";
-
-const hintableSelector =
-	`:is(${defaultSelector})${notSelector}` +
-	(includeSelectorAll ? `, ${includeSelectorAll}` : "");
 
 function hasSignificantSiblings(target: Node) {
 	if (!target.parentNode) return false;
@@ -57,13 +24,12 @@ function hasSignificantSiblings(target: Node) {
 }
 
 function isRedundant(target: Element) {
-	const includeSelectorAll = getIncludeSelectorAll();
-	const hintableSelector = getHintableSelector();
+	if (matchesCustomInclude(target)) return false;
+
 	if (
 		!hasSignificantSiblings(target) &&
 		target.parentElement &&
-		target.parentElement.matches(hintableSelector) &&
-		!(includeSelectorAll && target.matches(includeSelectorAll))
+		matchesHintableSelector(target.parentElement)
 	) {
 		return true;
 	}
@@ -85,9 +51,9 @@ function isHintableExtra(target: Element): boolean {
 	if (
 		(cursor === "pointer" ||
 			target.matches(
-				"[class*='button' i], [class*='btn' i], [class*='select']"
+				"[class*='button' i], [class*='btn' i], [class*='select' i]"
 			)) &&
-		target.matches("div, span")
+		matchesExtraSelector(target)
 	) {
 		return true;
 	}
@@ -95,9 +61,20 @@ function isHintableExtra(target: Element): boolean {
 	return false;
 }
 
-export function isHintable(target: Element, extra: boolean): boolean {
+export function isHintable(target: Element): boolean {
+	if (
+		getExtraHintsToggle() &&
+		(matchesHintableSelector(target) || isHintableExtra(target))
+	) {
+		return true;
+	}
+
+	if (matchesCustomExclude(target) && !getShowExcludedToggle()) return false;
+
+	if (matchesCustomInclude(target)) return true;
+
 	return (
-		(target.matches(hintableSelector) && !isRedundant(target)) ||
-		(extra && isHintableExtra(target))
+		(matchesHintableSelector(target) && !isRedundant(target)) ||
+		matchesMarkedForInclusion(target)
 	);
 }

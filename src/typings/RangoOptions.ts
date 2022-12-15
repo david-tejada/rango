@@ -29,4 +29,5 @@ export interface StorableRangoOptions {
 	includeSingleLetterHints: boolean;
 	urlInTitle: boolean;
 	keyboardClicking: boolean;
+	customSelectors: Record<string, { include: string[]; exclude: string[] }>;
 }
