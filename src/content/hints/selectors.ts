@@ -17,7 +17,7 @@ const defaultSelector =
 
 const hintableSelector = `:is(${defaultSelector}):not([aria-hidden='true']`;
 
-export const extraSelector = "div, span, h1, h2, h3, h4, h5, h6";
+export const extraSelector = "div, span, i, li, td, h1, h2, h3, h4, h5, h6";
 
 let includeSelectorAll = "";
 let excludeSelectorAll = "";
