@@ -59,6 +59,15 @@ function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {
 // eslint-disable-next-line unicorn/prefer-module
 const css = fs.readFileSync(path.join(__dirname, "styles.css"), "utf8");
 
+// Inject styles for the page. We have to do it like this instead of including
+// the css in the manifest because if the extension is disabled/removed the
+// hints would remain but the css would be gone and the layout of the page would
+// break massively
+const style = document.createElement("style");
+style.className = "rango-styles";
+style.textContent = css;
+document.head.append(style);
+
 function injectShadowStyles(rootNode: ShadowRoot) {
 	let stylesPresent = false;
 
