@@ -23,7 +23,7 @@ import { setStyleProperties } from "./setStyleProperties";
 
 function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {
 	const descendants = target.querySelectorAll("*");
-	let zIndex = 1;
+	let zIndex = 0;
 
 	for (const descendant of descendants) {
 		if (createsStackingContext(descendant)) {
@@ -47,7 +47,7 @@ function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {
 				window.getComputedStyle(current).zIndex,
 				10
 			);
-			zIndex = Number.isNaN(currentIndex) ? 1 : currentIndex + 1;
+			zIndex = Number.isNaN(currentIndex) ? 0 : currentIndex;
 		}
 
 		current = current.parentElement;
