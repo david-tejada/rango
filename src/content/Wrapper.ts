@@ -54,6 +54,19 @@ export function addWrappersFrom(root: Element) {
 		addWrapper(new Wrapper(element));
 		if (element.shadowRoot) {
 			mutationObserver.observe(element.shadowRoot, mutationObserverConfig);
+		} else if (element.tagName.includes("-")) {
+			// If a shadow gets attached to an element after we have added that
+			// wrapper the elements within that shadowRoot won't register. This seems
+			// to deal with the problem.
+			setTimeout(() => {
+				if (element.shadowRoot) {
+					const shadowElements = deepGetElements(element);
+					mutationObserver.observe(element.shadowRoot, mutationObserverConfig);
+					for (const element of shadowElements) {
+						addWrapper(new Wrapper(element));
+					}
+				}
+			}, 1000);
 		}
 	}
 }
