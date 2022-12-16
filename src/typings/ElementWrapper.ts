@@ -49,6 +49,7 @@ export interface HintableMark {
 
 	// Methods
 	setBackgroundColor(color?: string): void;
+	computeHintContext(): void;
 	computeColors(): void;
 	updateColors(): void;
 	position(): void;

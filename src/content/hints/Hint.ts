@@ -88,7 +88,7 @@ function injectShadowStyles(rootNode: ShadowRoot) {
 
 // This mutation observer takes care of reattaching the hints when they are
 // deleted by the page
-const mutationObserver = new MutationObserver((entries) => {
+const containerMutationObserver = new MutationObserver((entries) => {
 	for (const entry of entries) {
 		for (const node of entry.removedNodes) {
 			if (
@@ -100,6 +100,21 @@ const mutationObserver = new MutationObserver((entries) => {
 
 				if (wrapper?.hint?.string) wrapper.hint.reattach();
 			}
+		}
+	}
+});
+
+// If there are some changes to the target element itself we need to recompute
+// the context in case the element we used to position the hint is removed or
+// something else changes
+const targetMutationObserver = new MutationObserver((entries) => {
+	for (const entry of entries) {
+		if (
+			entry.target instanceof Element &&
+			// Avoid recomputing while we attach hint in development
+			entry.attributeName !== "data-hint"
+		) {
+			getWrapper(entry.target)?.hint?.computeHintContext();
 		}
 	}
 });
@@ -127,15 +142,16 @@ export class Hint implements HintableMark {
 
 	constructor(target: Element) {
 		this.target = target;
-		this.elementToPositionHint = getElementToPositionHint(this.target);
-		({
-			container: this.container,
-			limitParent: this.limitParent,
-			availableSpaceLeft: this.availableSpaceLeft,
-			availableSpaceTop: this.availableSpaceTop,
-		} = getContextForHint(target, this.elementToPositionHint));
 
-		mutationObserver.observe(this.container, { childList: true });
+		this.computeHintContext();
+
+		containerMutationObserver.observe(this.container, { childList: true });
+
+		targetMutationObserver.observe(this.target, {
+			attributes: true,
+			childList: true,
+			subtree: true,
+		});
 
 		const rootNode = this.container.getRootNode();
 		if (rootNode instanceof ShadowRoot) injectShadowStyles(rootNode);
@@ -162,6 +178,16 @@ export class Hint implements HintableMark {
 		setStyleProperties(this.inner, {
 			"background-color": color,
 		});
+	}
+
+	computeHintContext() {
+		this.elementToPositionHint = getElementToPositionHint(this.target);
+		({
+			container: this.container,
+			limitParent: this.limitParent,
+			availableSpaceLeft: this.availableSpaceLeft,
+			availableSpaceTop: this.availableSpaceTop,
+		} = getContextForHint(this.target, this.elementToPositionHint));
 	}
 
 	computeColors() {
