@@ -117,74 +117,30 @@ function withinDifferentHintable(node: Element, hintable: Element) {
 	return false;
 }
 
-// Returns the first image or text element ignoring some cases where the element
-// has multiple of those, for example, a clickable div block with an avatar and
-// some blocks of text.
 function getFirstIconOrTextElement(
 	target: Element
 ): Element | Text | undefined {
 	const elements = deepGetElements(target, true).filter(
 		(element) => !element.matches(".rango-hint-wrapper, .rango-hint")
 	);
-	// For some elements that are highly likely to have an icon plus text we can
-	// allow having multiple blocks of image or text
-	const allowMultipleBlocks = Boolean(
-		target.closest("nav, li, button, [role='button'], [role='treeitem'")
-	);
+
 	let firstTextBlockElement: Element | undefined;
 	let firstImage;
 
 	for (const element of elements) {
-		if (
-			allowMultipleBlocks &&
-			(firstImage || firstTextBlockElement) &&
-			// We want to break once we have exited the first text block element because
-			// said element could have an image in it that comes before any text node.
-			// Example: <button><img src="path.jpg">click me!</button>
-			!firstTextBlockElement?.contains(element)
-		) {
-			break;
-		}
-
 		const { opacity } = window.getComputedStyle(element);
 
-		if (opacity === "0" || !elementsOverlap(target, element)) {
+		if (
+			opacity === "0" ||
+			!elementsOverlap(target, element) ||
+			withinDifferentHintable(element, target)
+		) {
 			continue;
 		}
 
-		if (isImage(element)) {
-			if (firstImage && !allowMultipleBlocks) {
-				// There is more than one logo or icon in the element
-				return undefined;
-			}
+		if (isImage(element)) firstImage ??= element;
 
-			const differentHintable = withinDifferentHintable(element, target);
-
-			if (differentHintable && !allowMultipleBlocks) {
-				return undefined;
-			}
-
-			if (!firstImage && !differentHintable) {
-				firstImage = element;
-			}
-		}
-
-		if (hasSignificantTextNodeChild(element)) {
-			if (firstTextBlockElement && !firstTextBlockElement.contains(element)) {
-				// There is more than one significant block of text
-				return undefined;
-			}
-
-			const differentHintable = withinDifferentHintable(element, target);
-
-			if (differentHintable && !allowMultipleBlocks) {
-				return undefined;
-			}
-
-			if (!firstTextBlockElement && !differentHintable) {
-				firstTextBlockElement = element;
-			}
-		}
+		if (hasSignificantTextNodeChild(element)) firstTextBlockElement ??= element;
 	}
 
 	const firstText = firstTextBlockElement
@@ -192,8 +148,10 @@ function getFirstIconOrTextElement(
 		: undefined;
 
 	// If there is both a first image and a first text we return the one that
-	// let picomHerecomes first in the document
+	// comes first in the document
 	if (firstImage && firstText) {
+		// 4: firstText follows firstImage. Since firstImage can't contain firstText
+		// we don't need to worry about other cases
 		return firstImage.compareDocumentPosition(firstText) === 4
 			? firstImage
 			: firstText;
@@ -213,7 +171,5 @@ export function getElementToPositionHint(target: Element) {
 		return target;
 	}
 
-	const firstImageOrText = getFirstIconOrTextElement(target);
-
-	return firstImageOrText ?? target;
+	return getFirstIconOrTextElement(target) ?? target;
 }
