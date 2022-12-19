@@ -4,6 +4,8 @@ import { isPromiseFulfilledResult } from "../../typings/TypingUtils";
 import { getCurrentTabId } from "../utils/getCurrentTab";
 import { splitRequestsByFrame } from "../utils/splitRequestsByFrame";
 
+let lastScrollFrameId = 0;
+
 export async function sendRequestToCurrentTab(
 	request: ContentRequest
 ): Promise<unknown> {
@@ -14,8 +16,16 @@ export async function sendRequestToCurrentTab(
 		const frameIds = await splitRequestsByFrame(currentTabId, request);
 
 		if (frameIds) {
-			const sending = Array.from(frameIds).map(async ([frameId, rangoAction]) =>
-				browser.tabs.sendMessage(currentTabId, rangoAction, { frameId })
+			const sending = Array.from(frameIds).map(
+				async ([frameId, rangoAction]) => {
+					if (/^scroll.*AtElement$/.test(request.type)) {
+						lastScrollFrameId = frameId;
+					}
+
+					return browser.tabs.sendMessage(currentTabId, rangoAction, {
+						frameId,
+					});
+				}
 			);
 
 			const results = await Promise.allSettled(sending);
@@ -34,6 +44,11 @@ export async function sendRequestToCurrentTab(
 
 			return undefined;
 		}
+	} else if (/^scroll.*AtElement$/.test(request.type)) {
+		// This is for the "up/down/left/right again" commands
+		return browser.tabs.sendMessage(currentTabId, request, {
+			frameId: lastScrollFrameId,
+		});
 	}
 
 	return browser.tabs.sendMessage(currentTabId, request, {
