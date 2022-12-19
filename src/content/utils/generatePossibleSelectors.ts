@@ -11,14 +11,12 @@ import { combineArrays } from "./combineArrays";
 // will appear "div.root main span.button")
 export function generatePossibleSelectors(
 	selectors: string[],
-	maxIds = 2,
-	maxClasses = 5
+	maxClasses = 7
 ): string[] {
 	// Because generating all the possible selectors could be costly if there are
 	// too many selectors, we need to limit the amount of selectors that we
 	// include
 	const selectorsTrimmed: string[] = [];
-	let idsAdded = 0;
 	let classesAdded = 0;
 
 	// We need to reverse the selectors because we want to keep the selector parts
@@ -33,17 +31,7 @@ export function generatePossibleSelectors(
 		} else {
 			let filteredSelector = "";
 			for (const part of selectorParts) {
-				if (part.startsWith("#") && idsAdded < maxIds) {
-					idsAdded++;
-					filteredSelector += part;
-				}
-
-				if (part.startsWith(".") && classesAdded < maxClasses) {
-					classesAdded++;
-					filteredSelector += part;
-				}
-
-				if (part.startsWith(":") && classesAdded < maxClasses) {
+				if (/^[.:]/.test(part) && classesAdded < maxClasses) {
 					classesAdded++;
 					filteredSelector += part;
 				}
