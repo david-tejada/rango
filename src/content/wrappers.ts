@@ -27,8 +27,8 @@ export function getWrapper(
 
 	if (Array.isArray(key)) {
 		result = [];
-		for (const string of wrappersHinted.keys()) {
-			if (key.includes(string)) {
+		for (const string of key) {
+			if (wrappersHinted.has(string)) {
 				result.push(wrappersHinted.get(string)!);
 			}
 		}
