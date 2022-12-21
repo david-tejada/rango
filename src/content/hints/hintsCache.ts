@@ -40,5 +40,8 @@ export function pushHint(hints: string | string[], keepInCache = false) {
 export async function clearHintsCache() {
 	hintsCache = [];
 	returnedHints = [];
+
+	// We don't need to worry about this being called in every frame because
+	// frames other than 0 are ignored within the function
 	await initStack();
 }
