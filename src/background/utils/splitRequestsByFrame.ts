@@ -46,13 +46,14 @@ export async function splitRequestsByFrame(
 	}
 
 	for (const [key, value] of hintsByFrame.entries()) {
-		let arg: number | undefined;
+		let arg: number | string | undefined;
 
 		if (
 			request.type === "scrollUpAtElement" ||
 			request.type === "scrollDownAtElement" ||
 			request.type === "scrollLeftAtElement" ||
-			request.type === "scrollRightAtElement"
+			request.type === "scrollRightAtElement" ||
+			request.type === "insertToField"
 		) {
 			arg = request.arg;
 		}

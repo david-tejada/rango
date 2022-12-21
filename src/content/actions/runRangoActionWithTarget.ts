@@ -12,6 +12,7 @@ import { hoverElement } from "./hoverElement";
 import { openInBackgroundTab, openInNewTab } from "./openInNewTab";
 import { showTitleAndHref } from "./showTitleAndHref";
 import { includeOrExcludeExtraSelectors } from "./customHints";
+import { insertToField } from "./insertToField";
 
 export async function runRangoActionWithTarget(
 	request: RangoActionWithTarget
@@ -54,6 +55,10 @@ export async function runRangoActionWithTarget(
 
 		case "copyElementTextContent":
 			return copyElementTextContentToClipboard(wrappers);
+
+		case "insertToField":
+			insertToField(wrappers, request.arg);
+			break;
 
 		case "scrollUpAtElement":
 			scroll({ dir: "up", target: wrapper, factor: request.arg });

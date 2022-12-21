@@ -104,10 +104,17 @@ interface RangoActionWithMultipleTargets {
 	target: string[];
 }
 
+interface RangoActionWithMultipleTargetsAndStrinArg {
+	type: "insertToField";
+	target: string[];
+	arg: string;
+}
+
 export type RangoActionWithTarget =
 	| RangoActionWithSingleTarget
 	| RangoActionWithMultipleTargets
-	| RangoActionWithTargetWithOptionalNumberArg;
+	| RangoActionWithTargetWithOptionalNumberArg
+	| RangoActionWithMultipleTargetsAndStrinArg;
 
 export type RangoActionWithoutTarget =
 	| RangoActionWithoutTargetWithoutArg

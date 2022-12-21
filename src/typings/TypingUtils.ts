@@ -33,6 +33,12 @@ export function isFocusOnClickInput(
 	);
 }
 
+export function isFieldWithValue(
+	element: Element
+): element is FocusOnClickInput | HTMLTextAreaElement {
+	return isFocusOnClickInput(element) || element instanceof HTMLTextAreaElement;
+}
+
 export function hasDisabled(
 	element: Element
 ): element is
