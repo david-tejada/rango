@@ -57,16 +57,6 @@ interface RangoActionWithoutTargetWithNumberArg {
 	arg: number;
 }
 
-interface RangoActionWithTargetWithOptionalNumberArg {
-	type:
-		| "scrollUpAtElement"
-		| "scrollDownAtElement"
-		| "scrollLeftAtElement"
-		| "scrollRightAtElement";
-	target: string;
-	arg?: number;
-}
-
 interface RangoActionWithoutTargetWithOptionalNumberArg {
 	type:
 		| "scrollUpPage"
@@ -80,17 +70,7 @@ interface RangoActionWithoutTargetWithOptionalNumberArg {
 	arg?: number;
 }
 
-interface RangoActionWithSingleTarget {
-	type:
-		| "scrollElementToTop"
-		| "scrollElementToBottom"
-		| "scrollElementToCenter"
-		| "setSelectionBefore"
-		| "setSelectionAfter";
-	target: string;
-}
-
-interface RangoActionWithMultipleTargets {
+interface RangoActionWithTargets {
 	type:
 		| "openInBackgroundTab"
 		| "clickElement"
@@ -102,21 +82,35 @@ interface RangoActionWithMultipleTargets {
 		| "showLink"
 		| "hoverElement"
 		| "includeExtraSelectors"
-		| "excludeExtraSelectors";
+		| "excludeExtraSelectors"
+		| "scrollElementToTop"
+		| "scrollElementToBottom"
+		| "scrollElementToCenter"
+		| "setSelectionBefore"
+		| "setSelectionAfter";
 	target: string[];
 }
 
-interface RangoActionWithMultipleTargetsAndStrinArg {
+interface RangoActionWithTargetsWithOptionalNumberArg {
+	type:
+		| "scrollUpAtElement"
+		| "scrollDownAtElement"
+		| "scrollLeftAtElement"
+		| "scrollRightAtElement";
+	target: string[];
+	arg?: number;
+}
+
+interface RangoActionWithTargetsAndStrinArg {
 	type: "insertToField";
 	target: string[];
 	arg: string;
 }
 
 export type RangoActionWithTarget =
-	| RangoActionWithSingleTarget
-	| RangoActionWithMultipleTargets
-	| RangoActionWithTargetWithOptionalNumberArg
-	| RangoActionWithMultipleTargetsAndStrinArg;
+	| RangoActionWithTargets
+	| RangoActionWithTargetsWithOptionalNumberArg
+	| RangoActionWithTargetsAndStrinArg;
 
 export type RangoActionWithoutTarget =
 	| RangoActionWithoutTargetWithoutArg
