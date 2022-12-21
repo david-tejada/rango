@@ -87,7 +87,8 @@ interface RangoActionWithTargets {
 		| "scrollElementToBottom"
 		| "scrollElementToCenter"
 		| "setSelectionBefore"
-		| "setSelectionAfter";
+		| "setSelectionAfter"
+		| "clearAndSetSelection";
 	target: string[];
 }
 
