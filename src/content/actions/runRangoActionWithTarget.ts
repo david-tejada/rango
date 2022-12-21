@@ -13,6 +13,7 @@ import { openInBackgroundTab, openInNewTab } from "./openInNewTab";
 import { showTitleAndHref } from "./showTitleAndHref";
 import { includeOrExcludeExtraSelectors } from "./customHints";
 import { insertToField } from "./insertToField";
+import { setSelectionAfter, setSelectionBefore } from "./setSelection";
 
 export async function runRangoActionWithTarget(
 	request: RangoActionWithTarget
@@ -58,6 +59,14 @@ export async function runRangoActionWithTarget(
 
 		case "insertToField":
 			insertToField(wrappers, request.arg);
+			break;
+
+		case "setSelectionBefore":
+			setSelectionBefore(wrapper);
+			break;
+
+		case "setSelectionAfter":
+			setSelectionAfter(wrapper);
 			break;
 
 		case "scrollUpAtElement":

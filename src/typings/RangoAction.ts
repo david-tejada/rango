@@ -84,7 +84,9 @@ interface RangoActionWithSingleTarget {
 	type:
 		| "scrollElementToTop"
 		| "scrollElementToBottom"
-		| "scrollElementToCenter";
+		| "scrollElementToCenter"
+		| "setSelectionBefore"
+		| "setSelectionAfter";
 	target: string;
 }
 
