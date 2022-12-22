@@ -267,8 +267,45 @@ export class Hint implements HintableMark {
 				: this.elementToPositionHint.getBoundingClientRect();
 		const { x: outerX, y: outerY } = this.outer.getBoundingClientRect();
 
-		const nudgeX = this.elementToPositionHint instanceof Text ? 0.2 : 0.6;
-		const nudgeY = 0.6;
+		let nudgeX = 0.3;
+		let nudgeY = 0.5;
+
+		// Since hints could be obscure by a neighboring element with superior
+		// z-index, and since the algorithm to detect that would be complicated, a
+		// simple solution is to, when possible, place the hint as close to the
+		// hinted element as possible
+		if (this.elementToPositionHint instanceof Text) {
+			const { fontSize } = window.getComputedStyle(
+				this.elementToPositionHint.parentElement!
+			);
+			const fontSizePixels = Number.parseInt(fontSize, 10);
+			if (fontSizePixels < 15) {
+				nudgeX = 0.3;
+				nudgeY = 0.5;
+			} else if (fontSizePixels < 20) {
+				nudgeX = 0.4;
+				nudgeY = 0.6;
+			} else {
+				nudgeX = 0.6;
+				nudgeY = 0.8;
+			}
+		}
+
+		if (!(this.elementToPositionHint instanceof Text)) {
+			const { width, height } =
+				this.elementToPositionHint.getBoundingClientRect();
+
+			if (
+				(width > 30 && height > 30) ||
+				// This is to avoid the hint being hidden by a superior stacking context
+				// in some pages when a very small textarea element is used to display a
+				// blinking cursor (CodePen, for example)
+				this.target instanceof HTMLTextAreaElement
+			) {
+				nudgeX = 1;
+				nudgeY = 1;
+			}
+		}
 
 		const hintOffsetX = this.inner.offsetWidth * (1 - nudgeX);
 		const hintOffsetY = this.inner.offsetHeight * (1 - nudgeY);
