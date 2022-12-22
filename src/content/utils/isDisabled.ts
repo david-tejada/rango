@@ -1,6 +1,8 @@
 import { hasDisabled } from "../../typings/TypingUtils";
 
 export function isDisabled(element: Element) {
+	if (element.getAttribute("aria-disabled") === "true") return true;
+
 	if (
 		element instanceof HTMLLabelElement &&
 		element.control &&
