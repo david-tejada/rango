@@ -19,10 +19,12 @@ import { focusesOnclick } from "./utils/focusesOnclick";
 import { openInNewTab } from "./actions/openInNewTab";
 import { dispatchClick, dispatchHover } from "./utils/dispatchEvents";
 import {
+	getExtraHintsToggle,
 	updatePositionAll,
 	updateShouldBeHintedAll,
 	updateStyleAll,
 } from "./updateWrappers";
+import { matchesCustomExclude, matchesCustomInclude } from "./hints/selectors";
 
 // =============================================================================
 // HELPER FUNCTIONS
@@ -222,7 +224,10 @@ export class Wrapper implements ElementWrapper {
 		const newShouldBeHinted =
 			this.isHintable &&
 			!this.isActiveFocusable &&
-			isVisible(this.element) &&
+			(isVisible(this.element) ||
+				(matchesCustomInclude(this.element) &&
+					!matchesCustomExclude(this.element)) ||
+				getExtraHintsToggle()) &&
 			!isDisabled(this.element);
 
 		if (newShouldBeHinted !== this.shouldBeHinted) {
