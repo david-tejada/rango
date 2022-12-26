@@ -21,6 +21,14 @@ export async function runRangoActionWithoutTarget(
 	request: RangoActionWithoutTarget
 ): Promise<string | undefined> {
 	switch (request.type) {
+		case "historyGoBack":
+			window.history.back();
+			break;
+
+		case "historyGoForward":
+			window.history.forward();
+			break;
+
 		case "scrollUpPage":
 			scroll({ dir: "up", target: "page", factor: request.arg });
 			break;

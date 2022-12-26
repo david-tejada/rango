@@ -9,6 +9,7 @@ import { toggleHints } from "../actions/toggleHints";
 import { closeTabsInWindow } from "../actions/closeTabsInWindow";
 import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
 import { focusPreviousTab } from "../actions/focusPreviousTab";
+import { sendRequestToCurrentTab } from "../messaging/sendRequestToCurrentTab";
 
 export async function runBackgroundCommand(
 	command: RangoAction
@@ -17,6 +18,24 @@ export async function runBackgroundCommand(
 	const currentTabId = await getCurrentTabId();
 
 	switch (command.type) {
+		case "historyGoBack":
+			try {
+				await sendRequestToCurrentTab(command);
+			} catch {
+				await browser.tabs.goBack();
+			}
+
+			break;
+
+		case "historyGoForward":
+			try {
+				await sendRequestToCurrentTab(command);
+			} catch {
+				await browser.tabs.goForward();
+			}
+
+			break;
+
 		case "toggleHints": {
 			const hintsToggle = (await getStored("hintsToggle")) as HintsToggle;
 			hintsToggle.global = !hintsToggle.global;

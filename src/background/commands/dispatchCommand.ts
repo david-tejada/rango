@@ -29,6 +29,8 @@ const backgroundCommands = new Set([
 	"toggleKeyboardClicking",
 	"moveCurrentTabToNewWindow",
 	"focusPreviousTab",
+	"historyGoBack",
+	"historyGoForward",
 ]);
 
 export async function dispatchCommand(
