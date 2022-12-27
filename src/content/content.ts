@@ -16,6 +16,7 @@ import { updateHintsInTab } from "./utils/getHintsInTab";
 import { runRangoActionWithTarget } from "./actions/runRangoActionWithTarget";
 import { runRangoActionWithoutTarget } from "./actions/runRangoActionWithoutTarget";
 import { updateCustomSelectors } from "./hints/selectors";
+import { getHintStringsInUse } from "./wrappers";
 
 cacheHintOptions()
 	.then(addUrlToTitle)
@@ -51,6 +52,9 @@ browser.runtime.onMessage.addListener(
 					copyToClipboardManifestV3(request.text);
 					break;
 				}
+
+				case "getHintStringsInUse":
+					return getHintStringsInUse();
 
 				case "getLocation":
 					return [

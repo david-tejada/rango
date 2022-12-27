@@ -1,7 +1,10 @@
 import browser from "webextension-polyfill";
+import { Mutex } from "async-mutex";
 import { HintsStack, StorableHintsStack } from "../../typings/HintsStack";
 import { getStored, setStored } from "../../lib/getStored";
 import { allHints } from "./allHints";
+
+const mutex = new Mutex();
 
 function stackToStorable(stack: HintsStack): StorableHintsStack {
 	return {
@@ -90,6 +93,22 @@ export async function claimHints(
 	return hints;
 }
 
+export async function storeHintsInUse(
+	hints: string[],
+	tabId: number,
+	frameId: number
+) {
+	const stack = await getStack(tabId);
+
+	stack.free = stack.free.filter((value) => !hints.includes(value));
+
+	for (const hint of hints) {
+		stack.assigned.set(hint, frameId);
+	}
+
+	await saveStack(stack, tabId);
+}
+
 export async function releaseHints(hints: string[], tabId: number) {
 	const stack = await getStack(tabId);
 	// We make sure the hints to release are actually assigned
@@ -106,8 +125,24 @@ export async function releaseHints(hints: string[], tabId: number) {
 
 // We use onCommitted because onBeforeNavigate can sometimes be received repeated times.
 // onCommitted is also guaranteed to be received before any of the subframes onBeforeNavigate
-browser.webNavigation.onCommitted.addListener(async ({ frameId, tabId }) => {
-	if (frameId === 0) {
-		await initStack(tabId, frameId);
-	}
+browser.webNavigation.onCommitted.addListener(async ({ tabId, frameId }) => {
+	await mutex.runExclusive(async () => {
+		if (frameId === 0) {
+			await initStack(tabId, frameId);
+		}
+
+		// In chrome and safari, sometimes, when you hit the back or forward button
+		// the content script is recovered instead of being started again. For that
+		// reason we need to recover the hints that are in use and store them in
+		// memory in its stack.
+		const hintsInUse = (await browser.tabs.sendMessage(
+			tabId,
+			{ type: "getHintStringsInUse" },
+			{
+				frameId,
+			}
+		)) as string[];
+
+		await storeHintsInUse(hintsInUse, tabId, frameId);
+	});
 });

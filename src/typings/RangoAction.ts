@@ -36,7 +36,8 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "includeOrExcludeMoreSelectors"
 		| "includeOrExcludeLessSelectors"
 		| "confirmSelectorsCustomization"
-		| "resetCustomSelectors";
+		| "resetCustomSelectors"
+		| "getHintStringsInUse";
 }
 
 interface RangoActionWithoutTargetWithStringArg {

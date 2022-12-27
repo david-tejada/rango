@@ -55,6 +55,10 @@ export function getWrappersWithin(element: Element): ElementWrapper[] {
 	return result;
 }
 
+export function getHintStringsInUse() {
+	return [...wrappersHinted.keys()];
+}
+
 export function deleteWrapper(target: Element) {
 	const elements = deepGetElements(target);
 	for (const element of elements) {
