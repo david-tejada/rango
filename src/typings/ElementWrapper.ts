@@ -38,6 +38,7 @@ export interface HintableMark {
 	elementToPositionHint: Element | SVGElement | Text;
 	zIndex?: number;
 	positioned: boolean;
+	reattachedTimes: number;
 	color: Color;
 	backgroundColor: Color;
 	borderColor: Color;

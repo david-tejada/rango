@@ -131,6 +131,7 @@ export class Hint implements HintableMark {
 	elementToPositionHint: Element | SVGElement | Text;
 	zIndex?: number;
 	positioned: boolean;
+	reattachedTimes: number;
 	color: Color;
 	backgroundColor: Color;
 	borderColor: Color;
@@ -166,6 +167,7 @@ export class Hint implements HintableMark {
 		this.outer.append(this.inner);
 
 		this.positioned = false;
+		this.reattachedTimes = 0;
 
 		// Initial styles for inner
 
@@ -448,7 +450,13 @@ export class Hint implements HintableMark {
 	}
 
 	reattach() {
-		this.container.append(this.outer);
+		// We put a limit on how many times we reattach the hint to avoid a vicious
+		// cycle in which the page deletes the hint and we reattach it
+		// constantly
+		if (this.reattachedTimes < 2) {
+			this.container.append(this.outer);
+			this.reattachedTimes++;
+		}
 	}
 
 	applyDefaultStyle() {
