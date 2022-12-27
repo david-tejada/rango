@@ -40,8 +40,8 @@ export interface HintableMark {
 	positioned: boolean;
 	color: Color;
 	backgroundColor: Color;
-	outlineColor: Color;
-	outlineWidth: number;
+	borderColor: Color;
+	borderWidth: number;
 	keyEmphasis?: boolean;
 	freezeColors?: boolean;
 	firstTextNodeDescendant?: Text;

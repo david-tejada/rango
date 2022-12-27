@@ -133,8 +133,8 @@ export class Hint implements HintableMark {
 	positioned: boolean;
 	color: Color;
 	backgroundColor: Color;
-	outlineColor: Color;
-	outlineWidth: number;
+	borderColor: Color;
+	borderWidth: number;
 	keyEmphasis?: boolean;
 	freezeColors?: boolean;
 	firstTextNodeDescendant?: Text;
@@ -156,7 +156,7 @@ export class Hint implements HintableMark {
 		const rootNode = this.container.getRootNode();
 		if (rootNode instanceof ShadowRoot) injectShadowStyles(rootNode);
 
-		this.outlineWidth = 1;
+		this.borderWidth = 1;
 
 		this.outer = document.createElement("div");
 		this.outer.className = "rango-hint-wrapper";
@@ -197,11 +197,11 @@ export class Hint implements HintableMark {
 		if (matchesMarkedForExclusion(this.target)) {
 			backgroundColor = new Color("red");
 			color = new Color("white");
-			this.outlineColor = new Color("white");
+			this.borderColor = new Color("white");
 		} else if (matchesMarkedForInclusion(this.target)) {
 			backgroundColor = new Color("green");
 			color = new Color("white");
-			this.outlineColor = new Color("white");
+			this.borderColor = new Color("white");
 		} else {
 			this.firstTextNodeDescendant = getFirstTextNodeDescendant(this.target);
 			backgroundColor = new Color(getEffectiveBackgroundColor(this.target));
@@ -228,13 +228,13 @@ export class Hint implements HintableMark {
 					: new Color("white");
 			}
 
-			this.outlineWidth = 1;
-			this.outlineColor = new Color(color).alpha(0.3);
+			this.borderWidth = 1;
+			this.borderColor = new Color(color).alpha(0.3);
 		}
 
 		if (this.keyEmphasis) {
-			this.outlineColor = new Color(this.color).alpha(0.7);
-			this.outlineWidth = 2;
+			this.borderColor = new Color(this.color).alpha(0.7);
+			this.borderWidth = 2;
 		}
 
 		this.backgroundColor = backgroundColor;
@@ -249,9 +249,9 @@ export class Hint implements HintableMark {
 			setStyleProperties(this.inner, {
 				"background-color": this.backgroundColor.string(),
 				color: this.color.string(),
-				outline: subtleHints
+				border: subtleHints
 					? "0"
-					: `${this.outlineWidth}px solid ${this.outlineColor.string()}`,
+					: `${this.borderWidth}px solid ${this.borderColor.string()}`,
 			});
 		}
 	}
@@ -480,7 +480,7 @@ export class Hint implements HintableMark {
 				? "transparent"
 				: this.backgroundColor.string(),
 			color: this.color.string(),
-			outline: subtleHints ? "0" : `1px solid ${this.outlineColor.string()}`,
+			border: subtleHints ? "0" : `1px solid ${this.borderColor.string()}`,
 			"font-size": `${hintFontSize}px`,
 			"font-weight": fontWeight,
 		});
