@@ -175,6 +175,7 @@ export async function writeResponseToClipboard(
 				copyPasteArea.select();
 				document.execCommand("copy");
 				copyPasteArea.value = "";
+				return;
 			}
 		} else {
 			return navigator.clipboard.writeText(jsonResponse);
