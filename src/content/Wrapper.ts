@@ -392,7 +392,9 @@ export class Wrapper implements ElementWrapper {
 
 	remove() {
 		this.unobserveIntersection();
+		viewportIntersectionObserver.unobserve(this.element);
 		this.shouldBeHinted = undefined;
+		this.isIntersectingViewport = undefined;
 
 		if (this.hint?.string) {
 			this.hint.release();
