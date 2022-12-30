@@ -59,6 +59,22 @@ export function getHintStringsInUse() {
 	return [...wrappersHinted.keys()];
 }
 
+export function reclaimHints(amount?: number) {
+	const reclaimed = [];
+
+	for (const [hintString, wrapper] of wrappersHinted.entries()) {
+		if (!wrapper.isIntersectingViewport) {
+			wrappersHinted.delete(hintString);
+			wrapper.unobserveIntersection();
+			wrapper.hint?.release(false);
+			reclaimed.push(hintString);
+			if (amount && reclaimed.length >= amount) return reclaimed;
+		}
+	}
+
+	return reclaimed;
+}
+
 export function deleteWrapper(target: Element) {
 	const elements = deepGetElements(target);
 	for (const element of elements) {

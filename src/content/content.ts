@@ -16,7 +16,8 @@ import { updateHintsInTab } from "./utils/getHintsInTab";
 import { runRangoActionWithTarget } from "./actions/runRangoActionWithTarget";
 import { runRangoActionWithoutTarget } from "./actions/runRangoActionWithoutTarget";
 import { updateCustomSelectors } from "./hints/selectors";
-import { getHintStringsInUse } from "./wrappers";
+import { getHintStringsInUse, reclaimHints } from "./wrappers";
+import { reclaimHintsFromCache } from "./hints/hintsCache";
 
 cacheHintOptions()
 	.then(addUrlToTitle)
@@ -55,6 +56,15 @@ browser.runtime.onMessage.addListener(
 
 				case "getHintStringsInUse":
 					return getHintStringsInUse();
+
+				case "reclaimHints": {
+					const reclaimed = reclaimHintsFromCache(request.amount);
+					if (reclaimed.length < request.amount) {
+						reclaimed.push(...reclaimHints(request.amount - reclaimed.length));
+					}
+
+					return reclaimed;
+				}
 
 				case "getLocation":
 					return [

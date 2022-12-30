@@ -355,7 +355,10 @@ export class Hint implements HintableMark {
 	claim() {
 		const string = popHint();
 
-		if (!string) throw new Error("No more hint strings available");
+		if (!string) {
+			console.warn("No more hint strings available");
+			return;
+		}
 
 		this.inner.textContent = string;
 		this.string = string;
@@ -419,7 +422,7 @@ export class Hint implements HintableMark {
 		return string;
 	}
 
-	release(keepInCache = false) {
+	release(returnToStack = true) {
 		// Checking this.string is safer than check in this.inner.textContent as the
 		// latter could be removed by a page script
 		if (!this.string) {
@@ -429,7 +432,7 @@ export class Hint implements HintableMark {
 
 		this.inner.classList.remove("visible");
 
-		pushHint(this.string, keepInCache);
+		if (returnToStack) pushHint(this.string);
 		this.inner.textContent = "";
 		this.string = undefined;
 

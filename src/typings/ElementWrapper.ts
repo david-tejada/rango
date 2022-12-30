@@ -5,6 +5,8 @@ export interface ElementWrapper {
 	readonly element: Element;
 
 	isIntersecting?: boolean;
+	observingIntersection?: boolean;
+	isIntersectingViewport?: boolean;
 	isHintable: boolean;
 	isActiveFocusable: boolean;
 	shouldBeHinted?: boolean;
@@ -21,6 +23,7 @@ export interface ElementWrapper {
 	observeIntersection(): void;
 	unobserveIntersection(): void;
 	intersect(isIntersecting: boolean): void;
+	intersectViewport(isIntersecting: boolean): void;
 	click(): void;
 	hover(): Element;
 	remove(): void;
@@ -55,7 +58,7 @@ export interface HintableMark {
 	updateColors(): void;
 	position(): void;
 	flash(ms?: number): void;
-	claim(): string;
+	claim(): string | undefined;
 	release(keepInCache?: boolean): void;
 	reattach(): void;
 	applyDefaultStyle(): void;

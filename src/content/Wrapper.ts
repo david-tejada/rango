@@ -1,3 +1,4 @@
+import { Mutex } from "async-mutex";
 import { ElementWrapper } from "../typings/ElementWrapper";
 import { isHintable } from "./utils/isHintable";
 import { isDisabled } from "./utils/isDisabled";
@@ -84,19 +85,56 @@ const scrollIntersectionObservers: Map<
 	BoundedIntersectionObserver
 > = new Map();
 
+const mutex = new Mutex();
+
 async function intersectionCallback(entries: IntersectionObserverEntry[]) {
-	const amountIntersecting = entries.filter(
-		(entry) => entry.isIntersecting
-	).length;
+	// Since this callback can be called multiple times asynchronously we need
+	// to make sure that we only run the code inside after the previous one has
+	// finished executing. If not the hints cache can get messed up.
+	await mutex.runExclusive(async () => {
+		const amountIntersecting = entries.filter(
+			(entry) => entry.isIntersecting
+		).length;
 
-	if (amountIntersecting) {
-		await cacheHints(amountIntersecting);
-	}
+		const amountNotIntersectingViewport = entries.filter(
+			(entry) =>
+				entry.isIntersecting &&
+				getWrapperProxy(entry.target).isIntersectingViewport === false
+		).length;
 
-	for (const entry of entries) {
-		getWrapperProxy(entry.target).intersect(entry.isIntersecting);
-	}
+		if (amountIntersecting) {
+			await cacheHints(
+				amountIntersecting - amountNotIntersectingViewport,
+				amountNotIntersectingViewport
+			);
+		}
+
+		for (const entry of entries) {
+			getWrapperProxy(entry.target).intersect(entry.isIntersecting);
+		}
+	});
 }
+
+const viewportIntersectionObserver = new IntersectionObserver(
+	async (entries) => {
+		for (const entry of entries) {
+			const wrapper = getWrapper(entry.target);
+
+			wrapper?.intersectViewport(entry.isIntersecting);
+
+			// Only after having stored isIntersectingViewport we can start observing
+			// the intersection for the element so when intersectionCallback is called
+			// we already know how many are intersecting the viewport to cache those
+			// as optional.
+			if (!wrapper?.observingIntersection) wrapper?.observeIntersection();
+		}
+	},
+	{
+		root: null,
+		rootMargin: "0px",
+		threshold: 0,
+	}
+);
 
 // MUTATION OBSERVER
 
@@ -183,6 +221,8 @@ export class Wrapper implements ElementWrapper {
 	readonly element: Element;
 
 	isIntersecting?: boolean;
+	observingIntersection?: boolean;
+	isIntersectingViewport?: boolean;
 	isHintable: boolean;
 	isActiveFocusable: boolean;
 	shouldBeHinted?: boolean;
@@ -232,13 +272,17 @@ export class Wrapper implements ElementWrapper {
 
 		if (newShouldBeHinted !== this.shouldBeHinted) {
 			if (newShouldBeHinted) {
-				this.observeIntersection();
+				// We don't call this.observeIntersection() yet because when that
+				// intersection occurs we need to know if the element is intersecting
+				// the viewport for hint strings caching
+				viewportIntersectionObserver.observe(this.element);
 			} else {
 				if (this.hint?.string) {
 					wrappersHinted.delete(this.hint.string);
 					this.hint.release();
 				}
 
+				viewportIntersectionObserver.unobserve(this.element);
 				this.unobserveIntersection();
 			}
 		}
@@ -258,7 +302,7 @@ export class Wrapper implements ElementWrapper {
 
 		const options: IntersectionObserverInit = {
 			root,
-			rootMargin: "300px",
+			rootMargin: "1000px",
 			threshold: 0,
 		};
 
@@ -267,6 +311,7 @@ export class Wrapper implements ElementWrapper {
 			new BoundedIntersectionObserver(intersectionCallback, options);
 
 		this.intersectionObserver.observe(this.element);
+		this.observingIntersection = true;
 
 		if (!scrollIntersectionObservers.has(root)) {
 			scrollIntersectionObservers.set(root, this.intersectionObserver);
@@ -275,6 +320,7 @@ export class Wrapper implements ElementWrapper {
 
 	unobserveIntersection() {
 		this.intersectionObserver?.unobserve(this.element);
+		this.observingIntersection = false;
 	}
 
 	intersect(isIntersecting: boolean) {
@@ -287,14 +333,23 @@ export class Wrapper implements ElementWrapper {
 					? this.hint.container
 					: this.hint.container.host;
 			hintContainerResizeObserver.observe(containerToObserve);
-			try {
-				wrappersHinted.set(this.hint.claim(), this);
-			} catch (error: unknown) {
-				console.error(error);
-			}
+			const hintString = this.hint.claim();
+			if (hintString) wrappersHinted.set(hintString, this);
 		} else if (this.hint?.string) {
 			wrappersHinted.delete(this.hint.string);
 			this.hint.release();
+		}
+	}
+
+	intersectViewport(isIntersecting: boolean) {
+		this.isIntersectingViewport = isIntersecting;
+
+		if (this.isIntersectingViewport) {
+			// If it was previously unobserved because the hint was reclaimed we will
+			// get an intersection entry for intersectionObserver. If instead it
+			// wasn't unobserved nothing will happen as repeated calls to observe of
+			// the same element don't cause another intersection entry.
+			this.intersectionObserver?.observe(this.element);
 		}
 	}
 

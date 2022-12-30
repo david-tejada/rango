@@ -1,37 +1,35 @@
 import { RangoAction } from "./RangoAction";
-import {
-	MarkHintsAsKeyboardReachable,
-	RestoreKeyboardReachableHints,
-} from "./BackgroundRequest";
+import { MarkHintsAsKeyboardReachable } from "./BackgroundRequest";
 
-interface GetClipboardManifestV3 {
-	type: "getClipboardManifestV3";
-}
 interface CopyToClipboardManifestV3 {
 	type: "copyToClipboardManifestV3";
 	text: string;
 }
-interface GetLocation {
-	type: "getLocation";
-}
+
 interface UpdateHintsInTab {
 	type: "updateHintsInTab";
 	hints: string[];
 }
-interface InitKeyboardNavigation {
-	type: "initKeyboardNavigation";
+
+interface ReclaimHints {
+	type: "reclaimHints";
+	amount: number;
 }
-interface CheckIfDocumentHasFocus {
-	type: "checkIfDocumentHasFocus";
+
+interface SimpleContentRequest {
+	type:
+		| "getClipboardManifestV3"
+		| "getLocation"
+		| "initKeyboardNavigation"
+		| "restoreKeyboardReachableHints"
+		| "checkIfDocumentHasFocus"
+		| "getHintStringsInUse";
 }
 
 export type ContentRequest =
 	| RangoAction
-	| GetClipboardManifestV3
+	| SimpleContentRequest
 	| CopyToClipboardManifestV3
-	| GetLocation
 	| UpdateHintsInTab
 	| MarkHintsAsKeyboardReachable
-	| RestoreKeyboardReachableHints
-	| InitKeyboardNavigation
-	| CheckIfDocumentHasFocus;
+	| ReclaimHints;

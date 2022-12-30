@@ -6,9 +6,7 @@ interface OpenInBackgroundTab {
 	type: "openInBackgroundTab";
 	links: string[];
 }
-interface InitStack {
-	type: "initStack";
-}
+
 interface ClaimHints {
 	type: "claimHints";
 	amount: number;
@@ -19,9 +17,6 @@ interface ReleaseHints {
 	hints: string[];
 }
 
-interface GetTabId {
-	type: "getTabId";
-}
 interface ClickHintInFrame {
 	type: "clickHintInFrame";
 	hint: string;
@@ -32,17 +27,21 @@ export interface MarkHintsAsKeyboardReachable {
 	letter: string;
 }
 
-export interface RestoreKeyboardReachableHints {
-	type: "restoreKeyboardReachableHints";
+export interface ReclaimHintsFromOtherFrames {
+	type: "reclaimHintsFromOtherFrames";
+	amount: number;
+}
+
+export interface SimpleBackgroundRequest {
+	type: "initStack" | "getTabId" | "restoreKeyboardReachableHints";
 }
 
 export type BackgroundRequest =
+	| SimpleBackgroundRequest
 	| OpenInNewTab
-	| InitStack
 	| ClaimHints
 	| ReleaseHints
 	| OpenInBackgroundTab
-	| GetTabId
 	| ClickHintInFrame
 	| MarkHintsAsKeyboardReachable
-	| RestoreKeyboardReachableHints;
+	| ReclaimHintsFromOtherFrames;

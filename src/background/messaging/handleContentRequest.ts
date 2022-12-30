@@ -2,7 +2,12 @@ import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
 import { BackgroundRequest } from "../../typings/BackgroundRequest";
 import { assertDefined } from "../../typings/TypingUtils";
-import { claimHints, initStack, releaseHints } from "../utils/hintsAllocator";
+import {
+	claimHints,
+	initStack,
+	reclaimHintsFromOtherFrames,
+	releaseHints,
+} from "../utils/hintsAllocator";
 import { sendRequestToCurrentTab } from "./sendRequestToCurrentTab";
 
 const mutex = new Mutex();
@@ -16,7 +21,14 @@ export async function handleContentRequest(
 	assertDefined(tabId);
 	const frameId = sender.frameId ?? 0;
 
-	if (["initStack", "claimHints", "releaseHints"].includes(request.type)) {
+	if (
+		[
+			"initStack",
+			"claimHints",
+			"releaseHints",
+			"reclaimHintsFromOtherFrames",
+		].includes(request.type)
+	) {
 		return mutex.runExclusive(async () => {
 			switch (request.type) {
 				case "initStack":
@@ -24,6 +36,9 @@ export async function handleContentRequest(
 
 				case "claimHints":
 					return claimHints(request.amount, tabId, frameId);
+
+				case "reclaimHintsFromOtherFrames":
+					return reclaimHintsFromOtherFrames(tabId, frameId, request.amount);
 
 				case "releaseHints":
 					return releaseHints(request.hints, tabId);
@@ -82,6 +97,7 @@ export async function handleContentRequest(
 			break;
 
 		default:
+			console.error(request);
 			throw new Error("Bad request to background script");
 	}
 

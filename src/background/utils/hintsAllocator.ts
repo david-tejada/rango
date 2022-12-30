@@ -93,6 +93,51 @@ export async function claimHints(
 	return hints;
 }
 
+export async function reclaimHintsFromOtherFrames(
+	tabId: number,
+	frameId: number,
+	amount: number
+) {
+	const stack = await getStack(tabId);
+	const frameIds = [...new Set(stack.assigned.values())].filter(
+		(id) => id !== frameId
+	);
+
+	const reclaimed: string[] = [];
+
+	for (const id of frameIds) {
+		// eslint-disable-next-line no-await-in-loop
+		const reclaimedFromFrame = (await browser.tabs.sendMessage(
+			tabId,
+			{
+				type: "reclaimHints",
+				amount: amount - reclaimed.length,
+			},
+			{ frameId: id }
+		)) as string[];
+
+		reclaimed.push(...reclaimedFromFrame);
+
+		// Once we have enough hints we don't need to continue sending messages to
+		// other frames
+		if (reclaimed.length === amount) break;
+	}
+
+	for (const hint of reclaimed) {
+		stack.assigned.set(hint, frameId);
+	}
+
+	await saveStack(stack, tabId);
+
+	const hintsInTab = [...stack.assigned.keys()];
+	await browser.tabs.sendMessage(tabId, {
+		type: "updateHintsInTab",
+		hints: hintsInTab,
+	});
+
+	return reclaimed;
+}
+
 export async function storeHintsInUse(
 	hints: string[],
 	tabId: number,

@@ -13,6 +13,13 @@ export async function claimHints(amount: number): Promise<string[]> {
 	}) as Promise<string[]>;
 }
 
+export async function reclaimHintsFromOtherFrames(amount: number) {
+	return browser.runtime.sendMessage({
+		type: "reclaimHintsFromOtherFrames",
+		amount,
+	}) as Promise<string[]>;
+}
+
 export async function releaseHints(hints: string[]) {
 	return browser.runtime.sendMessage({
 		type: "releaseHints",
