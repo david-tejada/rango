@@ -16,6 +16,10 @@ export async function sendRequestToCurrentTab(
 		// We need to take into account that the targets could be in different frames
 		const frameIds = await splitRequestsByFrame(currentTabId, request);
 
+		if (request.type === "directClickElement" && frameIds?.size === 0) {
+			return { type: "noHintFound" };
+		}
+
 		if (frameIds) {
 			const sending = Array.from(frameIds).map(
 				async ([frameId, rangoAction]) => {
