@@ -39,17 +39,17 @@
 	"commands": {
 		"get-talon-request": {
 			"suggested_key": {
-				"default": "Ctrl+Shift+3",
-				"mac": "MacCtrl+Shift+3"
-			},
-			"description": "Get the talon request"
-		},
-		"get-talon-request-legacy": {
-			"suggested_key": {
 				"default": "Ctrl+Shift+Insert",
 				"mac": "MacCtrl+Shift+Insert"
 			},
-			"description": "Get the talon request (legacy)"
+			"description": "Get the talon request"
+		},
+		"get-talon-request-alternative": {
+			"suggested_key": {
+				"default": "Ctrl+Shift+3",
+				"mac": "MacCtrl+Shift+3"
+			},
+			"description": "Get the talon request (alternative)"
 		},
 		"toggle-hints": {
 			"suggested_key": {

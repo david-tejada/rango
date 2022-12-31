@@ -28,7 +28,7 @@ if (browser.action) {
 browser.commands.onCommand.addListener(async (internalCommand: string) => {
 	if (
 		internalCommand === "get-talon-request" ||
-		internalCommand === "get-talon-request-legacy"
+		internalCommand === "get-talon-request-alternative"
 	) {
 		await handleTalonRequest();
 	}
