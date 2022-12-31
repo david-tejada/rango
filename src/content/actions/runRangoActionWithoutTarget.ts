@@ -29,6 +29,10 @@ export async function runRangoActionWithoutTarget(
 			window.history.forward();
 			break;
 
+		case "navigateToPageRoot":
+			window.location.href = "/";
+			break;
+
 		case "scrollUpPage":
 			scroll({ dir: "up", target: "page", factor: request.arg });
 			break;

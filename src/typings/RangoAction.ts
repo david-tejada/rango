@@ -2,6 +2,7 @@ interface RangoActionWithoutTargetWithoutArg {
 	type:
 		| "historyGoBack"
 		| "historyGoForward"
+		| "navigateToPageRoot"
 		| "closeOtherTabsInWindow"
 		| "closeTabsToTheLeftInWindow"
 		| "closeTabsToTheRightInWindow"
