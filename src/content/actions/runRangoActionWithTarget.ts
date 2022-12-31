@@ -40,6 +40,13 @@ export async function runRangoActionWithTarget(
 		case "clickElement":
 		case "directClickElement":
 			await clickElement(wrappers);
+			if (
+				wrappers.length === 1 &&
+				wrapper.element instanceof HTMLSelectElement
+			) {
+				return { type: "pressKeyArrowDown" };
+			}
+
 			break;
 
 		case "showLink":

@@ -7,7 +7,7 @@ export interface RequestFromTalon {
 }
 
 export interface TalonAction {
-	type: "noAction" | "copyToClipboard" | "noHintFound";
+	type: "noAction" | "copyToClipboard" | "noHintFound" | "pressKeyArrowDown";
 	textToCopy?: string;
 	text?: string;
 }
