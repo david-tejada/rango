@@ -27,12 +27,12 @@ export interface MarkHintsAsKeyboardReachable {
 	letter: string;
 }
 
-export interface ReclaimHintsFromOtherFrames {
+interface ReclaimHintsFromOtherFrames {
 	type: "reclaimHintsFromOtherFrames";
 	amount: number;
 }
 
-export interface SimpleBackgroundRequest {
+interface SimpleBackgroundRequest {
 	type: "initStack" | "getTabId" | "restoreKeyboardReachableHints";
 }
 

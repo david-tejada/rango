@@ -1,5 +1,6 @@
 import browser from "webextension-polyfill";
 import { ContentRequest } from "../typings/ContentRequest";
+import { TalonAction } from "../typings/RequestFromTalon";
 import { cacheHintOptions } from "./options/cacheHintOptions";
 import {
 	getClipboardManifestV3,
@@ -38,7 +39,7 @@ cacheHintOptions()
 browser.runtime.onMessage.addListener(
 	async (
 		request: ContentRequest
-	): Promise<string | string[] | boolean | undefined> => {
+	): Promise<string | string[] | TalonAction | boolean | undefined> => {
 		if ("target" in request) {
 			return runRangoActionWithTarget(request);
 		}

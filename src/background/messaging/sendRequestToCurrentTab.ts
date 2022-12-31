@@ -1,5 +1,6 @@
 import browser from "webextension-polyfill";
 import { ContentRequest } from "../../typings/ContentRequest";
+import { TalonAction } from "../../typings/RequestFromTalon";
 import { isPromiseFulfilledResult } from "../../typings/TypingUtils";
 import { getCurrentTabId } from "../utils/getCurrentTab";
 import { splitRequestsByFrame } from "../utils/splitRequestsByFrame";
@@ -40,6 +41,18 @@ export async function sendRequestToCurrentTab(
 					});
 
 				return texts.join("\n");
+			}
+
+			if (
+				// We only send the talon action if there was only one result. For
+				// example, if the action was "directClickElement" with multiple targets
+				// and those hints can't be found there is no use in sending back to
+				// talon "noHintFound" to type those letters
+				results.length === 1 &&
+				isPromiseFulfilledResult(results[0]!) &&
+				results[0]!.value
+			) {
+				return results[0].value as TalonAction;
 			}
 
 			return undefined;

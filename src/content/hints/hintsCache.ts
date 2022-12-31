@@ -62,7 +62,7 @@ export function pushHint(hint: string) {
 	returnedHints.push(hint);
 }
 
-export function saveHintsToCache(hints: string[], toMain?: number) {
+function saveHintsToCache(hints: string[], toMain?: number) {
 	const hintsToAdditional = [...hints];
 	const hintsToMain: string[] = toMain
 		? hintsToAdditional.splice(-toMain, toMain)

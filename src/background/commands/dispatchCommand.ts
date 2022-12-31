@@ -1,4 +1,4 @@
-import { ResponseToTalon } from "../../typings/RequestFromTalon";
+import { ResponseToTalon, TalonAction } from "../../typings/RequestFromTalon";
 import { RangoAction } from "../../typings/RangoAction";
 import { sendRequestToCurrentTab } from "../messaging/sendRequestToCurrentTab";
 import { noActionResponse } from "../utils/responseObjects";
@@ -36,19 +36,21 @@ const backgroundCommands = new Set([
 export async function dispatchCommand(
 	command: RangoAction
 ): Promise<ResponseToTalon> {
-	const textToCopy = (await (backgroundCommands.has(command.type)
+	const result = (await (backgroundCommands.has(command.type)
 		? runBackgroundCommand(command)
-		: sendRequestToCurrentTab(command))) as string | undefined;
+		: sendRequestToCurrentTab(command))) as string | TalonAction | undefined;
 
-	if (textToCopy) {
+	if (typeof result === "string") {
 		return {
 			type: "response",
 			action: {
 				type: "copyToClipboard",
-				textToCopy,
+				textToCopy: result,
 			},
 		};
 	}
+
+	if (result?.type) return { type: "response", action: result };
 
 	return noActionResponse;
 }

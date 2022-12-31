@@ -1,12 +1,11 @@
-import { ResponseToTalon } from "../../typings/RequestFromTalon";
 import { adaptResponse } from "../utils/adaptResponse";
 import {
 	getRequestFromClipboard,
 	writeResponseToClipboard,
 } from "../utils/clipboard";
+import { focusedDocumentInCurrentTab } from "../utils/focusedDocumentInCurrentTab";
 import { noActionResponse } from "../utils/responseObjects";
 import { dispatchCommand } from "./dispatchCommand";
-import { isUnintendedDirectClicking } from "./isUnintendedDirectClicking";
 
 export async function handleTalonRequest() {
 	try {
@@ -19,23 +18,43 @@ export async function handleTalonRequest() {
 			return;
 		}
 
-		// We check first if the user intended to type instead of direct clicking
-		if (await isUnintendedDirectClicking(request.action)) {
-			const response: ResponseToTalon = {
-				type: "response",
-				action: {
-					type: "noHintFound",
-				},
-			};
+		if (request.action.type === "directClickElement") {
+			// We only need to differentiate between "directClickElement" and
+			// "clickElement" when there is only one target as the user might have
+			// intended to type those letters
+			if (request.action.target.length > 1) {
+				request.action.type = "clickElement";
+			}
 
-			const adaptedResponse = adaptResponse(response, request.version ?? 0);
-			await writeResponseToClipboard(adaptedResponse);
-			return;
+			const focusedDocument = await focusedDocumentInCurrentTab();
+
+			if (request.action.target.length === 1 && !focusedDocument) {
+				await writeResponseToClipboard(
+					adaptResponse(
+						{
+							type: "response",
+							// Technically the action should be something like "noDocumentFocused"
+							// or even better "pressKeys" but we leave this for simplicity and
+							// backwards compatibility with rango-talon
+							action: { type: "noHintFound" },
+						},
+						request.version ?? 0
+					)
+				);
+
+				return;
+			}
 		}
 
-		// If we are dealing with a copy command we first send the command and store
-		// the response to send back to talon
-		if (request.action.type.startsWith("copy")) {
+		// If we are dealing with a command that might return a response other than
+		// "noAction" we first send the command and store the response to send back
+		// to talon
+		if (
+			request.action.type.startsWith("copy") ||
+			((request.action.type === "clickElement" ||
+				request.action.type === "directClickElement") &&
+				request.action.target.length === 1)
+		) {
 			const response = await dispatchCommand(request.action);
 			const adaptedResponse = adaptResponse(response, request.version ?? 0);
 

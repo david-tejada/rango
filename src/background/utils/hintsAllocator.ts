@@ -20,7 +20,7 @@ function stackFromStorable(storableStack: StorableHintsStack): HintsStack {
 	};
 }
 
-export async function getStack(tabId: number): Promise<HintsStack> {
+async function getStack(tabId: number): Promise<HintsStack> {
 	const storableStack = (await getStored(`hints-stack-${tabId}`)) as
 		| StorableHintsStack
 		| undefined;
@@ -138,7 +138,7 @@ export async function reclaimHintsFromOtherFrames(
 	return reclaimed;
 }
 
-export async function storeHintsInUse(
+async function storeHintsInUse(
 	hints: string[],
 	tabId: number,
 	frameId: number

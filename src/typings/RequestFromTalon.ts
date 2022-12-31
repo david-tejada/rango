@@ -6,7 +6,7 @@ export interface RequestFromTalon {
 	action: RangoAction;
 }
 
-interface TalonAction {
+export interface TalonAction {
 	type: "noAction" | "copyToClipboard" | "noHintFound";
 	textToCopy?: string;
 	text?: string;

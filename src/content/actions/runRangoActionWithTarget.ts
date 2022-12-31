@@ -1,6 +1,7 @@
 import { RangoActionWithTarget } from "../../typings/RangoAction";
 import { assertDefined } from "../../typings/TypingUtils";
 import { getWrapper } from "../wrappers";
+import { TalonAction } from "../../typings/RequestFromTalon";
 import { clickElement } from "./clickElement";
 import {
 	copyElementTextContentToClipboard,
@@ -18,10 +19,18 @@ import { clearAndSetSelection } from "./clearAndSetSelection";
 
 export async function runRangoActionWithTarget(
 	request: RangoActionWithTarget
-): Promise<string | undefined> {
+): Promise<string | TalonAction | undefined> {
 	const hints =
 		typeof request.target === "string" ? [request.target] : request.target;
-	const wrappers = getWrapper(hints);
+	const wrappers = getWrapper(hints).filter(
+		(wrapper) => wrapper.isIntersectingViewport
+	);
+
+	if (wrappers.length === 0) {
+		return request.type === "directClickElement"
+			? { type: "noHintFound" }
+			: undefined;
+	}
 
 	// Wrapper for scroll, if there's more than one target we take the first and ignore the rest
 	const wrapper = wrappers[0];
