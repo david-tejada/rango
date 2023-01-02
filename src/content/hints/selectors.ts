@@ -1,5 +1,4 @@
 import browser from "webextension-polyfill";
-import { assertDefined } from "../../typings/TypingUtils";
 
 interface CustomSelectors {
 	include: string[];
@@ -25,11 +24,16 @@ let includeSelectorAll = "";
 let excludeSelectorAll = "";
 
 export async function updateCustomSelectors() {
-	const { customSelectors } = (await browser.storage.local.get(
+	let { customSelectors } = (await browser.storage.local.get(
 		"customSelectors"
 	)) as Record<string, Record<string, CustomSelectors>>;
 
-	assertDefined(customSelectors);
+	// This is stored when the extension first runs, so it shouldn't be undefined.
+	// But it is undefined when running tests. This way we also make extra sure.
+	if (!customSelectors) {
+		customSelectors = {};
+		await browser.storage.local.set({ customSelectors });
+	}
 
 	let includeSelectors: string[] = [];
 	let excludeSelectors: string[] = [];

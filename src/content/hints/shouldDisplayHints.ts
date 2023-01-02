@@ -1,7 +1,6 @@
 import browser from "webextension-polyfill";
 import { hintsToggleFromStorable } from "../../common/HintsToggleFromStorable";
 import { StorableHintsToggle } from "../../typings/RangoOptions";
-import { assertDefined } from "../../typings/TypingUtils";
 
 let navigationToggle: boolean | undefined;
 
@@ -16,10 +15,17 @@ export async function shouldDisplayHints(): Promise<boolean> {
 		return navigationToggle;
 	}
 
-	const { hintsToggle: storableHintsToggle } = (await browser.storage.local.get(
+	let { hintsToggle: storableHintsToggle } = (await browser.storage.local.get(
 		"hintsToggle"
 	)) as Record<string, StorableHintsToggle>;
-	assertDefined(storableHintsToggle);
+
+	// This is stored when the extension first runs, so it shouldn't be undefined.
+	// But it is undefined when running tests. This way we also make extra sure.
+	if (!storableHintsToggle) {
+		storableHintsToggle = { global: true, tabs: [], hosts: [], paths: [] };
+		await browser.storage.local.set({ hintsToggle: storableHintsToggle });
+	}
+
 	const hintsToggle = hintsToggleFromStorable(storableHintsToggle);
 	const { tabs, hosts, paths } = hintsToggle;
 	const { tabId } = (await browser.runtime.sendMessage({
