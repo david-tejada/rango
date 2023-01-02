@@ -118,15 +118,7 @@ async function intersectionCallback(entries: IntersectionObserverEntry[]) {
 const viewportIntersectionObserver = new IntersectionObserver(
 	async (entries) => {
 		for (const entry of entries) {
-			const wrapper = getWrapper(entry.target);
-
-			wrapper?.intersectViewport(entry.isIntersecting);
-
-			// Only after having stored isIntersectingViewport we can start observing
-			// the intersection for the element so when intersectionCallback is called
-			// we already know how many are intersecting the viewport to cache those
-			// as optional.
-			if (!wrapper?.observingIntersection) wrapper?.observeIntersection();
+			getWrapper(entry.target)?.intersectViewport(entry.isIntersecting);
 		}
 	},
 	{
@@ -344,12 +336,17 @@ export class Wrapper implements ElementWrapper {
 	intersectViewport(isIntersecting: boolean) {
 		this.isIntersectingViewport = isIntersecting;
 
-		if (this.isIntersectingViewport) {
-			// If it was previously unobserved because the hint was reclaimed we will
-			// get an intersection entry for intersectionObserver. If instead it
-			// wasn't unobserved nothing will happen as repeated calls to observe of
-			// the same element don't cause another intersection entry.
+		// Only after having stored isIntersectingViewport we can start observing
+		// the intersection for the element so when intersectionCallback is called
+		// we already know how many are intersecting the viewport to cache those
+		// hint strings as optional.
+		if (!this.intersectionObserver) this.observeIntersection();
+
+		if (this.isIntersectingViewport && !this.observingIntersection) {
+			// If it was previously unobserved because the hint was reclaimed, we will
+			// get an intersection entry for intersectionObserver.
 			this.intersectionObserver?.observe(this.element);
+			this.observingIntersection = true;
 		}
 	}
 
