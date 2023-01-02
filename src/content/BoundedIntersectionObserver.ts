@@ -102,7 +102,10 @@ export class BoundedIntersectionObserver implements IntersectionObserver {
 	}
 
 	observe(target: Element) {
-		this.observationTargets.set(target, {});
+		if (!this.observationTargets.has(target)) {
+			this.observationTargets.set(target, {});
+		}
+
 		this.trueObserver.observe(target);
 	}
 
