@@ -91,13 +91,16 @@ function getLeftmostScrollable() {
 		);
 
 	let leftScrollable;
-	let leftScrollableX;
+	let leftScrollableRight;
 
+	// The leftmost scrollable is the one whose right side is most to the left.
+	// we compare that instead of the left side because another scrollable left
+	// could be more to the left but, for example, span the whole viewport.
 	for (const scrollable of scrollables) {
-		const { x } = scrollable.getBoundingClientRect();
-		if (!leftScrollableX || x < leftScrollableX) {
+		const { right } = scrollable.getBoundingClientRect();
+		if (leftScrollableRight === undefined || right < leftScrollableRight) {
 			leftScrollable = scrollable;
-			leftScrollableX = x;
+			leftScrollableRight = right;
 		}
 	}
 
@@ -115,13 +118,13 @@ function getRightmostScrollable() {
 		);
 
 	let rightScrollable;
-	let rightScrollableX;
+	let rightScrollableLeft;
 
 	for (const scrollable of scrollables) {
-		const { right } = scrollable.getBoundingClientRect();
-		if (!rightScrollableX || right > rightScrollableX) {
+		const { left } = scrollable.getBoundingClientRect();
+		if (rightScrollableLeft === undefined || left > rightScrollableLeft) {
 			rightScrollable = scrollable;
-			rightScrollableX = right;
+			rightScrollableLeft = left;
 		}
 	}
 
