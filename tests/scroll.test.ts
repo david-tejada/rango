@@ -1,3 +1,4 @@
+/* eslint-disable max-nested-callbacks */
 import puppeteer from "puppeteer";
 import { launchBrowser } from "./utils/launchBrowser";
 import { getFileUrlPath } from "./utils/getFileUrlPath";
@@ -27,6 +28,94 @@ function getCenter(element: Element) {
 
 let page: puppeteer.Page;
 let browser: puppeteer.Browser;
+
+async function getActionableHint(containerSelector: string, top = true) {
+	await page.waitForSelector(`${containerSelector} [data-hint]`);
+	const $container = await page.$(containerSelector);
+
+	const {
+		top: cTop,
+		right: cRight,
+		bottom: cBottom,
+		left: cLeft,
+	} = await $container!.evaluate((container) => {
+		const { top, right, bottom, left } = container.getBoundingClientRect();
+		if (window.getComputedStyle(container).overflow === "visible") {
+			return {
+				top: 0,
+				right: document.documentElement.clientWidth,
+				bottom: document.documentElement.clientHeight,
+				left: 0,
+			};
+		}
+
+		return { top, right, bottom, left };
+	});
+
+	const $$nodes = await page.$$(`${containerSelector} a[data-hint]`);
+	const $$visible = [];
+	for (const $node of $$nodes) {
+		// eslint-disable-next-line no-await-in-loop
+		const visible = await $node.evaluate(
+			(node, cTop, cRight, cBottom, cLeft) => {
+				const { top, right, bottom, left } = node.getBoundingClientRect();
+				return (
+					top >= cTop && right <= cRight && bottom <= cBottom && left >= cLeft
+				);
+			},
+			cTop,
+			cRight,
+			cBottom,
+			cLeft
+		);
+
+		if (visible) $$visible.push($node);
+	}
+
+	const $target = top ? $$visible[0] : $$visible[$$visible.length - 1];
+
+	return $target!.evaluate(getHint);
+}
+
+async function waitForScroll(
+	containerSelector: string,
+	previousScrollTop?: number,
+	previousScrollLeft?: number
+) {
+	// We wait for an scroll event in container.
+	// https://stackoverflow.com/a/70789108
+	return page.$eval(
+		containerSelector,
+		async (container, previousScrollTop, previousScrollLeft) => {
+			// If we scroll the html element it's actually the window object that
+			// receives the scroll event
+			const eventTarget =
+				container === document.documentElement ? window : container;
+
+			await new Promise<void>((resolve) => {
+				const listener = () => {
+					eventTarget.removeEventListener("scroll", listener);
+					resolve();
+				};
+
+				eventTarget.addEventListener("scroll", listener);
+				// It is possible that between calling this function and adding the
+				// event listener the container scrolls so we need to check if it has
+				// already scrolled
+				if (
+					previousScrollTop !== undefined &&
+					previousScrollLeft !== undefined &&
+					(container.scrollTop !== previousScrollTop ||
+						container.scrollLeft !== previousScrollLeft)
+				) {
+					resolve();
+				}
+			});
+		},
+		previousScrollTop,
+		previousScrollLeft
+	);
+}
 
 /**
  * This function executes a rango command and returns the factor by which the
@@ -69,33 +158,30 @@ async function executeCommandAndGetScrolledFactor(options: {
 		// We need to insert a prudent wait here so that the hints have had time to
 		// update after the initial scrolling setup
 		await sleep(300);
-		await page.waitForSelector(`${getHintFrom} a[data-hint]`);
-		hint = await page.$eval(
-			`${getHintFrom} a[data-hint]`,
-			(element) => (element as HTMLAnchorElement).dataset["hint"]
-		);
+		hint = await getActionableHint(getHintFrom);
 	}
 
 	await (hint
 		? rangoCommandWithTarget(action, [hint], arg)
 		: rangoCommandWithoutTarget(action, arg));
 
-	// We insert a wait to make sure the command has enough time to be executed
-	await sleep(300);
+	let { clientHeight, clientWidth, scrollLeft, scrollTop } =
+		await $container.evaluate((container) => {
+			const { clientHeight, clientWidth, scrollLeft, scrollTop } = container;
+			return { clientHeight, clientWidth, scrollLeft, scrollTop };
+		});
 
-	const containerHeight = await $container.evaluate(
-		(element) => element.clientHeight
-	);
-	const containerWidth = await $container.evaluate(
-		(element) => element.clientWidth
-	);
-
-	const scrollLeft = await $container.evaluate((element) => element.scrollLeft);
-	const scrollTop = await $container.evaluate((element) => element.scrollTop);
+	if (scrollLeftBefore === scrollLeft && scrollTopBefore === scrollTop) {
+		await waitForScroll(shouldScroll, scrollTopBefore, scrollLeftBefore);
+		({ scrollLeft, scrollTop } = await $container.evaluate((container) => {
+			const { scrollLeft, scrollTop } = container;
+			return { scrollLeft, scrollTop };
+		}));
+	}
 
 	return {
-		scrolledRightFactor: (scrollLeft - scrollLeftBefore) / containerWidth,
-		scrolledDownFactor: (scrollTop - scrollTopBefore) / containerHeight,
+		scrolledRightFactor: (scrollLeft - scrollLeftBefore) / clientWidth,
+		scrolledDownFactor: (scrollTop - scrollTopBefore) / clientHeight,
 	};
 }
 
@@ -110,6 +196,7 @@ afterAll(async () => {
 describe("Vertical", () => {
 	beforeAll(async () => {
 		await page.goto(getFileUrlPath("./test-pages/verticalScrolling.html"));
+		await page.waitForSelector(".rango-hint");
 	});
 
 	describe("DOWN", () => {
@@ -211,8 +298,6 @@ describe("Vertical", () => {
 					}
 				);
 
-				await sleep(300);
-				// eslint-disable-next-line max-nested-callbacks
 				await page.$eval("html", (element) => element.scrollTop);
 
 				expect(scrolledDownFactor).toBeCloseTo(1.8);
@@ -263,7 +348,7 @@ describe("Vertical", () => {
 				expect(scrolledDownFactor).toBeCloseTo(-0.66);
 			});
 
-			test("At element, (page scroll)", async () => {
+			test("At element (page scroll)", async () => {
 				const { scrolledDownFactor } = await executeCommandAndGetScrolledFactor(
 					{
 						action: "scrollUpAtElement",
@@ -488,7 +573,7 @@ describe("Horizontal", () => {
 				expect(scrolledRightFactor).toBeCloseTo(-0.66);
 			});
 
-			test("At element, (page scroll)", async () => {
+			test("At element (page scroll)", async () => {
 				const { scrolledRightFactor } =
 					await executeCommandAndGetScrolledFactor({
 						action: "scrollLeftAtElement",
@@ -567,24 +652,22 @@ describe("Horizontal", () => {
 describe("Snap", () => {
 	beforeAll(async () => {
 		await page.goto(getFileUrlPath("./test-pages/snapScrolling.html"));
+		await page.waitForSelector(".rango-hint");
 	});
 	beforeEach(async () => {
 		await page.evaluate(() => {
 			document.documentElement.scrollTo(0, 0);
 			document.querySelector(".scroll")?.scrollTo(0, 0);
 		});
-		await sleep(300);
 	});
 	describe("Top", () => {
 		test("Scroll container", async () => {
-			await page.waitForSelector("[data-hint]");
-			// We get the second hinted element as the first is already at the top
-			const $target = await page.$(".scroll li + li > a[data-hint]");
-			const hint = await $target!.evaluate(getHint);
+			const hint = await getActionableHint(".scroll", false);
 			await rangoCommandWithTarget("scrollElementToTop", [hint]);
-			await sleep(300);
+			await waitForScroll(".scroll");
 
-			const top = await $target?.evaluate(
+			const top = await page.$eval(
+				`a[data-hint='${hint}']`,
 				(element) => element.getBoundingClientRect().top
 			);
 			const cTop = await page.$eval(
@@ -596,14 +679,12 @@ describe("Snap", () => {
 		});
 
 		test("Scroll container with sticky header", async () => {
-			await page.waitForSelector("[data-hint]");
-			// We get the second hinted element as the first is already at the top
-			const $target = await page.$(".scroll-sticky li + li > a[data-hint]");
-			const hint = await $target!.evaluate(getHint);
+			const hint = await getActionableHint(".scroll-sticky", false);
 			await rangoCommandWithTarget("scrollElementToTop", [hint]);
-			await sleep(300);
+			await waitForScroll(".scroll-sticky");
 
-			const top = await $target?.evaluate(
+			const top = await page.$eval(
+				`a[data-hint='${hint}']`,
 				(element) => element.getBoundingClientRect().top
 			);
 			const stickyBottom = await page.$eval(
@@ -615,15 +696,12 @@ describe("Snap", () => {
 		});
 
 		test("Page", async () => {
-			await page.waitForSelector("[data-hint]");
-			const $target = await page.$(".no-scroll a[data-hint]");
-			const hint = await $target!.evaluate(
-				(element) => (element as HTMLAnchorElement).dataset["hint"]
-			);
-			await rangoCommandWithTarget("scrollElementToTop", [hint!]);
-			await sleep(300);
+			const hint = await getActionableHint(".no-scroll", false);
+			await rangoCommandWithTarget("scrollElementToTop", [hint]);
+			await waitForScroll("html");
 
-			const top = await $target?.evaluate(
+			const top = await page.$eval(
+				`a[data-hint='${hint}']`,
 				(element) => element.getBoundingClientRect().top
 			);
 
@@ -634,15 +712,12 @@ describe("Snap", () => {
 			await page.$eval("h1", (element) => {
 				element.style.display = "block";
 			});
-			await page.waitForSelector("[data-hint]");
-			const $target = await page.$(".no-scroll a[data-hint]");
-			const hint = await $target!.evaluate(
-				(element) => (element as HTMLAnchorElement).dataset["hint"]
-			);
-			await rangoCommandWithTarget("scrollElementToTop", [hint!]);
-			await sleep(300);
+			const hint = await getActionableHint(".no-scroll", false);
+			await rangoCommandWithTarget("scrollElementToTop", [hint]);
+			await waitForScroll("html");
 
-			const top = await $target?.evaluate(
+			const top = await page.$eval(
+				`a[data-hint='${hint}']`,
 				(element) => element.getBoundingClientRect().top
 			);
 
@@ -661,27 +736,23 @@ describe("Snap", () => {
 
 	describe("Center", () => {
 		test("Scroll container", async () => {
-			await page.waitForSelector("[data-hint]");
-			const $target = await page.$("li:nth-child(7) a[data-hint]");
-			const hint = await $target!.evaluate(getHint);
-			await rangoCommandWithTarget("scrollElementToCenter", [hint]);
-			await sleep(300);
+			const hint = await getActionableHint(".scroll", false);
 
-			const center = await $target?.evaluate(getCenter);
+			await rangoCommandWithTarget("scrollElementToCenter", [hint]);
+			await waitForScroll(".scroll");
+
+			const center = await page.$eval(`a[data-hint='${hint}']`, getCenter);
 			const cCenter = await page.$eval(".scroll", getCenter);
 
 			expect(center).toBeCloseTo(cCenter, 0);
 		});
 
 		test("Page", async () => {
-			await page.waitForSelector("[data-hint]");
-			// Here we have to select an element that's able to scroll to the center
-			const $target = await page.$(".no-scroll li:nth-child(15) a[data-hint]");
-			const hint = await $target!.evaluate(getHint);
+			const hint = await getActionableHint(".no-scroll", false);
 			await rangoCommandWithTarget("scrollElementToCenter", [hint]);
-			await sleep(300);
+			await waitForScroll("html");
 
-			const center = await $target?.evaluate(getCenter);
+			const center = await page.$eval(`a[data-hint='${hint}']`, getCenter);
 			const cCenter = await page.evaluate(() => {
 				return document.documentElement.clientHeight / 2;
 			});
@@ -692,13 +763,19 @@ describe("Snap", () => {
 
 	describe("Bottom", () => {
 		test("Scroll container", async () => {
-			await page.waitForSelector("[data-hint]");
-			const $target = await page.$(".scroll li:nth-child(10) a[data-hint]");
-			const hint = await $target!.evaluate(getHint);
-			await rangoCommandWithTarget("scrollElementToBottom", [hint]);
-			await sleep(300);
+			// We first need to scroll down the container a bit so the actionable hint
+			// that we get can scroll to the bottom.
+			await page.$eval(".scroll", (element) => {
+				element.scrollBy(0, 200);
+			});
 
-			const bottom = await $target?.evaluate(
+			const hint = await getActionableHint(".scroll", false);
+
+			await rangoCommandWithTarget("scrollElementToBottom", [hint]);
+			await waitForScroll(".scroll");
+
+			const bottom = await page.$eval(
+				`a[data-hint='${hint}']`,
 				(element) => element.getBoundingClientRect().bottom
 			);
 			const cBottom = await page.$eval(
@@ -710,14 +787,18 @@ describe("Snap", () => {
 		});
 
 		test("Page", async () => {
-			await page.waitForSelector("[data-hint]");
-			// Here we have to select an element that's able to scroll to the bottom
-			const $target = await page.$(".no-scroll li:nth-child(35) a[data-hint]");
-			const hint = await $target!.evaluate(getHint);
-			await rangoCommandWithTarget("scrollElementToBottom", [hint]);
-			await sleep(300);
+			// We first need to scroll down the page a bit so the actionable hint
+			// that we get can scroll to the bottom.
+			await page.evaluate(() => {
+				document.documentElement.scrollBy(0, 200);
+			});
 
-			const bottom = await $target?.evaluate(
+			const hint = await getActionableHint(".no-scroll", false);
+			await rangoCommandWithTarget("scrollElementToBottom", [hint]);
+			await waitForScroll("html");
+
+			const bottom = await page.$eval(
+				`a[data-hint='${hint}']`,
 				(element) => element.getBoundingClientRect().bottom
 			);
 			const cBottom = await page.evaluate(() => {
@@ -732,6 +813,7 @@ describe("Snap", () => {
 describe("Find scrolling container", () => {
 	beforeAll(async () => {
 		await page.goto(getFileUrlPath("./test-pages/scrollingContainers.html"));
+		await page.waitForSelector(".rango-hint");
 	});
 
 	test("Left aside", async () => {
