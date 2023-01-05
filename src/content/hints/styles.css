@@ -12,6 +12,7 @@ overwritten by external rules */
 	inset: auto !important;
 
 	display: block !important;
+	contain: strict;
 }
 
 .rango-hint:not(#a#a#a#a#a#a#a#a#a#a) {

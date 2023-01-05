@@ -1,5 +1,9 @@
 import { assertDefined } from "../../typings/TypingUtils";
-import { getFirstCharacterRect } from "../utils/nodeUtils";
+import {
+	getBoundingClientRect,
+	getClientDimensions,
+	getFirstCharacterRect,
+} from "./layoutCache";
 
 // Minimum space that needs to be available so that we can place the hint in the
 // current element
@@ -19,7 +23,7 @@ function getPaddingRect(element: Element): DOMRect {
 	const borderTop = Number.parseInt(borderTopWidth, 10);
 	const borderBottom = Number.parseInt(borderBottomWidth, 10);
 
-	const { x, y, width, height } = element.getBoundingClientRect();
+	const { x, y, width, height } = getBoundingClientRect(element);
 
 	return new DOMRect(
 		x + borderLeft,
@@ -30,7 +34,8 @@ function getPaddingRect(element: Element): DOMRect {
 }
 
 function isUserScrollable(element: Element) {
-	const { clientWidth, scrollWidth, clientHeight, scrollHeight } = element;
+	const { clientWidth, scrollWidth, clientHeight, scrollHeight } =
+		getClientDimensions(element);
 	const { overflowX, overflowY } = window.getComputedStyle(element);
 
 	return (
@@ -47,13 +52,13 @@ function getSpaceAvailable(
 	const targetRect =
 		elementToPositionHint instanceof Text
 			? getFirstCharacterRect(elementToPositionHint)
-			: elementToPositionHint.getBoundingClientRect();
+			: getBoundingClientRect(elementToPositionHint);
 
 	const containerForRect =
 		container instanceof HTMLElement ? container : container.host;
 
 	// To use when overflow: visible;
-	const borderRect = containerForRect.getBoundingClientRect();
+	const borderRect = getBoundingClientRect(containerForRect);
 	const borderInnerLeft = targetRect.left - borderRect.left;
 	const borderInnerTop = targetRect.top - borderRect.top;
 

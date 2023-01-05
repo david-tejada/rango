@@ -1,4 +1,5 @@
 import { assertDefined } from "../../typings/TypingUtils";
+import { getTextNodeRect } from "../hints/layoutCache";
 import { getWrapper } from "../wrappers";
 
 // Inside some elements you can't get the coordinates of a text node with Range and
@@ -11,23 +12,6 @@ function rangeGivesCoordinates(textNode: Text): boolean {
 	}
 
 	return true;
-}
-
-function getTextNodeRect(textNode: Text): DOMRect {
-	const range = document.createRange();
-	range.setStart(textNode, 0);
-	range.setEnd(textNode, textNode.length);
-	return range.getBoundingClientRect();
-}
-
-export function getFirstCharacterRect(textNode: Text): DOMRect {
-	const firstNonWhiteSpaceCharacter = textNode.textContent?.search(/\S/) ?? 0;
-
-	const range = document.createRange();
-	range.setStart(textNode, firstNonWhiteSpaceCharacter);
-	range.setEnd(textNode, firstNonWhiteSpaceCharacter + 1);
-	const rect = range.getBoundingClientRect();
-	return rect;
 }
 
 export function getFirstTextNodeDescendant(element: Node): Text | undefined {

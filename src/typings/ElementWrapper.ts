@@ -5,11 +5,13 @@ export interface ElementWrapper {
 	readonly element: Element;
 
 	isIntersecting?: boolean;
+	intersectionTimeout?: ReturnType<typeof setTimeout>;
 	observingIntersection?: boolean;
 	isIntersectingViewport?: boolean;
 	isHintable: boolean;
 	isActiveFocusable: boolean;
 	shouldBeHinted?: boolean;
+	updateShouldBeHintedNextIntersection?: boolean;
 
 	// These properties are only needed for hintables
 	intersectionObserver?: BoundedIntersectionObserver;
@@ -56,6 +58,7 @@ export interface HintableMark {
 	computeHintContext(): void;
 	computeColors(): void;
 	updateColors(): void;
+	positionNextTick(): void;
 	position(): void;
 	flash(ms?: number): void;
 	claim(): string | undefined;

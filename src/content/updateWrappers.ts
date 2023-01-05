@@ -4,6 +4,7 @@ import {
 	popCustomSelectorsToUpdate,
 } from "./hints/customHintsEdit";
 import { clearHintsCache } from "./hints/hintsCache";
+import { cacheLayout } from "./hints/layoutCache";
 import { extraSelector, getExcludeSelectorAll } from "./hints/selectors";
 import { getWrappersBySelector, wrappersAll, wrappersHinted } from "./wrappers";
 
@@ -16,13 +17,16 @@ export const updateStyleAll = throttle(() => {
 	}
 }, 50);
 
-export const updatePositionAll = throttle(() => {
+export function updatePositionAll() {
 	for (const wrapper of wrappersHinted.values()) {
-		wrapper.hint?.position();
+		wrapper.hint?.positionNextTick();
 	}
-}, 50);
+}
 
 export const updateShouldBeHintedAll = throttle(() => {
+	cacheLayout(
+		[...wrappersAll.values()].filter((wrapper) => wrapper.isHintable)
+	);
 	for (const wrapper of wrappersAll.values()) {
 		if (wrapper.isHintable) {
 			wrapper.updateShouldBeHinted();

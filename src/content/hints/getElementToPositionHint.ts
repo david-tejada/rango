@@ -5,12 +5,12 @@
 // most of the time, we want the hint next to the text of the hinted element.
 
 import { deepGetElements } from "../utils/deepGetElements";
-import { getFirstCharacterRect } from "../utils/nodeUtils";
 import { getWrapper } from "../wrappers";
+import { getBoundingClientRect, getFirstCharacterRect } from "./layoutCache";
 
 function elementsOverlap(a: Element, b: Element) {
-	const aRect = a.getBoundingClientRect();
-	const bRect = b.getBoundingClientRect();
+	const aRect = getBoundingClientRect(a);
+	const bRect = getBoundingClientRect(b);
 
 	// If any of the elements doesn't occupy any space we return false
 	if (

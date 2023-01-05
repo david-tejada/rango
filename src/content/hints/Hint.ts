@@ -5,13 +5,10 @@ import Color from "color";
 import { rgbaToRgb } from "../../lib/rgbaToRgb";
 import { getHintOption } from "../options/cacheHintOptions";
 import { getEffectiveBackgroundColor } from "../utils/getEffectiveBackgroundColor";
-import {
-	getFirstCharacterRect,
-	getFirstTextNodeDescendant,
-} from "../utils/nodeUtils";
+import { getFirstTextNodeDescendant } from "../utils/nodeUtils";
 import { createsStackingContext } from "../utils/createsStackingContext";
 import { HintableMark } from "../../typings/ElementWrapper";
-import { getWrapper } from "../wrappers";
+import { getWrapper, wrappersHinted } from "../wrappers";
 import {
 	matchesMarkedForInclusion,
 	matchesMarkedForExclusion,
@@ -20,6 +17,36 @@ import { getElementToPositionHint } from "./getElementToPositionHint";
 import { getContextForHint } from "./getContextForHint";
 import { popHint, pushHint } from "./hintsCache";
 import { setStyleProperties } from "./setStyleProperties";
+import {
+	cacheLayout,
+	getBoundingClientRect,
+	getClientDimensions,
+	getFirstCharacterRect,
+	getOffsetParent,
+} from "./layoutCache";
+import { throttle } from "../../lib/debounceAndThrottle";
+
+const toBePositioned: Set<Hint> = new Set();
+
+const positionHints = throttle(() => {
+	const toCache = [];
+
+	for (const hint of toBePositioned) {
+		if (!hint.elementToPositionHint.isConnected) {
+			hint.elementToPositionHint = getElementToPositionHint(hint.target);
+		}
+
+		toCache.push(hint.elementToPositionHint, hint.outer, hint.inner);
+	}
+
+	cacheLayout(toCache);
+	cacheLayout([...wrappersHinted.values()]);
+
+	for (const hint of toBePositioned) {
+		hint.position();
+		toBePositioned.delete(hint);
+	}
+}, 200);
 
 function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {
 	const descendants = target.querySelectorAll("*");
@@ -258,16 +285,17 @@ export class Hint implements HintableMark {
 		}
 	}
 
-	position() {
-		if (!this.elementToPositionHint.isConnected) {
-			this.elementToPositionHint = getElementToPositionHint(this.target);
-		}
+	positionNextTick() {
+		toBePositioned.add(this);
+		positionHints();
+	}
 
+	position() {
 		const { x: targetX, y: targetY } =
 			this.elementToPositionHint instanceof Text
 				? getFirstCharacterRect(this.elementToPositionHint)
-				: this.elementToPositionHint.getBoundingClientRect();
-		const { x: outerX, y: outerY } = this.outer.getBoundingClientRect();
+				: getBoundingClientRect(this.elementToPositionHint);
+		const { x: outerX, y: outerY } = getBoundingClientRect(this.outer);
 
 		let nudgeX = 0.3;
 		let nudgeY = 0.5;
@@ -294,8 +322,9 @@ export class Hint implements HintableMark {
 		}
 
 		if (!(this.elementToPositionHint instanceof Text)) {
-			const { width, height } =
-				this.elementToPositionHint.getBoundingClientRect();
+			const { width, height } = getBoundingClientRect(
+				this.elementToPositionHint
+			);
 
 			if (
 				(width > 30 && height > 30) ||
@@ -309,8 +338,10 @@ export class Hint implements HintableMark {
 			}
 		}
 
-		const hintOffsetX = this.inner.offsetWidth * (1 - nudgeX);
-		const hintOffsetY = this.inner.offsetHeight * (1 - nudgeY);
+		const hintOffsetX =
+			getClientDimensions(this.inner).offsetWidth! * (1 - nudgeX);
+		const hintOffsetY =
+			getClientDimensions(this.inner).offsetHeight! * (1 - nudgeY);
 
 		let x =
 			targetX -
@@ -336,6 +367,7 @@ export class Hint implements HintableMark {
 		});
 
 		this.positioned = true;
+		this.display();
 	}
 
 	flash(ms = 300) {
@@ -373,8 +405,11 @@ export class Hint implements HintableMark {
 					: this.container.host
 			);
 
+			const hintOfSetParent = getOffsetParent(this.outer);
+
 			if (
-				!this.limitParent.contains(this.outer.offsetParent) &&
+				hintOfSetParent &&
+				!this.limitParent.contains(hintOfSetParent) &&
 				// We can't use position: relative inside display: grid because it distorts
 				// layouts. This seems to work fine but I have to see if it breaks somewhere.
 				display !== "grid"
@@ -391,25 +426,9 @@ export class Hint implements HintableMark {
 			setStyleProperties(this.outer, { "z-index": `${this.zIndex}` });
 		}
 
-		// We can't have a transition effect if the element has display: none, thus
-		// not rendered. That's why we need nested requestAnimationFrame
-		// https://stackoverflow.com/questions/32481972/transition-not-working-when-changing-from-display-none-to-block
-		requestAnimationFrame(() => {
-			// We need to render the hint but hide it so we can calculate its size for
-			// positioning it and so we can have a transition.
-			this.inner.classList.add("hidden");
+		this.inner.classList.add("hidden");
 
-			if (!this.positioned) this.position();
-
-			requestAnimationFrame(() => {
-				this.inner.classList.remove("hidden");
-
-				// This is to make sure that we don't make visible a hint that was
-				// released and causing layouts to break. Since release could be called
-				// before this callback is called
-				if (this.string) this.inner.classList.add("visible");
-			});
-		});
+		if (!this.positioned) this.positionNextTick();
 
 		// This is here for debugging and testing purposes
 		if (process.env["NODE_ENV"] !== "production") {
@@ -420,6 +439,20 @@ export class Hint implements HintableMark {
 		}
 
 		return string;
+	}
+
+	display() {
+		// We can't have a transition effect if the element has display: none, thus
+		// not rendered. That's why we need nested requestAnimationFrame
+		// https://stackoverflow.com/questions/32481972/transition-not-working-when-changing-from-display-none-to-block
+		requestAnimationFrame(() => {
+			this.inner.classList.remove("hidden");
+
+			// This is to make sure that we don't make visible a hint that was
+			// released and causing layouts to break. Since release could be called
+			// before this callback is called
+			if (this.string) this.inner.classList.add("visible");
+		});
 	}
 
 	release(returnToStack = true) {

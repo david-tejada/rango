@@ -26,6 +26,8 @@ import {
 	updateStyleAll,
 } from "./updateWrappers";
 import { matchesCustomExclude, matchesCustomInclude } from "./hints/selectors";
+import { throttle } from "../lib/debounceAndThrottle";
+import { cacheLayout } from "./hints/layoutCache";
 
 // =============================================================================
 // HELPER FUNCTIONS
@@ -52,6 +54,9 @@ export function addWrappersFrom(root: Element) {
 	}
 
 	const elements = deepGetElements(root);
+	const rest = elements.splice(25_000);
+
+	for (const element of rest) initialIntersectionObserver.observe(element);
 
 	for (const element of elements) {
 		addWrapper(new Wrapper(element));
@@ -74,9 +79,67 @@ export function addWrappersFrom(root: Element) {
 	}
 }
 
+const intersectQueue: Set<Wrapper> = new Set();
+
+const processIntersectQueue = throttle(() => {
+	console.log({});
+	for (const wrapper of intersectQueue) {
+		wrapper.intersect(true);
+		intersectQueue.delete(wrapper);
+	}
+}, 300);
+
+function addToIntersectQueue(wrapper: Wrapper) {
+	intersectQueue.add(wrapper);
+	processIntersectQueue();
+}
+
+function removeFromIntersectQueue(wrapper: Wrapper) {
+	intersectQueue.delete(wrapper);
+}
+
 // =============================================================================
 // OBSERVERS
 // =============================================================================
+
+const initialIntersectionObserver = new IntersectionObserver(
+	(entries, observer) => {
+		for (const entry of entries) {
+			if (entry.isIntersecting) {
+				addWrapper(new Wrapper(entry.target));
+				if (entry.target.shadowRoot) {
+					mutationObserver.observe(
+						entry.target.shadowRoot,
+						mutationObserverConfig
+					);
+				} else if (entry.target.tagName.includes("-")) {
+					// If a shadow gets attached to an element after we have added that
+					// wrapper the elements within that shadowRoot won't register. This seems
+					// to deal with the problem.
+					setTimeout(() => {
+						if (entry.target.shadowRoot) {
+							const shadowElements = deepGetElements(entry.target);
+							mutationObserver.observe(
+								entry.target.shadowRoot,
+								mutationObserverConfig
+							);
+							for (const element of shadowElements) {
+								addWrapper(new Wrapper(element));
+							}
+						}
+					}, 1000);
+				}
+
+				observer.unobserve(entry.target);
+			}
+		}
+	},
+	{
+		root: document,
+		rootMargin: "2000px",
+		threshold: 0,
+	}
+);
 
 // INTERSECTION OBSERVER
 
@@ -92,9 +155,9 @@ async function intersectionCallback(entries: IntersectionObserverEntry[]) {
 	// to make sure that we only run the code inside after the previous one has
 	// finished executing. If not the hints cache can get messed up.
 	await mutex.runExclusive(async () => {
-		const amountIntersecting = entries.filter(
-			(entry) => entry.isIntersecting
-		).length;
+		const intersecting = entries.filter((entry) => entry.isIntersecting);
+
+		const amountIntersecting = intersecting.length;
 
 		const amountNotIntersectingViewport = entries.filter(
 			(entry) =>
@@ -107,10 +170,20 @@ async function intersectionCallback(entries: IntersectionObserverEntry[]) {
 				amountIntersecting - amountNotIntersectingViewport,
 				amountNotIntersectingViewport
 			);
+
+			cacheLayout(intersecting.map((entry) => entry.target));
 		}
 
 		for (const entry of entries) {
 			getWrapperProxy(entry.target).intersect(entry.isIntersecting);
+			// const wrapper = getWrapperProxy(entry.target);
+			// if (entry.isIntersecting) {
+			// 	addToIntersectQueue(wrapper);
+			// } else if (intersectQueue.has(wrapper)) {
+			// 	removeFromIntersectQueue(wrapper);
+			// } else {
+			// 	wrapper.intersect(entry.isIntersecting);
+			// }
 		}
 	});
 }
@@ -184,8 +257,10 @@ const mutationCallback: MutationCallback = (mutationList) => {
 	updatePositionAll();
 
 	if (stylesMightHaveChanged) {
-		updateStyleAll();
-		updateShouldBeHintedAll();
+		window.requestIdleCallback(() => {
+			updateStyleAll();
+			updateShouldBeHintedAll();
+		});
 	}
 };
 
@@ -213,11 +288,13 @@ export class Wrapper implements ElementWrapper {
 	readonly element: Element;
 
 	isIntersecting?: boolean;
+	intersectionTimeout?: ReturnType<typeof setTimeout>;
 	observingIntersection?: boolean;
 	isIntersectingViewport?: boolean;
 	isHintable: boolean;
 	isActiveFocusable: boolean;
 	shouldBeHinted?: boolean;
+	updateShouldBeHintedNextIntersection?: boolean;
 
 	// These properties are only needed for hintables
 	intersectionObserver?: BoundedIntersectionObserver;
@@ -253,6 +330,11 @@ export class Wrapper implements ElementWrapper {
 	}
 
 	updateShouldBeHinted() {
+		if (this.shouldBeHinted !== undefined && !this.isIntersecting) {
+			this.updateShouldBeHintedNextIntersection = true;
+			return;
+		}
+
 		const newShouldBeHinted =
 			this.isHintable &&
 			!this.isActiveFocusable &&
@@ -316,7 +398,12 @@ export class Wrapper implements ElementWrapper {
 	}
 
 	intersect(isIntersecting: boolean) {
+		// if (isIntersecting) console.log("intersect:", this.element);
 		this.isIntersecting = isIntersecting;
+		if (this.isIntersecting && this.updateShouldBeHintedNextIntersection) {
+			this.updateShouldBeHinted();
+			this.updateShouldBeHintedNextIntersection = false;
+		}
 
 		if (this.isIntersecting && this.shouldBeHinted) {
 			this.hint ??= new Hint(this.element);
