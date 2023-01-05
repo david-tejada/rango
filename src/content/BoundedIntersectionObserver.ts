@@ -128,7 +128,7 @@ export class BoundedIntersectionObserver implements IntersectionObserver {
 		// If the root observer is observing the viewport we know that whatever
 		// we get from these entries is valid
 		if (observer.root === null) {
-			this.callback(entries, observer);
+			this.callback(entries, this);
 		} else {
 			const relevantEntries: IntersectionObserverEntry[] = [];
 
@@ -159,7 +159,7 @@ export class BoundedIntersectionObserver implements IntersectionObserver {
 				}
 			}
 
-			this.callback(relevantEntries, this.trueObserver);
+			this.callback(relevantEntries, this);
 		}
 	}
 
