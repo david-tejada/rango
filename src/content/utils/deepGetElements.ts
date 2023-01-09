@@ -8,7 +8,7 @@ export function deepGetElements(
 	const all = root.shadowRoot
 		? root.shadowRoot.querySelectorAll("*")
 		: root.querySelectorAll("*");
-	const result = includeRoot ? [root] : [];
+	const result = includeRoot && root.matches(selector) ? [root] : [];
 
 	// This branch is more expensive so we only do it if some elements have
 	// shadowRoot
