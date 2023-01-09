@@ -40,9 +40,15 @@ export function deepGetElements(
 		});
 	}
 
-	const filtered = root.shadowRoot
+	const matchingSelector = root.shadowRoot
 		? root.shadowRoot.querySelectorAll(selector)
 		: root.querySelectorAll(selector);
-	result.push(...filtered);
+
+	// Will loop here because if we used result.push(...matchingSelector) we get
+	// RangeError: Maximum call stack size exceeded
+	for (const element of matchingSelector) {
+		result.push(element);
+	}
+
 	return result;
 }
