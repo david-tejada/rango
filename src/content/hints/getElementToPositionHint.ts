@@ -73,7 +73,7 @@ function isImage(element: Element) {
 	const { backgroundImage, maskImage } = window.getComputedStyle(element);
 	const hasOnlyBackgroundImage =
 		element.childNodes.length === 0 &&
-		(backgroundImage !== "none" || maskImage !== "none");
+		(backgroundImage !== "none" || (maskImage && maskImage !== "none"));
 
 	const { content } = window.getComputedStyle(element, ":before");
 	const isFontIcon =
