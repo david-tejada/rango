@@ -81,7 +81,7 @@ export function addWrappersFrom(root: Element) {
 // INTERSECTION OBSERVER
 
 const scrollIntersectionObservers: Map<
-	Element | Document,
+	Element | null,
 	BoundedIntersectionObserver
 > = new Map();
 
@@ -289,7 +289,7 @@ export class Wrapper implements ElementWrapper {
 			this.userScrollableContainer === document.documentElement ||
 			this.userScrollableContainer === document.body ||
 			!this.userScrollableContainer
-				? document
+				? null
 				: this.userScrollableContainer;
 
 		const options: IntersectionObserverInit = {
