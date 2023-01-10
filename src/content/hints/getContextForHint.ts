@@ -125,9 +125,14 @@ function getSpaceAvailable(
 		return { left: Math.max(left, 0), top: Math.max(top, 0) };
 	}
 
+	// There is nothing clipping the container, the space available is that
+	// offered by the document
+	const scrollLeft = Math.max(document.body.scrollLeft, document.documentElement.scrollLeft);
+	const scrollTop = Math.max(document.body.scrollTop, document.documentElement.scrollTop)
+
 	return {
-		left: Math.max(targetRect.left, 0),
-		top: Math.max(targetRect.top, 0),
+		left: Math.max(targetRect.left + scrollLeft, 0),
+		top: Math.max(targetRect.top + scrollTop, 0),
 	};
 }
 
