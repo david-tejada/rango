@@ -5,12 +5,16 @@
 // most of the time, we want the hint next to the text of the hinted element.
 
 import { deepGetElements } from "../utils/deepGetElements";
-import { getFirstCharacterRect } from "../utils/nodeUtils";
-import { getWrapper } from "../wrappers";
+import { getWrapperForElement } from "../wrappers";
+import {
+	getBoundingClientRect,
+	getCachedStyle,
+	getFirstCharacterRect,
+} from "./layoutCache";
 
 function elementsOverlap(a: Element, b: Element) {
-	const aRect = a.getBoundingClientRect();
-	const bRect = b.getBoundingClientRect();
+	const aRect = getBoundingClientRect(a);
+	const bRect = getBoundingClientRect(b);
 
 	// If any of the elements doesn't occupy any space we return false
 	if (
@@ -46,7 +50,7 @@ function hasSignificantText(element: Text): boolean {
 
 // Returns true if any of the children is a Text node that is not all white space
 function hasSignificantTextNodeChild(target: Element) {
-	const { textIndent } = window.getComputedStyle(target);
+	const { textIndent } = getCachedStyle(target);
 	const textIndentNumber = Number.parseInt(textIndent, 10);
 
 	if (Math.abs(textIndentNumber) > 100) {
@@ -70,7 +74,7 @@ function isImage(element: Element) {
 	const isImageElement =
 		element instanceof HTMLImageElement || element instanceof SVGSVGElement;
 
-	const { backgroundImage, maskImage } = window.getComputedStyle(element);
+	const { backgroundImage, maskImage } = getCachedStyle(element);
 	const hasOnlyBackgroundImage =
 		element.childNodes.length === 0 &&
 		(backgroundImage !== "none" || (maskImage && maskImage !== "none"));
@@ -107,7 +111,7 @@ function withinDifferentHintable(node: Element, hintable: Element) {
 	let current: Element | null = node;
 
 	while (current && current !== hintable) {
-		if (getWrapper(current)?.isHintable) {
+		if (getWrapperForElement(current)?.isHintable) {
 			return true;
 		}
 
@@ -128,19 +132,21 @@ function getFirstIconOrTextElement(
 	let firstImage;
 
 	for (const element of elements) {
-		const { opacity } = window.getComputedStyle(element);
+		const { opacity } = getCachedStyle(element);
 
 		if (
 			opacity === "0" ||
-			!elementsOverlap(target, element) ||
-			withinDifferentHintable(element, target)
+			withinDifferentHintable(element, target) ||
+			!elementsOverlap(target, element)
 		) {
 			continue;
 		}
 
 		if (isImage(element)) firstImage ??= element;
 
-		if (hasSignificantTextNodeChild(element)) firstTextBlockElement ??= element;
+		if (!firstTextBlockElement && hasSignificantTextNodeChild(element)) {
+			firstTextBlockElement = element;
+		}
 	}
 
 	const firstText = firstTextBlockElement

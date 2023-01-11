@@ -1,8 +1,16 @@
 import { ElementWrapper } from "../typings/ElementWrapper";
 import { deepGetElements } from "./utils/deepGetElements";
 
-export const wrappersAll: Map<Element, ElementWrapper> = new Map();
-export const wrappersHinted: Map<string, ElementWrapper> = new Map();
+const wrappersAll: Map<Element, ElementWrapper> = new Map();
+const wrappersHinted: Map<string, ElementWrapper> = new Map();
+
+export function getAllWrappers() {
+	return wrappersAll.values();
+}
+
+export function getHintedWrappers() {
+	return wrappersHinted.values();
+}
 
 // These methods adds the target and all of its descendants if they were
 // already created
@@ -37,6 +45,11 @@ export function getWrapper(
 	return result;
 }
 
+// This is more performant than getWrapper
+export function getWrapperForElement(element: Element) {
+	return wrappersAll.get(element);
+}
+
 export function getWrappersBySelector(selector: string) {
 	const elements = deepGetElements(document.body, false, selector);
 
@@ -59,12 +72,20 @@ export function getHintStringsInUse() {
 	return [...wrappersHinted.keys()];
 }
 
+export function setHintedWrapper(hint: string, element: Element) {
+	const wrapper = getWrapper(element);
+	if (wrapper) wrappersHinted.set(hint, wrapper);
+}
+
+export function clearHintedWrapper(hint: string) {
+	wrappersHinted.delete(hint);
+}
+
 export function reclaimHints(amount?: number) {
 	const reclaimed = [];
 
 	for (const [hintString, wrapper] of wrappersHinted.entries()) {
 		if (!wrapper.isIntersectingViewport) {
-			wrappersHinted.delete(hintString);
 			wrapper.unobserveIntersection();
 			wrapper.hint?.release(false);
 			reclaimed.push(hintString);

@@ -1,4 +1,4 @@
-import { getWrapper } from "../wrappers";
+import { getWrapperForElement } from "../wrappers";
 import { getElementCenter } from "./cssomUtils";
 
 export function getPointerTarget(element: Element) {
@@ -11,8 +11,11 @@ export function getPointerTarget(element: Element) {
 			let differentWrapper = false;
 
 			while (current && current !== element) {
-				const wrapper = getWrapper(current);
-				if (wrapper?.isHintable && wrapper !== getWrapper(elementAt)) {
+				const wrapper = getWrapperForElement(current);
+				if (
+					wrapper?.isHintable &&
+					wrapper !== getWrapperForElement(elementAt)
+				) {
 					differentWrapper = true;
 				}
 

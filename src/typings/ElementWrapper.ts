@@ -56,9 +56,10 @@ export interface HintableMark {
 	computeHintContext(): void;
 	computeColors(): void;
 	updateColors(): void;
-	position(): void;
-	flash(ms?: number): void;
 	claim(): string | undefined;
+	position(): void;
+	display(): void;
+	flash(ms?: number): void;
 	release(keepInCache?: boolean): void;
 	reattach(): void;
 	applyDefaultStyle(): void;

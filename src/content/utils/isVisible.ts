@@ -1,6 +1,8 @@
+import { getBoundingClientRect } from "../hints/layoutCache";
+
 export function isVisible(element: Element): boolean {
 	const { visibility, opacity } = window.getComputedStyle(element);
-	const { width, height } = element.getBoundingClientRect();
+	const { width, height } = getBoundingClientRect(element);
 
 	if (visibility === "hidden" || width < 5 || height < 5 || opacity === "0") {
 		return false;

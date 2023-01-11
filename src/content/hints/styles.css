@@ -10,8 +10,8 @@ overwritten by external rules */
 	issues of distorted layouts using "position: relative" */
 	position: absolute !important;
 	inset: auto !important;
-
 	display: block !important;
+	contain: layout size style !important;
 }
 
 .rango-hint:not(#a#a#a#a#a#a#a#a#a#a) {
@@ -24,6 +24,7 @@ overwritten by external rules */
 	font-family: monospace !important;
 	padding: 0 0.15em !important;
 	opacity: 0% !important;
+	contain: layout style !important;
 }
 
 .rango-hint.hidden:not(#a#a#a#a#a#a#a#a#a#a) {

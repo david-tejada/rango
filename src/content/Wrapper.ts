@@ -8,11 +8,11 @@ import { getUserScrollableContainer } from "./utils/getUserScrollableContainer";
 import { BoundedIntersectionObserver } from "./BoundedIntersectionObserver";
 import { Hint } from "./hints/Hint";
 import {
-	getWrapper,
 	addWrapper,
 	deleteWrapper,
-	wrappersHinted,
 	getWrappersWithin,
+	getWrapperForElement,
+	clearHintedWrapper,
 } from "./wrappers";
 import { deepGetElements } from "./utils/deepGetElements";
 import { getPointerTarget } from "./utils/getPointerTarget";
@@ -26,19 +26,40 @@ import {
 	updateStyleAll,
 } from "./updateWrappers";
 import { matchesCustomExclude, matchesCustomInclude } from "./hints/selectors";
+import { cacheLayout, clearLayoutCache } from "./hints/layoutCache";
 
 // =============================================================================
 // HELPER FUNCTIONS
 // =============================================================================
 
-function getWrapperProxy(element: Element) {
-	let wrapper = getWrapper(element);
+function getOrCreateWrapper(element: Element) {
+	let wrapper = getWrapperForElement(element);
 	if (!wrapper) {
 		wrapper = new Wrapper(element);
 		addWrapper(wrapper);
 	}
 
 	return wrapper;
+}
+
+function addWrapperOrShadow(element: Element) {
+	addWrapper(new Wrapper(element));
+	if (element.shadowRoot) {
+		mutationObserver.observe(element.shadowRoot, mutationObserverConfig);
+	} else if (element.tagName.includes("-")) {
+		// If a shadow gets attached to an element after we have added that
+		// wrapper the elements within that shadowRoot won't register. This seems
+		// to deal with the problem.
+		setTimeout(() => {
+			if (element.shadowRoot) {
+				const shadowElements = deepGetElements(element);
+				mutationObserver.observe(element.shadowRoot, mutationObserverConfig);
+				for (const element of shadowElements) {
+					addWrapper(new Wrapper(element));
+				}
+			}
+		}, 1000);
+	}
 }
 
 export function addWrappersFrom(root: Element) {
@@ -51,32 +72,63 @@ export function addWrappersFrom(root: Element) {
 		hint.remove();
 	}
 
-	const elements = deepGetElements(root);
+	// We must include all elements here (except Rango hints) and not just
+	// hintables because we need to check for elements that could have a shadow
+	// root attached that could contain hintables
+	const elements = deepGetElements(root, true);
 
-	for (const element of elements) {
-		addWrapper(new Wrapper(element));
-		if (element.shadowRoot) {
-			mutationObserver.observe(element.shadowRoot, mutationObserverConfig);
-		} else if (element.tagName.includes("-")) {
-			// If a shadow gets attached to an element after we have added that
-			// wrapper the elements within that shadowRoot won't register. This seems
-			// to deal with the problem.
-			setTimeout(() => {
-				if (element.shadowRoot) {
-					const shadowElements = deepGetElements(element);
-					mutationObserver.observe(element.shadowRoot, mutationObserverConfig);
-					for (const element of shadowElements) {
-						addWrapper(new Wrapper(element));
-					}
-				}
-			}, 1000);
+	if (elements.length > 10_000) {
+		for (const element of elements) {
+			addWrapperIntersectionObserver.observe(element);
 		}
+	} else {
+		cacheLayout(
+			elements.filter((element) => isHintable(element)),
+			false
+		);
+		for (const element of elements) {
+			addWrapperOrShadow(element);
+		}
+
+		clearLayoutCache();
 	}
 }
 
 // =============================================================================
 // OBSERVERS
 // =============================================================================
+
+// ADD WRAPPER INTERSECTION OBSERVER
+
+// This is only used in very large pages. The reason being that creating
+// wrappers for hundreds of thousands of elements all at once can be costly. For
+// example, https://html.spec.whatwg.org/ has circa 288.000 elements. Using this
+// observer we create only wrappers for the elements that are in the viewport +
+// rootMargin.
+export const addWrapperIntersectionObserver = new IntersectionObserver(
+	(entries) => {
+		cacheLayout(
+			entries
+				.filter((entry) => entry.isIntersecting)
+				.filter((entry) => isHintable(entry.target))
+				.map((entry) => entry.target),
+			false
+		);
+		for (const entry of entries) {
+			const wrapper = getWrapperForElement(entry.target);
+			if (!wrapper && entry.isIntersecting) {
+				addWrapperOrShadow(entry.target);
+			} else if (!entry.isIntersecting) {
+				getWrapperForElement(entry.target)?.remove();
+			}
+		}
+	},
+	{
+		root: document,
+		rootMargin: "1000px",
+		threshold: 0,
+	}
+);
 
 // INTERSECTION OBSERVER
 
@@ -99,7 +151,7 @@ async function intersectionCallback(entries: IntersectionObserverEntry[]) {
 		const amountNotIntersectingViewport = entries.filter(
 			(entry) =>
 				entry.isIntersecting &&
-				getWrapperProxy(entry.target).isIntersectingViewport === false
+				getOrCreateWrapper(entry.target).isIntersectingViewport === false
 		).length;
 
 		if (amountIntersecting) {
@@ -110,7 +162,7 @@ async function intersectionCallback(entries: IntersectionObserverEntry[]) {
 		}
 
 		for (const entry of entries) {
-			getWrapperProxy(entry.target).intersect(entry.isIntersecting);
+			getOrCreateWrapper(entry.target).intersect(entry.isIntersecting);
 		}
 	});
 }
@@ -118,7 +170,9 @@ async function intersectionCallback(entries: IntersectionObserverEntry[]) {
 const viewportIntersectionObserver = new IntersectionObserver(
 	async (entries) => {
 		for (const entry of entries) {
-			getWrapper(entry.target)?.intersectViewport(entry.isIntersecting);
+			getWrapperForElement(entry.target)?.intersectViewport(
+				entry.isIntersecting
+			);
 		}
 	},
 	{
@@ -168,7 +222,7 @@ const mutationCallback: MutationCallback = (mutationList) => {
 					mutationRecord.attributeName
 				)
 			) {
-				getWrapperProxy(mutationRecord.target).updateIsHintable();
+				getOrCreateWrapper(mutationRecord.target).updateIsHintable();
 			}
 
 			if (mutationRecord.attributeName === "aria-hidden") {
@@ -193,14 +247,10 @@ export const mutationObserver = new MutationObserver(mutationCallback);
 
 // RESIZE OBSERVER
 
-const hintContainerResizeObserver = new ResizeObserver(() => {
-	updatePositionAll();
-});
-
 const hintablesResizeObserver = new ResizeObserver((entries) => {
 	for (const entry of entries) {
 		if (entry.target.isConnected) {
-			getWrapperProxy(entry.target).updateShouldBeHinted();
+			getOrCreateWrapper(entry.target).updateShouldBeHinted();
 		}
 	}
 });
@@ -228,12 +278,13 @@ export class Wrapper implements ElementWrapper {
 	constructor(element: Element) {
 		this.element = element;
 		this.isActiveFocusable =
-			focusesOnclick(this.element) && this.element === document.activeElement;
+			this.element === document.activeElement && focusesOnclick(this.element);
 		this.updateIsHintable();
 	}
 
 	updateIsHintable() {
 		this.isHintable = isHintable(this.element);
+
 		if (this.isHintable) {
 			if (focusesOnclick(this.element)) {
 				this.element.addEventListener("focus", () => {
@@ -270,7 +321,7 @@ export class Wrapper implements ElementWrapper {
 				viewportIntersectionObserver.observe(this.element);
 			} else {
 				if (this.hint?.string) {
-					wrappersHinted.delete(this.hint.string);
+					clearHintedWrapper(this.hint.string);
 					this.hint.release();
 				}
 
@@ -320,15 +371,8 @@ export class Wrapper implements ElementWrapper {
 
 		if (this.isIntersecting && this.shouldBeHinted) {
 			this.hint ??= new Hint(this.element);
-			const containerToObserve =
-				this.hint.container instanceof HTMLElement
-					? this.hint.container
-					: this.hint.container.host;
-			hintContainerResizeObserver.observe(containerToObserve);
-			const hintString = this.hint.claim();
-			if (hintString) wrappersHinted.set(hintString, this);
+			this.hint.claim();
 		} else if (this.hint?.string) {
-			wrappersHinted.delete(this.hint.string);
 			this.hint.release();
 		}
 	}

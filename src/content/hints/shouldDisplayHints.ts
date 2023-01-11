@@ -9,7 +9,7 @@ export function setNavigationToggle(toggle: boolean) {
 }
 
 export async function shouldDisplayHints(): Promise<boolean> {
-	if (document.body.contentEditable === "true") return false;
+	if (document.body?.contentEditable === "true") return false;
 
 	if (navigationToggle !== undefined) {
 		return navigationToggle;

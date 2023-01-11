@@ -1,5 +1,10 @@
 import { assertDefined } from "../../typings/TypingUtils";
-import { getFirstCharacterRect } from "../utils/nodeUtils";
+import {
+	getBoundingClientRect,
+	getCachedStyle,
+	getClientDimensions,
+	getFirstCharacterRect,
+} from "./layoutCache";
 
 // Minimum space that needs to be available so that we can place the hint in the
 // current element
@@ -12,14 +17,14 @@ function getPaddingRect(element: Element): DOMRect {
 		borderRightWidth,
 		borderTopWidth,
 		borderBottomWidth,
-	} = window.getComputedStyle(element);
+	} = getCachedStyle(element);
 
 	const borderLeft = Number.parseInt(borderLeftWidth, 10);
 	const borderRight = Number.parseInt(borderRightWidth, 10);
 	const borderTop = Number.parseInt(borderTopWidth, 10);
 	const borderBottom = Number.parseInt(borderBottomWidth, 10);
 
-	const { x, y, width, height } = element.getBoundingClientRect();
+	const { x, y, width, height } = getBoundingClientRect(element);
 
 	return new DOMRect(
 		x + borderLeft,
@@ -30,8 +35,9 @@ function getPaddingRect(element: Element): DOMRect {
 }
 
 function isUserScrollable(element: Element) {
-	const { clientWidth, scrollWidth, clientHeight, scrollHeight } = element;
-	const { overflowX, overflowY } = window.getComputedStyle(element);
+	const { clientWidth, scrollWidth, clientHeight, scrollHeight } =
+		getClientDimensions(element);
+	const { overflowX, overflowY } = getCachedStyle(element);
 
 	return (
 		element === document.documentElement ||
@@ -47,13 +53,13 @@ function getSpaceAvailable(
 	const targetRect =
 		elementToPositionHint instanceof Text
 			? getFirstCharacterRect(elementToPositionHint)
-			: elementToPositionHint.getBoundingClientRect();
+			: getBoundingClientRect(elementToPositionHint);
 
 	const containerForRect =
 		container instanceof HTMLElement ? container : container.host;
 
 	// To use when overflow: visible;
-	const borderRect = containerForRect.getBoundingClientRect();
+	const borderRect = getBoundingClientRect(containerForRect);
 	const borderInnerLeft = targetRect.left - borderRect.left;
 	const borderInnerTop = targetRect.top - borderRect.top;
 
@@ -68,7 +74,7 @@ function getSpaceAvailable(
 		clipPath,
 		left: styleLeft,
 		top: styleTop,
-	} = window.getComputedStyle(containerForRect);
+	} = getCachedStyle(containerForRect);
 
 	// We make sure to return 0 if any of the values are negative. This could
 	// happen if the element to position hint is not within the container. For example,
@@ -127,8 +133,14 @@ function getSpaceAvailable(
 
 	// There is nothing clipping the container, the space available is that
 	// offered by the document
-	const scrollLeft = Math.max(document.body.scrollLeft, document.documentElement.scrollLeft);
-	const scrollTop = Math.max(document.body.scrollTop, document.documentElement.scrollTop)
+	const scrollLeft = Math.max(
+		document.body.scrollLeft,
+		document.documentElement.scrollLeft
+	);
+	const scrollTop = Math.max(
+		document.body.scrollTop,
+		document.documentElement.scrollTop
+	);
 
 	return {
 		left: Math.max(targetRect.left + scrollLeft, 0),
@@ -137,7 +149,7 @@ function getSpaceAvailable(
 }
 
 function getAptContainer(origin: Element) {
-	const { position } = window.getComputedStyle(origin);
+	const { position } = getCachedStyle(origin);
 	let current: Node | null =
 		position === "fixed" || position === "sticky" ? origin : origin.parentNode;
 
@@ -151,7 +163,7 @@ function getAptContainer(origin: Element) {
 			continue;
 		}
 
-		const { display } = window.getComputedStyle(current);
+		const { display } = getCachedStyle(current);
 
 		if (current.tagName !== "DETAILS" && display !== "contents") {
 			return current;
@@ -186,7 +198,7 @@ export function getContextForHint(
 
 	// If the hintable itself is sticky or fixed we need to place the hint inside
 	// it or it will jump up and down when scrolling
-	const { position } = window.getComputedStyle(element);
+	const { position } = getCachedStyle(element);
 	let current =
 		position === "sticky" || position === "fixed"
 			? element
@@ -204,7 +216,7 @@ export function getContextForHint(
 		}
 
 		const { overflow, contain, clipPath, position, transform, willChange } =
-			window.getComputedStyle(current);
+			getCachedStyle(current);
 
 		if (
 			current === document.body ||

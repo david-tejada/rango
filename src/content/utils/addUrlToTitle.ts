@@ -28,6 +28,6 @@ export async function addUrlToTitle() {
 			}
 		});
 		const config = { attributes: true, childList: true, subtree: true };
-		headObserver.observe(document.head, config);
+		if (document.head) headObserver.observe(document.head, config);
 	}
 }

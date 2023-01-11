@@ -5,25 +5,29 @@ import {
 } from "./hints/customHintsEdit";
 import { clearHintsCache } from "./hints/hintsCache";
 import { extraSelector, getExcludeSelectorAll } from "./hints/selectors";
-import { getWrappersBySelector, wrappersAll, wrappersHinted } from "./wrappers";
+import {
+	getAllWrappers,
+	getHintedWrappers,
+	getWrappersBySelector,
+} from "./wrappers";
 
 let showExtraHints = false;
 let showExcludedHints = false;
 
 export const updateStyleAll = throttle(() => {
-	for (const wrapper of wrappersHinted.values()) {
+	for (const wrapper of getHintedWrappers()) {
 		wrapper.hint?.updateColors();
 	}
 }, 50);
 
 export const updatePositionAll = throttle(() => {
-	for (const wrapper of wrappersHinted.values()) {
+	for (const wrapper of getHintedWrappers()) {
 		wrapper.hint?.position();
 	}
 }, 50);
 
 export const updateShouldBeHintedAll = throttle(() => {
-	for (const wrapper of wrappersAll.values()) {
+	for (const wrapper of getAllWrappers()) {
 		if (wrapper.isHintable) {
 			wrapper.updateShouldBeHinted();
 		}
@@ -31,7 +35,7 @@ export const updateShouldBeHintedAll = throttle(() => {
 }, 300);
 
 function updateIsHintableAll() {
-	for (const wrapper of wrappersAll.values()) {
+	for (const wrapper of getAllWrappers()) {
 		wrapper.updateIsHintable();
 	}
 }
@@ -54,7 +58,7 @@ export async function refreshHints() {
 	clearMarkedForInclusionOrExclusion();
 	showExtraHints = false;
 	showExcludedHints = false;
-	for (const wrapper of wrappersHinted.values()) {
+	for (const wrapper of getHintedWrappers()) {
 		wrapper.remove();
 	}
 
@@ -63,7 +67,7 @@ export async function refreshHints() {
 }
 
 export function updateHintsStyle() {
-	for (const wrapper of wrappersHinted.values()) {
+	for (const wrapper of getHintedWrappers()) {
 		wrapper.hint!.applyDefaultStyle();
 	}
 }

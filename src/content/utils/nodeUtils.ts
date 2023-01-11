@@ -1,5 +1,5 @@
 import { assertDefined } from "../../typings/TypingUtils";
-import { getWrapper } from "../wrappers";
+import { getWrapperForElement } from "../wrappers";
 
 // Inside some elements you can't get the coordinates of a text node with Range and
 // instead you get the characters offset
@@ -55,7 +55,7 @@ export function getFirstTextNodeDescendant(element: Node): Text | undefined {
 			// in the YouTube search suggestions every item is an element with role="option" and inside
 			// those that represent previous searches a link element to remove said search,
 			// positioned at the right end
-			if (getWrapper(childNode)?.isHintable) {
+			if (getWrapperForElement(childNode)?.isHintable) {
 				continue;
 			}
 

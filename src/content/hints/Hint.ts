@@ -5,13 +5,17 @@ import Color from "color";
 import { rgbaToRgb } from "../../lib/rgbaToRgb";
 import { getHintOption } from "../options/cacheHintOptions";
 import { getEffectiveBackgroundColor } from "../utils/getEffectiveBackgroundColor";
-import {
-	getFirstCharacterRect,
-	getFirstTextNodeDescendant,
-} from "../utils/nodeUtils";
+import { getFirstTextNodeDescendant } from "../utils/nodeUtils";
 import { createsStackingContext } from "../utils/createsStackingContext";
 import { HintableMark } from "../../typings/ElementWrapper";
-import { getWrapper } from "../wrappers";
+import {
+	clearHintedWrapper,
+	getWrapper,
+	getWrapperForElement,
+	setHintedWrapper,
+} from "../wrappers";
+import { debounce } from "../../lib/debounceAndThrottle";
+import { updatePositionAll } from "../updateWrappers";
 import {
 	matchesMarkedForInclusion,
 	matchesMarkedForExclusion,
@@ -20,6 +24,73 @@ import { getElementToPositionHint } from "./getElementToPositionHint";
 import { getContextForHint } from "./getContextForHint";
 import { popHint, pushHint } from "./hintsCache";
 import { setStyleProperties } from "./setStyleProperties";
+import {
+	cacheLayout,
+	clearLayoutCache,
+	getBoundingClientRect,
+	getClientDimensions,
+	getFirstCharacterRect,
+	getOffsetParent,
+} from "./layoutCache";
+
+const hintQueue: Set<Hint> = new Set();
+
+function addToHintQueue(hint: Hint) {
+	hintQueue.add(hint);
+	processHintQueue();
+}
+
+const processHintQueue = debounce(() => {
+	window.requestIdleCallback(() => {
+		const toComputeContext = [];
+
+		for (const hint of hintQueue) {
+			if (!hint.container) toComputeContext.push(hint.target);
+		}
+
+		cacheLayout(toComputeContext);
+
+		for (const hint of hintQueue) {
+			if (!hint.container) hint.computeHintContext();
+		}
+
+		const toCache = [];
+
+		for (const hint of hintQueue) {
+			hint.inner.classList.add("hidden");
+			if (!hint.outer.isConnected) hint.container.append(hint.outer);
+			if (!hint.elementToPositionHint.isConnected) {
+				hint.elementToPositionHint = getElementToPositionHint(hint.target);
+			}
+
+			toCache.push(
+				hint.target,
+				hint.elementToPositionHint,
+				hint.outer,
+				hint.inner
+			);
+		}
+
+		cacheLayout(toCache);
+
+		for (const hint of hintQueue) {
+			hintQueue.delete(hint);
+			hint.position();
+			hint.display();
+			setHintedWrapper(hint.string!, hint.target);
+
+			// This is here for debugging and testing purposes
+			if (process.env["NODE_ENV"] !== "production") {
+				hint.outer.dataset["hint"] = hint.string;
+				hint.inner.dataset["hint"] = hint.string;
+				if (hint.target instanceof HTMLElement)
+					hint.target.dataset["hint"] = hint.string;
+			}
+		}
+
+		clearLayoutCache();
+	});
+}, 100);
 
 function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {
 	const descendants = target.querySelectorAll("*");
@@ -66,7 +137,7 @@ const css = fs.readFileSync(path.join(__dirname, "styles.css"), "utf8");
 const style = document.createElement("style");
 style.className = "rango-styles";
 style.textContent = css;
-document.head.append(style);
+document.head?.append(style);
 
 function injectShadowStyles(rootNode: ShadowRoot) {
 	let stylesPresent = false;
@@ -104,17 +175,35 @@ const containerMutationObserver = new MutationObserver((entries) => {
 	}
 });
 
+const containerResizeObserver = new ResizeObserver(() => {
+	updatePositionAll();
+});
+
 // If there are some changes to the target element itself we need to recompute
 // the context in case the element we used to position the hint is removed or
 // something else changes
 const targetMutationObserver = new MutationObserver((entries) => {
-	for (const entry of entries) {
+	const filtered = entries.filter(
+		(entry) =>
+			![...entry.addedNodes, ...entry.removedNodes].some(
+				(node) =>
+					node instanceof HTMLElement && node.className.includes("rango-hint")
+			)
+	);
+
+	for (const entry of filtered) {
 		if (
 			entry.target instanceof Element &&
+			!entry.target.className.includes("rango-hint") &&
 			// Avoid recomputing while we attach hint in development
 			entry.attributeName !== "data-hint"
 		) {
-			getWrapper(entry.target)?.hint?.computeHintContext();
+			const wrapper = getWrapperForElement(entry.target);
+
+			if (wrapper?.hint?.container) {
+				wrapper.hint.computeHintContext();
+				wrapper.hint.position();
+			}
 		}
 	}
 });
@@ -143,19 +232,6 @@ export class Hint implements HintableMark {
 
 	constructor(target: Element) {
 		this.target = target;
-
-		this.computeHintContext();
-
-		containerMutationObserver.observe(this.container, { childList: true });
-
-		targetMutationObserver.observe(this.target, {
-			attributes: true,
-			childList: true,
-			subtree: true,
-		});
-
-		const rootNode = this.container.getRootNode();
-		if (rootNode instanceof ShadowRoot) injectShadowStyles(rootNode);
 
 		this.borderWidth = 1;
 
@@ -190,6 +266,25 @@ export class Hint implements HintableMark {
 			availableSpaceLeft: this.availableSpaceLeft,
 			availableSpaceTop: this.availableSpaceTop,
 		} = getContextForHint(this.target, this.elementToPositionHint));
+
+		containerMutationObserver.observe(this.container, { childList: true });
+
+		const containerToObserve =
+			this.container instanceof HTMLElement
+				? this.container
+				: this.container.host;
+		containerResizeObserver.observe(containerToObserve);
+
+		targetMutationObserver.observe(this.target, {
+			attributes: true,
+			childList: true,
+			subtree: true,
+		});
+
+		const rootNode = this.container.getRootNode();
+		// We don't need to worry if the shadow styles have been injected already,
+		// injectShadowStyles checks that
+		if (rootNode instanceof ShadowRoot) injectShadowStyles(rootNode);
 	}
 
 	computeColors() {
@@ -258,16 +353,57 @@ export class Hint implements HintableMark {
 		}
 	}
 
+	claim() {
+		const string = popHint();
+
+		if (!string) {
+			console.warn("No more hint strings available");
+			return;
+		}
+
+		this.inner.textContent = string;
+		this.string = string;
+
+		addToHintQueue(this);
+
+		return string;
+	}
+
 	position() {
-		if (!this.elementToPositionHint.isConnected) {
-			this.elementToPositionHint = getElementToPositionHint(this.target);
+		// We need to calculate this here the first time the hint is appended
+		if (this.wrapperRelative === undefined) {
+			const { display } = window.getComputedStyle(
+				this.container instanceof HTMLElement
+					? this.container
+					: this.container.host
+			);
+
+			const hintOffsetParent = getOffsetParent(this.outer);
+
+			if (
+				hintOffsetParent &&
+				!this.limitParent.contains(hintOffsetParent) &&
+				// We can't use position: relative inside display: grid because it distorts
+				// layouts. This seems to work fine but I have to see if it breaks somewhere.
+				display !== "grid"
+			) {
+				this.wrapperRelative = true;
+				setStyleProperties(this.outer, { position: "relative" });
+			} else {
+				this.wrapperRelative = false;
+			}
+		}
+
+		if (this.zIndex === undefined) {
+			this.zIndex = calculateZIndex(this.target, this.outer);
+			setStyleProperties(this.outer, { "z-index": `${this.zIndex}` });
 		}
 
 		const { x: targetX, y: targetY } =
 			this.elementToPositionHint instanceof Text
 				? getFirstCharacterRect(this.elementToPositionHint)
-				: this.elementToPositionHint.getBoundingClientRect();
-		const { x: outerX, y: outerY } = this.outer.getBoundingClientRect();
+				: getBoundingClientRect(this.elementToPositionHint);
+		const { x: outerX, y: outerY } = getBoundingClientRect(this.outer);
 
 		let nudgeX = 0.3;
 		let nudgeY = 0.5;
@@ -294,8 +430,9 @@ export class Hint implements HintableMark {
 		}
 
 		if (!(this.elementToPositionHint instanceof Text)) {
-			const { width, height } =
-				this.elementToPositionHint.getBoundingClientRect();
+			const { width, height } = getBoundingClientRect(
+				this.elementToPositionHint
+			);
 
 			if (
 				(width > 30 && height > 30) ||
@@ -309,8 +446,10 @@ export class Hint implements HintableMark {
 			}
 		}
 
-		const hintOffsetX = this.inner.offsetWidth * (1 - nudgeX);
-		const hintOffsetY = this.inner.offsetHeight * (1 - nudgeY);
+		const hintOffsetX =
+			getClientDimensions(this.inner).offsetWidth! * (1 - nudgeX);
+		const hintOffsetY =
+			getClientDimensions(this.inner).offsetHeight! * (1 - nudgeY);
 
 		let x =
 			targetX -
@@ -352,83 +491,33 @@ export class Hint implements HintableMark {
 		}, ms);
 	}
 
-	claim() {
-		const string = popHint();
+	display() {
+		// We need to render the hint but hide it so we can calculate its size for
+		// positioning it and so we can have a transition.
 
-		if (!string) {
-			console.warn("No more hint strings available");
-			return;
-		}
+		if (!this.positioned) this.position();
 
-		this.inner.textContent = string;
-		this.string = string;
-
-		if (!this.outer.isConnected) this.container.append(this.outer);
-
-		// We need to calculate this here the first time the hint is appended
-		if (this.wrapperRelative === undefined) {
-			const { display } = window.getComputedStyle(
-				this.container instanceof HTMLElement
-					? this.container
-					: this.container.host
-			);
-
-			if (
-				!this.limitParent.contains(this.outer.offsetParent) &&
-				// We can't use position: relative inside display: grid because it distorts
-				// layouts. This seems to work fine but I have to see if it breaks somewhere.
-				display !== "grid"
-			) {
-				this.wrapperRelative = true;
-				setStyleProperties(this.outer, { position: "relative" });
-			} else {
-				this.wrapperRelative = false;
-			}
-		}
-
-		if (this.zIndex === undefined) {
-			this.zIndex = calculateZIndex(this.target, this.outer);
-			setStyleProperties(this.outer, { "z-index": `${this.zIndex}` });
-		}
-
-		// We can't have a transition effect if the element has display: none, thus
-		// not rendered. That's why we need nested requestAnimationFrame
-		// https://stackoverflow.com/questions/32481972/transition-not-working-when-changing-from-display-none-to-block
 		requestAnimationFrame(() => {
-			// We need to render the hint but hide it so we can calculate its size for
-			// positioning it and so we can have a transition.
-			this.inner.classList.add("hidden");
+			this.inner.classList.remove("hidden");
 
-			if (!this.positioned) this.position();
-
-			requestAnimationFrame(() => {
-				this.inner.classList.remove("hidden");
-
-				// This is to make sure that we don't make visible a hint that was
-				// released and causing layouts to break. Since release could be called
-				// before this callback is called
-				if (this.string) this.inner.classList.add("visible");
-			});
+			// This is to make sure that we don't make visible a hint that was
+			// released and causing layouts to break. Since release could be called
+			// before this callback is called
+			if (this.string) this.inner.classList.add("visible");
 		});
-
-		// This is here for debugging and testing purposes
-		if (process.env["NODE_ENV"] !== "production") {
-			this.outer.dataset["hint"] = string;
-			this.inner.dataset["hint"] = string;
-			if (this.target instanceof HTMLElement)
-				this.target.dataset["hint"] = string;
-		}
-
-		return string;
 	}
 
 	release(returnToStack = true) {
+		if (hintQueue.has(this)) hintQueue.delete(this);
+
 		// Checking this.string is safer than check in this.inner.textContent as the
 		// latter could be removed by a page script
 		if (!this.string) {
 			console.warn("Releasing an empty hint");
 			return;
 		}
+
+		clearHintedWrapper(this.string);
 
 		this.inner.classList.remove("visible");
 
