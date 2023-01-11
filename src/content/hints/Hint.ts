@@ -208,28 +208,9 @@ const targetMutationObserver = new MutationObserver((entries) => {
 	}
 });
 
-export class Hint implements HintableMark {
-	readonly target: Element;
-	readonly outer: HTMLDivElement;
-	readonly inner: HTMLDivElement;
-	container: HTMLElement | ShadowRoot;
-	limitParent: HTMLElement;
-	availableSpaceLeft?: number;
-	availableSpaceTop?: number;
-	wrapperRelative?: boolean;
-	elementToPositionHint: Element | SVGElement | Text;
-	zIndex?: number;
-	positioned: boolean;
-	reattachedTimes: number;
-	color: Color;
-	backgroundColor: Color;
-	borderColor: Color;
-	borderWidth: number;
-	keyEmphasis?: boolean;
-	freezeColors?: boolean;
-	firstTextNodeDescendant?: Text;
-	string?: string;
+export interface Hint extends HintableMark {}
 
+export class Hint {
 	constructor(target: Element) {
 		this.target = target;
 

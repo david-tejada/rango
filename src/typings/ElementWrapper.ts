@@ -2,7 +2,7 @@ import Color from "color";
 import { BoundedIntersectionObserver } from "../content/BoundedIntersectionObserver";
 
 export interface ElementWrapper {
-	readonly element: Element;
+	element: Element;
 
 	isIntersecting?: boolean;
 	observingIntersection?: boolean;
@@ -30,9 +30,9 @@ export interface ElementWrapper {
 }
 
 export interface HintableMark {
-	readonly target: Element;
-	readonly outer: HTMLDivElement;
-	readonly inner: HTMLDivElement;
+	target: Element;
+	outer: HTMLDivElement;
+	inner: HTMLDivElement;
 	container: HTMLElement | ShadowRoot;
 	limitParent: HTMLElement;
 	availableSpaceLeft?: number;

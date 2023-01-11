@@ -259,22 +259,9 @@ const hintablesResizeObserver = new ResizeObserver((entries) => {
 // ELEMENT WRAPPER
 // =============================================================================
 
-export class Wrapper implements ElementWrapper {
-	readonly element: Element;
+export interface Wrapper extends ElementWrapper {}
 
-	isIntersecting?: boolean;
-	observingIntersection?: boolean;
-	isIntersectingViewport?: boolean;
-	isHintable: boolean;
-	isActiveFocusable: boolean;
-	shouldBeHinted?: boolean;
-
-	// These properties are only needed for hintables
-	intersectionObserver?: BoundedIntersectionObserver;
-	userScrollableContainer?: HTMLElement;
-	effectiveBackgroundColor?: string;
-	hint?: Hint;
-
+export class Wrapper {
 	constructor(element: Element) {
 		this.element = element;
 		this.isActiveFocusable =
