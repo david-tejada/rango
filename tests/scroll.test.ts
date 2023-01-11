@@ -57,6 +57,7 @@ async function getActionableHint(containerSelector: string, top = true) {
 	for (const $node of $$nodes) {
 		// eslint-disable-next-line no-await-in-loop
 		const visible = await $node.evaluate(
+			/* eslint-disable-next-line max-params */
 			(node, cTop, cRight, cBottom, cLeft) => {
 				const { top, right, bottom, left } = node.getBoundingClientRect();
 				return (
