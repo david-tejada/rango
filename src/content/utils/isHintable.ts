@@ -8,14 +8,28 @@ import {
 } from "../hints/selectors";
 import { isVisible } from "./isVisible";
 
+function hasSignificantSiblings(target: Node) {
+	if (!target.parentNode) return false;
+
+	const significantSiblingsIncludingSelf = [
+		...target.parentNode.childNodes,
+	].filter(
+		(node) =>
+			// We need to exclude hint divs for when we display/remove extra hints
+			(node instanceof Element && node.className !== "rango-hint-wrapper") ||
+			(node instanceof Text && node.textContent && /\S/.test(node.textContent))
+	);
+
+	return significantSiblingsIncludingSelf.length > 1;
+}
+
 function isRedundant(target: Element) {
 	if (matchesCustomInclude(target)) return false;
 
 	if (
-		target.matches(":only-child") &&
 		target.parentElement &&
-		target.parentElement.textContent === target.textContent &&
-		matchesHintableSelector(target.parentElement)
+		matchesHintableSelector(target.parentElement) &&
+		!hasSignificantSiblings(target)
 	) {
 		return true;
 	}
