@@ -77,7 +77,7 @@ export function addWrappersFrom(root: Element) {
 	// root attached that could contain hintables
 	const elements = deepGetElements(root, true);
 
-	if (elements.length > 10_000) {
+	if (elements.length > 25_000) {
 		for (const element of elements) {
 			addWrapperIntersectionObserver.observe(element);
 		}
