@@ -57,6 +57,8 @@ const processHintQueue = debounce(() => {
 		const toCache = [];
 
 		for (const hint of hintQueue) {
+			// We need to render the hint but hide it so we can calculate its size for
+			// positioning it and so we can have a transition.
 			hint.inner.classList.add("hidden");
 			if (!hint.outer.isConnected) hint.container.append(hint.outer);
 			if (!hint.elementToPositionHint.isConnected) {
@@ -74,9 +76,7 @@ const processHintQueue = debounce(() => {
 		cacheLayout(toCache);
 
 		for (const hint of hintQueue) {
-			hintQueue.delete(hint);
 			hint.position();
-			hint.display();
 			setHintedWrapper(hint.string!, hint.target);
 
 			// This is here for debugging and testing purposes
@@ -87,6 +87,20 @@ const processHintQueue = debounce(() => {
 					hint.target.dataset["hint"] = hint.string;
 			}
 		}
+
+		requestAnimationFrame(() => {
+			for (const hint of hintQueue) {
+				hint.inner.classList.remove("hidden");
+			}
+
+			// This is to make sure that we don't make visible a hint that was
+			// released and causing layouts to break. Since release could be called
+			// before this callback is called
+			for (const hint of hintQueue) {
+				hintQueue.delete(hint);
+				if (hint.string) hint.inner.classList.add("visible");
+			}
+		});
 
 		clearLayoutCache();
 	});
@@ -470,22 +484,6 @@ export class Hint {
 			this.freezeColors = false;
 			this.updateColors();
 		}, ms);
-	}
-
-	display() {
-		// We need to render the hint but hide it so we can calculate its size for
-		// positioning it and so we can have a transition.
-
-		if (!this.positioned) this.position();
-
-		requestAnimationFrame(() => {
-			this.inner.classList.remove("hidden");
-
-			// This is to make sure that we don't make visible a hint that was
-			// released and causing layouts to break. Since release could be called
-			// before this callback is called
-			if (this.string) this.inner.classList.add("visible");
-		});
 	}
 
 	release(returnToStack = true) {
