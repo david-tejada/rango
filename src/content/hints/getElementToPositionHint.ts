@@ -12,9 +12,10 @@ import {
 	getFirstCharacterRect,
 } from "./layoutCache";
 
-function elementsOverlap(a: Element, b: Element) {
+function elementsAreNear(a: Element, b: Element) {
 	const aRect = getBoundingClientRect(a);
 	const bRect = getBoundingClientRect(b);
+	const margin = 100;
 
 	// If any of the elements doesn't occupy any space we return false
 	if (
@@ -27,10 +28,10 @@ function elementsOverlap(a: Element, b: Element) {
 	}
 
 	if (
-		aRect.right < bRect.left ||
-		bRect.right < aRect.left ||
-		aRect.bottom < bRect.top ||
-		bRect.bottom < aRect.top
+		aRect.right + margin < bRect.left ||
+		bRect.right + margin < aRect.left ||
+		aRect.bottom + margin < bRect.top ||
+		bRect.bottom + margin < aRect.top
 	) {
 		return false;
 	}
@@ -96,7 +97,7 @@ function getFirstSignificantTextNode(element: Element): Text | undefined {
 			hasSignificantText(current) &&
 			// We need to make sure that the elements overlap just in case the Text
 			// node is hidden or moved out of the viewport
-			elementsOverlap(element, current.parentElement!)
+			elementsAreNear(element, current.parentElement!)
 		) {
 			return current;
 		}
@@ -137,7 +138,7 @@ function getFirstIconOrTextElement(
 		if (
 			opacity === "0" ||
 			withinDifferentHintable(element, target) ||
-			!elementsOverlap(target, element)
+			!elementsAreNear(target, element)
 		) {
 			continue;
 		}
