@@ -15,16 +15,16 @@ let returnedHints: string[] = [];
 export async function cacheHints(necessary: number, additional: number) {
 	const total = necessary + additional;
 
+	const hintsToRequest = total - returnedHints.length;
+
 	if (returnedHints.length > 0) {
 		saveHintsToCache(returnedHints.splice(0, returnedHints.length));
 	}
 
-	const hintsToRequest = total - returnedHints.length;
-
 	if (hintsToRequest > 0) {
 		const hints = await claimHints(hintsToRequest);
 
-		if (hints.length < necessary) {
+		if (hints.length < Math.min(hintsToRequest, necessary)) {
 			// If there are not enough hints available we try to reclaim those hints
 			// that are outside of the viewport in the same frame (for speed)
 			hints.push(...reclaimHints(necessary - hints.length));
