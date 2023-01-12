@@ -31,6 +31,7 @@ import {
 	getClientDimensions,
 	getFirstCharacterRect,
 	getOffsetParent,
+	removeFromLayoutCache,
 } from "./layoutCache";
 
 const hintQueue: Set<Hint> = new Set();
@@ -383,7 +384,15 @@ export class Hint {
 				display !== "grid"
 			) {
 				this.wrapperRelative = true;
-				setStyleProperties(this.outer, { position: "relative" });
+				setStyleProperties(this.outer, {
+					position: "relative",
+					// In case the container itself is inline (what will happen very
+					// rarely), this seems to cause the least amount of layout distortion
+					display: "inline-block",
+				});
+				// When we change the position property of the hint wrapper its position
+				// in the page can change, so we need to invalidate the layout cache
+				removeFromLayoutCache(this.outer);
 			} else {
 				this.wrapperRelative = false;
 			}

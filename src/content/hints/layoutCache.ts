@@ -26,6 +26,13 @@ export function clearLayoutCache() {
 	styles.clear();
 }
 
+export function removeFromLayoutCache(element: Element) {
+	boundingClientRects.delete(element);
+	offsetParents.delete(element);
+	clientDimensions.delete(element);
+	styles.delete(element);
+}
+
 export function getFirstTextNodes(element: Element) {
 	const nodes = [];
 
