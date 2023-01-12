@@ -224,7 +224,12 @@ export function getContextForHint(
 			position === "sticky" ||
 			transform !== "none" ||
 			willChange === "transform" ||
-			isUserScrollable(current)
+			isUserScrollable(current) ||
+			// This handles the YouTube search box doing weird stuff as it stores the
+			// previous results dom elements (hints included) and then places stuff
+			// within the hints. This is the only instance of something like that
+			// happening. I'll have to revisit this issue if more cases arise.
+			current.matches("ul.sbsb_b > li.sbsb_c.gsfs")
 		) {
 			limitParent ??= current;
 		}
