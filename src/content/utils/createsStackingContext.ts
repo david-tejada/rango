@@ -2,14 +2,17 @@ const props =
 	/\b(?:position|zIndex|opacity|mixBlendMode|transform|filter|backdrop-filter|perspective|clip-path|mask|mask-image|mask-border|isolation)\b/;
 
 function isFlexOrGridChild(element: Element) {
-	const display =
+	const parentDisplay =
 		element.parentNode instanceof Element &&
 		getComputedStyle(element.parentNode).display;
 	return (
-		display === "flex" ||
-		display === "inline-flex" ||
-		display === "grid" ||
-		display === "inline-grid"
+		parentDisplay === "flex" ||
+		parentDisplay === "inline-flex" ||
+		parentDisplay === "-webkit-box" ||
+		parentDisplay === "-webkit-flex" ||
+		parentDisplay === "-ms-flexbox" ||
+		parentDisplay === "grid" ||
+		parentDisplay === "inline-grid"
 	);
 }
 
