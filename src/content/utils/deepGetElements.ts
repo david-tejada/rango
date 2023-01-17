@@ -3,7 +3,7 @@
 export function deepGetElements(
 	root: Element,
 	includeRoot = true,
-	selector = ":not(.rango-hint-wrapper, .rango-hint, #rango-copy-paste-area)"
+	selector = ":not(.rango-hint, #rango-copy-paste-area)"
 ): Element[] {
 	const all = root.shadowRoot
 		? root.shadowRoot.querySelectorAll("*")
@@ -18,7 +18,7 @@ export function deepGetElements(
 			: [...root.querySelectorAll("*")];
 
 		for (const element of elements) {
-			if (element.shadowRoot) {
+			if (element.shadowRoot && element.className !== "rango-hint") {
 				result.push(...deepGetElements(element));
 			} else {
 				result.push(element);

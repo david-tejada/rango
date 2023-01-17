@@ -1,0 +1,32 @@
+.outer {
+	/* Setting "position: absolute" with "inset: auto" (equivalent to setting top,
+	left, bottom and right to auto) ensures that the position of the wrapper is the
+	same as if position was static and doesn't occupy any space. This solves some
+	issues of distorted layouts using "position: relative" */
+	position: absolute;
+	inset: auto;
+	display: block;
+	contain: layout size style;
+}
+
+.inner {
+	display: none;
+	user-select: none;
+	position: absolute;
+	border-radius: 20%;
+	line-height: 1.25;
+	font-family: monospace;
+	padding: 0 0.15em;
+	opacity: 0%;
+	contain: layout style;
+}
+
+.inner.hidden {
+	display: block;
+}
+
+.inner.visible {
+	display: block;
+	opacity: 100%;
+	transition: opacity 0.3s;
+}

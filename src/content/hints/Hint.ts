@@ -61,7 +61,7 @@ const processHintQueue = debounce(() => {
 			// We need to render the hint but hide it so we can calculate its size for
 			// positioning it and so we can have a transition.
 			hint.inner.classList.add("hidden");
-			if (!hint.outer.isConnected) hint.container.append(hint.outer);
+			if (!hint.shadowHost.isConnected) hint.container.append(hint.shadowHost);
 			if (!hint.elementToPositionHint.isConnected) {
 				hint.elementToPositionHint = getElementToPositionHint(hint.target);
 			}
@@ -79,13 +79,14 @@ const processHintQueue = debounce(() => {
 		for (const hint of hintQueue) {
 			hint.position();
 			setHintedWrapper(hint.string!, hint.target);
+			hint.shadowHost.dataset["hint"] = hint.string;
 
 			// This is here for debugging and testing purposes
-			if (process.env["NODE_ENV"] !== "production") {
-				hint.outer.dataset["hint"] = hint.string;
-				hint.inner.dataset["hint"] = hint.string;
-				if (hint.target instanceof HTMLElement)
-					hint.target.dataset["hint"] = hint.string;
+			if (
+				process.env["NODE_ENV"] !== "production" &&
+				hint.target instanceof HTMLElement
+			) {
+				hint.target.dataset["hint"] = hint.string;
 			}
 		}
 
@@ -142,8 +143,13 @@ function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {
 	return zIndex;
 }
 
-// eslint-disable-next-line unicorn/prefer-module
+/* eslint-disable unicorn/prefer-module */
 const css = fs.readFileSync(path.join(__dirname, "styles.css"), "utf8");
+const shadowCss = fs.readFileSync(
+	path.join(__dirname, "hint-shadow-styles.css"),
+	"utf8"
+);
+/* eslint-enable unicorn/prefer-module */
 
 // Inject styles for the page. We have to do it like this instead of including
 // the css in the manifest because if the extension is disabled/removed the
@@ -198,6 +204,7 @@ const containerResizeObserver = new ResizeObserver(() => {
 // the context in case the element we used to position the hint is removed or
 // something else changes
 const targetMutationObserver = new MutationObserver((entries) => {
+	// We filter out the entries of adding or removing hints
 	const filtered = entries.filter(
 		(entry) =>
 			![...entry.addedNodes, ...entry.removedNodes].some(
@@ -223,6 +230,15 @@ const targetMutationObserver = new MutationObserver((entries) => {
 	}
 });
 
+// We have to revert any changes that the page might do to the hints attributes
+const shadowHostMutationObserver = new MutationObserver((entries) => {
+	for (const entry of entries) {
+		if (entry.attributeName && entry.attributeName !== "data-hint") {
+			(entry.target as HTMLDivElement).removeAttribute(entry.attributeName);
+		}
+	}
+});
+
 export interface Hint extends HintableMark {}
 
 export class Hint {
@@ -231,12 +247,22 @@ export class Hint {
 
 		this.borderWidth = 1;
 
-		this.outer = document.createElement("div");
-		this.outer.className = "rango-hint-wrapper";
+		this.shadowHost = document.createElement("div");
+		this.shadowHost.className = "rango-hint";
+		shadowHostMutationObserver.observe(this.shadowHost, { attributes: true });
+		const shadow = this.shadowHost.attachShadow({ mode: "open" });
 
+		const style = document.createElement("style");
+		style.textContent = shadowCss;
+		shadow.append(style);
+
+		this.outer = document.createElement("div");
+		this.outer.className = "outer";
 		this.inner = document.createElement("div");
-		this.inner.className = "rango-hint";
+		this.inner.className = "inner";
+
 		this.outer.append(this.inner);
+		shadow.append(this.outer);
 
 		this.positioned = false;
 		this.reattachedTimes = 0;
@@ -399,7 +425,7 @@ export class Hint {
 		}
 
 		if (this.zIndex === undefined) {
-			this.zIndex = calculateZIndex(this.target, this.outer);
+			this.zIndex = calculateZIndex(this.target, this.shadowHost);
 			setStyleProperties(this.outer, { "z-index": `${this.zIndex}` });
 		}
 
@@ -517,17 +543,18 @@ export class Hint {
 		// minimizes the possibility of something weird happening. Like in the
 		// YouTube search suggestions where the page inserts elements within the
 		// hints if they are not removed.
-		this.outer.remove();
+		this.shadowHost.remove();
 
-		if (process.env["NODE_ENV"] !== "production") {
-			/* eslint-disable @typescript-eslint/no-dynamic-delete */
-			delete this.outer.dataset["hint"];
-			delete this.inner.dataset["hint"];
-			if (this.target instanceof HTMLElement)
-				delete this.target.dataset["hint"];
-			/* eslint-enable @typescript-eslint/no-dynamic-delete */
-		}
+		/* eslint-disable @typescript-eslint/no-dynamic-delete */
+		delete this.shadowHost.dataset["hint"];
+
+		if (
+			process.env["NODE_ENV"] !== "production" &&
+			this.target instanceof HTMLElement
+		)
+			delete this.target.dataset["hint"];
 	}
+	/* eslint-enable @typescript-eslint/no-dynamic-delete */
 
 	reattach() {
 		// We put a limit on how many times we reattach the hint to avoid a vicious

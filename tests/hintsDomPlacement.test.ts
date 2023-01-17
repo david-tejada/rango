@@ -27,8 +27,8 @@ describe("The hints are placed in the appropriate DOM element", () => {
 		});
 
 		await page.waitForSelector(".rango-hint");
-		const $hint = await page.$("#target > .rango-hint-wrapper");
-		const $noHint = await page.$("#skip > .rango-hint-wrapper");
+		const $hint = await page.$("#target > .rango-hint");
+		const $noHint = await page.$("#skip > .rango-hint");
 
 		expect($hint).not.toBeNull();
 		expect($noHint).toBeNull();
@@ -44,7 +44,7 @@ describe("The hints are placed in the appropriate DOM element", () => {
 		});
 
 		await page.waitForSelector(".rango-hint");
-		const $hint = await page.$("div > .rango-hint-wrapper");
+		const $hint = await page.$("div > .rango-hint");
 
 		expect($hint).not.toBeNull();
 	});
@@ -60,8 +60,8 @@ describe("The hints are placed in the appropriate DOM element", () => {
 		});
 
 		await page.waitForSelector(".rango-hint");
-		const $hint = await page.$("body > .rango-hint-wrapper");
-		const $noHint = await page.$("details > .rango-hint-wrapper");
+		const $hint = await page.$("body > .rango-hint");
+		const $noHint = await page.$("details > .rango-hint");
 
 		expect($hint).not.toBeNull();
 		expect($noHint).toBeNull();
@@ -79,7 +79,7 @@ describe("The hints are placed in the appropriate DOM element", () => {
 		});
 
 		await page.waitForSelector(".rango-hint");
-		const $hint = await page.$("li > .rango-hint-wrapper");
+		const $hint = await page.$("li > .rango-hint");
 
 		expect($hint).not.toBeNull();
 	});
@@ -96,7 +96,7 @@ describe("The hints are placed in the appropriate DOM element", () => {
 		});
 
 		await page.waitForSelector(".rango-hint");
-		let $hint = await page.$("div > .rango-hint-wrapper");
+		let $hint = await page.$("div > .rango-hint");
 
 		expect($hint).not.toBeNull();
 
@@ -111,7 +111,7 @@ describe("The hints are placed in the appropriate DOM element", () => {
 		});
 
 		await page.waitForSelector(".rango-hint");
-		$hint = await page.$("div > .rango-hint-wrapper");
+		$hint = await page.$("div > .rango-hint");
 
 		expect($hint).not.toBeNull();
 	});

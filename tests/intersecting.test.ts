@@ -40,7 +40,7 @@ test("As we scroll the container only the hintables within the container and the
 		document.querySelector("#inside")?.scrollBy(0, 18);
 	});
 
-	await page.waitForSelector("#inside li#item46 .rango-hint-wrapper");
+	await page.waitForSelector("#inside li#item46 .rango-hint");
 
 	const hintsLength = await page.$$eval(
 		"#inside .rango-hint",

@@ -31,6 +31,7 @@ export interface ElementWrapper {
 
 export interface HintableMark {
 	target: Element;
+	shadowHost: HTMLDivElement;
 	outer: HTMLDivElement;
 	inner: HTMLDivElement;
 	container: HTMLElement | ShadowRoot;

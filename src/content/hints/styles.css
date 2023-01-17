@@ -1,38 +1,7 @@
 /* stylelint-disable declaration-no-important */
-/* This selectors ensure a high specificity (10-1-0) so that our styles aren't
+/* This selectors ensure a high specificity (5-1-0) so that our styles aren't
 overwritten by external rules */
-.rango-hint-wrapper:not(#a#a#a#a#a#a#a#a#a#a) {
+.rango-hint:not(#a#a#a#a#a) {
 	all: initial !important;
-
-	/* Setting "position: absolute" with "inset: auto" (equivalent to setting top,
-	left, bottom and right to auto) ensures that the position of the wrapper is the
-	same as if position was static and doesn't occupy any space. This solves some
-	issues of distorted layouts using "position: relative" */
-	position: absolute !important;
-	inset: auto !important;
-	display: block !important;
-	contain: layout size style !important;
-}
-
-.rango-hint:not(#a#a#a#a#a#a#a#a#a#a) {
-	all: initial !important;
-	display: none !important;
-	user-select: none !important;
-	position: absolute !important;
-	border-radius: 20% !important;
-	line-height: 1.25 !important;
-	font-family: monospace !important;
-	padding: 0 0.15em !important;
-	opacity: 0% !important;
-	contain: layout style !important;
-}
-
-.rango-hint.hidden:not(#a#a#a#a#a#a#a#a#a#a) {
-	display: block !important;
-}
-
-.rango-hint.visible:not(#a#a#a#a#a#a#a#a#a#a) {
-	display: block !important;
-	opacity: 100% !important;
-	transition: opacity 0.3s !important;
+	display: contents !important;
 }

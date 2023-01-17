@@ -66,7 +66,7 @@ export function addWrappersFrom(root: Element) {
 	// Sometimes an element gets stored and then replaced when you hit
 	// the back button. For example, in GitHub. We need to delete the hints
 	// that were stored with the body or another element.
-	const staleHints = deepGetElements(root, true, ".rango-hint-wrapper");
+	const staleHints = deepGetElements(root, true, ".rango-hint");
 
 	for (const hint of staleHints) {
 		hint.remove();
@@ -191,7 +191,7 @@ const mutationObserverConfig = {
 };
 
 const selectorFilter =
-	":not(head, head *, .rango-hint-wrapper, .rango-hint, #rango-copy-paste-area)";
+	":not(head, head *, .rango-hint, #rango-copy-paste-area)";
 
 const mutationCallback: MutationCallback = (mutationList) => {
 	let stylesMightHaveChanged = false;
