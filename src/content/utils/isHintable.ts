@@ -47,19 +47,9 @@ function isRedundant(target: Element) {
 
 function isHintableExtra(target: Element): boolean {
 	const { cursor } = window.getComputedStyle(target);
-	const parentCursor =
-		target.parentElement &&
-		window.getComputedStyle(target.parentElement).cursor;
-
-	if (cursor === "pointer" && parentCursor === "pointer") {
-		const targetLeft = target.getBoundingClientRect().left;
-		const parentLeft = target.parentElement!.getBoundingClientRect().left;
-
-		if (Math.abs(targetLeft - parentLeft) > 30) return true;
-	}
 
 	if (
-		((cursor === "pointer" && parentCursor !== "pointer") ||
+		(cursor === "pointer" ||
 			target.matches(
 				"[class*='button' i], [class*='btn' i], [class*='select' i], [class*='control' i], [jsaction]"
 			)) &&
