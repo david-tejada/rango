@@ -21,6 +21,16 @@ export function getUserScrollableContainer(element: Element): HTMLElement {
 		}
 
 		if (
+			current === document.body &&
+			scrollWidth === document.documentElement.scrollWidth &&
+			scrollHeight === document.documentElement.scrollHeight
+		) {
+			checked.push(current);
+			current = current.parentElement;
+			continue;
+		}
+
+		if (
 			current instanceof HTMLElement &&
 			((scrollWidth > clientWidth && /scroll|auto/.test(overflowX)) ||
 				(scrollHeight > clientHeight && /scroll|auto/.test(overflowY)))
