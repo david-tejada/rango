@@ -12,6 +12,12 @@ import {
 	getFirstCharacterRect,
 } from "./layoutCache";
 
+declare global {
+	interface CSSStyleDeclaration {
+		maskImage: string;
+	}
+}
+
 function elementsAreNear(a: Element, b: Element) {
 	const aRect = getBoundingClientRect(a);
 	const bRect = getBoundingClientRect(b);
@@ -78,7 +84,8 @@ function isImage(element: Element) {
 	const { backgroundImage, maskImage } = getCachedStyle(element);
 	const hasOnlyBackgroundImage =
 		element.childNodes.length === 0 &&
-		(backgroundImage !== "none" || (maskImage && maskImage !== "none"));
+		(backgroundImage !== "none" ||
+			(Boolean(maskImage) && maskImage !== "none"));
 
 	const { content } = window.getComputedStyle(element, ":before");
 	const isFontIcon =
