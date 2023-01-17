@@ -429,6 +429,10 @@ export class Hint {
 			setStyleProperties(this.outer, { "z-index": `${this.zIndex}` });
 		}
 
+		if (!this.elementToPositionHint.isConnected) {
+			this.elementToPositionHint = getElementToPositionHint(this.target);
+		}
+
 		const { x: targetX, y: targetY } =
 			this.elementToPositionHint instanceof Text
 				? getFirstCharacterRect(this.elementToPositionHint)
