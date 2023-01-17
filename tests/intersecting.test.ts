@@ -22,8 +22,9 @@ afterAll(async () => {
 test("At the beginning only the hintables within the container and the rootMargins have hints", async () => {
 	const hintsLength = await page.$$eval(".rango-hint", (hints) => hints.length);
 
-	// 500px (container) + 300px (bottom rootMargin) = 800px / 18px = 44.44
-	expect(hintsLength).toBe(45);
+	// #inside: 500px (container) + 1000px (bottom rootMargin) = 1500px / 18px = 83.33
+	// #outside: 600px (bottom rootMargin) = 600px / 18px = 33.33
+	expect(hintsLength).toBe(Math.ceil(1500 / 18) + Math.ceil(600 / 18));
 });
 
 test("Scroll containers out of the viewport + rootMargin won't have any hints in them", async () => {
@@ -40,14 +41,15 @@ test("As we scroll the container only the hintables within the container and the
 		document.querySelector("#inside")?.scrollBy(0, 18);
 	});
 
-	await page.waitForSelector("#inside li#item46 .rango-hint");
+	await page.waitForSelector("#inside li#item84 .rango-hint");
 
 	const hintsLength = await page.$$eval(
 		"#inside .rango-hint",
 		(hints) => hints.length
 	);
 
-	expect(hintsLength).toBe(46);
+	// 500px (container) + 1000px (bottom rootMargin) = 1500px / 18px
+	expect(hintsLength).toBe(Math.ceil(1500 / 18));
 });
 
 test("As we scroll the document only the hintables within the container and the bottom and top root margin have hints", async () => {
@@ -56,13 +58,13 @@ test("As we scroll the document only the hintables within the container and the 
 		window.scrollBy(0, 1000 - document.documentElement.clientHeight);
 	});
 
-	await page.waitForSelector("#outside .rango-hint");
+	await page.waitForSelector("#outside li#item100 .rango-hint");
 
 	const hintsLength = await page.$$eval(
 		"#outside .rango-hint",
 		(hints) => hints.length
 	);
 
-	// 300px / 18px = 16.67
-	expect(hintsLength).toBe(17);
+	// 1000px / 18px = 55.56
+	expect(hintsLength).toBe(Math.ceil(1000 / 18));
 });
