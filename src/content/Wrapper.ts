@@ -401,9 +401,11 @@ export class Wrapper {
 			) {
 				void openInNewTab([this]);
 			} else {
+				dispatchHover(pointerTarget);
 				void dispatchClick(pointerTarget);
 			}
 		} else {
+			dispatchHover(pointerTarget);
 			void dispatchClick(pointerTarget);
 		}
 	}
