@@ -127,6 +127,7 @@
 		"color": "^4.2.3",
 		"combinations": "^1.0.0",
 		"intersect": "^1.0.1",
+		"requestidlecallback-polyfill": "^1.0.2",
 		"specificity": "^0.4.1",
 		"tippy.js": "^6.3.7",
 		"webextension-polyfill": "^0.8.0"

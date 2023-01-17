@@ -1,4 +1,6 @@
 import browser from "webextension-polyfill";
+// eslint-disable-next-line import/no-unassigned-import
+import "requestidlecallback-polyfill";
 import { ContentRequest } from "../typings/ContentRequest";
 import { TalonAction } from "../typings/RequestFromTalon";
 import { cacheHintOptions } from "./options/cacheHintOptions";
