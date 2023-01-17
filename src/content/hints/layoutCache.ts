@@ -62,11 +62,26 @@ function textNodeRect(textNode: Text): DOMRect {
 }
 
 function firstCharacterRect(textNode: Text): DOMRect {
-	const firstNonWhiteSpaceCharacter = textNode.textContent?.search(/\S/) ?? 0;
+	if (!textNode.textContent) {
+		return new DOMRect(0, 0, 0, 0);
+	}
+
+	const firstNonWhiteSpaceCharacterIndex =
+		textNode.textContent?.search(/\S/) ?? 0;
+
+	// We need to know the character size. For example, with emojis the
+	// character size is 2.
+	// https://stackoverflow.com/q/46157867
+	const firstNonWhiteSpaceCharacter = [...textNode.textContent][
+		firstNonWhiteSpaceCharacterIndex
+	];
+	const charactersSize = firstNonWhiteSpaceCharacter
+		? firstNonWhiteSpaceCharacter.length
+		: 0;
 
 	const range = document.createRange();
-	range.setStart(textNode, firstNonWhiteSpaceCharacter);
-	range.setEnd(textNode, firstNonWhiteSpaceCharacter + 1);
+	range.setStart(textNode, firstNonWhiteSpaceCharacterIndex);
+	range.setEnd(textNode, firstNonWhiteSpaceCharacterIndex + charactersSize);
 	const rect = range.getBoundingClientRect();
 	return rect;
 }
