@@ -3,6 +3,16 @@ import { Wrapper } from "../Wrapper";
 
 const DEFAULT_SCROLL_FACTOR = 0.66;
 
+// Officially "instant" is not part of the specification yet, although it works
+// in Firefox, Chrome and Safari.
+declare global {
+	interface ScrollToOptions {
+		left?: number;
+		top?: number;
+		behavior?: "auto" | "instant" | "smooth";
+	}
+}
+
 let lastScrollContainer: HTMLElement | undefined;
 let lastScrollFactor: number;
 
@@ -167,7 +177,7 @@ export function snapScroll(
 		scrollAmount = isPageScroll ? -(cHeight - bottom) : -(cBottom - bottom);
 	}
 
-	scrollContainer.scrollBy(0, scrollAmount);
+	scrollContainer.scrollBy({ left: 0, top: scrollAmount, behavior: "instant" });
 
 	// Handle sticky headers
 	if (position === "top") {
@@ -196,7 +206,11 @@ export function snapScroll(
 					(position === "sticky" || position === "fixed")
 				) {
 					const stickyBottom = element.getBoundingClientRect().bottom;
-					scrollContainer.scrollBy(0, top - stickyBottom);
+					scrollContainer.scrollBy({
+						left: 0,
+						top: top - stickyBottom,
+						behavior: "instant",
+					});
 					stickyFound = true;
 					break;
 				}
@@ -265,11 +279,5 @@ export function scroll(options: ScrollOptions) {
 	if (dir === "left") left = -scrollWidth * factor;
 	if (dir === "right") left = scrollWidth * factor;
 
-	//
-	const previousScrollBehavior =
-		window.getComputedStyle(scrollContainer).scrollBehavior;
-	scrollContainer.style.scrollBehavior = "auto";
-
-	scrollContainer.scrollBy({ left, top, behavior: "auto" });
-	scrollContainer.style.scrollBehavior = previousScrollBehavior;
+	scrollContainer.scrollBy({ left, top, behavior: "instant" });
 }
