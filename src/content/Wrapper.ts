@@ -385,9 +385,11 @@ export class Wrapper {
 		const pointerTarget = getPointerTarget(this.element);
 		this.hint?.flash();
 
-		if (pointerTarget instanceof HTMLElement && focusesOnclick(pointerTarget)) {
-			pointerTarget.focus();
-		} else if (pointerTarget instanceof HTMLAnchorElement) {
+		if (
+			pointerTarget instanceof HTMLAnchorElement &&
+			pointerTarget.getAttribute("target") === "_blank" &&
+			pointerTarget.getAttribute("href")
+		) {
 			// In Firefox if we click a link with target="_blank" we get a popup message
 			// saying "Firefox prevented this site from opening a popup". In order to
 			// avoid that we open a new tab with the url of the href of the link.
@@ -395,16 +397,10 @@ export class Wrapper {
 			// They probably prevent the default behavior with javascript. For example Slack
 			// has this for opening a thread in the side panel. So here we make sure that
 			// there is a href attribute before we open the link in a new tab.
-			if (
-				pointerTarget.getAttribute("target") === "_blank" &&
-				pointerTarget.getAttribute("href")
-			) {
-				void openInNewTab([this]);
-			} else {
-				dispatchHover(pointerTarget);
-				void dispatchClick(pointerTarget);
-			}
+			void openInNewTab([this]);
 		} else {
+			// Some pages expect a some hover event prior to the click and if there
+			// isn't one we can't click at all. For example, Slack search suggestions.
 			dispatchHover(pointerTarget);
 			void dispatchClick(pointerTarget);
 		}
