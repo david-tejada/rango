@@ -1,4 +1,5 @@
 import browser from "webextension-polyfill";
+import { HintsStack } from "../../typings/HintsStack";
 
 export async function initStack() {
 	return browser.runtime.sendMessage({
@@ -25,4 +26,10 @@ export async function releaseHints(hints: string[]) {
 		type: "releaseHints",
 		hints,
 	});
+}
+
+export async function getHintsStackForTab() {
+	return browser.runtime.sendMessage({
+		type: "getHintsStackForTab",
+	}) as Promise<HintsStack>;
 }

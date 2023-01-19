@@ -87,3 +87,8 @@ export async function clearHintsCache() {
 	// frames other than 0 are ignored within the function
 	await initStack();
 }
+
+// For debugging purposes
+export function getHintsCache() {
+	return { main: mainCache, additional: additionalCache };
+}

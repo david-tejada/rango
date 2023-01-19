@@ -21,6 +21,7 @@ import { runRangoActionWithoutTarget } from "./actions/runRangoActionWithoutTarg
 import { updateCustomSelectors } from "./hints/selectors";
 import { getHintStringsInUse, reclaimHints } from "./wrappers";
 import { reclaimHintsFromCache } from "./hints/hintsCache";
+import { loadDevtoolsUtils } from "./utils/devtoolsUtils";
 
 cacheHintOptions()
 	.then(addUrlToTitle)
@@ -37,6 +38,8 @@ cacheHintOptions()
 	.catch((error) => {
 		console.error(error);
 	});
+
+loadDevtoolsUtils();
 
 browser.runtime.onMessage.addListener(
 	async (

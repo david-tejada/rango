@@ -5,11 +5,11 @@ const wrappersAll: Map<Element, ElementWrapper> = new Map();
 const wrappersHinted: Map<string, ElementWrapper> = new Map();
 
 export function getAllWrappers() {
-	return wrappersAll.values();
+	return [...wrappersAll.values()];
 }
 
 export function getHintedWrappers() {
-	return wrappersHinted.values();
+	return [...wrappersHinted.values()];
 }
 
 // These methods adds the target and all of its descendants if they were

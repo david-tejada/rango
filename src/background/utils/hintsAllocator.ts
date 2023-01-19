@@ -20,7 +20,7 @@ function stackFromStorable(storableStack: StorableHintsStack): HintsStack {
 	};
 }
 
-async function getStack(tabId: number): Promise<HintsStack> {
+export async function getStack(tabId: number): Promise<HintsStack> {
 	const storableStack = (await getStored(`hints-stack-${tabId}`)) as
 		| StorableHintsStack
 		| undefined;

@@ -33,7 +33,11 @@ interface ReclaimHintsFromOtherFrames {
 }
 
 interface SimpleBackgroundRequest {
-	type: "initStack" | "getTabId" | "restoreKeyboardReachableHints";
+	type:
+		| "initStack"
+		| "getTabId"
+		| "restoreKeyboardReachableHints"
+		| "getHintsStackForTab";
 }
 
 export type BackgroundRequest =

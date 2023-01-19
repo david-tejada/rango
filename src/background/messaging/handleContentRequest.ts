@@ -4,6 +4,7 @@ import { BackgroundRequest } from "../../typings/BackgroundRequest";
 import { assertDefined } from "../../typings/TypingUtils";
 import {
 	claimHints,
+	getStack,
 	initStack,
 	reclaimHintsFromOtherFrames,
 	releaseHints,
@@ -27,6 +28,7 @@ export async function handleContentRequest(
 			"claimHints",
 			"releaseHints",
 			"reclaimHintsFromOtherFrames",
+			"getHintsStackForTab",
 		].includes(request.type)
 	) {
 		return mutex.runExclusive(async () => {
@@ -42,6 +44,9 @@ export async function handleContentRequest(
 
 				case "releaseHints":
 					return releaseHints(request.hints, tabId);
+
+				case "getHintsStackForTab":
+					return getStack(tabId);
 
 				default:
 					break;
