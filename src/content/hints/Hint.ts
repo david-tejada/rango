@@ -42,70 +42,68 @@ function addToHintQueue(hint: Hint) {
 }
 
 const processHintQueue = debounce(() => {
-	window.requestIdleCallback(() => {
-		const toComputeContext = [];
+	const toComputeContext = [];
 
-		for (const hint of hintQueue) {
-			if (!hint.container) toComputeContext.push(hint.target);
+	for (const hint of hintQueue) {
+		if (!hint.container) toComputeContext.push(hint.target);
+	}
+
+	cacheLayout(toComputeContext);
+
+	for (const hint of hintQueue) {
+		if (!hint.container) hint.computeHintContext();
+	}
+
+	const toCache = [];
+
+	for (const hint of hintQueue) {
+		// We need to render the hint but hide it so we can calculate its size for
+		// positioning it and so we can have a transition.
+		hint.inner.classList.add("hidden");
+		if (!hint.shadowHost.isConnected) hint.container.append(hint.shadowHost);
+		if (!hint.elementToPositionHint.isConnected) {
+			hint.elementToPositionHint = getElementToPositionHint(hint.target);
 		}
 
-		cacheLayout(toComputeContext);
+		toCache.push(
+			hint.target,
+			hint.elementToPositionHint,
+			hint.outer,
+			hint.inner
+		);
+	}
 
+	cacheLayout(toCache);
+
+	for (const hint of hintQueue) {
+		hint.position();
+		setHintedWrapper(hint.string!, hint.target);
+		hint.shadowHost.dataset["hint"] = hint.string;
+
+		// This is here for debugging and testing purposes
+		if (
+			process.env["NODE_ENV"] !== "production" &&
+			hint.target instanceof HTMLElement
+		) {
+			hint.target.dataset["hint"] = hint.string;
+		}
+	}
+
+	requestAnimationFrame(() => {
 		for (const hint of hintQueue) {
-			if (!hint.container) hint.computeHintContext();
+			hint.inner.classList.remove("hidden");
 		}
 
-		const toCache = [];
-
+		// This is to make sure that we don't make visible a hint that was
+		// released and causing layouts to break. Since release could be called
+		// before this callback is called
 		for (const hint of hintQueue) {
-			// We need to render the hint but hide it so we can calculate its size for
-			// positioning it and so we can have a transition.
-			hint.inner.classList.add("hidden");
-			if (!hint.shadowHost.isConnected) hint.container.append(hint.shadowHost);
-			if (!hint.elementToPositionHint.isConnected) {
-				hint.elementToPositionHint = getElementToPositionHint(hint.target);
-			}
-
-			toCache.push(
-				hint.target,
-				hint.elementToPositionHint,
-				hint.outer,
-				hint.inner
-			);
+			hintQueue.delete(hint);
+			if (hint.string) hint.inner.classList.add("visible");
 		}
-
-		cacheLayout(toCache);
-
-		for (const hint of hintQueue) {
-			hint.position();
-			setHintedWrapper(hint.string!, hint.target);
-			hint.shadowHost.dataset["hint"] = hint.string;
-
-			// This is here for debugging and testing purposes
-			if (
-				process.env["NODE_ENV"] !== "production" &&
-				hint.target instanceof HTMLElement
-			) {
-				hint.target.dataset["hint"] = hint.string;
-			}
-		}
-
-		requestAnimationFrame(() => {
-			for (const hint of hintQueue) {
-				hint.inner.classList.remove("hidden");
-			}
-
-			// This is to make sure that we don't make visible a hint that was
-			// released and causing layouts to break. Since release could be called
-			// before this callback is called
-			for (const hint of hintQueue) {
-				hintQueue.delete(hint);
-				if (hint.string) hint.inner.classList.add("visible");
-			}
-		});
-
-		clearLayoutCache();
 	});
+
+	clearLayoutCache();
 }, 100);
 
 function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {

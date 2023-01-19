@@ -99,13 +99,14 @@ export async function reclaimHintsFromOtherFrames(
 	amount: number
 ) {
 	const stack = await getStack(tabId);
-	const frameIds = [...new Set(stack.assigned.values())].filter(
-		(id) => id !== frameId
-	);
+	const frames = await browser.webNavigation.getAllFrames({ tabId });
+	const otherFramesIds = frames
+		.map((frame) => frame.frameId)
+		.filter((id) => id !== frameId);
 
 	const reclaimed: string[] = [];
 
-	for (const id of frameIds) {
+	for (const id of otherFramesIds) {
 		// eslint-disable-next-line no-await-in-loop
 		const reclaimedFromFrame = (await browser.tabs.sendMessage(
 			tabId,

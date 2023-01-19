@@ -22,15 +22,16 @@ export async function cacheHints(necessary: number, additional: number) {
 	}
 
 	if (hintsToRequest > 0) {
+		const minimumAmountRequired = Math.min(hintsToRequest, necessary);
 		const hints = await claimHints(hintsToRequest);
 
-		if (hints.length < Math.min(hintsToRequest, necessary)) {
+		if (hints.length < minimumAmountRequired) {
 			// If there are not enough hints available we try to reclaim those hints
 			// that are outside of the viewport in the same frame (for speed)
 			hints.push(...reclaimHints(necessary - hints.length));
 		}
 
-		if (hints.length < necessary) {
+		if (hints.length < minimumAmountRequired) {
 			// If after that there're still not enough hints available we reclaim
 			// hints that are outside of the viewport from others frames
 			const additionalHints = await reclaimHintsFromOtherFrames(
