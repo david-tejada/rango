@@ -84,7 +84,9 @@ export class BoundedIntersectionObserver implements IntersectionObserver {
 					}
 				}
 
-				this.callback(filteredEntries, this.trueObserver);
+				if (filteredEntries.length > 0) {
+					this.callback(filteredEntries, this);
+				}
 			}, 50);
 
 			this.root.addEventListener("scroll", throttledScrollCallback, {
@@ -159,7 +161,7 @@ export class BoundedIntersectionObserver implements IntersectionObserver {
 				}
 			}
 
-			this.callback(relevantEntries, this);
+			if (relevantEntries.length > 0) this.callback(relevantEntries, this);
 		}
 	}
 
