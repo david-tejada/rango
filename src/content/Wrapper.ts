@@ -1,4 +1,3 @@
-import { Mutex } from "async-mutex";
 import { ElementWrapper } from "../typings/ElementWrapper";
 import { isHintable } from "./utils/isHintable";
 import { isDisabled } from "./utils/isDisabled";
@@ -137,34 +136,30 @@ const scrollIntersectionObservers: Map<
 	BoundedIntersectionObserver
 > = new Map();
 
-const mutex = new Mutex();
-
 async function intersectionCallback(entries: IntersectionObserverEntry[]) {
 	// Since this callback can be called multiple times asynchronously we need
 	// to make sure that we only run the code inside after the previous one has
 	// finished executing. If not the hints cache can get messed up.
-	await mutex.runExclusive(async () => {
-		const amountIntersecting = entries.filter(
-			(entry) => entry.isIntersecting
-		).length;
+	const amountIntersecting = entries.filter(
+		(entry) => entry.isIntersecting
+	).length;
 
-		const amountNotIntersectingViewport = entries.filter(
-			(entry) =>
-				entry.isIntersecting &&
-				getOrCreateWrapper(entry.target).isIntersectingViewport === false
-		).length;
+	const amountNotIntersectingViewport = entries.filter(
+		(entry) =>
+			entry.isIntersecting &&
+			getOrCreateWrapper(entry.target).isIntersectingViewport === false
+	).length;
 
-		if (amountIntersecting) {
-			await cacheHints(
-				amountIntersecting - amountNotIntersectingViewport,
-				amountNotIntersectingViewport
-			);
-		}
+	if (amountIntersecting) {
+		await cacheHints(
+			amountIntersecting - amountNotIntersectingViewport,
+			amountNotIntersectingViewport
+		);
+	}
 
-		for (const entry of entries) {
-			getOrCreateWrapper(entry.target).intersect(entry.isIntersecting);
-		}
-	});
+	for (const entry of entries) {
+		getOrCreateWrapper(entry.target).intersect(entry.isIntersecting);
+	}
 }
 
 const viewportIntersectionObserver = new IntersectionObserver(
