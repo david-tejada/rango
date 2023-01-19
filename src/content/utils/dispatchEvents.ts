@@ -1,6 +1,8 @@
 import { getElementCenter } from "./cssomUtils";
 import { focusesOnclick } from "./focusesOnclick";
 
+let lastHovered: Element | undefined;
+
 export async function dispatchClick(element: Element) {
 	const { x: clientX, y: clientY } = getElementCenter(element);
 
@@ -43,6 +45,8 @@ export async function dispatchClick(element: Element) {
 }
 
 export function dispatchHover(element: Element) {
+	if (lastHovered) dispatchUnhover(lastHovered);
+
 	const { x: clientX, y: clientY } = getElementCenter(element);
 
 	const mouseenterEvent = new MouseEvent("mouseenter", {
@@ -74,10 +78,21 @@ export function dispatchHover(element: Element) {
 	element.dispatchEvent(mouseenterEvent);
 	element.dispatchEvent(mouseoverEvent);
 	element.dispatchEvent(mousemoveEvent);
+
+	lastHovered = element;
 }
 
 export function dispatchUnhover(element: Element) {
 	const { x: clientX, y: clientY } = getElementCenter(element);
+
+	const mousemoveEvent = new MouseEvent("mousemove", {
+		view: window,
+		clientX,
+		clientY,
+		composed: true,
+		bubbles: true,
+		cancelable: true,
+	});
 
 	const mouseleaveEvent = new MouseEvent("mouseleave", {
 		view: window,
@@ -97,6 +112,9 @@ export function dispatchUnhover(element: Element) {
 		cancelable: true,
 	});
 
+	element.dispatchEvent(mousemoveEvent);
 	element.dispatchEvent(mouseleaveEvent);
 	element.dispatchEvent(mouseoutEvent);
+
+	lastHovered = undefined;
 }
