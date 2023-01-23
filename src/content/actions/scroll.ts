@@ -1,4 +1,5 @@
 import { isHtmlElement } from "../../typings/TypingUtils";
+import { getUserScrollableContainer } from "../utils/getUserScrollableContainer";
 import { Wrapper } from "../Wrapper";
 
 const DEFAULT_SCROLL_FACTOR = 0.66;
@@ -235,7 +236,7 @@ export function scroll(options: ScrollOptions) {
 	}
 
 	if (target instanceof Wrapper) {
-		scrollContainer = target.userScrollableContainer;
+		scrollContainer = getUserScrollableContainer(target.element);
 		if (!scrollContainer) {
 			throw new Error("Couldn't find userScrollableContainer for element");
 		}
