@@ -214,7 +214,7 @@ const targetMutationObserver = new MutationObserver((entries) => {
 	for (const entry of filtered) {
 		if (
 			entry.target instanceof Element &&
-			!entry.target.className.includes("rango-hint") &&
+			!(entry.target.className === "rango-hint") &&
 			// Avoid recomputing while we attach hint in development
 			entry.attributeName !== "data-hint"
 		) {
