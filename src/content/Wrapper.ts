@@ -17,7 +17,11 @@ import { deepGetElements } from "./utils/deepGetElements";
 import { getPointerTarget } from "./utils/getPointerTarget";
 import { focusesOnclick } from "./utils/focusesOnclick";
 import { openInNewTab } from "./actions/openInNewTab";
-import { dispatchClick, dispatchHover } from "./utils/dispatchEvents";
+import {
+	dispatchClick,
+	dispatchHover,
+	dispatchUnhover,
+} from "./utils/dispatchEvents";
 import {
 	getExtraHintsToggle,
 	updatePositionAll,
@@ -405,10 +409,11 @@ export class Wrapper {
 		const pointerTarget = getPointerTarget(this.element);
 		this.hint?.flash();
 		dispatchHover(pointerTarget);
+	}
 
-		// We need to return the pointerTarget to add to the list of hoveredElements
-		// so that later we can unhover all hovered elements
-		return pointerTarget;
+	unhover() {
+		const pointerTarget = getPointerTarget(this.element);
+		dispatchUnhover(pointerTarget);
 	}
 
 	remove() {
