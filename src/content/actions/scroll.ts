@@ -107,6 +107,9 @@ function getLeftmostScrollable() {
 	// we compare that instead of the left side because another scrollable left
 	// could be more to the left but, for example, span the whole viewport.
 	for (const scrollable of scrollables) {
+		// This finds instances of scrolling elements that don't really scroll. For
+		// example, Slack left bar.
+		if (scrollable.querySelectorAll("*").length < 5) continue;
 		const { right } = scrollable.getBoundingClientRect();
 		if (leftScrollableRight === undefined || right < leftScrollableRight) {
 			leftScrollable = scrollable;
@@ -131,6 +134,9 @@ function getRightmostScrollable() {
 	let rightScrollableLeft;
 
 	for (const scrollable of scrollables) {
+		// This finds instances of scrolling elements that don't really scroll. For
+		// example, Slack left bar.
+		if (scrollable.querySelectorAll("*").length < 5) continue;
 		const { left } = scrollable.getBoundingClientRect();
 		if (rightScrollableLeft === undefined || left > rightScrollableLeft) {
 			rightScrollable = scrollable;
