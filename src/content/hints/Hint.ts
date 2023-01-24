@@ -181,14 +181,15 @@ function injectShadowStyles(rootNode: ShadowRoot) {
 const containerMutationObserver = new MutationObserver((entries) => {
 	for (const entry of entries) {
 		for (const node of entry.removedNodes) {
-			if (
-				node instanceof HTMLDivElement &&
-				node.className === "rango-hint-wrapper" &&
-				node.textContent
-			) {
-				const wrapper = getWrapper(node.textContent);
+			if (node instanceof HTMLDivElement && node.className === "rango-hint") {
+				const inner = node.shadowRoot?.querySelector(".inner");
 
-				if (wrapper?.hint?.string) wrapper.hint.reattach();
+				if (inner?.textContent) {
+					const wrapper = getWrapper(inner.textContent);
+
+					// eslint-disable-next-line max-depth
+					if (wrapper?.hint?.string) wrapper.hint.reattach();
+				}
 			}
 		}
 	}
@@ -562,8 +563,8 @@ export class Hint {
 		// We put a limit on how many times we reattach the hint to avoid a vicious
 		// cycle in which the page deletes the hint and we reattach it
 		// constantly
-		if (this.reattachedTimes < 2) {
-			this.container.append(this.outer);
+		if (this.reattachedTimes < 10) {
+			this.container.append(this.shadowHost);
 			this.reattachedTimes++;
 		}
 	}
