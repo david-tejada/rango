@@ -19,6 +19,7 @@
 	padding: 0 0.15em;
 	opacity: 0%;
 	contain: layout style;
+	pointer-events: none;
 }
 
 .inner.hidden {
