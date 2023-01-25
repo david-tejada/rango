@@ -1,33 +1,44 @@
 import browser from "webextension-polyfill";
 
-let lastUrl: string;
+let lastUrlAdded: string | undefined;
 
 export async function addUrlToTitle() {
 	const { urlInTitle } = (await browser.storage.local.get(
 		"urlInTitle"
 	)) as Record<string, boolean>;
-	if (urlInTitle) {
+
+	// Here urlInTitle === undefined is mostly for testing purposes. As when we
+	// start the browser sometimes the options haven't been initialized
+	if (urlInTitle || urlInTitle === undefined) {
 		window.addEventListener("hashchange", () => {
-			if (document.title?.includes(lastUrl)) {
-				document.title = document.title.replace(lastUrl, window.location.href);
-				lastUrl = window.location.href;
-			}
+			document.title =
+				lastUrlAdded && document.title?.includes(lastUrlAdded)
+					? document.title.replace(lastUrlAdded, window.location.href)
+					: document.title + " - " + window.location.href;
+
+			lastUrlAdded = window.location.href;
 		});
 
 		if (document.title && !document.title.includes(window.location.href)) {
 			document.title = document.title + " - " + window.location.href;
-			lastUrl = window.location.href;
+			lastUrlAdded = window.location.href;
 		}
 
-		const headObserver = new MutationObserver(() => {
-			// We don't care to check if <title> was changed, in involves looping over addedNodes, ...
-			// I think it's quicker this way
+		const mutationObserver = new MutationObserver(() => {
+			// We need to check if the url has changed every time there is a mutation.
+			// The URL could be changed using something like history.pushState and
+			// sometimes the title doesn't even change (issue #75).
 			if (document.title && !document.title.includes(window.location.href)) {
-				document.title = document.title + " - " + window.location.href;
-				lastUrl = window.location.href;
+				document.title =
+					lastUrlAdded && document.title.includes(lastUrlAdded)
+						? document.title.replace(lastUrlAdded, window.location.href)
+						: document.title + " - " + window.location.href;
+
+				lastUrlAdded = window.location.href;
 			}
 		});
+
 		const config = { attributes: true, childList: true, subtree: true };
-		if (document.head) headObserver.observe(document.head, config);
+		mutationObserver.observe(document, config);
 	}
 }
