@@ -133,7 +133,9 @@ function getFirstIconOrTextElement(
 	target: Element
 ): Element | Text | undefined {
 	const elements = deepGetElements(target, true).filter(
-		(element) => !element.matches(".rango-hint")
+		(element) =>
+			!element.matches(".rango-hint") &&
+			!(element instanceof SVGElement && !(element instanceof SVGSVGElement))
 	);
 
 	let firstTextBlockElement: Element | undefined;
