@@ -16,6 +16,7 @@ import {
 } from "./customHints";
 import { unhoverAll } from "./hoverElement";
 import { scroll } from "./scroll";
+import { navigateToNextPage, navigateToPreviousPage } from "./pagination";
 
 export async function runRangoActionWithoutTarget(
 	request: RangoActionWithoutTarget
@@ -31,6 +32,14 @@ export async function runRangoActionWithoutTarget(
 
 		case "navigateToPageRoot":
 			window.location.href = "/";
+			break;
+
+		case "navigateToNextPage":
+			navigateToNextPage();
+			break;
+
+		case "navigateToPreviousPage":
+			navigateToPreviousPage();
 			break;
 
 		case "scrollUpPage":

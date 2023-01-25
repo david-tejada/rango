@@ -45,7 +45,7 @@ function isRedundant(target: Element) {
 	return false;
 }
 
-function isHintableExtra(target: Element): boolean {
+export function isHintableExtra(target: Element): boolean {
 	const { cursor } = window.getComputedStyle(target);
 
 	if (
