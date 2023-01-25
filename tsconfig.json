@@ -6,6 +6,5 @@
 		"lib": ["es2021", "ES2021.String", "DOM", "DOM.Iterable"],
 		"strictPropertyInitialization": false
 	},
-	"files": ["node_modules/jest-expect-message/types/index.d.ts"],
 	"include": ["src/**/*", "tests/**/*"]
 }
