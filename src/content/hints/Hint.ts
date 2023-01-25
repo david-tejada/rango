@@ -42,21 +42,27 @@ function addToHintQueue(hint: Hint) {
 }
 
 const processHintQueue = debounce(() => {
+	// We need to make a copy of hintQueue in case a new hint is added to the
+	// queue in the middle of this callback. If this happens, for example, after
+	// the first for loop but before the second one, the hint will be processed
+	// and removed from hintQueue but the hint won't be displayed because we
+	// didn't compute the context.
+	const queue = new Set(hintQueue);
 	const toComputeContext = [];
 
-	for (const hint of hintQueue) {
+	for (const hint of queue) {
 		if (!hint.container) toComputeContext.push(hint.target);
 	}
 
 	cacheLayout(toComputeContext);
 
-	for (const hint of hintQueue) {
+	for (const hint of queue) {
 		if (!hint.container) hint.computeHintContext();
 	}
 
 	const toCache = [];
 
-	for (const hint of hintQueue) {
+	for (const hint of queue) {
 		// We need to render the hint but hide it so we can calculate its size for
 		// positioning it and so we can have a transition.
 		hint.inner.classList.add("hidden");
@@ -75,7 +81,7 @@ const processHintQueue = debounce(() => {
 
 	cacheLayout(toCache);
 
-	for (const hint of hintQueue) {
+	for (const hint of queue) {
 		hint.position();
 		setHintedWrapper(hint.string!, hint.target);
 		hint.shadowHost.dataset["hint"] = hint.string;
@@ -90,14 +96,17 @@ const processHintQueue = debounce(() => {
 	}
 
 	requestAnimationFrame(() => {
-		for (const hint of hintQueue) {
+		for (const hint of queue) {
 			hint.inner.classList.remove("hidden");
 		}
 
 		// This is to make sure that we don't make visible a hint that was
 		// released and causing layouts to break. Since release could be called
 		// before this callback is called
-		for (const hint of hintQueue) {
+		for (const hint of queue) {
+			// Here we need to delete from the actual hintQueue and not from queue so
+			// that the hints aren't processed in the next call to processHintQueue
+			// again
 			hintQueue.delete(hint);
 			if (hint.string) hint.inner.classList.add("visible");
 		}
