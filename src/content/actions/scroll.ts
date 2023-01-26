@@ -60,22 +60,27 @@ function getIntersectionWithViewport(element: Element): DOMRect {
 	return new DOMRect(x, y, width, height);
 }
 
-function isScrollable(element: HTMLElement) {
+function isScrollable(
+	element: HTMLElement,
+	direction: "horizontal" | "vertical"
+) {
 	const { clientHeight, clientWidth, scrollHeight, scrollWidth } = element;
 	const { overflowX, overflowY } = window.getComputedStyle(element);
 
 	// We need to take into account that the <html> element can scroll even if
 	// overflow is "visible"
 	return (
-		(clientWidth !== scrollWidth &&
+		(direction === "horizontal" &&
+			clientWidth !== scrollWidth &&
 			(element === document.documentElement ||
 				/scroll|auto/.test(overflowX))) ||
-		(clientHeight !== scrollHeight &&
+		(direction === "vertical" &&
+			clientHeight !== scrollHeight &&
 			(element === document.documentElement || /scroll|auto/.test(overflowY)))
 	);
 }
 
-function getScrollableAtCenter() {
+function getScrollableAtCenter(direction: "horizontal" | "vertical") {
 	const x = document.documentElement.clientWidth / 2;
 	const y = document.documentElement.clientHeight / 2;
 
@@ -84,7 +89,7 @@ function getScrollableAtCenter() {
 	let current = document.elementFromPoint(x, y);
 
 	while (current) {
-		if (current instanceof HTMLElement && isScrollable(current)) {
+		if (current instanceof HTMLElement && isScrollable(current, direction)) {
 			outerScrollable = current;
 		}
 
@@ -98,7 +103,8 @@ function getLeftmostScrollable() {
 	const scrollables = [...document.querySelectorAll("*")]
 		.filter(isHtmlElement)
 		.filter(
-			(element) => isScrollable(element) && element.matches(":not(html, body)")
+			(element) =>
+				isScrollable(element, "vertical") && element.matches(":not(html, body)")
 		);
 
 	let leftScrollable;
@@ -127,7 +133,7 @@ function getRightmostScrollable() {
 		.filter(
 			(element) =>
 				element instanceof HTMLElement &&
-				isScrollable(element) &&
+				isScrollable(element, "vertical") &&
 				element.matches(":not(html, body)")
 		);
 
@@ -230,13 +236,15 @@ export function scroll(options: ScrollOptions) {
 	const { dir, target } = options;
 	let factor = options.factor;
 	let scrollContainer: HTMLElement | undefined;
+	const direction =
+		dir === "left" || dir === "right" ? "horizontal" : "vertical";
 
 	if (target === "repeatLast" && (!lastScrollContainer || !lastScrollFactor)) {
 		throw new Error("Unable to repeat the last scroll");
 	}
 
 	if (target instanceof Wrapper) {
-		scrollContainer = getUserScrollableContainer(target.element);
+		scrollContainer = getUserScrollableContainer(target.element, direction);
 		if (!scrollContainer) {
 			throw new Error("Couldn't find userScrollableContainer for element");
 		}
@@ -249,12 +257,12 @@ export function scroll(options: ScrollOptions) {
 
 	// Page scroll
 	if (target === "page") {
-		if (isScrollable(document.documentElement)) {
+		if (isScrollable(document.documentElement, direction)) {
 			scrollContainer = document.documentElement;
-		} else if (isScrollable(document.body)) {
+		} else if (isScrollable(document.body, direction)) {
 			scrollContainer = document.body;
 		} else {
-			scrollContainer = getScrollableAtCenter();
+			scrollContainer = getScrollableAtCenter(direction);
 		}
 	}
 

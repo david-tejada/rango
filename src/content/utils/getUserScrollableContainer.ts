@@ -1,6 +1,9 @@
 const containersCache: Map<Element, HTMLElement> = new Map();
 
-export function getUserScrollableContainer(element: Element): HTMLElement {
+export function getUserScrollableContainer(
+	element: Element,
+	direction?: "vertical" | "horizontal"
+): HTMLElement {
 	const elementPosition = window.getComputedStyle(element).position;
 
 	const checked = [];
@@ -32,8 +35,12 @@ export function getUserScrollableContainer(element: Element): HTMLElement {
 
 		if (
 			current instanceof HTMLElement &&
-			((scrollWidth > clientWidth && /scroll|auto/.test(overflowX)) ||
-				(scrollHeight > clientHeight && /scroll|auto/.test(overflowY)))
+			(((!direction || direction === "horizontal") &&
+				scrollWidth > clientWidth &&
+				/scroll|auto/.test(overflowX)) ||
+				((!direction || direction === "vertical") &&
+					scrollHeight > clientHeight &&
+					/scroll|auto/.test(overflowY)))
 		) {
 			checked.push(current);
 
