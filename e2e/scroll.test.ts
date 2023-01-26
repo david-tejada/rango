@@ -53,7 +53,7 @@ async function getActionableHint(containerSelector: string, top = true) {
 	});
 
 	const $$nodes = await page.$$(`${containerSelector} a[data-hint]`);
-	const $$visible = [];
+	const $$visible: puppeteer.ElementHandle[] = [];
 	for (const $node of $$nodes) {
 		// eslint-disable-next-line no-await-in-loop
 		const visible = await $node.evaluate(
