@@ -1,6 +1,12 @@
+/* eslint-disable unicorn/prefer-module */
+/* eslint-disable unicorn/prefer-node-protocol */
+import fs from "fs";
+import path from "path";
 import tippy from "tippy.js";
 import { ElementWrapper } from "../../typings/ElementWrapper";
 import { assertDefined } from "../../typings/TypingUtils";
+
+const tippyCss = fs.readFileSync(path.join(__dirname, "tippy.css"), "utf8");
 
 export function showTooltip(
 	wrapper: ElementWrapper,
@@ -8,6 +14,10 @@ export function showTooltip(
 	duration: number
 ) {
 	assertDefined(wrapper.hint);
+
+	const style = document.createElement("style");
+	style.textContent = tippyCss;
+	wrapper.hint.shadowHost.shadowRoot!.append(style);
 
 	const hintInner = wrapper.hint.inner;
 	hintInner.id = "rango-tooltip";
@@ -27,5 +37,6 @@ export function showTooltip(
 	setTimeout(() => {
 		instance.hide();
 		hintInner.removeAttribute("id");
+		style.remove();
 	}, duration);
 }
