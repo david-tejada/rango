@@ -4,7 +4,7 @@ import {
 	displayMoreOrLessHints,
 	updateHintablesBySelector,
 	updateRecentCustomSelectors,
-} from "../updateWrappers";
+} from "../wrappers/updateWrappers";
 import { deepGetElements } from "../utils/deepGetElements";
 import { updateCustomSelectors } from "../hints/selectors";
 import { generatePossibleSelectors } from "../utils/generatePossibleSelectors";

@@ -1,10 +1,10 @@
-import { throttle } from "../lib/debounceAndThrottle";
+import { throttle } from "../../lib/debounceAndThrottle";
 import {
 	clearMarkedForInclusionOrExclusion,
 	popCustomSelectorsToUpdate,
-} from "./hints/customHintsEdit";
-import { clearHintsCache } from "./hints/hintsCache";
-import { extraSelector, getExcludeSelectorAll } from "./hints/selectors";
+} from "../hints/customHintsEdit";
+import { clearHintsCache } from "../hints/hintsCache";
+import { extraSelector, getExcludeSelectorAll } from "../hints/selectors";
 import {
 	getAllWrappers,
 	getHintedWrappers,

@@ -19,7 +19,7 @@ import { updateHintsInTab } from "./utils/getHintsInTab";
 import { runRangoActionWithTarget } from "./actions/runRangoActionWithTarget";
 import { runRangoActionWithoutTarget } from "./actions/runRangoActionWithoutTarget";
 import { updateCustomSelectors } from "./hints/selectors";
-import { getHintStringsInUse, reclaimHints } from "./wrappers";
+import { getHintStringsInUse, reclaimHints } from "./wrappers/wrappers";
 import { reclaimHintsFromCache } from "./hints/hintsCache";
 import { loadDevtoolsUtils } from "./utils/devtoolsUtils";
 

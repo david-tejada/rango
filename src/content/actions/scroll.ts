@@ -1,6 +1,6 @@
 import { isHtmlElement } from "../../typings/TypingUtils";
 import { getUserScrollableContainer } from "../utils/getUserScrollableContainer";
-import { Wrapper } from "../Wrapper";
+import { Wrapper } from "../wrappers/Wrapper";
 
 const DEFAULT_SCROLL_FACTOR = 0.66;
 

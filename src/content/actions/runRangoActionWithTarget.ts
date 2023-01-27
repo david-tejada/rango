@@ -1,6 +1,6 @@
 import { RangoActionWithTarget } from "../../typings/RangoAction";
 import { assertDefined } from "../../typings/TypingUtils";
-import { getWrapper } from "../wrappers";
+import { getWrapper } from "../wrappers/wrappers";
 import { TalonAction } from "../../typings/RequestFromTalon";
 import { clickElement } from "./clickElement";
 import {

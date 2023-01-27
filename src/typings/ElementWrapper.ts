@@ -1,5 +1,5 @@
 import Color from "color";
-import { BoundedIntersectionObserver } from "../content/BoundedIntersectionObserver";
+import { BoundedIntersectionObserver } from "../content/utils/BoundedIntersectionObserver";
 
 export interface ElementWrapper {
 	element: Element;

@@ -1,5 +1,5 @@
 import { isHintableExtra } from "../utils/isHintable";
-import { getAllWrappers } from "../wrappers";
+import { getAllWrappers } from "../wrappers/wrappers";
 
 const i18nPreviousRe =
 	/^.{0,3}(previous|newer|anterior|förra|zurück|precedente|préc|前ページ|上一页).{0,3}$/i;

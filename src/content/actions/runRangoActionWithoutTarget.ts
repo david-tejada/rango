@@ -7,7 +7,7 @@ import {
 	refreshHints,
 	updateHintablesBySelector,
 	updateHintsStyle,
-} from "../updateWrappers";
+} from "../wrappers/updateWrappers";
 import { updateCustomSelectors } from "../hints/selectors";
 import { resetCustomSelectors } from "../hints/customHintsEdit";
 import {

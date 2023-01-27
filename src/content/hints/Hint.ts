@@ -13,9 +13,9 @@ import {
 	getWrapper,
 	getWrapperForElement,
 	setHintedWrapper,
-} from "../wrappers";
+} from "../wrappers/wrappers";
 import { debounce } from "../../lib/debounceAndThrottle";
-import { updatePositionAll } from "../updateWrappers";
+import { updatePositionAll } from "../wrappers/updateWrappers";
 import {
 	matchesMarkedForInclusion,
 	matchesMarkedForExclusion,

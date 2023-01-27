@@ -1,5 +1,8 @@
 import { matchesMarkedForInclusion } from "../hints/customHintsEdit";
-import { getExtraHintsToggle, getShowExcludedToggle } from "../updateWrappers";
+import {
+	getExtraHintsToggle,
+	getShowExcludedToggle,
+} from "../wrappers/updateWrappers";
 import {
 	matchesCustomExclude,
 	matchesCustomInclude,

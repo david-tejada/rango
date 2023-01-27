@@ -1,6 +1,10 @@
 import { getHintsCache } from "../hints/hintsCache";
 import { getHintsStackForTab } from "../hints/hintsRequests";
-import { getAllWrappers, getHintedWrappers, getWrapper } from "../wrappers";
+import {
+	getAllWrappers,
+	getHintedWrappers,
+	getWrapper,
+} from "../wrappers/wrappers";
 
 // This is not exact but I can't find a definition of exportFunction
 declare function exportFunction(

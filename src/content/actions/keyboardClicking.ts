@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
 import { assertDefined, isFocusOnClickInput } from "../../typings/TypingUtils";
 import { getHintsInTab } from "../utils/getHintsInTab";
-import { getWrapper } from "../wrappers";
+import { getWrapper } from "../wrappers/wrappers";
 
 let keysPressedBuffer = "";
 let timeoutId: ReturnType<typeof setTimeout>;

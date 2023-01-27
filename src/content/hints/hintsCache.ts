@@ -1,4 +1,4 @@
-import { reclaimHints } from "../wrappers";
+import { reclaimHints } from "../wrappers/wrappers";
 import {
 	claimHints,
 	initStack,

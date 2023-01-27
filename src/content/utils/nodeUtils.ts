@@ -1,5 +1,5 @@
 import { assertDefined } from "../../typings/TypingUtils";
-import { getWrapperForElement } from "../wrappers";
+import { getWrapperForElement } from "../wrappers/wrappers";
 
 // Inside some elements you can't get the coordinates of a text node with Range and
 // instead you get the characters offset

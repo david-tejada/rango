@@ -5,8 +5,8 @@
  * plus rootMargin.
  */
 
-import { throttle } from "../lib/debounceAndThrottle";
-import { assertDefined } from "../typings/TypingUtils";
+import { throttle } from "../../lib/debounceAndThrottle";
+import { assertDefined } from "../../typings/TypingUtils";
 
 function isIntersectingViewportMargin(target: Element, margin: number) {
 	const { top, bottom, left, right } = target.getBoundingClientRect();

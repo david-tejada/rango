@@ -1,11 +1,28 @@
-import { ElementWrapper } from "../typings/ElementWrapper";
-import { isHintable } from "./utils/isHintable";
-import { isDisabled } from "./utils/isDisabled";
-import { isVisible } from "./utils/isVisible";
-import { cacheHints } from "./hints/hintsCache";
-import { getUserScrollableContainer } from "./utils/getUserScrollableContainer";
-import { BoundedIntersectionObserver } from "./BoundedIntersectionObserver";
-import { Hint } from "./hints/Hint";
+import { ElementWrapper } from "../../typings/ElementWrapper";
+import { isHintable } from "../utils/isHintable";
+import { isDisabled } from "../utils/isDisabled";
+import { isVisible } from "../utils/isVisible";
+import { cacheHints } from "../hints/hintsCache";
+import { getUserScrollableContainer } from "../utils/getUserScrollableContainer";
+import { BoundedIntersectionObserver } from "../utils/BoundedIntersectionObserver";
+import { Hint } from "../hints/Hint";
+import { deepGetElements } from "../utils/deepGetElements";
+import { getPointerTarget } from "../utils/getPointerTarget";
+import { focusesOnclick } from "../utils/focusesOnclick";
+import { openInNewTab } from "../actions/openInNewTab";
+import {
+	dispatchClick,
+	dispatchHover,
+	dispatchUnhover,
+} from "../utils/dispatchEvents";
+import { matchesCustomExclude, matchesCustomInclude } from "../hints/selectors";
+import { cacheLayout, clearLayoutCache } from "../hints/layoutCache";
+import {
+	getExtraHintsToggle,
+	updatePositionAll,
+	updateShouldBeHintedAll,
+	updateStyleAll,
+} from "./updateWrappers";
 import {
 	addWrapper,
 	deleteWrapper,
@@ -13,23 +30,6 @@ import {
 	getWrapperForElement,
 	clearHintedWrapper,
 } from "./wrappers";
-import { deepGetElements } from "./utils/deepGetElements";
-import { getPointerTarget } from "./utils/getPointerTarget";
-import { focusesOnclick } from "./utils/focusesOnclick";
-import { openInNewTab } from "./actions/openInNewTab";
-import {
-	dispatchClick,
-	dispatchHover,
-	dispatchUnhover,
-} from "./utils/dispatchEvents";
-import {
-	getExtraHintsToggle,
-	updatePositionAll,
-	updateShouldBeHintedAll,
-	updateStyleAll,
-} from "./updateWrappers";
-import { matchesCustomExclude, matchesCustomInclude } from "./hints/selectors";
-import { cacheLayout, clearLayoutCache } from "./hints/layoutCache";
 
 // =============================================================================
 // HELPER FUNCTIONS

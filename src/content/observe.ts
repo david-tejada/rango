@@ -3,8 +3,8 @@ import {
 	addWrappersFrom,
 	addWrapperIntersectionObserver,
 	mutationObserver,
-} from "./Wrapper";
-import { clearWrappersAll } from "./wrappers";
+} from "./wrappers/Wrapper";
+import { clearWrappersAll } from "./wrappers/wrappers";
 
 let enabled = false;
 const config = { attributes: true, childList: true, subtree: true };

@@ -5,7 +5,7 @@
 // most of the time, we want the hint next to the text of the hinted element.
 
 import { deepGetElements } from "../utils/deepGetElements";
-import { getWrapperForElement } from "../wrappers";
+import { getWrapperForElement } from "../wrappers/wrappers";
 import {
 	getBoundingClientRect,
 	getCachedStyle,

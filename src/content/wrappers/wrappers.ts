@@ -1,5 +1,5 @@
-import { ElementWrapper } from "../typings/ElementWrapper";
-import { deepGetElements } from "./utils/deepGetElements";
+import { ElementWrapper } from "../../typings/ElementWrapper";
+import { deepGetElements } from "../utils/deepGetElements";
 
 const wrappersAll: Map<Element, ElementWrapper> = new Map();
 const wrappersHinted: Map<string, ElementWrapper> = new Map();

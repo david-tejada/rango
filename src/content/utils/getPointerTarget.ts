@@ -1,4 +1,4 @@
-import { getWrapperForElement } from "../wrappers";
+import { getWrapperForElement } from "../wrappers/wrappers";
 import { getElementCenter } from "./cssomUtils";
 
 export function getPointerTarget(element: Element) {
