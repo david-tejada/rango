@@ -6,6 +6,12 @@ import {
 	getFirstCharacterRect,
 } from "./layoutCache";
 
+declare global {
+	interface CSSStyleDeclaration {
+		contentVisibility?: string;
+	}
+}
+
 // Minimum space that needs to be available so that we can place the hint in the
 // current element
 const ENOUGH_LEFT = 15;
@@ -72,6 +78,7 @@ function getSpaceAvailable(
 		position,
 		overflow,
 		clipPath,
+		contentVisibility,
 		left: styleLeft,
 		top: styleTop,
 	} = getCachedStyle(containerForRect);
@@ -95,7 +102,11 @@ function getSpaceAvailable(
 	// handled in the previous if block
 	// We treat elements with clip-path the same as if it was overflow: hidden.
 	// Calculating exactly what is the visible area of the element would be a nightmare
-	if (overflow !== "visible" || clipPath !== "none") {
+	if (
+		overflow !== "visible" ||
+		clipPath !== "none" ||
+		contentVisibility !== "visible"
+	) {
 		return {
 			left: Math.max(paddingInnerLeft, 0),
 			top: Math.max(paddingInnerTop, 0),
@@ -215,8 +226,15 @@ export function getContextForHint(
 			continue;
 		}
 
-		const { overflow, contain, clipPath, position, transform, willChange } =
-			getCachedStyle(current);
+		const {
+			overflow,
+			contain,
+			clipPath,
+			position,
+			transform,
+			willChange,
+			contentVisibility,
+		} = getCachedStyle(current);
 
 		if (
 			current === document.body ||
@@ -243,7 +261,8 @@ export function getContextForHint(
 			/paint|content|strict/.test(contain) ||
 			clipPath !== "none" ||
 			position === "fixed" ||
-			position === "sticky"
+			position === "sticky" ||
+			contentVisibility !== "visible"
 		) {
 			clipAncestors.push(current);
 			if (limitParent) {
