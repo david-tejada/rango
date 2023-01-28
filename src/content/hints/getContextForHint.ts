@@ -105,7 +105,7 @@ function getSpaceAvailable(
 	if (
 		overflow !== "visible" ||
 		clipPath !== "none" ||
-		contentVisibility !== "visible"
+		(contentVisibility && contentVisibility !== "visible")
 	) {
 		return {
 			left: Math.max(paddingInnerLeft, 0),
@@ -262,7 +262,7 @@ export function getContextForHint(
 			clipPath !== "none" ||
 			position === "fixed" ||
 			position === "sticky" ||
-			contentVisibility !== "visible"
+			(contentVisibility && contentVisibility !== "visible")
 		) {
 			clipAncestors.push(current);
 			if (limitParent) {
