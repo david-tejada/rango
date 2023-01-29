@@ -15,7 +15,7 @@ import { showTitleAndHref } from "./showTitleAndHref";
 import { includeOrExcludeExtraSelectors } from "./customHints";
 import { insertToField } from "./insertToField";
 import { setSelectionAfter, setSelectionBefore } from "./setSelection";
-import { clearAndSetSelection } from "./clearAndSetSelection";
+import { focusAndDeleteContents } from "./focusAndDeleteContents";
 
 export async function runRangoActionWithTarget(
 	request: RangoActionWithTarget
@@ -86,9 +86,8 @@ export async function runRangoActionWithTarget(
 			setSelectionAfter(wrapper);
 			break;
 
-		case "clearAndSetSelection":
-			clearAndSetSelection(wrapper);
-			break;
+		case "focusAndDeleteContents":
+			return focusAndDeleteContents(wrapper);
 
 		case "scrollUpAtElement":
 			scroll({ dir: "up", target: wrapper, factor: request.arg });

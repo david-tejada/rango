@@ -51,6 +51,7 @@ export async function handleTalonRequest() {
 		// to talon
 		if (
 			request.action.type.startsWith("copy") ||
+			request.action.type === "focusAndDeleteContents" ||
 			((request.action.type === "clickElement" ||
 				request.action.type === "directClickElement") &&
 				request.action.target.length === 1)
