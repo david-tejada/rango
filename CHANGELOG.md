@@ -2,6 +2,21 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.3.1](https://github.com/david-tejada/rango/releases/tag/v0.3.1) - 2023-01-30
+
+### Changed
+
+- Change scroll command behavior to follow the user's reduced motion settings.
+- Modify the command to delete the contents of a field so that the user is able to undo it.
+
+### Added
+
+- Make links inside contenteditable open in a new tab.
+
+### Fixed
+
+- Fix some hints displaying even after disabling them with `hints off`
+
 ## [0.3.0](https://github.com/david-tejada/rango/releases/tag/v0.3.0) - 2023-01-27
 
 ### Changed
