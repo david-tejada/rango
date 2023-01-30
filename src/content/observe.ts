@@ -1,8 +1,8 @@
 import { shouldDisplayHints } from "./hints/shouldDisplayHints";
 import {
 	addWrappersFrom,
-	addWrapperIntersectionObserver,
 	mutationObserver,
+	disconnectObservers,
 } from "./wrappers/Wrapper";
 import { clearWrappersAll } from "./wrappers/wrappers";
 
@@ -18,7 +18,7 @@ export async function updateHintsEnabled() {
 	}
 
 	if (enabled && !newEnabled) {
-		addWrapperIntersectionObserver.disconnect();
+		disconnectObservers();
 		clearWrappersAll();
 		enabled = false;
 	}

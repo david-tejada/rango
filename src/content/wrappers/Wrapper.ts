@@ -254,6 +254,17 @@ const hintablesResizeObserver = new ResizeObserver((entries) => {
 	}
 });
 
+export function disconnectObservers() {
+	addWrapperIntersectionObserver.disconnect();
+	mutationObserver.disconnect();
+	viewportIntersectionObserver.disconnect();
+	hintablesResizeObserver.disconnect();
+
+	for (const observer of scrollIntersectionObservers.values()) {
+		observer.disconnect();
+	}
+}
+
 // =============================================================================
 // ELEMENT WRAPPER
 // =============================================================================
