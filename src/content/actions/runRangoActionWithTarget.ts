@@ -44,7 +44,7 @@ export async function runRangoActionWithTarget(
 				wrappers.length === 1 &&
 				wrapper.element instanceof HTMLSelectElement
 			) {
-				return { type: "pressKeyArrowDown" };
+				return { type: "key", key: "down" };
 			}
 
 			break;

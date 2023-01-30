@@ -11,11 +11,12 @@ export interface TalonAction {
 		| "noAction"
 		| "copyToClipboard"
 		| "noHintFound"
-		| "pressKeyArrowDown"
+		| "key"
 		| "editDelete"
 		| "editDeleteAfterDelay";
 	textToCopy?: string;
 	text?: string;
+	key?: string;
 }
 
 export interface ResponseToTalon {
