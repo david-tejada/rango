@@ -23,6 +23,12 @@ interface ScrollOptions {
 	factor?: number;
 }
 
+function getScrollBehavior() {
+	const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+
+	return !mediaQuery || mediaQuery.matches ? "instant" : "smooth";
+}
+
 /**
  * Since the scroll container could be spanning beyond the viewport we need
  * the rectangle that is actually intersecting the viewport
@@ -190,7 +196,11 @@ export function snapScroll(
 		scrollAmount = isPageScroll ? -(cHeight - bottom) : -(cBottom - bottom);
 	}
 
-	scrollContainer.scrollBy({ left: 0, top: scrollAmount, behavior: "instant" });
+	scrollContainer.scrollBy({
+		left: 0,
+		top: scrollAmount,
+		behavior: getScrollBehavior(),
+	});
 
 	// Handle sticky headers
 	if (position === "top") {
@@ -222,7 +232,7 @@ export function snapScroll(
 					scrollContainer.scrollBy({
 						left: 0,
 						top: top - stickyBottom,
-						behavior: "instant",
+						behavior: getScrollBehavior(),
 					});
 					stickyFound = true;
 					break;
@@ -294,5 +304,5 @@ export function scroll(options: ScrollOptions) {
 	if (dir === "left") left = -scrollWidth * factor;
 	if (dir === "right") left = scrollWidth * factor;
 
-	scrollContainer.scrollBy({ left, top, behavior: "instant" });
+	scrollContainer.scrollBy({ left, top, behavior: getScrollBehavior() });
 }
