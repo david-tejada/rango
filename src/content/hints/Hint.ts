@@ -57,6 +57,14 @@ const processHintQueue = debounce(() => {
 	cacheLayout(toComputeContext);
 
 	for (const hint of queue) {
+		// Between adding the hint to the queue and processing the queue the target
+		// element could have been removed from the dom
+		if (!hint.target.isConnected) {
+			queue.delete(hint);
+			hintQueue.delete(hint);
+			continue;
+		}
+
 		if (!hint.container) hint.computeHintContext();
 	}
 
