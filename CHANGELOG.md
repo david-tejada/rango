@@ -2,9 +2,66 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.3.0](https://github.com/david-tejada/rango/releases/tag/v0.3.0) - 2023-01-27
+
+### Changed
+
+- Complete rewrite of the hint rendering logic to implement **static hints** so that the hints always stay with their target element, even when scrolling.
+- Include a 1000px viewport margin where the hints are rendered. Serving for a nicer scrolling experience.
+- Implement fade-in transition effect for the hints when first rendered for a smoother experience.
+- Render hints using shadow DOM which provides better encapsulation and avoids some issues like in #20.
+- Improve the positioning of the hints so that more elements are accessible.
+- Simplify the logic for detecting what is a hintable element. This improves performance and reduces duplicates. A tradeoff is that now, if the element is not minimally accessible, it won't display a hint (see custom hints for a solution to this).
+- Improve page scroll commands so that if the page doesn't scroll it uses the scroll container at the center.
+- Add `pointer-events: none` to the hint style to prevent it from swallowing clicks when using a mouse.
+- Include source maps also in production.
+- Make the default hotkey `ctrl-shift-insert` for all the browsers except for Safari.
+- The command `copy text <user.rango_target>` will now also copy the content of an input field.
+- Disconnect all observers when the hints are off to avoid unnecessary load.
+- Batch measuring and writing to the DOM to minimize reflow and avoid potential performance issues.
+
+### Added
+
+- Implement custom hints: include mechanism to display more hints when the target element doesn't display one. New commands:
+  - `hint extra`: Display hints for more elements.
+  - `hint more`: Display hints for previously excluded elements.
+  - `hint less`: Only display the default hints.
+  - `include <user.rango_target>`: Mark the selected hints for inclusion.
+  - `exclude <user.rango_target>`: Mark the selected hints for exclusion.
+  - `some more`: Mark more hints for inclusion/exclusion.
+  - `some less`: Mark less hints for inclusion/exclusion.
+  - `custom hints save`: Save the currently selected hints marked for inclusion/exclusion so that they render by default.
+  - `custom hints reset`: Remove any previously included/excluded custom hints.
+- Implement new commands `page next` and `page last` to navigate to the next or previous page in paginated sites.
+- Implement new command `go root` to navigate to the root of the page.
+- Implement new scroll commands:
+  - `upper/downer <number>`: Scroll up/down a certain amount of pages.
+  - `upper/downer all`: Scroll to the top.
+  - `scroll left/right`: Scroll to the left/right.
+  - `scroll left/right all`: Scroll all the way to the left/right.
+  - `tiny left/right`: Scroll to the left/right a small amount.
+  - `upper/downer left/right`: Scroll the left/right aside upwards/downwards.
+  - `upper/downer left/right all`: Scroll the left/right aside to the top/bottom.
+  - `scroll left/right <user.rango_target>`: Scroll the container with the hinted element to the left/right.
+  - `tiny left/right <user.rango_target>`: Scroll the container with the hinted element a small amount to the left/right.
+  - `left/right again`: Repeat the previous scroll to the left/right.
+- New command `paste to <user.rango_target>` to paste the contents of the clipboard to an input field.
+- New commands `pre <user.rango_target>` and `post <user.rango_target>` to focus an input field and please the caret a the start or the end.
+- New command `change <user.rango_target>` to focus an input field and remove its contents.
+- New commands `insert <user.text> to <user.rango_target>` and `enter <user.text> to <user.rango_target>` to enter text to a text field. The latter also presses enter.
+
+### Fixed
+
+- Improve the events dispatched to fix some elements not reacting to Rango clicks.
+- Dynamically retrieve the pointer target so that we click the same element that we would if we used the mouse. Fixing some issues of the wrong element being clicked.
+- Fix regression of commands `up again` and `down again` not working.
+- Reimplement the actions `browser.go_back` and `browser.go_forward` in the context of Rango to improve their reliability and fix their behavior in Chromium browsers due to the history entry being marked as skippable when there's no user intervention.
+- Fix multiple URLs being added to the end of the document title when the URL changes but the title doesn't.
+- Fix clicking on `<select>` elements so that it directly opens the menu of options.
+
 ## [0.2.3](https://github.com/david-tejada/rango/releases/tag/v0.2.3) - 2022-09-02
 
-## Fixed
+### Fixed
 
 - Fix issue where opening a link with target="\_blank" with same domain is blocked in Firefox.
 
