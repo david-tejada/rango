@@ -397,7 +397,10 @@ export class Wrapper {
 
 		if (
 			pointerTarget instanceof HTMLAnchorElement &&
-			pointerTarget.getAttribute("target") === "_blank" &&
+			(pointerTarget.getAttribute("target") === "_blank" ||
+				pointerTarget.closest(
+					"[contenteditable=''], [contenteditable='true']"
+				)) &&
 			pointerTarget.getAttribute("href")
 		) {
 			// In Firefox if we click a link with target="_blank" we get a popup message
