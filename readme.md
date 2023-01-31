@@ -26,9 +26,9 @@ If the hints are displayed but the commands don't work, most of the time it has 
 
 In Firefox, navigate to [about:addons](about:addons), click on the cog at the top right and then "Manage Extension Shortcuts".
 
-In Chrome, navigate to [chrome://extensions/](chrome://extensions/), click on the hamburger menu at the top left and select "Keyboard shortcuts".
+In Chrome, navigate to [chrome://extensions/shortcuts](chrome://extensions/shortcuts).
 
-In Edge, navigate to [edge://extensions/](edge://extensions/), click on "Keyboard shortcuts" on the left sidebar.
+In Edge, navigate to [edge://extensions/shortcuts](edge://extensions/shortcuts).
 
 ## Usage
 
