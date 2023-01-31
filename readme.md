@@ -20,7 +20,7 @@ In order to use the extension you need two pieces: the extension and the talon f
 
 ### Troubleshooting
 
-If the hints are displayed but the commands don't work, most of the time it has to do with the configuration of the hotkey. In order to communicate with Rango, Talon presses a key combination to prompt Rango to read the command present on the clipboard. By default the key combination is `ctrl-shift-insert` in Windows and Linux and `ctrl-shift-3` in Mac. If Rango commands aren't working for you, make sure that the hotkey is properly set up.
+If the hints are displayed but the commands don't work, most of the time it has to do with the configuration of the hotkey. In order to communicate with Rango, Talon presses a key combination to prompt Rango to read the command present on the clipboard. By default the key combination is `ctrl-shift-insert` in all the browsers except for Safari, where it is `ctrl-shift-3`. If Rango commands aren't working for you, make sure that the hotkey is properly set up. The shortcut that needs to be changed is `Get the talon request`.
 
 #### Where to Find the Extension Keyboard Shortcuts
 
@@ -31,6 +31,92 @@ In Chrome, navigate to [chrome://extensions/shortcuts](chrome://extensions/short
 In Edge, navigate to [edge://extensions/shortcuts](edge://extensions/shortcuts).
 
 ## Usage
+
+### Hints
+
+Hints are marks with letters that appear next to elements and that we can use to refer to the element to click, hover, copy its text content, etc.
+
+<p align="left">
+  <img src="images/screenshot-hint.png" height=60px">
+</p>
+
+#### Which Elements Receive Hints
+
+By default, only certain elements receive hints. If the element is clickable it should receive a hint. Most of the time it does, but in some rare cases, it might not. In order for an element to receive a hint it must be minimally accessible. This means that it must use the right semantic element or indicate what its role is. For example, the following buttons would display a hint.
+
+`<button>Click me!</button>`
+
+`<div role="button">Click me!</div>`
+
+But there won't be a hint for the following element:
+
+`<div class="btn">Click me!</div>`
+
+In earlier versions of the extension I would try to display more hints by default by looking at things like the element's class name, the onclick property or the css property `cursor: pointer`. The issue with this approach is we would get many duplicate hints and some unnecessary ones. Reducing those duplicates and unnecessary hints wasn't always possible and resulted in complicated and poorly performant code.
+
+#### Displaying Extra Hints
+
+Moving away from that complicated logic resulted in better performance and cleaner ui. But now we need a way to display hints for those elements that are not accessible. For that we use the command `hint extra`. At this point we don't care so much about duplicates and we can use all those extra checks to see if an element might be clickable. The command `hint less` lets us go back to only displaying the default hints.
+
+#### Custom Hints
+
+With the command `hint extra` now we have a way to show hints for those elements that don't receive them by default. But you might frequently use some page where some elements that you want to click don't receive hints. Having to use the command `hint extra` every time you want to click one of those elements can become tedious. Custom hints are a way to indicate that you want some extra hints to always display by default.
+
+After having used the command `hint extra` you can use the command `include <user.rango_target>` to indicate that you want some hints to always display. The hints selected for inclusion will be marked in green. The best approach is to use at least a couple of hints representing the same ui element. With those hints Rango calculates the css selector that includes both. It tries not to be greedy and use the selector that includes the least amount of hints possible. This is usually enough to include the desired ui element. In case it falls short and doesn't include all the elements you want, you can use the command `some more`. This will pick a different selector that matches more elements (not necessarily the same elements matched before). The command `some less` does the opposite. You can use the `include` command again if you need to add more hints representing different ui elements. Once you are happy with the result you can use the command `custom hints save` so that those hints appear by default the next time.
+
+Here is one example to illustrate this process:
+
+In [this page](https://forvo.com/word/define/#en) we have this section which unfortunately doesn't show any hints.
+
+<p align="left">
+  <img src="images/screenshot-custom-hints-1.png" height=70px">
+</p>
+
+Now we use the command `hint extra` to greedily display hints.
+
+<p align="left">
+  <img src="images/screenshot-custom-hints-2.png" height=70px">
+</p>
+
+If we wanted to show hints for the gray links we can issue the command `include cap each and cap drum`, which marks in green the hints that will be included.
+
+<p align="left">
+  <img src="images/screenshot-custom-hints-3.png" height=70px">
+</p>
+
+Since the result is not exactly what we want and there are still hints missing we use the command `some more`.
+
+<p align="left">
+  <img src="images/screenshot-custom-hints-4.png" height=70px">
+</p>
+
+Now there are more hints showing but they're not the ones we want. We issue the command `some more` again to see if that helps.
+
+<p align="left">
+  <img src="images/screenshot-custom-hints-5.png" height=70px">
+</p>
+
+The hints marked for inclusion now are exactly the ones we want. We could continue including more custom hints using the `include` command again but for the moment we leave it like that and save with `custom hints save`.
+
+<p align="left">
+  <img src="images/screenshot-custom-hints-6.png" height=330px">
+</p>
+
+Now the extra hints disappear and we are left with the custom hints that we just defined. We can see that similar elements also display hints. Next time we visit the page those hints will be displayed by default.
+
+This same process can be used to exclude hints using the command `exclude <user.rango_target>`. With the command `hint more` we can display any previously excluded hints.
+
+Here is a summary of all the commands for customizing hints:
+
+- `hint extra`: Display hints for more elements.
+- `hint more`: Display hints for previously excluded elements.
+- `hint less`: Only display the default hints.
+- `include <user.rango_target>`: Mark the selected hints for inclusion.
+- `exclude <user.rango_target>`: Mark the selected hints for exclusion.
+- `some more`: Mark more hints for inclusion/exclusion.
+- `some less`: Mark less hints for inclusion/exclusion.
+- `custom hints save`: Save the currently selected hints marked for inclusion/exclusion so that they render by default.
+- `custom hints reset`: Remove any previously included/excluded custom hints.
 
 ### Click
 
