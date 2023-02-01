@@ -163,6 +163,8 @@ To toggle it you have to use the command `keyboard toggle` or press `ctrl-shift-
 
 ### Scroll
 
+The default behavior for scrolling in Rango is "smooth". The behavior will be "instant" if you have configured your OS to prefer reduced motion. You can follow the instructions [here](https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion#user_preferences) if you want to know how to do that.
+
 #### Page Scrolling
 
 These commands scroll the page, that is, the html or body elements, or the scroll container at the center of the page if those elements don't scroll.
