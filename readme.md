@@ -32,6 +32,8 @@ In Edge, navigate to [edge://extensions/shortcuts](edge://extensions/shortcuts).
 
 ## Usage
 
+**Note**: The notation `<target>` in this readme can refer to a single or multiple hints chained with the word `and`. For example, the command `click any and bat` would click on the elements marked with the hints `a` and `b`. Most Rango commands accept multiple hints as target.
+
 ### Hints
 
 Hints are marks with letters that appear next to elements and that we can use to refer to the element to click, hover, copy its text content, etc.
@@ -62,7 +64,7 @@ Moving away from that complicated logic resulted in better performance and clean
 
 With the command `hint extra` now we have a way to show hints for those elements that don't receive them by default. But you might frequently use some page where some elements that you want to click don't receive hints. Having to use the command `hint extra` every time you want to click one of those elements can become tedious. Custom hints are a way to indicate that you want some extra hints to always display by default.
 
-After having used the command `hint extra` you can use the command `include <user.rango_target>` to indicate that you want some hints to always display. The hints selected for inclusion will be marked in green. The best approach is to use at least a couple of hints representing the same ui element. With those hints Rango calculates the css selector that includes both. It tries not to be greedy and use the selector that includes the least amount of hints possible. This is usually enough to include the desired ui element. In case it falls short and doesn't include all the elements you want, you can use the command `some more`. This will pick a different selector that matches more elements (not necessarily the same elements matched before). The command `some less` does the opposite. You can use the `include` command again if you need to add more hints representing different ui elements. Once you are happy with the result you can use the command `custom hints save` so that those hints appear by default the next time.
+After having used the command `hint extra` you can use the command `include <target>` to indicate that you want some hints to always display. The hints selected for inclusion will be marked in green. The best approach is to use at least a couple of hints representing the same ui element. With those hints Rango calculates the css selector that includes both. It tries not to be greedy and use the selector that includes the least amount of hints possible. This is usually enough to include the desired ui element. In case it falls short and doesn't include all the elements you want, you can use the command `some more`. This will pick a different selector that matches more elements (not necessarily the same elements matched before). The command `some less` does the opposite. You can use the `include` command again if you need to add more hints representing different ui elements. Once you are happy with the result you can use the command `custom hints save` so that those hints appear by default the next time.
 
 Here is one example to illustrate this process:
 
@@ -104,7 +106,7 @@ The hints marked for inclusion now are exactly the ones we want. We could contin
 
 Now the extra hints disappear and we are left with the custom hints that we just defined. We can see that similar elements also display hints. Next time we visit the page those hints will be displayed by default.
 
-This same process can be used to exclude hints using the command `exclude <user.rango_target>`. With the command `hint more` we can display any previously excluded hints.
+This same process can be used to exclude hints using the command `exclude <target>`. With the command `hint more` we can display any previously excluded hints.
 
 If after using the `include` or `exclude` command you are not happy with the hints marked for inclusion/exclusion you can use the command `some less` (you might have to use it a few times if you've already used the command `some more`) to remove the recently marked hints and start over. This will keep any hints marked with a previous `include` or `exclude` command.
 
@@ -113,8 +115,8 @@ Here is a summary of all the commands for customizing hints:
 - `hint extra`: Display hints for more elements.
 - `hint more`: Display hints for previously excluded elements.
 - `hint less`: Only display the default hints.
-- `include <user.rango_target>`: Mark the selected hints for inclusion.
-- `exclude <user.rango_target>`: Mark the selected hints for exclusion.
+- `include <target>`: Mark the selected hints for inclusion.
+- `exclude <target>`: Mark the selected hints for exclusion.
 - `some more`: Mark more hints for inclusion/exclusion.
 - `some less`: Mark less hints for inclusion/exclusion.
 - `custom hints save`: Save the currently selected hints marked for inclusion/exclusion so that they render by default.
@@ -147,53 +149,63 @@ To toggle it you have to use the command `keyboard toggle` or press `ctrl-shift-
 
 ### Open in a New Tab
 
-- `blank <hint>`: Opens the link in a new tab.
-- `stash <hint>+`: Opens one or more links in a new tab without focusing that tab.
+- `blank <target>`: Opens the link in a new tab.
+- `stash <target>+`: Opens one or more links in a new tab without focusing that tab.
 
 ### Hover
 
-- `hover <hint>`: Dispatches a hover event to the selected element. Sometimes this command doesn't have a visible result if the current page doesn't have a hover event handler for this element. One example of a page that does have hover event handlers for links is the Wikipedia, where you'll get a popup with a preview of the linked article.
+- `hover <target>`: Dispatches a hover event to the selected element. Sometimes this command doesn't have a visible result if the current page doesn't have a hover event handler for this element. One example of a page that does have hover event handlers for links is the Wikipedia, where you'll get a popup with a preview of the linked article.
 - `dismiss`: Clears any previously hovered element.
 
 ### Show Element Information
 
-- `show <hint>`: Shows a tooltip with the element title and url if the element is a link.
+- `show <target>`: Shows a tooltip with the element title and url if the element is a link.
 
 ### Scroll
 
-- `upper`: Scroll the page up.
-- `downer`: Scroll the page down.
+#### Page Scrolling
 
-Sometimes we want to scroll a container that is not the main page. An example for that could be a sidebar with links for navigation. For that we need to refer to one of the hints inside said container and use one of the following commands:
+These commands scroll the page, that is, the html or body elements, or the scroll container at the center of the page if those elements don't scroll.
 
-- `upper <hint>`: Scroll up the container with the hinted element.
-- `downer <hint>`: Scroll down the container with the hinted element.
+- `upper/downer`: Scroll up/down.
+- `upper/downer <number>`: Scroll up/down a certain amount of pages.
+- `upper/downer all`: Scroll all the way to the top/bottom.
+- `tiny up/down`: Scroll the page up/down a factor of 0.2.
+- `scroll left/right`: Scroll to the left/right.
+- `scroll left/right all`: Scroll all the way to the left/right.
+- `tiny left/right`: Scroll to the left/right a factor of 0.2.
 
-#### Scrolling Small Amounts
+#### Aside Scrolling
 
-The commands above scroll two thirds of the scrolling container, the following commands scroll one fifth of the scrolling container:
+You can easily scroll the left or right aside with these commands:
 
-- `tiny up`: Scroll the page up 20%.
-- `tiny down`: Scroll the page down 20%.
-- `tiny up <hint>`: Scroll up the container with the hinted element 20%.
-- `tiny down <hint>`: Scroll down the container with the hinted element 20%.
+- `upper/downer left/right`: Scroll the left/right aside upwards/downwards.
+- `upper/downer left/right all`: Scroll the left/right aside to the top/bottom.
 
-#### Scrolling an Element to the Top, Bottom or Center
+#### Scrolling the Container That Includes a Hinted Element
 
-- `crown <hint>`: Scrolls the element with the hint to the top of the page/container. It tries to take into account any sticky/fixed headers and not scroll past that.
-- `center <hint>`: Scrolls the element to the center of the page/container.
-- `bottom <hint>`: Scrolls the element to the bottom of the page/container.
+Sometimes we want to scroll a container that is not the main page or an aside. An example for that could be a popup with links. For that we need to refer to one of the hints inside said container and use one of the following commands:
+
+- `upper/downer <target>`: Scroll up/down the container with the hinted element.
+- `tiny up/down <target>`: Scroll up/down the container with the hinted element a factor of 0.2.
+- `scroll left/right <target>`: Scroll the container with the hinted element to the left/right.
+- `tiny left/right <target>`: Scroll the container with the hinted element to the left/right a factor of 0.2.
 
 #### Scrolling the Same Container Repeated Times
 
 Once you have scrolled a container by referring to a hint inside it, you can keep scrolling the same container with these commands without needing to refer to a hint within it again. It will also use the same amount of scroll last used:
 
-- `up again`: Scroll up a previously scrolled container.
-- `down again`: Scroll down a previously scrolled container.
+- `up/down/left/right again`: Scroll up/down/left/right the same factor a previously scrolled container.
+
+#### Scrolling an Element to the Top, Bottom or Center
+
+- `crown <target>`: Scrolls the element with the hint to the top of the page/container. It tries to take into account any sticky/fixed headers and not scroll past that.
+- `center <target>`: Scrolls the element to the center of the page/container.
+- `bottom <target>`: Scrolls the element to the bottom of the page/container.
 
 #### Custom Scroll Amounts
 
-You can change the scroll amount of these commands or create new scroll commands by adding/changing the last argument in the function call in your rango.talon file. For example, the next commands would scroll up or down half of its scroll container:
+You can change the scroll amount of these commands or create new scroll commands by adding/changing the last argument in the action call in your rango.talon file. For example, the next commands would scroll up or down half of its scroll container:
 
 ```talon
 half up: user.rango_command_without_target("scrollUpPage", 0.5)
@@ -206,9 +218,9 @@ half down <user.rango_target>:
 
 ### Copy Target Information
 
-- `copy <hint>`: If the element is a link it copies the url to the clipboard.
-- `copy mark <hint>`: If the element is a link it copies the link in markdown format to the clipboard.
-- `copy text <hint>`: Copies the text content of the element to the clipboard.
+- `copy <target>`: If the element is a link it copies the url to the clipboard.
+- `copy mark <target>`: If the element is a link it copies the link in markdown format to the clipboard.
+- `copy text <target>`: Copies the text content of the element to the clipboard.
 
 ### Copy Current URL Information
 
@@ -224,10 +236,10 @@ half down <user.rango_target>:
 - `tab close other`: Closes all the tabs in the window except the current one.
 - `tab close left`: Closes all the tabs in the window to the left of the current one.
 - `tab close right`: Closes all the tabs in the window to the right of the current one.
-- `tab close first [<number_small>]`: Closes the amount of tabs specified (or one if no number is given) starting from the leftmost tab.
-- `tab close final [<number_small>]`: Closes the amount of tabs specified (or one if no number is given) starting from the rightmost tab.
-- `tab close previous [<number_small>]`: Closes the amount of tabs specified (or one if no number is given) to the left of the current tab.
-- `tab close next [<number_small>]`: Closes the amount of tabs specified (or one if no number is given) to the right of the current tab.
+- `tab close first [<number>]`: Closes the amount of tabs specified (or one if no number is given) starting from the leftmost tab.
+- `tab close final [<number>]`: Closes the amount of tabs specified (or one if no number is given) starting from the rightmost tab.
+- `tab close previous [<number>]`: Closes the amount of tabs specified (or one if no number is given) to the left of the current tab.
+- `tab close next [<number>]`: Closes the amount of tabs specified (or one if no number is given) to the right of the current tab.
 
 ### Modify Hints Appearance
 
