@@ -106,6 +106,8 @@ Now the extra hints disappear and we are left with the custom hints that we just
 
 This same process can be used to exclude hints using the command `exclude <user.rango_target>`. With the command `hint more` we can display any previously excluded hints.
 
+If after using the `include` or `exclude` command you are not happy with the hints marked for inclusion/exclusion you can use the command `some less` (you might have to use it a few times if you've already used the command `some more`) to remove the recently marked hints and start over. This will keep any hints marked with a previous `include` or `exclude` command.
+
 Here is a summary of all the commands for customizing hints:
 
 - `hint extra`: Display hints for more elements.
