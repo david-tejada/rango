@@ -1,0 +1,18 @@
+// Configuration settings file format documentation can be found at:
+// https://help.apple.com/xcode/#/dev745c5c974
+
+#include "RangoVersion.xcconfig"
+
+// Rename this file to `UserSpecific.xcconfig`, then edit
+// DEVELOPMENT_TEAM and RANGO_BUNDLE_ID_BASE below.
+
+// Your Apple developer account's development team ID.
+// View it (among other places) at https://developer.apple.com/account
+// under "Membership details".
+DEVELOPMENT_TEAM = XXXXXXXXXX
+
+// Prepended to ".Rango" and ".Rango.extension" in generated bundle IDs.
+// Convention is reverse domain name.
+RANGO_BUNDLE_ID_BASE = app.rango
+
+CODE_SIGN_IDENTITY = Apple Development
