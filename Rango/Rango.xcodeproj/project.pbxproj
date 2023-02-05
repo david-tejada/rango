@@ -8,6 +8,18 @@
 
 /* Begin PBXBuildFile section */
 		E17BC8F8285E2315007EB9C6 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17BC8F7285E2315007EB9C6 /* Application.swift */; };
+		E18784B3298EEFB50028A679 /* UserSpecific.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E18784B1298EEFB50028A679 /* UserSpecific.xcconfig */; };
+		E18784B4298EEFB50028A679 /* UserSpecific.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E18784B1298EEFB50028A679 /* UserSpecific.xcconfig */; };
+		E18784B5298EEFB50028A679 /* RangoVersion.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E18784B2298EEFB50028A679 /* RangoVersion.xcconfig */; };
+		E18784B6298EEFB50028A679 /* RangoVersion.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E18784B2298EEFB50028A679 /* RangoVersion.xcconfig */; };
+		E18A7D53298ED9B7000801AD /* icon48.ace12d5e.png in Resources */ = {isa = PBXBuildFile; fileRef = E18A7D4B298ED9B7000801AD /* icon48.ace12d5e.png */; };
+		E18A7D54298ED9B7000801AD /* icon128.8b6ee0ac.png in Resources */ = {isa = PBXBuildFile; fileRef = E18A7D4C298ED9B7000801AD /* icon128.8b6ee0ac.png */; };
+		E18A7D55298ED9B7000801AD /* content.d5600b6a.js in Resources */ = {isa = PBXBuildFile; fileRef = E18A7D4D298ED9B7000801AD /* content.d5600b6a.js */; };
+		E18A7D56298ED9B7000801AD /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = E18A7D4E298ED9B7000801AD /* manifest.json */; };
+		E18A7D57298ED9B7000801AD /* background.ec971b02.js in Resources */ = {isa = PBXBuildFile; fileRef = E18A7D4F298ED9B7000801AD /* background.ec971b02.js */; };
+		E18A7D58298ED9B7000801AD /* icon128.b2125553.png in Resources */ = {isa = PBXBuildFile; fileRef = E18A7D50298ED9B7000801AD /* icon128.b2125553.png */; };
+		E18A7D59298ED9B7000801AD /* icon-keyboard-clicking48.cd245b3d.png in Resources */ = {isa = PBXBuildFile; fileRef = E18A7D51298ED9B7000801AD /* icon-keyboard-clicking48.cd245b3d.png */; };
+		E18A7D5A298ED9B7000801AD /* icon48.79c125ec.png in Resources */ = {isa = PBXBuildFile; fileRef = E18A7D52298ED9B7000801AD /* icon48.79c125ec.png */; };
 		E1AEB977284D1D7800154974 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AEB976284D1D7800154974 /* AppDelegate.swift */; };
 		E1AEB97A284D1D7800154974 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E1AEB978284D1D7800154974 /* Main.storyboard */; };
 		E1AEB98C284D1D7800154974 /* Rango Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E1AEB98B284D1D7800154974 /* Rango Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -18,13 +30,6 @@
 		E1AEB99B284D1D7800154974 /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AEB95A284D1D7700154974 /* ViewController.swift */; };
 		E1AEB99D284D1D7800154974 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = E1AEB95B284D1D7800154974 /* Assets.xcassets */; };
 		E1AEB99F284D1D7800154974 /* SafariWebExtensionHandler.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AEB95D284D1D7800154974 /* SafariWebExtensionHandler.swift */; };
-		E1AEB9B8284D1D7800154974 /* hints.4c72288c.css in Resources */ = {isa = PBXBuildFile; fileRef = E1AEB9B1284D1D7800154974 /* hints.4c72288c.css */; };
-		E1AEB9B9284D1D7800154974 /* icon128.1644b526.png in Resources */ = {isa = PBXBuildFile; fileRef = E1AEB9B2284D1D7800154974 /* icon128.1644b526.png */; };
-		E1AEB9BA284D1D7800154974 /* tippy.470a7a0f.css in Resources */ = {isa = PBXBuildFile; fileRef = E1AEB9B3284D1D7800154974 /* tippy.470a7a0f.css */; };
-		E1AEB9BB284D1D7800154974 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = E1AEB9B4284D1D7800154974 /* manifest.json */; };
-		E1AEB9BC284D1D7800154974 /* content.823d5a8e.js in Resources */ = {isa = PBXBuildFile; fileRef = E1AEB9B5284D1D7800154974 /* content.823d5a8e.js */; };
-		E1AEB9BD284D1D7800154974 /* icon48.9179c0d7.png in Resources */ = {isa = PBXBuildFile; fileRef = E1AEB9B6284D1D7800154974 /* icon48.9179c0d7.png */; };
-		E1AEB9BE284D1D7800154974 /* background.1593f378.js in Resources */ = {isa = PBXBuildFile; fileRef = E1AEB9B7284D1D7800154974 /* background.1593f378.js */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -53,7 +58,16 @@
 
 /* Begin PBXFileReference section */
 		E17BC8F7285E2315007EB9C6 /* Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
-		E181855B287A133300771324 /* RangoVersion.xcconfig */ = {isa = PBXFileReference; lastKnownFileType = text.xcconfig; path = RangoVersion.xcconfig; sourceTree = "<group>"; };
+		E18784B1298EEFB50028A679 /* UserSpecific.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = UserSpecific.xcconfig; sourceTree = "<group>"; };
+		E18784B2298EEFB50028A679 /* RangoVersion.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = RangoVersion.xcconfig; sourceTree = "<group>"; };
+		E18A7D4B298ED9B7000801AD /* icon48.ace12d5e.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon48.ace12d5e.png; sourceTree = "<group>"; };
+		E18A7D4C298ED9B7000801AD /* icon128.8b6ee0ac.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon128.8b6ee0ac.png; sourceTree = "<group>"; };
+		E18A7D4D298ED9B7000801AD /* content.d5600b6a.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = content.d5600b6a.js; sourceTree = "<group>"; };
+		E18A7D4E298ED9B7000801AD /* manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
+		E18A7D4F298ED9B7000801AD /* background.ec971b02.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = background.ec971b02.js; sourceTree = "<group>"; };
+		E18A7D50298ED9B7000801AD /* icon128.b2125553.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon128.b2125553.png; sourceTree = "<group>"; };
+		E18A7D51298ED9B7000801AD /* icon-keyboard-clicking48.cd245b3d.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-keyboard-clicking48.cd245b3d.png"; sourceTree = "<group>"; };
+		E18A7D52298ED9B7000801AD /* icon48.79c125ec.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon48.79c125ec.png; sourceTree = "<group>"; };
 		E1AEB956284D1D7700154974 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = ../Base.lproj/Main.html; sourceTree = "<group>"; };
 		E1AEB957284D1D7700154974 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		E1AEB958284D1D7700154974 /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
@@ -69,13 +83,6 @@
 		E1AEB98B284D1D7800154974 /* Rango Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Rango Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1AEB990284D1D7800154974 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E1AEB991284D1D7800154974 /* Rango.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Rango.entitlements; sourceTree = "<group>"; };
-		E1AEB9B1284D1D7800154974 /* hints.4c72288c.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = hints.4c72288c.css; sourceTree = "<group>"; };
-		E1AEB9B2284D1D7800154974 /* icon128.1644b526.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon128.1644b526.png; sourceTree = "<group>"; };
-		E1AEB9B3284D1D7800154974 /* tippy.470a7a0f.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = tippy.470a7a0f.css; sourceTree = "<group>"; };
-		E1AEB9B4284D1D7800154974 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
-		E1AEB9B5284D1D7800154974 /* content.823d5a8e.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = content.823d5a8e.js; sourceTree = "<group>"; };
-		E1AEB9B6284D1D7800154974 /* icon48.9179c0d7.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon48.9179c0d7.png; sourceTree = "<group>"; };
-		E1AEB9B7284D1D7800154974 /* background.1593f378.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = background.1593f378.js; sourceTree = "<group>"; };
 		E1E0B327287A38DD00A5B751 /* UpdateRangoVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateRangoVersion.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -100,10 +107,27 @@
 		E181855D287A150700771324 /* Build */ = {
 			isa = PBXGroup;
 			children = (
-				E181855B287A133300771324 /* RangoVersion.xcconfig */,
+				E18784B2298EEFB50028A679 /* RangoVersion.xcconfig */,
+				E18784B1298EEFB50028A679 /* UserSpecific.xcconfig */,
 				E1E0B327287A38DD00A5B751 /* UpdateRangoVersion.swift */,
 			);
 			path = Build;
+			sourceTree = "<group>";
+		};
+		E18A7D4A298ED9B7000801AD /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				E18A7D4B298ED9B7000801AD /* icon48.ace12d5e.png */,
+				E18A7D4C298ED9B7000801AD /* icon128.8b6ee0ac.png */,
+				E18A7D4D298ED9B7000801AD /* content.d5600b6a.js */,
+				E18A7D4E298ED9B7000801AD /* manifest.json */,
+				E18A7D4F298ED9B7000801AD /* background.ec971b02.js */,
+				E18A7D50298ED9B7000801AD /* icon128.b2125553.png */,
+				E18A7D51298ED9B7000801AD /* icon-keyboard-clicking48.cd245b3d.png */,
+				E18A7D52298ED9B7000801AD /* icon48.79c125ec.png */,
+			);
+			name = Resources;
+			path = "../../dist-mv2-safari";
 			sourceTree = "<group>";
 		};
 		E1AEB94E284D1D7700154974 = {
@@ -143,7 +167,7 @@
 		E1AEB95C284D1D7800154974 /* Shared (Extension) */ = {
 			isa = PBXGroup;
 			children = (
-				E1AEB9B0284D1D7800154974 /* Resources */,
+				E18A7D4A298ED9B7000801AD /* Resources */,
 				E1AEB95D284D1D7800154974 /* SafariWebExtensionHandler.swift */,
 			);
 			path = "Shared (Extension)";
@@ -177,21 +201,6 @@
 			);
 			path = "macOS (Extension)";
 			sourceTree = "<group>";
-		};
-		E1AEB9B0284D1D7800154974 /* Resources */ = {
-			isa = PBXGroup;
-			children = (
-				E1AEB9B1284D1D7800154974 /* hints.4c72288c.css */,
-				E1AEB9B2284D1D7800154974 /* icon128.1644b526.png */,
-				E1AEB9B3284D1D7800154974 /* tippy.470a7a0f.css */,
-				E1AEB9B4284D1D7800154974 /* manifest.json */,
-				E1AEB9B5284D1D7800154974 /* content.823d5a8e.js */,
-				E1AEB9B6284D1D7800154974 /* icon48.9179c0d7.png */,
-				E1AEB9B7284D1D7800154974 /* background.1593f378.js */,
-			);
-			name = Resources;
-			path = "../dist-mv2-safari";
-			sourceTree = SOURCE_ROOT;
 		};
 /* End PBXGroup section */
 
@@ -275,10 +284,12 @@
 			buildActionMask = 2147483647;
 			files = (
 				E1AEB995284D1D7800154974 /* Icon.png in Resources */,
+				E18784B5298EEFB50028A679 /* RangoVersion.xcconfig in Resources */,
 				E1AEB997284D1D7800154974 /* Style.css in Resources */,
 				E1AEB97A284D1D7800154974 /* Main.storyboard in Resources */,
 				E1AEB999284D1D7800154974 /* Script.js in Resources */,
 				E1AEB99D284D1D7800154974 /* Assets.xcassets in Resources */,
+				E18784B3298EEFB50028A679 /* UserSpecific.xcconfig in Resources */,
 				E1AEB993284D1D7800154974 /* Main.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -287,13 +298,16 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E1AEB9BC284D1D7800154974 /* content.823d5a8e.js in Resources */,
-				E1AEB9BB284D1D7800154974 /* manifest.json in Resources */,
-				E1AEB9BE284D1D7800154974 /* background.1593f378.js in Resources */,
-				E1AEB9BD284D1D7800154974 /* icon48.9179c0d7.png in Resources */,
-				E1AEB9B9284D1D7800154974 /* icon128.1644b526.png in Resources */,
-				E1AEB9BA284D1D7800154974 /* tippy.470a7a0f.css in Resources */,
-				E1AEB9B8284D1D7800154974 /* hints.4c72288c.css in Resources */,
+				E18A7D59298ED9B7000801AD /* icon-keyboard-clicking48.cd245b3d.png in Resources */,
+				E18A7D58298ED9B7000801AD /* icon128.b2125553.png in Resources */,
+				E18A7D56298ED9B7000801AD /* manifest.json in Resources */,
+				E18784B6298EEFB50028A679 /* RangoVersion.xcconfig in Resources */,
+				E18784B4298EEFB50028A679 /* UserSpecific.xcconfig in Resources */,
+				E18A7D53298ED9B7000801AD /* icon48.ace12d5e.png in Resources */,
+				E18A7D5A298ED9B7000801AD /* icon48.79c125ec.png in Resources */,
+				E18A7D54298ED9B7000801AD /* icon128.8b6ee0ac.png in Resources */,
+				E18A7D57298ED9B7000801AD /* background.ec971b02.js in Resources */,
+				E18A7D55298ED9B7000801AD /* content.d5600b6a.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -350,7 +364,7 @@
 /* Begin XCBuildConfiguration section */
 		E1AEB9A0284D1D7800154974 /* Debug */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E181855B287A133300771324 /* RangoVersion.xcconfig */;
+			baseConfigurationReference = E18784B1298EEFB50028A679 /* UserSpecific.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -412,7 +426,7 @@
 		};
 		E1AEB9A1284D1D7800154974 /* Release */ = {
 			isa = XCBuildConfiguration;
-			baseConfigurationReference = E181855B287A133300771324 /* RangoVersion.xcconfig */;
+			baseConfigurationReference = E18784B1298EEFB50028A679 /* UserSpecific.xcconfig */;
 			buildSettings = {
 				ALWAYS_SEARCH_USER_PATHS = NO;
 				CLANG_ANALYZER_NONNULL = YES;
@@ -469,12 +483,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "macOS (Extension)/Rango.entitlements";
-				CODE_SIGN_IDENTITY = "-";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = CYEL96ZVC2;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "macOS (Extension)/Info.plist";
@@ -489,7 +500,7 @@
 					"-framework",
 					SafariServices,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = net.sabi.Rango.extension;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(RANGO_BUNDLE_ID_BASE).Rango.extension";
 				PRODUCT_NAME = "Rango Extension";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
@@ -502,12 +513,9 @@
 			isa = XCBuildConfiguration;
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "macOS (Extension)/Rango.entitlements";
-				CODE_SIGN_IDENTITY = "-";
-				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = CYEL96ZVC2;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "macOS (Extension)/Info.plist";
@@ -522,7 +530,7 @@
 					"-framework",
 					SafariServices,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = net.sabi.Rango.extension;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(RANGO_BUNDLE_ID_BASE).Rango.extension";
 				PRODUCT_NAME = "Rango Extension";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
@@ -538,11 +546,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "macOS (App)/Rango.entitlements";
-				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = CYEL96ZVC2;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "macOS (App)/Info.plist";
@@ -560,7 +566,7 @@
 					"-framework",
 					WebKit,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = net.sabi.Rango;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(RANGO_BUNDLE_ID_BASE).Rango";
 				PRODUCT_NAME = Rango;
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -575,11 +581,9 @@
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "macOS (App)/Rango.entitlements";
-				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
 				CURRENT_PROJECT_VERSION = 4;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = CYEL96ZVC2;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "macOS (App)/Info.plist";
@@ -597,7 +601,7 @@
 					"-framework",
 					WebKit,
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = net.sabi.Rango;
+				PRODUCT_BUNDLE_IDENTIFIER = "$(RANGO_BUNDLE_ID_BASE).Rango";
 				PRODUCT_NAME = Rango;
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;

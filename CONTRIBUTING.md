@@ -61,11 +61,19 @@ To build for development:
     swift Rango/Build/UpdateRangoVersion.swift
     ```
 
-3. Open the Rango project in Xcode.
+3. Copy the template xcconfig to a user-specific one.
+
+    ```bash
+    cp Rango/Build/UserSpecific{.template,}.xcconfig
+    ```
+
+4. Open the Rango project in Xcode.
     ```bash
     xed Rango
     ```
 
-4. Build and run the project.
+5. Edit `Build` » `UserSpecific.xcconfig` according to the comments in the file.
 
-5. Enable the extension in Safari’s Preferences.
+6. Build and run the project.
+
+7. Enable the extension in Safari’s Preferences.

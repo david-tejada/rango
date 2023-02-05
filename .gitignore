@@ -12,6 +12,7 @@ workspace.code-workspace
 .DS_Store
 # Xcode
 RangoVersion.xcconfig
+UserSpecific.xcconfig
 xcuserdata
 # Emacs
 *~
