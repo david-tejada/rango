@@ -149,8 +149,36 @@ To toggle it you have to use the command `keyboard toggle` or press `ctrl-shift-
 
 ### Open in a New Tab
 
-- `blank <target>`: Opens the link in a new tab.
-- `stash <target>+`: Opens one or more links in a new tab without focusing that tab.
+- `blank <target>`: Opens the link in a new tab. If you use multiple targets all the links will open in new tabs and the first one will receive focus.
+- `stash <target>`: Opens the link in a new tab without focusing that tab. When using direct clicking and multiple targets you can omit the word `stash`. For example, `air bat and air drum` will open the links with the hints "ah" and "ad" in a new tab without stealing focus from the current one.
+
+### Navigation
+
+- `go root`: Navigate to the root of the current page.
+- `page next`: Navigate to the next page in paginated pages.
+- `page last`: Navigate to the previous page in paginated pages.
+
+### Input Fields
+
+**Note**: "Input field" here refers to any element with editable content. It doesn't need to be an `<input>` element.
+
+- `paste to <target>`: Paste the contents of the clipboard to an input field.
+- `insert <text> to <target>`: Inserts text to an input field. It first clicks the element so it will work in places were you first have to click a button that opens the field, like a search button.
+- `enter <text> to <target>`: Same as the previous command but it also presses the enter key at the end to submit.
+- `change <target>`: Focus an input field and remove its contents.
+- `pre <target>`: Places the cursor at the start of an input field.
+- `post <target>`: Places the cursor at the end of an input field.
+
+### Copy to the Clipboard
+
+- `copy <target>`: If the element is a link it copies the url to the clipboard.
+- `copy mark <target>`: If the element is a link it copies the link in markdown format to the clipboard.
+- `copy text <target>`: Copies the text content of the element to the clipboard.
+
+### Copy Current URL Information
+
+- `copy page (address | host name | host | origin | path | port | protocol)`: Copies the information relative to the current URL to the clipboard.
+- `copy mark address`: Copies the current URL in markdown format to the clipboard.
 
 ### Hover
 
@@ -218,22 +246,13 @@ half down <user.rango_target>:
   user.rango_command_with_target("scrollDownAtElement", rango_target, 0.5)
 ```
 
-### Copy Target Information
-
-- `copy <target>`: If the element is a link it copies the url to the clipboard.
-- `copy mark <target>`: If the element is a link it copies the link in markdown format to the clipboard.
-- `copy text <target>`: Copies the text content of the element to the clipboard.
-
-### Copy Current URL Information
-
-- `copy page (address | host name | host | origin | path | port | protocol)`: Copies the information relative to the current URL to the clipboard.
-- `copy mark address`: Copies the current URL in markdown format to the clipboard.
-
-### Clone Tab
+### Tabs
 
 - `tab clone`: Duplicates the current tab.
+- `tab back`: Switches to the previously focused tab.
+- `tab split`: Move the current tab to a new window.
 
-### Close Tabs
+#### Close Tabs
 
 - `tab close other`: Closes all the tabs in the window except the current one.
 - `tab close left`: Closes all the tabs in the window to the left of the current one.
@@ -242,6 +261,13 @@ half down <user.rango_target>:
 - `tab close final [<number>]`: Closes the amount of tabs specified (or one if no number is given) starting from the rightmost tab.
 - `tab close previous [<number>]`: Closes the amount of tabs specified (or one if no number is given) to the left of the current tab.
 - `tab close next [<number>]`: Closes the amount of tabs specified (or one if no number is given) to the right of the current tab.
+
+#### Attach the URL to the title
+
+This is useful to, for example, be able to use in a context header the property `browser.host`.
+
+`address in title on`: Turns on the setting to add the URL to the title
+`address in title off`: Turns off the setting to add the URL to the title
 
 ### Modify Hints Appearance
 
@@ -275,6 +301,10 @@ half down <user.rango_target>:
 ### Changing Hints Font Family
 
 If you find hints text difficult to read, apart from using the commands for changing the hints size and font weight, you can change the monospace font in the browser settings and the hints will render with that font.
+
+## Known Issues and Limitations
+
+- There is currently no way to open a pure CSS dropdown menu like the "hover" menu in [this example](https://www.tailwindtoolbox.com/components/megamenu-demo.php#). It is not possible to activate the `:hover` pseudo class in javascript and this will only be possible once I implement cursor moving/clicking.
 
 ## Contributing
 
