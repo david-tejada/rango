@@ -1,6 +1,3 @@
-/* eslint-disable unicorn/prefer-node-protocol */
-import fs from "fs";
-import path from "path";
 import Color from "color";
 import { rgbaToRgb } from "../../lib/rgbaToRgb";
 import { getHintOption } from "../options/cacheHintOptions";
@@ -73,7 +70,7 @@ const processHintQueue = debounce(() => {
 	for (const hint of queue) {
 		// We need to render the hint but hide it so we can calculate its size for
 		// positioning it and so we can have a transition.
-		hint.inner.classList.add("hidden");
+		setStyleProperties(hint.inner, { display: "block" });
 		if (!hint.shadowHost.isConnected) hint.container.append(hint.shadowHost);
 		if (!hint.elementToPositionHint.isConnected) {
 			hint.elementToPositionHint = getElementToPositionHint(hint.target);
@@ -105,7 +102,7 @@ const processHintQueue = debounce(() => {
 
 	requestAnimationFrame(() => {
 		for (const hint of queue) {
-			hint.inner.classList.remove("hidden");
+			setStyleProperties(hint.inner, { display: "none" });
 		}
 
 		// This is to make sure that we don't make visible a hint that was
@@ -116,7 +113,13 @@ const processHintQueue = debounce(() => {
 			// that the hints aren't processed in the next call to processHintQueue
 			// again
 			hintQueue.delete(hint);
-			if (hint.string) hint.inner.classList.add("visible");
+			if (hint.string) {
+				setStyleProperties(hint.inner, {
+					display: "block",
+					opacity: "100%",
+					transition: "opacity 0.3s",
+				});
+			}
 		}
 	});
 
@@ -156,41 +159,6 @@ function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {
 	}
 
 	return zIndex;
-}
-
-/* eslint-disable unicorn/prefer-module */
-const css = fs.readFileSync(path.join(__dirname, "styles.css"), "utf8");
-const shadowCss = fs.readFileSync(
-	path.join(__dirname, "hint-shadow-styles.css"),
-	"utf8"
-);
-/* eslint-enable unicorn/prefer-module */
-
-// Inject styles for the page. We have to do it like this instead of including
-// the css in the manifest because if the extension is disabled/removed the
-// hints would remain but the css would be gone and the layout of the page would
-// break massively
-const style = document.createElement("style");
-style.className = "rango-styles";
-style.textContent = css;
-document.head?.append(style);
-
-function injectShadowStyles(rootNode: ShadowRoot) {
-	let stylesPresent = false;
-
-	// This is more performant than using querySelector, especially if there are
-	// multiple shadowRoots
-	for (const child of rootNode.children) {
-		if (child.className === "rango-styles") stylesPresent = true;
-	}
-
-	if (!stylesPresent) {
-		const style = document.createElement("style");
-		style.className = "rango-styles";
-		style.textContent = css;
-
-		rootNode.append(style);
-	}
 }
 
 // This mutation observer takes care of reattaching the hints when they are
@@ -265,17 +233,46 @@ export class Hint {
 
 		this.shadowHost = document.createElement("div");
 		this.shadowHost.className = "rango-hint";
+		setStyleProperties(this.shadowHost, {
+			display: "contents",
+		});
+
 		shadowHostMutationObserver.observe(this.shadowHost, { attributes: true });
 		const shadow = this.shadowHost.attachShadow({ mode: "open" });
 
-		const style = document.createElement("style");
-		style.textContent = shadowCss;
-		shadow.append(style);
-
 		this.outer = document.createElement("div");
 		this.outer.className = "outer";
+		// We set the style properties inline because using stylesheets brought some
+		// issues related to CSP in Safari.
+		setStyleProperties(this.outer, {
+			// Setting "position: absolute" with "inset: auto" (equivalent to setting
+			//  top, left, bottom and right to auto) ensures that the position of the
+			//  wrapper is the same as if position was static and doesn't occupy any
+			//  space. This solves some issues of distorted layouts using "position:
+			//  relative".
+			position: "absolute",
+			inset: "auto",
+			display: "block",
+			contain: "layout size style",
+		});
+
 		this.inner = document.createElement("div");
 		this.inner.className = "inner";
+		setStyleProperties(this.inner, {
+			display: "none",
+			"user-select": "none",
+			position: "absolute",
+			"border-radius": "20%",
+			"line-height": "1.25",
+			"font-family": "monospace",
+			padding: "0 0.15em",
+			opacity: "0%",
+			contain: "layout style",
+			"pointer-events": "none",
+			"word-break": "keep-all",
+			"text-transform": "none",
+			"overflow-wrap": "normal",
+		});
 
 		this.outer.append(this.inner);
 		shadow.append(this.outer);
@@ -318,11 +315,6 @@ export class Hint {
 			childList: true,
 			subtree: true,
 		});
-
-		const rootNode = this.container.getRootNode();
-		// We don't need to worry if the shadow styles have been injected already,
-		// injectShadowStyles checks that
-		if (rootNode instanceof ShadowRoot) injectShadowStyles(rootNode);
 	}
 
 	computeColors() {
@@ -553,7 +545,9 @@ export class Hint {
 
 		clearHintedWrapper(this.string);
 
-		this.inner.classList.remove("visible");
+		setStyleProperties(this.inner, {
+			display: "none",
+		});
 
 		if (returnToStack) pushHint(this.string);
 		this.inner.textContent = "";

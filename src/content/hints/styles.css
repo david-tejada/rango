@@ -1,7 +1,0 @@
-/* stylelint-disable declaration-no-important */
-/* This selectors ensure a high specificity (5-1-0) so that our styles aren't
-overwritten by external rules */
-.rango-hint:not(#a#a#a#a#a) {
-	all: initial !important;
-	display: contents !important;
-}
