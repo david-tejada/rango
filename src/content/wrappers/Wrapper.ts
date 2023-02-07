@@ -396,12 +396,12 @@ export class Wrapper {
 		this.hint?.flash();
 
 		if (
-			pointerTarget instanceof HTMLAnchorElement &&
-			(pointerTarget.getAttribute("target") === "_blank" ||
-				pointerTarget.closest(
+			this.element instanceof HTMLAnchorElement &&
+			(this.element.getAttribute("target") === "_blank" ||
+				this.element.closest(
 					"[contenteditable=''], [contenteditable='true']"
 				)) &&
-			pointerTarget.getAttribute("href")
+			this.element.getAttribute("href")
 		) {
 			// In Firefox if we click a link with target="_blank" we get a popup message
 			// saying "Firefox prevented this site from opening a popup". In order to
