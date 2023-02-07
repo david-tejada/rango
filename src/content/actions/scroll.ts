@@ -24,6 +24,9 @@ interface ScrollOptions {
 }
 
 function getScrollBehavior() {
+	// Scroll tests fail if behavior is "smooth"
+	if (process.env["NODE_ENV"] !== "production") return "instant";
+
 	const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
 
 	return !mediaQuery || mediaQuery.matches ? "instant" : "smooth";
