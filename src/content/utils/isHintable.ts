@@ -31,6 +31,14 @@ function isRedundant(target: Element) {
 
 	if (
 		target.parentElement &&
+		target.parentElement instanceof HTMLLabelElement &&
+		target.parentElement.control === target
+	) {
+		return false;
+	}
+
+	if (
+		target.parentElement &&
 		matchesHintableSelector(target.parentElement) &&
 		!hasSignificantSiblings(target)
 	) {
