@@ -76,17 +76,35 @@ function isScrollable(
 	const { clientHeight, clientWidth, scrollHeight, scrollWidth } = element;
 	const { overflowX, overflowY } = window.getComputedStyle(element);
 
-	// We need to take into account that the <html> element can scroll even if
-	// overflow is "visible"
-	return (
-		(direction === "horizontal" &&
-			clientWidth !== scrollWidth &&
-			(element === document.documentElement ||
-				/scroll|auto/.test(overflowX))) ||
-		(direction === "vertical" &&
-			clientHeight !== scrollHeight &&
-			(element === document.documentElement || /scroll|auto/.test(overflowY)))
-	);
+	if (direction === "horizontal" && clientWidth !== scrollWidth) {
+		if (element === document.documentElement) return true;
+
+		if (
+			element === document.body &&
+			document.documentElement.clientWidth ===
+				document.documentElement.scrollWidth
+		) {
+			return true;
+		}
+
+		if (/scroll|auto/.test(overflowX)) return true;
+	}
+
+	if (direction === "vertical" && clientHeight !== scrollHeight) {
+		if (element === document.documentElement) return true;
+
+		if (
+			element === document.body &&
+			document.documentElement.clientHeight ===
+				document.documentElement.scrollHeight
+		) {
+			return true;
+		}
+
+		if (/scroll|auto/.test(overflowY)) return true;
+	}
+
+	return false;
 }
 
 function getScrollableAtCenter(direction: "horizontal" | "vertical") {
