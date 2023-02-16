@@ -160,6 +160,11 @@ export async function getRequestFromClipboard(): Promise<
 export async function writeResponseToClipboard(
 	response: ResponseToTalon | ResponseToTalonVersion0
 ) {
+	// Before writing to the clipboard we make sure no other content has been
+	// copied to the clipboard. For example, if the command times out.
+	const requestBeforeWriting = await getRequestFromClipboard();
+	if (requestBeforeWriting?.type !== "request") return;
+
 	// We send the response so that talon can make sure the request was received
 	// and to tell talon to execute any actions
 	const jsonResponse = JSON.stringify(response);
