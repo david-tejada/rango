@@ -17,6 +17,7 @@
 	white-space: normal;
 	outline: 0;
 	transition-property: transform, visibility, opacity;
+	word-break: keep-all;
 }
 
 .tippy-arrow {

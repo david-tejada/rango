@@ -37,6 +37,9 @@ export function showTooltip(
 	setTimeout(() => {
 		instance.hide();
 		hintInner.removeAttribute("id");
-		style.remove();
+		// If we remove the styles immediately the transition looks awful
+		setTimeout(() => {
+			style.remove();
+		}, 1000);
 	}, duration);
 }
