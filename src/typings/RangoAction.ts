@@ -79,6 +79,7 @@ interface RangoActionWithTargets {
 	type:
 		| "openInBackgroundTab"
 		| "clickElement"
+		| "focusElement"
 		| "directClickElement"
 		| "openInNewTab"
 		| "copyLink"

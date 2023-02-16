@@ -13,7 +13,8 @@ export interface TalonAction {
 		| "noHintFound"
 		| "key"
 		| "editDelete"
-		| "editDeleteAfterDelay";
+		| "editDeleteAfterDelay"
+		| "focusPage";
 	textToCopy?: string;
 	text?: string;
 	key?: string;

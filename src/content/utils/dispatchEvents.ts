@@ -115,3 +115,29 @@ export function dispatchUnhover(element: Element) {
 	element.dispatchEvent(mouseleaveEvent);
 	element.dispatchEvent(mouseoutEvent);
 }
+
+export function dispatchKeyDown(element: Element, key: string) {
+	const keydownEvent = new KeyboardEvent("keydown", {
+		view: window,
+		code: key,
+		key,
+		composed: true,
+		bubbles: true,
+		cancelable: true,
+	});
+
+	element.dispatchEvent(keydownEvent);
+}
+
+export function dispatchKeyUp(element: Element, key: string) {
+	const keyupEvent = new KeyboardEvent("keyup", {
+		view: window,
+		code: key,
+		key,
+		composed: true,
+		bubbles: true,
+		cancelable: true,
+	});
+
+	element.dispatchEvent(keyupEvent);
+}

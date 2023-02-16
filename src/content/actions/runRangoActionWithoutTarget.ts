@@ -17,6 +17,7 @@ import {
 import { unhoverAll } from "./hoverElement";
 import { scroll } from "./scroll";
 import { navigateToNextPage, navigateToPreviousPage } from "./pagination";
+import { blur } from "./focus";
 
 export async function runRangoActionWithoutTarget(
 	request: RangoActionWithoutTarget
@@ -126,6 +127,7 @@ export async function runRangoActionWithoutTarget(
 			];
 
 		case "unhoverAll":
+			blur();
 			unhoverAll();
 			break;
 

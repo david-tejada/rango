@@ -16,6 +16,7 @@ import { includeOrExcludeExtraSelectors } from "./customHints";
 import { insertToField } from "./insertToField";
 import { setSelectionAfter, setSelectionBefore } from "./setSelection";
 import { focusAndDeleteContents } from "./focusAndDeleteContents";
+import { focus } from "./focus";
 
 export async function runRangoActionWithTarget(
 	request: RangoActionWithTarget
@@ -48,6 +49,9 @@ export async function runRangoActionWithTarget(
 			}
 
 			break;
+
+		case "focusElement":
+			return focus(wrappers);
 
 		case "showLink":
 			showTitleAndHref(wrappers);
