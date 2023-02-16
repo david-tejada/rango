@@ -410,9 +410,17 @@ export class Hint {
 
 			const hintOffsetParent = getOffsetParent(this.outer);
 
+			// If outer is position absolute and the offset parent is outside the user
+			// scrollable container the hints for the overflowing elements will show.
+			// To avoid that in those cases we need to use position relative.
+			const scrollContainer = getWrapperForElement(
+				this.target
+			)?.userScrollableContainer;
+
 			if (
 				hintOffsetParent &&
-				!this.limitParent.contains(hintOffsetParent) &&
+				scrollContainer &&
+				!scrollContainer.contains(hintOffsetParent) &&
 				// We can't use position: relative inside display: grid because it distorts
 				// layouts. This seems to work fine but I have to see if it breaks somewhere.
 				display !== "grid"
