@@ -4,7 +4,6 @@ import {
 	writeResponseToClipboard,
 } from "../utils/clipboard";
 import { focusedDocumentInCurrentTab } from "../utils/focusedDocumentInCurrentTab";
-import { noActionResponse } from "../utils/responseObjects";
 import { dispatchCommand } from "./dispatchCommand";
 
 export async function handleTalonRequest() {
@@ -46,30 +45,9 @@ export async function handleTalonRequest() {
 			}
 		}
 
-		// If we are dealing with a command that might return a response other than
-		// "noAction" we first send the command and store the response to send back
-		// to talon
-		if (
-			request.action.type.startsWith("copy") ||
-			request.action.type === "focusAndDeleteContents" ||
-			((request.action.type === "clickElement" ||
-				request.action.type === "directClickElement") &&
-				request.action.target.length === 1)
-		) {
-			const response = await dispatchCommand(request.action);
-			const adaptedResponse = adaptResponse(response, request.version ?? 0);
-
-			await writeResponseToClipboard(adaptedResponse);
-		} else {
-			// If talon isn't waiting for a response value we can send the responds right away
-			const adaptedResponse = adaptResponse(
-				noActionResponse,
-				request.version ?? 0
-			);
-
-			await writeResponseToClipboard(adaptedResponse);
-			await dispatchCommand(request.action);
-		}
+		const response = await dispatchCommand(request.action);
+		const adaptedResponse = adaptResponse(response, request.version ?? 0);
+		await writeResponseToClipboard(adaptedResponse);
 	} catch (error: unknown) {
 		if (error instanceof Error) {
 			console.error(error);
