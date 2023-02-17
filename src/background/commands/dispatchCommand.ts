@@ -49,7 +49,25 @@ export async function dispatchCommand(
 		]);
 	}
 
-	if (result?.type) return { type: "response", action: result };
+	// In Firefox, when we perform window.focus() in the content script, the page
+	// doesn't receive focus immediately. It seems like the page doesn't focus
+	// until the content script finishes handling the current message callback.
+	// Here we check again and remove the "focusPage" action if necessary.
+	if (result) {
+		const focusActionIndex = result.findIndex(
+			(action) => action.name === "focusPage"
+		);
+
+		if (focusActionIndex !== -1) {
+			const documentHasFocus = await sendRequestToCurrentTab({
+				type: "checkIfDocumentHasFocus",
+			});
+
+			if (documentHasFocus) {
+				result.splice(focusActionIndex, 1);
+			}
+		}
+	}
 
 	return constructTalonResponse(result ?? []);
 }
