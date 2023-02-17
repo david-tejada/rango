@@ -96,12 +96,7 @@ browser.runtime.onMessage.addListener(
 					break;
 
 				case "checkIfDocumentHasFocus":
-					if (document.hasFocus()) {
-						return true;
-					}
-
-					// eslint-disable-next-line unicorn/no-useless-promise-resolve-reject, @typescript-eslint/return-await
-					return Promise.reject();
+					return document.hasFocus();
 
 				default: {
 					const result = await runRangoActionWithoutTarget(request);

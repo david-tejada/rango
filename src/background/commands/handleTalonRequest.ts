@@ -3,7 +3,6 @@ import {
 	getRequestFromClipboard,
 	writeResponseToClipboard,
 } from "../utils/clipboard";
-import { focusedDocumentInCurrentTab } from "../utils/focusedDocumentInCurrentTab";
 import { dispatchCommand } from "./dispatchCommand";
 
 export async function handleTalonRequest() {
@@ -25,7 +24,9 @@ export async function handleTalonRequest() {
 				request.action.type = "clickElement";
 			}
 
-			const focusedDocument = await focusedDocumentInCurrentTab();
+			const focusedDocument = (await sendRequestToCurrentTab({
+				type: "checkIfDocumentHasFocus",
+			})) as boolean;
 
 			if (request.action.target.length === 1 && !focusedDocument) {
 				await writeResponseToClipboard(
