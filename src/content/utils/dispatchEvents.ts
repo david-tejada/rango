@@ -3,7 +3,9 @@ import { focusesOnclick } from "./focusesOnclick";
 
 let lastClicked: Element | undefined;
 
-export async function dispatchClick(element: Element) {
+export function dispatchClick(element: Element): boolean {
+	let shouldFocusPage = false;
+
 	if (lastClicked) dispatchUnhover(lastClicked);
 	const { x: clientX, y: clientY } = getElementCenter(element);
 
@@ -16,10 +18,6 @@ export async function dispatchClick(element: Element) {
 		bubbles: true,
 		cancelable: true,
 	});
-
-	if (element instanceof HTMLElement && focusesOnclick(element)) {
-		element.focus();
-	}
 
 	const mouseupEvent = new MouseEvent("mouseup", {
 		view: window,
@@ -37,14 +35,21 @@ export async function dispatchClick(element: Element) {
 		bubbles: true,
 		cancelable: true,
 	});
+
 	element.dispatchEvent(mousedownEvent);
-	await new Promise((r) => {
-		setTimeout(r, 100);
-	});
+
+	if (element instanceof HTMLElement && focusesOnclick(element)) {
+		window.focus();
+		element.focus();
+		if (!document.hasFocus()) shouldFocusPage = true;
+	}
+
 	element.dispatchEvent(mouseupEvent);
 	element.dispatchEvent(clickEvent);
 
 	lastClicked = element;
+
+	return shouldFocusPage;
 }
 
 export function dispatchHover(element: Element) {

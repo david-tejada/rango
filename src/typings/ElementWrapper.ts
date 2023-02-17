@@ -24,7 +24,7 @@ export interface ElementWrapper {
 	unobserveIntersection(): void;
 	intersect(isIntersecting: boolean): void;
 	intersectViewport(isIntersecting: boolean): void;
-	click(): void;
+	click(): boolean;
 	hover(): void;
 	unhover(): void;
 	remove(): void;

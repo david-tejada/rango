@@ -391,7 +391,7 @@ export class Wrapper {
 		}
 	}
 
-	click() {
+	click(): boolean {
 		const pointerTarget = getPointerTarget(this.element);
 		this.hint?.flash();
 
@@ -411,12 +411,13 @@ export class Wrapper {
 			// has this for opening a thread in the side panel. So here we make sure that
 			// there is a href attribute before we open the link in a new tab.
 			void openInNewTab([this]);
-		} else {
-			// Some pages expect a some hover event prior to the click and if there
-			// isn't one we can't click at all. For example, Slack search suggestions.
-			dispatchHover(pointerTarget);
-			void dispatchClick(pointerTarget);
+			return false;
 		}
+
+		// Some pages expect a some hover event prior to the click and if there
+		// isn't one we can't click at all. For example, Slack search suggestions.
+		dispatchHover(pointerTarget);
+		return dispatchClick(pointerTarget);
 	}
 
 	hover() {
