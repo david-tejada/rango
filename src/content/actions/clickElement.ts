@@ -17,4 +17,16 @@ export async function clickElement(wrappers: ElementWrapper[]) {
 	for (const wrapper of wrappers) {
 		wrapper.click();
 	}
+
+	if (
+		wrappers.length === 1 &&
+		wrappers[0]!.element instanceof HTMLSelectElement
+	) {
+		return {
+			type: "key",
+			key: "alt-down",
+		};
+	}
+
+	return undefined;
 }

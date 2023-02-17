@@ -40,15 +40,7 @@ export async function runRangoActionWithTarget(
 	switch (request.type) {
 		case "clickElement":
 		case "directClickElement":
-			await clickElement(wrappers);
-			if (
-				wrappers.length === 1 &&
-				wrapper.element instanceof HTMLSelectElement
-			) {
-				return { type: "key", key: "down" };
-			}
-
-			break;
+			return clickElement(wrappers);
 
 		case "focusElement":
 			return focus(wrappers);
