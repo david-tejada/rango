@@ -4,7 +4,7 @@ import { openInBackgroundTab } from "./openInNewTab";
 
 export async function clickElement(
 	wrappers: ElementWrapper[]
-): Promise<TalonAction | undefined> {
+): Promise<TalonAction[] | undefined> {
 	let performPageFocus = false;
 	// If there are multiple targets and some of them are anchor elements we open
 	// those in a new background tab
@@ -27,14 +27,18 @@ export async function clickElement(
 		wrappers.length === 1 &&
 		wrappers[0]!.element instanceof HTMLSelectElement
 	) {
-		return {
-			type: "key",
-			key: "alt-down",
-		};
+		return [
+			{ name: "focusPage" },
+			{
+				name: "key",
+				key: "alt-down",
+				main: true,
+			},
+		];
 	}
 
 	if (performPageFocus) {
-		return { type: "focusPage" };
+		return [{ name: "focusPage" }];
 	}
 
 	return undefined;

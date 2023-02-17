@@ -1,4 +1,4 @@
-import { adaptResponse } from "../utils/adaptResponse";
+import { sendRequestToCurrentTab } from "../messaging/sendRequestToCurrentTab";
 import {
 	getRequestFromClipboard,
 	writeResponseToClipboard,
@@ -29,26 +29,22 @@ export async function handleTalonRequest() {
 			})) as boolean;
 
 			if (request.action.target.length === 1 && !focusedDocument) {
-				await writeResponseToClipboard(
-					adaptResponse(
+				await writeResponseToClipboard({
+					type: "response",
+					action: { type: "noHintFound" },
+					actions: [
 						{
-							type: "response",
-							// Technically the action should be something like "noDocumentFocused"
-							// or even better "pressKeys" but we leave this for simplicity and
-							// backwards compatibility with rango-talon
-							action: { type: "noHintFound" },
+							name: "typeTargetCharacters",
 						},
-						request.version ?? 0
-					)
-				);
+					],
+				});
 
 				return;
 			}
 		}
 
 		const response = await dispatchCommand(request.action);
-		const adaptedResponse = adaptResponse(response, request.version ?? 0);
-		await writeResponseToClipboard(adaptedResponse);
+		await writeResponseToClipboard(response);
 	} catch (error: unknown) {
 		if (error instanceof Error) {
 			console.error(error);

@@ -2,7 +2,6 @@ import browser from "webextension-polyfill";
 import {
 	RequestFromTalon,
 	ResponseToTalon,
-	ResponseToTalonVersion0,
 } from "../../typings/RequestFromTalon";
 import { notify } from "./notify";
 
@@ -157,9 +156,7 @@ export async function getRequestFromClipboard(): Promise<
 	return undefined;
 }
 
-export async function writeResponseToClipboard(
-	response: ResponseToTalon | ResponseToTalonVersion0
-) {
+export async function writeResponseToClipboard(response: ResponseToTalon) {
 	// Before writing to the clipboard we make sure no other content has been
 	// copied to the clipboard. For example, if the command times out.
 	const requestBeforeWriting = await getRequestFromClipboard();

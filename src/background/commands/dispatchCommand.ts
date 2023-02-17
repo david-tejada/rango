@@ -1,7 +1,7 @@
 import { ResponseToTalon, TalonAction } from "../../typings/RequestFromTalon";
 import { RangoAction } from "../../typings/RangoAction";
 import { sendRequestToCurrentTab } from "../messaging/sendRequestToCurrentTab";
-import { noActionResponse } from "../utils/responseObjects";
+import { constructTalonResponse } from "../utils/constructTalonResponse";
 import { runBackgroundCommand } from "./runBackgroundCommand";
 
 const backgroundCommands = new Set([
@@ -38,19 +38,18 @@ export async function dispatchCommand(
 ): Promise<ResponseToTalon> {
 	const result = (await (backgroundCommands.has(command.type)
 		? runBackgroundCommand(command)
-		: sendRequestToCurrentTab(command))) as string | TalonAction | undefined;
+		: sendRequestToCurrentTab(command))) as string | TalonAction[] | undefined;
 
 	if (typeof result === "string") {
-		return {
-			type: "response",
-			action: {
-				type: "copyToClipboard",
+		return constructTalonResponse([
+			{
+				name: "copyToClipboard",
 				textToCopy: result,
 			},
-		};
+		]);
 	}
 
 	if (result?.type) return { type: "response", action: result };
 
-	return noActionResponse;
+	return constructTalonResponse(result ?? []);
 }

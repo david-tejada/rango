@@ -44,7 +44,7 @@ loadDevtoolsUtils();
 browser.runtime.onMessage.addListener(
 	async (
 		request: ContentRequest
-	): Promise<string | string[] | TalonAction | boolean | undefined> => {
+	): Promise<string | string[] | TalonAction[] | boolean | undefined> => {
 		if ("target" in request) {
 			return runRangoActionWithTarget(request);
 		}

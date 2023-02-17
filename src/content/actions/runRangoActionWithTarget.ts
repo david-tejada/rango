@@ -20,7 +20,7 @@ import { focus } from "./focus";
 
 export async function runRangoActionWithTarget(
 	request: RangoActionWithTarget
-): Promise<string | TalonAction | undefined> {
+): Promise<string | TalonAction[] | undefined> {
 	const hints =
 		typeof request.target === "string" ? [request.target] : request.target;
 	const wrappers = getWrapper(hints).filter(
@@ -28,8 +28,10 @@ export async function runRangoActionWithTarget(
 	);
 
 	if (wrappers.length === 0) {
+		// We don't need to worry about the number of hints said, if it was more
+		// than one the action would have changed to "clickElement"
 		return request.type === "directClickElement"
-			? { type: "noHintFound" }
+			? [{ name: "typeTargetCharacters" }]
 			: undefined;
 	}
 

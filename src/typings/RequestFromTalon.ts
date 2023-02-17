@@ -7,29 +7,35 @@ export interface RequestFromTalon {
 }
 
 export interface TalonAction {
-	type:
-		| "noAction"
+	name:
 		| "copyToClipboard"
-		| "noHintFound"
+		| "typeTargetCharacters"
 		| "key"
 		| "editDelete"
-		| "editDeleteAfterDelay"
+		| "sleep"
 		| "focusPage";
+	main?: true;
+	previousName?: "noHintFound" | "editDeleteAfterDelay";
 	textToCopy?: string;
 	text?: string;
 	key?: string;
+	ms?: number;
 }
 
 export interface ResponseToTalon {
 	type: "response";
-	action: TalonAction;
-}
-interface TalonActionVersion0 {
-	type: "ok" | "copyLink";
-	target?: string;
+	action: TalonActionLegacy;
+	actions: TalonAction[];
 }
 
-export interface ResponseToTalonVersion0 {
-	type: "response";
-	action: TalonActionVersion0;
+export interface TalonActionLegacy {
+	type:
+		| "noAction"
+		| "copyToClipboard"
+		| "key"
+		| "noHintFound"
+		| "editDelete"
+		| "editDeleteAfterDelay";
+	textToCopy?: string;
+	key?: string;
 }

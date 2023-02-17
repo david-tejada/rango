@@ -5,7 +5,7 @@ import { Wrapper } from "../wrappers/Wrapper";
 const focusableSelector =
 	"a, area[href], button, frame, iframe, input, object, select, textarea, summary, [tabindex]";
 
-export function focus(wrappers: Wrapper[]): TalonAction | undefined {
+export function focus(wrappers: Wrapper[]): TalonAction[] | undefined {
 	window.focus();
 
 	for (const wrapper of wrappers) {
@@ -25,7 +25,7 @@ export function focus(wrappers: Wrapper[]): TalonAction | undefined {
 	}
 
 	if (!document.hasFocus()) {
-		return { type: "focusPage" };
+		return [{ name: "focusPage" }];
 	}
 
 	return undefined;

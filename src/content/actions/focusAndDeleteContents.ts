@@ -4,7 +4,7 @@ import { focusesOnclick } from "../utils/focusesOnclick";
 
 export function focusAndDeleteContents(
 	wrapper: ElementWrapper
-): TalonAction | undefined {
+): TalonAction[] | undefined {
 	if (
 		wrapper.element instanceof HTMLInputElement ||
 		wrapper.element instanceof HTMLTextAreaElement
@@ -12,7 +12,7 @@ export function focusAndDeleteContents(
 		wrapper.element.select();
 		wrapper.element.focus();
 
-		return { type: "editDelete" };
+		return [{ name: "editDelete" }];
 	}
 
 	if (
@@ -29,7 +29,14 @@ export function focusAndDeleteContents(
 			selection?.removeAllRanges();
 			selection?.addRange(range);
 
-			return { type: "editDeleteAfterDelay" };
+			return [
+				{ name: "sleep" },
+				{
+					name: "editDelete",
+					main: true,
+					previousName: "editDeleteAfterDelay",
+				},
+			];
 		}
 	}
 
