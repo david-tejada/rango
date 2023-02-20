@@ -1,4 +1,6 @@
 import browser from "webextension-polyfill";
+import offscreenDocumentUrl from "url:./offscreen.html";
+
 import {
 	RequestFromTalon,
 	ResponseToTalon,
@@ -94,17 +96,17 @@ async function getClipboardManifestV3(): Promise<string | undefined> {
 }
 
 async function copyToClipboardManifestV3(text: string) {
-	const tabId = await getClipboardTabId();
-	if (tabId) {
-		void browser.tabs.sendMessage(
-			tabId,
-			{
-				type: "copyToClipboardManifestV3",
-				text,
-			},
-			{ frameId: 0 }
-		);
-	}
+	await chrome.offscreen.createDocument({
+		url: offscreenDocumentUrl,
+		reasons: [chrome.offscreen.Reason.CLIPBOARD],
+		justification: "Write the response to Talon to the clipboard",
+	});
+
+	await chrome.runtime.sendMessage({
+		type: "paste-to-clipboard",
+		target: "offscreen-doc",
+		text,
+	});
 }
 
 async function getTextFromClipboard(): Promise<string | undefined> {
@@ -157,11 +159,6 @@ export async function getRequestFromClipboard(): Promise<
 }
 
 export async function writeResponseToClipboard(response: ResponseToTalon) {
-	// Before writing to the clipboard we make sure no other content has been
-	// copied to the clipboard. For example, if the command times out.
-	const requestBeforeWriting = await getRequestFromClipboard();
-	if (requestBeforeWriting?.type !== "request") return;
-
 	// We send the response so that talon can make sure the request was received
 	// and to tell talon to execute any actions
 	const jsonResponse = JSON.stringify(response);

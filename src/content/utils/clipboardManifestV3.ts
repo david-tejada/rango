@@ -38,19 +38,3 @@ export function getClipboardManifestV3(): string {
 
 	return result;
 }
-
-export function copyToClipboardManifestV3(text: string) {
-	const lastActiveElement = document.activeElement?.shadowRoot
-		? document.activeElement.shadowRoot.activeElement
-		: document.activeElement;
-	const copyPasteArea = getCopyPasteArea();
-	copyPasteArea.disabled = false;
-	copyPasteArea.value = text;
-	copyPasteArea.select();
-	document.execCommand("copy");
-	copyPasteArea.value = "";
-	copyPasteArea.disabled = true;
-	if (lastActiveElement instanceof HTMLElement) {
-		lastActiveElement.focus();
-	}
-}

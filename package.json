@@ -50,7 +50,8 @@
 				2,
 				"never",
 				{
-					"png": "always"
+					"png": "always",
+					"html": "always"
 				}
 			],
 			"unicorn/filename-case": [
@@ -141,6 +142,7 @@
 		"@parcel/transformer-image": "^2.5.0",
 		"@parcel/transformer-inline-string": "^2.8.3",
 		"@sindresorhus/tsconfig": "^2.0.0",
+		"@types/chrome": "^0.0.216",
 		"@types/color": "^3.0.3",
 		"@types/combinations": "^1.0.0",
 		"@types/intersect": "^1.0.0",

@@ -15,7 +15,8 @@
 		"clipboardRead",
 		"clipboardWrite",
 		"notifications",
-		"webNavigation"
+		"webNavigation",
+		"offscreen"
 	],
 	"content_scripts": [
 		{

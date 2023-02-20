@@ -1,11 +1,6 @@
 import { RangoAction } from "./RangoAction";
 import { MarkHintsAsKeyboardReachable } from "./BackgroundRequest";
 
-interface CopyToClipboardManifestV3 {
-	type: "copyToClipboardManifestV3";
-	text: string;
-}
-
 interface UpdateHintsInTab {
 	type: "updateHintsInTab";
 	hints: string[];
@@ -29,7 +24,6 @@ interface SimpleContentRequest {
 export type ContentRequest =
 	| RangoAction
 	| SimpleContentRequest
-	| CopyToClipboardManifestV3
 	| UpdateHintsInTab
 	| MarkHintsAsKeyboardReachable
 	| ReclaimHints;

@@ -4,10 +4,7 @@ import "requestidlecallback-polyfill";
 import { ContentRequest } from "../typings/ContentRequest";
 import { TalonAction } from "../typings/RequestFromTalon";
 import { cacheHintOptions } from "./options/cacheHintOptions";
-import {
-	getClipboardManifestV3,
-	copyToClipboardManifestV3,
-} from "./utils/clipboardManifestV3";
+import { getClipboardManifestV3 } from "./utils/clipboardManifestV3";
 import observe from "./observe";
 import { addUrlToTitle } from "./utils/addUrlToTitle";
 import {
@@ -54,11 +51,6 @@ browser.runtime.onMessage.addListener(
 				// SCRIPT REQUESTS
 				case "getClipboardManifestV3":
 					return getClipboardManifestV3();
-
-				case "copyToClipboardManifestV3": {
-					copyToClipboardManifestV3(request.text);
-					break;
-				}
 
 				case "getHintStringsInUse":
 					return getHintStringsInUse();
