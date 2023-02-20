@@ -11,6 +11,7 @@ All notable changes to the Rango extension will be documented in this file.
 ### Fixed
 
 - Fix some elements becoming taller when the hints are rendered.
+- Fix clicking on `<select>` elements not always working
 - Fix elements not receiving focus if the page wasn't focused.
 - Fix regression where clicking on anchor element with target="\_blank" is blocked by the browser.
 - Fix wrong detection of duplicates when the parent is the `<label>` for the element.
