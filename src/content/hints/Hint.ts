@@ -430,7 +430,7 @@ export class Hint {
 					position: "relative",
 					// In case the container itself is inline (what will happen very
 					// rarely), this seems to cause the least amount of layout distortion
-					display: "inline-block",
+					display: "inline",
 				});
 				// When we change the position property of the hint wrapper its position
 				// in the page can change, so we need to invalidate the layout cache
