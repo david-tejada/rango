@@ -2,6 +2,19 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.3.2](https://github.com/david-tejada/rango/releases/tag/v0.3.2) - 2023-02-20
+
+### Added
+
+- Add command for focus and include blur of the current active element in dismiss.
+
+### Fixed
+
+- Fix some elements becoming taller when the hints are rendered.
+- Fix elements not receiving focus if the page wasn't focused.
+- Fix regression where clicking on anchor element with target="\_blank" is blocked by the browser.
+- Fix wrong detection of duplicates when the parent is the `<label>` for the element.
+
 ## [0.3.1](https://github.com/david-tejada/rango/releases/tag/v0.3.1) - 2023-01-30
 
 ### Changed
