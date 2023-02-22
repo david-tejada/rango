@@ -4,7 +4,7 @@
 	"description": "Extension that allows you to interact with webpages using your voice and talon",
 	"homepage_url": "https://github.com/david-tejada/rango",
 	"manifest_version": 3,
-	"minimum_chrome_version": "100",
+	"minimum_chrome_version": "109",
 	"icons": {
 		"48": "../assets/icon48.png",
 		"128": "../assets/icon128.png"
