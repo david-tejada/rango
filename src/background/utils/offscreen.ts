@@ -1,5 +1,5 @@
 interface OffscreenMessage {
-	type: "paste-to-clipboard";
+	type: "copy-to-clipboard";
 	target: "offscreen-doc";
 	text: string;
 }
@@ -10,11 +10,10 @@ chrome.runtime.onMessage.addListener((message: OffscreenMessage) => {
 	if (message.target !== "offscreen-doc") return;
 
 	switch (message.type) {
-		case "paste-to-clipboard":
+		case "copy-to-clipboard":
 			textarea.value = message.text;
 			textarea.select();
 			document.execCommand("copy");
-			window.close();
 			break;
 
 		default:

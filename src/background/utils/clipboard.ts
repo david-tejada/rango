@@ -96,6 +96,9 @@ async function getClipboardManifestV3(): Promise<string | undefined> {
 }
 
 async function copyToClipboardManifestV3(text: string) {
+	const hasDocument = await chrome.offscreen.hasDocument();
+	if (hasDocument) await chrome.offscreen.closeDocument();
+
 	await chrome.offscreen.createDocument({
 		url: offscreenDocumentUrl,
 		reasons: [chrome.offscreen.Reason.CLIPBOARD],
@@ -103,7 +106,7 @@ async function copyToClipboardManifestV3(text: string) {
 	});
 
 	await chrome.runtime.sendMessage({
-		type: "paste-to-clipboard",
+		type: "copy-to-clipboard",
 		target: "offscreen-doc",
 		text,
 	});
