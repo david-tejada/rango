@@ -2,6 +2,14 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.3.3](https://github.com/david-tejada/rango/releases/tag/v0.3.3) - 2023-02-22
+
+### Fixed
+
+- Use offscreen document to read the clipboard in manifest v3 to fix buggy behavior when reading the request.
+- Fix sometimes the response not being copied to the clipboard as the offscreen document closes too fast.
+- Fix timeout error when executing a command that affects all tabs, e.g. "hint bigger".
+
 ## [0.3.2](https://github.com/david-tejada/rango/releases/tag/v0.3.2) - 2023-02-20
 
 ### Added
