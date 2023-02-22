@@ -181,14 +181,22 @@ browser.webNavigation.onCommitted.addListener(async ({ tabId, frameId }) => {
 		// the content script is recovered instead of being started again. For that
 		// reason we need to recover the hints that are in use and store them in
 		// memory in its stack.
-		const hintsInUse = (await browser.tabs.sendMessage(
-			tabId,
-			{ type: "getHintStringsInUse" },
-			{
-				frameId,
-			}
-		)) as string[];
+		let hintsInUse;
+		try {
+			hintsInUse = (await browser.tabs.sendMessage(
+				tabId,
+				{ type: "getHintStringsInUse" },
+				{
+					frameId,
+				}
+			)) as string[];
+		} catch {
+			// We do nothing here. The content script still hasn't loaded, so there's
+			// no hints to store
+		}
 
-		await storeHintsInUse(hintsInUse, tabId, frameId);
+		if (hintsInUse) {
+			await storeHintsInUse(hintsInUse, tabId, frameId);
+		}
 	});
 });
