@@ -24,7 +24,7 @@ export async function sendRequestToAllTabs(request: ContentRequest) {
 
 	const backgroundTabRequest = { ...request };
 	backgroundTabRequest.type += "OnIdle";
-	await Promise.all(
+	await Promise.allSettled(
 		nonActiveTabs.map(async (tab) => {
 			if (tab.id) {
 				return browser.tabs.sendMessage(tab.id, backgroundTabRequest);
