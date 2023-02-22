@@ -4,7 +4,6 @@ import "requestidlecallback-polyfill";
 import { ContentRequest } from "../typings/ContentRequest";
 import { TalonAction } from "../typings/RequestFromTalon";
 import { cacheHintOptions } from "./options/cacheHintOptions";
-import { getClipboardManifestV3 } from "./utils/clipboardManifestV3";
 import observe from "./observe";
 import { addUrlToTitle } from "./utils/addUrlToTitle";
 import {
@@ -49,8 +48,6 @@ browser.runtime.onMessage.addListener(
 		try {
 			switch (request.type) {
 				// SCRIPT REQUESTS
-				case "getClipboardManifestV3":
-					return getClipboardManifestV3();
 
 				case "getHintStringsInUse":
 					return getHintStringsInUse();

@@ -13,7 +13,6 @@ interface ReclaimHints {
 
 interface SimpleContentRequest {
 	type:
-		| "getClipboardManifestV3"
 		| "getLocation"
 		| "initKeyboardNavigation"
 		| "restoreKeyboardReachableHints"
