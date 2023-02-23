@@ -10,7 +10,7 @@
 		height: 18px;
 	}
 </style>
-<ul id="inside" style="height: 500px; overflow: auto">
+<ul id="inside" style="height: 500px; overflow: auto; will-change: transform">
 	<li id="item1"><a href="#">Link 1</a></li>
 	<li id="item2"><a href="#">Link 2</a></li>
 	<li id="item3"><a href="#">Link 3</a></li>
@@ -105,7 +105,13 @@
 
 <ul
 	id="outside"
-	style="height: 500px; overflow: auto; position: absolute; top: 1000px"
+	style="
+		height: 500px;
+		overflow: auto;
+		position: absolute;
+		top: 1000px;
+		will-change: transform;
+	"
 >
 	<li id="item51"><a href="">Link 51</a></li>
 	<li id="item52"><a href="">Link 52</a></li>

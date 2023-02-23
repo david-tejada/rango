@@ -36,9 +36,7 @@ export interface HintableMark {
 	outer: HTMLDivElement;
 	inner: HTMLDivElement;
 	container: HTMLElement | ShadowRoot;
-	limitParent: HTMLElement;
-	availableSpaceLeft?: number;
-	availableSpaceTop?: number;
+	availableSpace?: { left: number; top: number };
 	wrapperRelative?: boolean;
 	elementToPositionHint: Element | SVGElement | Text;
 	zIndex?: number;

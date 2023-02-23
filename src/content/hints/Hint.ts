@@ -18,7 +18,7 @@ import {
 	matchesMarkedForExclusion,
 } from "./customHintsEdit";
 import { getElementToPositionHint } from "./getElementToPositionHint";
-import { getContextForHint } from "./getContextForHint";
+import { getHintContainer } from "./getHintContainer";
 import { popHint, pushHint } from "./hintsCache";
 import { setStyleProperties } from "./setStyleProperties";
 import {
@@ -30,6 +30,7 @@ import {
 	getOffsetParent,
 	removeFromLayoutCache,
 } from "./layoutCache";
+import { getAvailableSpace } from "./getSpaceAvailable";
 
 const hintQueue: Set<Hint> = new Set();
 
@@ -295,12 +296,11 @@ export class Hint {
 
 	computeHintContext() {
 		this.elementToPositionHint = getElementToPositionHint(this.target);
-		({
-			container: this.container,
-			limitParent: this.limitParent,
-			availableSpaceLeft: this.availableSpaceLeft,
-			availableSpaceTop: this.availableSpaceTop,
-		} = getContextForHint(this.target, this.elementToPositionHint));
+		this.container = getHintContainer(this.target);
+		this.availableSpace = getAvailableSpace(
+			this.container,
+			this.elementToPositionHint
+		);
 
 		containerMutationObserver.observe(this.container, { childList: true });
 
@@ -504,15 +504,15 @@ export class Hint {
 		let x =
 			targetX -
 			outerX -
-			(this.availableSpaceLeft === undefined
+			(this.availableSpace === undefined
 				? hintOffsetX
-				: Math.min(hintOffsetX, this.availableSpaceLeft - 1));
+				: Math.min(hintOffsetX, this.availableSpace.left - 1));
 		let y =
 			targetY -
 			outerY -
-			(this.availableSpaceTop === undefined
+			(this.availableSpace === undefined
 				? hintOffsetY
-				: Math.min(hintOffsetY, this.availableSpaceTop - 1));
+				: Math.min(hintOffsetY, this.availableSpace.top - 1));
 
 		if (this.inner.dataset["placeWithin"] === "true") {
 			x = targetX - outerX + 1;

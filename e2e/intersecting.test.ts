@@ -41,15 +41,15 @@ test("As we scroll the container only the hintables within the container and the
 		document.querySelector("#inside")?.scrollBy(0, 18);
 	});
 
-	await page.waitForSelector("#inside li#item84 .rango-hint");
+	await page.waitForSelector("#inside .rango-hint:nth-of-type(85)");
 
 	const hintsLength = await page.$$eval(
 		"#inside .rango-hint",
 		(hints) => hints.length
 	);
 
-	// 500px (container) + 1000px (bottom rootMargin) = 1500px / 18px
-	expect(hintsLength).toBe(Math.ceil(1500 / 18));
+	// 500px (container) + 1000px (bottom rootMargin) + 18px (scrolled) = 1518px / 18px = 84.33
+	expect(hintsLength).toBe(Math.ceil(1518 / 18));
 });
 
 test("As we scroll the document only the hintables within the container and the bottom and top root margin have hints", async () => {
@@ -58,7 +58,7 @@ test("As we scroll the document only the hintables within the container and the 
 		window.scrollBy(0, 1000 - document.documentElement.clientHeight);
 	});
 
-	await page.waitForSelector("#outside li#item100 .rango-hint");
+	await page.waitForSelector("#outside .rango-hint:nth-of-type(56)");
 
 	const hintsLength = await page.$$eval(
 		"#outside .rango-hint",
