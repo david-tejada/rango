@@ -22,24 +22,31 @@ export async function handleTalonRequest() {
 			// intended to type those letters
 			if (request.action.target.length > 1) {
 				request.action.type = "clickElement";
-			}
+			} else {
+				let focusedDocument;
+				let contentScript = true;
 
-			const focusedDocument = (await sendRequestToCurrentTab({
-				type: "checkIfDocumentHasFocus",
-			})) as boolean;
+				try {
+					focusedDocument = (await sendRequestToCurrentTab({
+						type: "checkIfDocumentHasFocus",
+					})) as boolean;
+				} catch {
+					contentScript = false;
+				}
 
-			if (request.action.target.length === 1 && !focusedDocument) {
-				await writeResponseToClipboard({
-					type: "response",
-					action: { type: "noHintFound" },
-					actions: [
-						{
-							name: "typeTargetCharacters",
-						},
-					],
-				});
+				if (!focusedDocument || !contentScript) {
+					await writeResponseToClipboard({
+						type: "response",
+						action: { type: "noHintFound" },
+						actions: [
+							{
+								name: "typeTargetCharacters",
+							},
+						],
+					});
 
-				return;
+					return;
+				}
 			}
 		}
 
