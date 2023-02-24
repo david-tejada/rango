@@ -2,6 +2,12 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.3.4](https://github.com/david-tejada/rango/releases/tag/v0.3.4) - 2023-02-24
+
+### Fixed
+
+- Fix regression with not being able to type one or two characters when there is no content script
+
 ## [0.3.3](https://github.com/david-tejada/rango/releases/tag/v0.3.3) - 2023-02-22
 
 ### Fixed
