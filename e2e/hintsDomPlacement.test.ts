@@ -1,18 +1,8 @@
-import puppeteer from "puppeteer";
 import { getFileUrlPath } from "./utils/getFileUrlPath";
-import { launchBrowser } from "./utils/launchBrowser";
 
 describe("The hints are placed in the appropriate DOM element", () => {
-	let browser: puppeteer.Browser;
-	let page: puppeteer.Page;
-
 	beforeAll(async () => {
-		({ browser, page } = await launchBrowser());
 		await page.goto(getFileUrlPath("./test-pages/basic.html"));
-	});
-
-	afterAll(async () => {
-		await browser.close();
 	});
 
 	test("The hint won't be placed in an element with overflow hidden and insufficient space if another ancestor has sufficient space", async () => {

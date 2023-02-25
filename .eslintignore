@@ -1,1 +1,3 @@
 Rango/
+# Ignore configuration files
+/*.js

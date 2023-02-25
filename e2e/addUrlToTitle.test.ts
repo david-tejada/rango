@@ -1,17 +1,7 @@
-import puppeteer from "puppeteer";
-import { launchBrowser } from "./utils/launchBrowser";
 import { sleep } from "./utils/testHelpers";
 
-let browser: puppeteer.Browser;
-let page: puppeteer.Page;
-
 beforeAll(async () => {
-	({ browser, page } = await launchBrowser());
 	await page.goto("http://127.0.0.1:8080/basic.html");
-});
-
-afterAll(async () => {
-	await browser.close();
 });
 
 test("The URL is attached to the title", async () => {

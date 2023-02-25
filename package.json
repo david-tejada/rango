@@ -17,11 +17,11 @@
 		"lint:css": "stylelint src/**/*.css",
 		"lint:js": "xo",
 		"test": "run-p lint:* build",
-		"jest:unit": "jest --testPathIgnorePatterns='e2e'",
 		"serve-test-pages": "http-server ./e2e/test-pages/",
-		"jest:e2e": "jest --testPathPattern='e2e' --runInBand",
-		"jest": "run-s jest:unit jest:e2e",
-		"jest:watch": "jest --watch --runInBand",
+		"jest:unit": "jest --selectProjects unit",
+		"jest:e2e": "jest --runInBand --selectProjects e2e",
+		"jest": "jest --runInBand --selectProjects unit e2e",
+		"jest:watch": "jest --watch --runInBand --selectProjects unit e2e",
 		"watch": "parcel watch src/mv2/manifest.json --dist-dir dist-mv2 --no-cache --no-hmr",
 		"watch:mv3": "parcel watch src/mv3/manifest.json --dist-dir dist-mv3 --no-cache --no-hmr",
 		"start:firefox": "web-ext run --target firefox-desktop",
@@ -39,6 +39,12 @@
 			"browser"
 		],
 		"prettier": "true",
+		"globals": {
+			"page": true,
+			"browser": true,
+			"context": true,
+			"jestPuppeteer": true
+		},
 		"rules": {
 			"no-unused-vars": [
 				"error",
@@ -146,23 +152,26 @@
 		"@types/color": "^3.0.3",
 		"@types/combinations": "^1.0.0",
 		"@types/intersect": "^1.0.0",
-		"@types/jest": "^27.4.1",
+		"@types/jest": "^29.4.0",
+		"@types/jest-environment-puppeteer": "^5.0.3",
 		"@types/webextension-polyfill": "^0.8.2",
 		"@typescript-eslint/eslint-plugin": "^5.16.0",
 		"@typescript-eslint/parser": "^5.16.0",
 		"eslint-config-xo": "^0.40.0",
 		"eslint-config-xo-typescript": "^0.50.0",
 		"http-server": "^14.1.1",
-		"jest": "^27.5.1",
+		"jest": "^29.4.3",
+		"jest-environment-jsdom": "^29.4.3",
+		"jest-puppeteer": "^7.0.1",
 		"npm-run-all": "^4.1.5",
 		"parcel": "^2.5.0",
 		"path-browserify": "^1.0.1",
 		"process": "^0.11.10",
-		"puppeteer": "^17.0.0",
+		"puppeteer": "^19.7.2",
 		"rimraf": "^3.0.2",
 		"stylelint": "^14.6.0",
 		"stylelint-config-xo": "^0.21.0",
-		"ts-jest": "^27.1.4",
+		"ts-jest": "^29.0.5",
 		"ts-unused-exports": "^8.0.5",
 		"typescript": "^4.6.3",
 		"web-ext": "^7.4.0",
@@ -177,13 +186,23 @@
 		}
 	},
 	"jest": {
-		"preset": "ts-jest",
-		"testEnvironment": "node",
-		"transform": {
-			"node_modules/variables/.+\\.(j|t)sx?$": "ts-jest"
-		},
-		"transformIgnorePatterns": [
-			"node_modules/(?!variables/.*)"
-		]
+		"projects": [
+			{
+				"displayName": "unit",
+				"preset": "ts-jest",
+				"testMatch": [
+					"<rootDir>/src/**/*.test.ts"
+				]
+			},
+			{
+				"displayName": "e2e",
+				"preset": "./jest-e2e-preset.js",
+				"maxWorkers": 1,
+				"testMatch": [
+					"<rootDir>/e2e/**/*.test.ts"
+				]
+			}
+		],
+		"testTimeout": 30000
 	}
 }

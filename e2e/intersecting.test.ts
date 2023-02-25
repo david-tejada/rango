@@ -1,22 +1,12 @@
-import puppeteer from "puppeteer";
 import { getFileUrlPath } from "./utils/getFileUrlPath";
-import { launchBrowser } from "./utils/launchBrowser";
-
-let browser: puppeteer.Browser;
-let page: puppeteer.Page;
 
 beforeAll(async () => {
-	({ browser, page } = await launchBrowser());
 	await page.setViewport({ width: 800, height: 600 });
 });
 
 beforeEach(async () => {
 	await page.goto(getFileUrlPath("./test-pages/intersecting.html"));
 	await page.waitForSelector(".rango-hint");
-});
-
-afterAll(async () => {
-	await browser.close();
 });
 
 test("At the beginning only the hintables within the container and the rootMargins have hints", async () => {

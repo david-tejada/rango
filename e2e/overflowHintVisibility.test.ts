@@ -1,18 +1,8 @@
-import puppeteer from "puppeteer";
 import { getFileUrlPath } from "./utils/getFileUrlPath";
-import { launchBrowser } from "./utils/launchBrowser";
-
-let browser: puppeteer.Browser;
-let page: puppeteer.Page;
 
 beforeAll(async () => {
-	({ browser, page } = await launchBrowser());
 	await page.goto(getFileUrlPath("./test-pages/overflowHintVisibility.html"));
 	await page.waitForSelector(".rango-hint");
-});
-
-afterAll(async () => {
-	await browser.close();
 });
 
 // There is no easy way to check if the hint is visible but I know that in this

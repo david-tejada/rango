@@ -1,22 +1,9 @@
 /* eslint-disable no-await-in-loop */
-import puppeteer from "puppeteer";
 import { getFileUrlPath } from "./utils/getFileUrlPath";
-import { launchBrowser } from "./utils/launchBrowser";
 import { sleep } from "./utils/testHelpers";
-
-let browser: puppeteer.Browser;
-let page: puppeteer.Page;
-
-beforeAll(async () => {
-	({ browser, page } = await launchBrowser());
-});
 
 beforeEach(async () => {
 	await page.goto(getFileUrlPath("./test-pages/basic.html"));
-});
-
-afterAll(async () => {
-	await browser.close();
 });
 
 test("The hint is reattached if it is deleted by the page", async () => {

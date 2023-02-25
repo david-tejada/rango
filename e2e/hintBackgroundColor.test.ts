@@ -1,20 +1,10 @@
-import puppeteer from "puppeteer";
 import { getFileUrlPath } from "./utils/getFileUrlPath";
-import { launchBrowser } from "./utils/launchBrowser";
 import { sleep } from "./utils/testHelpers";
-
-let browser: puppeteer.Browser;
-let page: puppeteer.Page;
 
 describe("Background color", () => {
 	beforeAll(async () => {
-		({ browser, page } = await launchBrowser());
 		await page.goto(getFileUrlPath("./test-pages/singleLink.html"));
 		await page.waitForSelector(".rango-hint");
-	});
-
-	afterAll(async () => {
-		await browser.close();
 	});
 
 	test("If the element doesn't have a background color set the background color of the hint will be white", async () => {

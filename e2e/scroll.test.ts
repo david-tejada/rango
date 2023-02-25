@@ -1,6 +1,5 @@
 /* eslint-disable max-nested-callbacks */
-import puppeteer from "puppeteer";
-import { launchBrowser } from "./utils/launchBrowser";
+import { ElementHandle } from "puppeteer";
 import { getFileUrlPath } from "./utils/getFileUrlPath";
 import {
 	rangoCommandWithoutTarget,
@@ -26,9 +25,6 @@ function getCenter(element: Element) {
 	return top + height / 2;
 }
 
-let page: puppeteer.Page;
-let browser: puppeteer.Browser;
-
 async function getActionableHint(containerSelector: string, top = true) {
 	await page.waitForSelector(`${containerSelector} [data-hint]`);
 	const $container = await page.$(containerSelector);
@@ -53,7 +49,7 @@ async function getActionableHint(containerSelector: string, top = true) {
 	});
 
 	const $$nodes = await page.$$(`${containerSelector} a[data-hint]`);
-	const $$visible: puppeteer.ElementHandle[] = [];
+	const $$visible: ElementHandle[] = [];
 	for (const $node of $$nodes) {
 		// eslint-disable-next-line no-await-in-loop
 		const visible = await $node.evaluate(
@@ -185,14 +181,6 @@ async function executeCommandAndGetScrolledFactor(options: {
 		scrolledDownFactor: (scrollTop - scrollTopBefore) / clientHeight,
 	};
 }
-
-beforeAll(async () => {
-	({ browser, page } = await launchBrowser());
-});
-
-afterAll(async () => {
-	await browser.close();
-});
 
 describe("Vertical", () => {
 	beforeAll(async () => {
