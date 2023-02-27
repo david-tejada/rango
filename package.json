@@ -12,15 +12,12 @@
 		"build-and-package": "run-s build package",
 		"check-types": "tsc --noemit",
 		"unused-exports": "ts-unused-exports ./tsconfig.json",
-		"lint": "run-p lint:* check-types",
 		"lint-fix": "run-p 'lint:* -- --fix'",
 		"lint:css": "stylelint src/**/*.css",
 		"lint:js": "xo",
-		"test": "run-p lint:* build",
-		"jest:unit": "jest --selectProjects unit",
-		"jest:e2e": "jest --runInBand --selectProjects e2e",
-		"jest": "jest --runInBand --selectProjects unit e2e",
-		"jest:watch": "jest --watch --runInBand --selectProjects unit e2e",
+		"lint": "run-p lint:* check-types",
+		"pretest": "NODE_ENV=test run-p lint:* build:mv3",
+		"test": "jest --runInBand",
 		"watch": "parcel watch src/mv2/manifest.json --dist-dir dist-mv2 --no-cache --no-hmr",
 		"watch:mv3": "parcel watch src/mv3/manifest.json --dist-dir dist-mv3 --no-cache --no-hmr",
 		"start:firefox": "web-ext run --target firefox-desktop",
@@ -197,7 +194,6 @@
 			{
 				"displayName": "e2e",
 				"preset": "./jest-e2e-preset.js",
-				"maxWorkers": 1,
 				"testMatch": [
 					"<rootDir>/e2e/**/*.test.ts"
 				]
