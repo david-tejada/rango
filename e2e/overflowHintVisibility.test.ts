@@ -1,7 +1,5 @@
-import { getFileUrlPath } from "./utils/getFileUrlPath";
-
 beforeAll(async () => {
-	await page.goto(getFileUrlPath("./test-pages/overflowHintVisibility.html"));
+	await page.goto("http://localhost:8080/overflowHintVisibility.html");
 	await page.waitForSelector(".rango-hint");
 });
 

@@ -1,11 +1,9 @@
-import { getFileUrlPath } from "./utils/getFileUrlPath";
-
 beforeAll(async () => {
 	await page.setViewport({ width: 800, height: 600 });
 });
 
 beforeEach(async () => {
-	await page.goto(getFileUrlPath("./test-pages/intersecting.html"));
+	await page.goto("http://localhost:8080/intersecting.html");
 	await page.waitForSelector(".rango-hint");
 });
 

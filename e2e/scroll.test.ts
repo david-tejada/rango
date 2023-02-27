@@ -1,6 +1,5 @@
 /* eslint-disable max-nested-callbacks */
 import { ElementHandle } from "puppeteer";
-import { getFileUrlPath } from "./utils/getFileUrlPath";
 import {
 	rangoCommandWithoutTarget,
 	rangoCommandWithTarget,
@@ -184,7 +183,7 @@ async function executeCommandAndGetScrolledFactor(options: {
 
 describe("Vertical", () => {
 	beforeAll(async () => {
-		await page.goto(getFileUrlPath("./test-pages/verticalScrolling.html"));
+		await page.goto("http://localhost:8080/verticalScrolling.html");
 		await page.waitForSelector(".rango-hint");
 	});
 
@@ -421,7 +420,7 @@ describe("Vertical", () => {
 
 describe("Horizontal", () => {
 	beforeAll(async () => {
-		await page.goto(getFileUrlPath("./test-pages/horizontalScrolling.html"));
+		await page.goto("http://localhost:8080/horizontalScrolling.html");
 		await page.waitForSelector(".rango-hint");
 	});
 
@@ -640,7 +639,7 @@ describe("Horizontal", () => {
 
 describe("Snap", () => {
 	beforeAll(async () => {
-		await page.goto(getFileUrlPath("./test-pages/snapScrolling.html"));
+		await page.goto("http://localhost:8080/snapScrolling.html");
 		await page.waitForSelector(".rango-hint");
 	});
 	beforeEach(async () => {
@@ -801,7 +800,7 @@ describe("Snap", () => {
 
 describe("Find scrolling container", () => {
 	beforeAll(async () => {
-		await page.goto(getFileUrlPath("./test-pages/scrollingContainers.html"));
+		await page.goto("http://localhost:8080/scrollingContainers.html");
 		await page.waitForSelector(".rango-hint");
 	});
 

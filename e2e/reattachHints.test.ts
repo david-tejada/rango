@@ -1,9 +1,8 @@
 /* eslint-disable no-await-in-loop */
-import { getFileUrlPath } from "./utils/getFileUrlPath";
 import { sleep } from "./utils/testHelpers";
 
 beforeEach(async () => {
-	await page.goto(getFileUrlPath("./test-pages/basic.html"));
+	await page.goto("http://localhost:8080/basic.html");
 });
 
 test("The hint is reattached if it is deleted by the page", async () => {

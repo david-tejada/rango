@@ -1,8 +1,6 @@
-import { getFileUrlPath } from "./utils/getFileUrlPath";
-
 describe("The hints are placed in the appropriate DOM element", () => {
 	beforeAll(async () => {
-		await page.goto(getFileUrlPath("./test-pages/basic.html"));
+		await page.goto("http://localhost:8080/basic.html");
 	});
 
 	test("The hint won't be placed in an element with overflow hidden and insufficient space if another ancestor has sufficient space", async () => {

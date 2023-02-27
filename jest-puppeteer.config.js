@@ -13,4 +13,8 @@ module.exports = {
 		],
 	},
 	browserContext: "default",
+	server: {
+		command: "node ./e2e/serve.js",
+		port: 8080,
+	},
 };

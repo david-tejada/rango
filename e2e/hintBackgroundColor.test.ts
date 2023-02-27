@@ -1,9 +1,8 @@
-import { getFileUrlPath } from "./utils/getFileUrlPath";
 import { sleep } from "./utils/testHelpers";
 
 describe("Background color", () => {
 	beforeAll(async () => {
-		await page.goto(getFileUrlPath("./test-pages/singleLink.html"));
+		await page.goto("http://localhost:8080/singleLink.html");
 		await page.waitForSelector(".rango-hint");
 	});
 
@@ -17,9 +16,7 @@ describe("Background color", () => {
 	});
 
 	test("If the element has an effective background color because of ancestors the hint will match that color", async () => {
-		await page.goto(
-			getFileUrlPath("./test-pages/effectiveBackgroundColor.html")
-		);
+		await page.goto("http://localhost:8080/effectiveBackgroundColor.html");
 		await page.waitForSelector(".rango-hint");
 
 		const backgroundColor = await page.$eval(".rango-hint", (hint) => {
