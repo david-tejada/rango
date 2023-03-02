@@ -7,7 +7,9 @@ module.exports = {
 		devtools: true,
 		headless: false,
 		product: "chrome",
+		executablePath: process.env.PUPPETEER_EXEC_PATH,
 		args: [
+			"no-sandbox",
 			`--disable-extensions-except=${EXTENSION_PATH}`,
 			`--load-extension=${EXTENSION_PATH}`,
 		],
