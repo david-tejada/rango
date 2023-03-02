@@ -17,7 +17,7 @@ export async function rangoCommandWithTarget(
 
 	const commandString = JSON.stringify(command);
 
-	await clipboard.copy(commandString);
+	await clipboard.setContent(commandString);
 	await keyboard.type(Key.LeftControl, Key.LeftShift, Key.Num3);
 }
 
@@ -36,6 +36,6 @@ export async function rangoCommandWithoutTarget(
 
 	const commandString = JSON.stringify(command);
 
-	await clipboard.copy(commandString);
+	await clipboard.setContent(commandString);
 	await keyboard.type(Key.LeftControl, Key.LeftShift, Key.Num3);
 }
