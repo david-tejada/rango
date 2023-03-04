@@ -1,3 +1,4 @@
+import { promiseWrap } from "../../lib/promiseWrap";
 import { sendRequestToCurrentTab } from "../messaging/sendRequestToCurrentTab";
 import {
 	getRequestFromClipboard,
@@ -23,18 +24,14 @@ export async function handleTalonRequest() {
 			if (request.action.target.length > 1) {
 				request.action.type = "clickElement";
 			} else {
-				let focusedDocument;
-				let contentScript = true;
-
-				try {
-					focusedDocument = (await sendRequestToCurrentTab({
+				// If no content script is running focusedDocument will be undefined
+				const [focusedDocument] = await promiseWrap(
+					sendRequestToCurrentTab({
 						type: "checkIfDocumentHasFocus",
-					})) as boolean;
-				} catch {
-					contentScript = false;
-				}
+					})
+				);
 
-				if (!focusedDocument || !contentScript) {
+				if (!focusedDocument) {
 					await writeResponseToClipboard({
 						type: "response",
 						action: { type: "noHintFound" },
