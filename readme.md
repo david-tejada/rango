@@ -147,6 +147,16 @@ Apart from using your voice for clicking you can also use your keyboard for that
 
 To toggle it you have to use the command `keyboard toggle` or press `ctrl-shift-5` in Firefox. In Chrome and Edge you have to set the shortcut manually since there is a limit of four shortcuts we can set by default. You'll see the toolbar icon shows a little orange dot when keyboard clicking is on. To allow typing text in pages, keyboard clicking will be off whenever the element in focus accepts text input.
 
+#### Focus
+
+- `focus <target>`: Focus the target element.
+
+#### Focus and Enter
+
+Clicking with Rango might fail on some elements. For example, clicking on elements that copy things to the clipboard almost always fails because the browser thinks there was no user interaction and disallows it. To avoid this pitfall you might use the following command.
+
+- `flick <target>`: Focus an element and then press enter with talon.
+
 ### Open in a New Tab
 
 - `blank <target>`: Opens the link in a new tab. If you use multiple targets all the links will open in new tabs and the first one will receive focus.
@@ -183,7 +193,7 @@ To toggle it you have to use the command `keyboard toggle` or press `ctrl-shift-
 ### Hover
 
 - `hover <target>`: Dispatches a hover event to the selected element. Sometimes this command doesn't have a visible result if the current page doesn't have a hover event handler for this element. One example of a page that does have hover event handlers for links is the Wikipedia, where you'll get a popup with a preview of the linked article.
-- `dismiss`: Clears any previously hovered element.
+- `dismiss`: Clears any previously hovered element. If there is a focused element it would also remove the focus from that element.
 
 ### Show Element Information
 
