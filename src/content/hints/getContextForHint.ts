@@ -159,7 +159,7 @@ function getSpaceAvailable(
 	};
 }
 
-function getAptContainer(origin: Element) {
+export function getAptContainer(origin: Element) {
 	const { position } = getCachedStyle(origin);
 	let current: Node | null =
 		position === "fixed" || position === "sticky" ? origin : origin.parentNode;

@@ -18,7 +18,7 @@ import {
 	matchesMarkedForExclusion,
 } from "./customHintsEdit";
 import { getElementToPositionHint } from "./getElementToPositionHint";
-import { getContextForHint } from "./getContextForHint";
+import { getAptContainer, getContextForHint } from "./getContextForHint";
 import { popHint, pushHint } from "./hintsCache";
 import { setStyleProperties } from "./setStyleProperties";
 import {
@@ -278,7 +278,7 @@ export class Hint {
 		shadow.append(this.outer);
 
 		this.positioned = false;
-		this.reattachedTimes = 0;
+		this.wasReattached = false;
 
 		// Initial styles for inner
 
@@ -579,12 +579,25 @@ export class Hint {
 	/* eslint-enable @typescript-eslint/no-dynamic-delete */
 
 	reattach() {
-		// We put a limit on how many times we reattach the hint to avoid a vicious
-		// cycle in which the page deletes the hint and we reattach it
-		// constantly
-		if (this.reattachedTimes < 10) {
+		// If a hint is deleted by the page we try reattaching it to same container.
+		// If it is deleted again we move it up the tree where it is less likely to
+		// be deleted.
+		if (!this.wasReattached) {
 			this.container.append(this.shadowHost);
-			this.reattachedTimes++;
+			this.wasReattached = true;
+			return;
+		}
+
+		const parent = this.container.parentElement;
+		if (parent) {
+			const newContainer = getAptContainer(parent);
+			if (this.limitParent.contains(newContainer)) {
+				this.container = newContainer;
+				this.container.append(this.shadowHost);
+				containerMutationObserver.observe(this.container, {
+					childList: true,
+				});
+			}
 		}
 	}
 

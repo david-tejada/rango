@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<style>
+			*,
+			*::before,
+			*::after {
+				margin: 0;
+				padding: 0;
+			}
+
+			body {
+				margin: 20px;
+			}
+
+			ul {
+				height: 10px;
+			}
+		</style>
+	</head>
+	<body>
+		<ul>
+			<li>
+				<div>
+					<a href="#">Link</a>
+				</div>
+			</li>
+		</ul>
+
+		<script>
+			const li = document.querySelector("li");
+			const mutationObserver = new MutationObserver((entries) => {
+				for (const entry of entries) {
+					for (const node of entry.addedNodes) {
+						node.remove();
+					}
+				}
+			});
+
+			mutationObserver.observe(li, { childList: true, subtree: true });
+		</script>
+	</body>
+</html>
