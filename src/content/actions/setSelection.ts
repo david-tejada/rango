@@ -9,27 +9,22 @@ declare global {
 	}
 }
 
-function setSelectionAtEdge(target: Element, atStart: boolean) {
+export function setSelectionAtEdge(target: Element, atStart: boolean) {
 	if (
 		target instanceof HTMLInputElement ||
 		target instanceof HTMLTextAreaElement
 	) {
 		const selectionOffset = atStart ? 0 : target.value.length;
 		target.setSelectionRange(selectionOffset, selectionOffset);
-	} else if (target.textContent) {
+	} else {
 		const range = document.createRange();
 		range.selectNodeContents(target);
 
-		// This doesn't work for Firefox when using selectNodeContents, it always
-		// collapses to the start. It doesn't matter because we change the cursor
-		// position with the call to selection.modify
 		range.collapse(atStart);
 		const selection = window.getSelection();
 		assertDefined(selection);
 		selection.removeAllRanges();
 		selection.addRange(range);
-
-		if (!atStart) selection.modify("move", "right", "line");
 	}
 }
 

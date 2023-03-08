@@ -45,6 +45,13 @@ export function dispatchClick(element: Element): boolean {
 	if (element instanceof HTMLElement && focusesOnclick(element)) {
 		window.focus();
 		element.focus();
+		const selection = window.getSelection();
+
+		// This handles an issue where the element doesn't focus (Notion)
+		if (selection && !element.contains(selection.anchorNode)) {
+			setSelectionAtEdge(element, true);
+		}
+
 		if (!document.hasFocus()) shouldFocusPage = true;
 	}
 
