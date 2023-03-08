@@ -62,6 +62,7 @@ export interface HintableMark {
 	position(): void;
 	display(): void;
 	flash(ms?: number): void;
+	clearFlash(): void;
 	release(keepInCache?: boolean): void;
 	reattach(): void;
 	applyDefaultStyle(): void;

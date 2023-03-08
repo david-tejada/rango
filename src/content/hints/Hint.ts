@@ -541,6 +541,15 @@ export class Hint {
 		}, ms);
 	}
 
+	clearFlash() {
+		setStyleProperties(this.inner, {
+			"background-color": this.backgroundColor.string(),
+			color: this.color.string(),
+		});
+
+		this.freezeColors = false;
+	}
+
 	release(returnToStack = true) {
 		if (hintQueue.has(this)) hintQueue.delete(this);
 
