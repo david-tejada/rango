@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Document</title>
+		<style>
+			*,
+			*::before,
+			*::after {
+				margin: 0;
+				padding: 0;
+			}
+
+			body {
+				margin: 20px;
+			}
+		</style>
+	</head>
+	<body>
+		<input type="text" />
+
+		<script>
+			const input = document.querySelector("input[type='text']");
+
+			const prefixes = ["pointer", "mouse"];
+			const suffixes = ["over", "enter", "move", "leave", "out", "up", "down"];
+			const eventTypes = [];
+
+			for (const prefix of prefixes) {
+				for (const suffix of suffixes) {
+					eventTypes.push(prefix + suffix);
+				}
+			}
+
+			eventTypes.push("click", "focus", "focusin", "focusout");
+
+			for (const eventType of eventTypes) {
+				const li = document.createElement("li");
+				document.body.append(li);
+
+				const label = document.createElement("label");
+				label.textContent = eventType;
+				li.append(label);
+
+				const checkbox = document.createElement("input");
+				checkbox.id = eventType;
+				checkbox.type = "checkbox";
+				label.append(checkbox);
+
+				input.addEventListener(eventType, () => {
+					const checkbox = document.querySelector(`#${eventType}`);
+					checkbox.setAttribute("checked", "true");
+				});
+			}
+		</script>
+	</body>
+</html>

@@ -1,7 +1,37 @@
+import { setSelectionAtEdge } from "../actions/setSelection";
 import { getElementCenter } from "./cssomUtils";
 import { focusesOnclick } from "./focusesOnclick";
 
 let lastClicked: Element | undefined;
+
+function mouseEvent(type: string, clientX: number, clientY: number) {
+	return new MouseEvent(type, {
+		view: window,
+		clientX,
+		clientY,
+		composed: true,
+		button: 0,
+		buttons: 0,
+		bubbles: true,
+		cancelable: true,
+	});
+}
+
+function pointerEvent(type: string, clientX: number, clientY: number) {
+	return new PointerEvent(type, {
+		pointerId: 1,
+		isPrimary: true,
+		pointerType: "mouse",
+		view: window,
+		clientX,
+		clientY,
+		composed: true,
+		button: -1,
+		buttons: 0,
+		bubbles: true,
+		cancelable: true,
+	});
+}
 
 export function dispatchClick(element: Element): boolean {
 	let shouldFocusPage = false;
@@ -9,34 +39,8 @@ export function dispatchClick(element: Element): boolean {
 	if (lastClicked) dispatchUnhover(lastClicked);
 	const { x: clientX, y: clientY } = getElementCenter(element);
 
-	const mousedownEvent = new MouseEvent("mousedown", {
-		view: window,
-		clientX,
-		clientY,
-		composed: true,
-		buttons: 1,
-		bubbles: true,
-		cancelable: true,
-	});
-
-	const mouseupEvent = new MouseEvent("mouseup", {
-		view: window,
-		clientX,
-		clientY,
-		composed: true,
-		bubbles: true,
-		cancelable: true,
-	});
-	const clickEvent = new MouseEvent("click", {
-		view: window,
-		clientX,
-		clientY,
-		composed: true,
-		bubbles: true,
-		cancelable: true,
-	});
-
-	element.dispatchEvent(mousedownEvent);
+	element.dispatchEvent(pointerEvent("pointerdown", clientX, clientY));
+	element.dispatchEvent(mouseEvent("mousedown", clientX, clientY));
 
 	if (element instanceof HTMLElement && focusesOnclick(element)) {
 		window.focus();
@@ -44,8 +48,10 @@ export function dispatchClick(element: Element): boolean {
 		if (!document.hasFocus()) shouldFocusPage = true;
 	}
 
-	element.dispatchEvent(mouseupEvent);
-	element.dispatchEvent(clickEvent);
+	element.dispatchEvent(pointerEvent("pointerup", clientX, clientY));
+	element.dispatchEvent(mouseEvent("mouseup", clientX, clientY));
+
+	element.dispatchEvent(mouseEvent("click", clientX, clientY));
 
 	lastClicked = element;
 
@@ -55,70 +61,26 @@ export function dispatchClick(element: Element): boolean {
 export function dispatchHover(element: Element) {
 	const { x: clientX, y: clientY } = getElementCenter(element);
 
-	const mouseenterEvent = new MouseEvent("mouseenter", {
-		view: window,
-		clientX,
-		clientY,
-		composed: true,
-		buttons: 1,
-		bubbles: true,
-		cancelable: true,
-	});
-	const mouseoverEvent = new MouseEvent("mouseover", {
-		view: window,
-		clientX,
-		clientY,
-		composed: true,
-		bubbles: true,
-		cancelable: true,
-	});
-	const mousemoveEvent = new MouseEvent("mousemove", {
-		view: window,
-		clientX,
-		clientY,
-		composed: true,
-		bubbles: true,
-		cancelable: true,
-	});
+	element.dispatchEvent(pointerEvent("pointerover", clientX, clientY));
+	element.dispatchEvent(pointerEvent("pointerenter", clientX, clientY));
+	element.dispatchEvent(pointerEvent("pointermove", clientX, clientY));
 
-	element.dispatchEvent(mouseenterEvent);
-	element.dispatchEvent(mouseoverEvent);
-	element.dispatchEvent(mousemoveEvent);
+	element.dispatchEvent(mouseEvent("mouseover", clientX, clientY));
+	element.dispatchEvent(mouseEvent("mouseenter", clientX, clientY));
+	element.dispatchEvent(mouseEvent("mousemove", clientX, clientY));
 }
 
 export function dispatchUnhover(element: Element) {
 	const { x: clientX, y: clientY } = getElementCenter(element);
 
-	const mousemoveEvent = new MouseEvent("mousemove", {
-		view: window,
-		clientX,
-		clientY,
-		composed: true,
-		bubbles: true,
-		cancelable: true,
-	});
+	element.dispatchEvent(pointerEvent("pointermove", clientX, clientY));
+	element.dispatchEvent(mouseEvent("mousemove", clientX, clientY));
 
-	const mouseleaveEvent = new MouseEvent("mouseleave", {
-		view: window,
-		clientX,
-		clientY,
-		composed: true,
-		bubbles: true,
-		cancelable: true,
-	});
-	const mouseoutEvent = new MouseEvent("mouseout", {
-		view: window,
-		clientX,
-		clientY,
-		composed: true,
-		buttons: 1,
-		bubbles: true,
-		cancelable: true,
-	});
+	element.dispatchEvent(pointerEvent("pointerout", clientX, clientY));
+	element.dispatchEvent(pointerEvent("pointerleave", clientX, clientY));
 
-	element.dispatchEvent(mousemoveEvent);
-	element.dispatchEvent(mouseleaveEvent);
-	element.dispatchEvent(mouseoutEvent);
+	element.dispatchEvent(mouseEvent("mouseout", clientX, clientY));
+	element.dispatchEvent(mouseEvent("mouseleave", clientX, clientY));
 }
 
 export function dispatchKeyDown(element: Element, key: string) {
