@@ -1,4 +1,19 @@
-import { keyboard, Key, clipboard } from "@nut-tree/nut-js";
+/* eslint-disable no-await-in-loop */
+import { keyboard, Key, clipboard, sleep } from "@nut-tree/nut-js";
+
+async function waitForCompletion() {
+	let message: any;
+
+	while (!message || message.type !== "response") {
+		const clip = await clipboard.getContent();
+
+		try {
+			message = JSON.parse(clip) as unknown;
+		} catch {}
+
+		await sleep(10);
+	}
+}
 
 export async function rangoCommandWithTarget(
 	actionType: string,
@@ -19,6 +34,7 @@ export async function rangoCommandWithTarget(
 
 	await clipboard.setContent(commandString);
 	await keyboard.type(Key.LeftControl, Key.LeftShift, Key.Num3);
+	await waitForCompletion();
 }
 
 export async function rangoCommandWithoutTarget(
@@ -38,4 +54,5 @@ export async function rangoCommandWithoutTarget(
 
 	await clipboard.setContent(commandString);
 	await keyboard.type(Key.LeftControl, Key.LeftShift, Key.Num3);
+	await waitForCompletion();
 }
