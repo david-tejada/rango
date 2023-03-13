@@ -4,7 +4,7 @@ const EXTENSION_PATH = path.resolve(__dirname, "dist-mv3");
 module.exports = {
 	launch: {
 		dumpio: false,
-		devtools: true,
+		devtools: false,
 		headless: false,
 		product: "chrome",
 		executablePath: process.env.PUPPETEER_EXEC_PATH,
