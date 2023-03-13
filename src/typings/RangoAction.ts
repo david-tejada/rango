@@ -45,12 +45,20 @@ interface RangoActionWithoutTargetWithoutArg {
 interface RangoActionWithoutTargetWithStringArg {
 	type:
 		| "copyLocationProperty"
-		| "setHintStyle"
-		| "setHintWeight"
 		| "enableHints"
 		| "disableHints"
 		| "resetToggleLevel";
 	arg: string;
+}
+
+interface RangoActionSetHintStyle {
+	type: "setHintStyle";
+	arg: "boxed" | "subtle";
+}
+
+interface RangoActionSetHintWeight {
+	type: "setHintWeight";
+	arg: "auto" | "normal" | "bold";
 }
 
 interface RangoActionWithoutTargetWithNumberArg {
@@ -123,6 +131,8 @@ export type RangoActionWithoutTarget =
 	| RangoActionWithoutTargetWithoutArg
 	| RangoActionWithoutTargetWithStringArg
 	| RangoActionWithoutTargetWithNumberArg
-	| RangoActionWithoutTargetWithOptionalNumberArg;
+	| RangoActionWithoutTargetWithOptionalNumberArg
+	| RangoActionSetHintStyle
+	| RangoActionSetHintWeight;
 
 export type RangoAction = RangoActionWithTarget | RangoActionWithoutTarget;

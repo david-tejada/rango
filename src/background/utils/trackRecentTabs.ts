@@ -5,6 +5,7 @@
 
 import browser from "webextension-polyfill";
 import { Mutex } from "async-mutex";
+import { retrieve, store } from "../../common/storage";
 
 const mutex = new Mutex();
 
@@ -17,9 +18,7 @@ async function updateRecentTab(
 	// a tab is removed so we need to run a mutex to avoid both modifying
 	// tabsByRecency at the same time
 	await mutex.runExclusive(async () => {
-		const { tabsByRecency } = (await browser.storage.local.get(
-			"tabsByRecency"
-		)) as Record<"tabsByRecency", Record<number, number[]>>;
+		const tabsByRecency = await retrieve("tabsByRecency");
 
 		const tabsIds = tabsByRecency[windowId] ?? [];
 		const index = tabsIds.indexOf(tabId);
@@ -34,7 +33,7 @@ async function updateRecentTab(
 
 		tabsByRecency[windowId] = tabsIds;
 
-		await browser.storage.local.set({ tabsByRecency });
+		await store("tabsByRecency", tabsByRecency);
 	});
 }
 

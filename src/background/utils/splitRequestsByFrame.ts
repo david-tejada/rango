@@ -1,6 +1,5 @@
-import browser from "webextension-polyfill";
-import { StorableHintsStack } from "../../typings/HintsStack";
 import { RangoActionWithTarget } from "../../typings/RangoAction";
+import { getStack } from "./hintsAllocator";
 
 // Splits one request into several if the hints are in different frames.
 // Returns a map of frame numbers and their corresponding requests.
@@ -18,18 +17,7 @@ export async function splitRequestsByFrame(
 	const hintsByFrame: Map<number, string[]> = new Map();
 	const requests: Map<number, any> = new Map();
 
-	const stackName = `hints-stack-${tabId}`;
-	const storage = await browser.storage.local.get(stackName);
-	const storableStack = storage[stackName] as StorableHintsStack;
-
-	if (!storableStack) {
-		return undefined;
-	}
-
-	const stack = {
-		free: storableStack.free,
-		assigned: new Map(storableStack.assigned),
-	};
+	const stack = await getStack(tabId);
 
 	for (const hint of hints) {
 		const hintFrameId = stack.assigned.get(hint);

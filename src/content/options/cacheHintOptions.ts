@@ -1,18 +1,18 @@
-import browser from "webextension-polyfill";
+import { retrieve } from "../../common/storage";
+import { Options } from "../../typings/Storage";
 
-const cachedOptions: Record<string, unknown> = {};
-const hintStyleOptionsKeys = ["hintFontSize", "hintWeight", "hintStyle"];
+let cachedOptions: Pick<Options, "hintFontSize" | "hintWeight" | "hintStyle">;
 
 export async function cacheHintOptions() {
-	const savedOptions = await browser.storage.local.get(hintStyleOptionsKeys);
+	const hintFontSize = await retrieve("hintFontSize");
+	const hintWeight = await retrieve("hintWeight");
+	const hintStyle = await retrieve("hintStyle");
 
-	for (const key in savedOptions) {
-		if (savedOptions[key] !== undefined) {
-			cachedOptions[key] = savedOptions[key];
-		}
-	}
+	cachedOptions = { hintFontSize, hintWeight, hintStyle };
 }
 
-export function getHintOption(option: string): unknown {
-	return cachedOptions[option];
+export function getHintOption<T extends keyof typeof cachedOptions>(
+	key: T
+): (typeof cachedOptions)[T] {
+	return cachedOptions[key];
 }

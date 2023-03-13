@@ -1,10 +1,5 @@
-import browser from "webextension-polyfill";
+import { retrieve, store } from "../../common/storage";
 import { assertDefined } from "../../typings/TypingUtils";
-
-interface CustomSelectors {
-	include: string[];
-	exclude: string[];
-}
 
 export interface SelectorAlternative {
 	selector: string;
@@ -83,9 +78,7 @@ export function pickSelectorAlternative(options: {
 export async function storeCustomSelectors() {
 	const pattern = getHostPattern();
 
-	const { customSelectors } = (await browser.storage.local.get(
-		"customSelectors"
-	)) as Record<string, Record<string, CustomSelectors>>;
+	const customSelectors = await retrieve("customSelectors");
 
 	assertDefined(customSelectors);
 
@@ -108,7 +101,7 @@ export async function storeCustomSelectors() {
 
 	customSelectors[pattern] = customForPattern;
 
-	await browser.storage.local.set({ customSelectors });
+	await store("customSelectors", customSelectors);
 
 	return addedSelectors;
 }
@@ -116,9 +109,7 @@ export async function storeCustomSelectors() {
 export async function resetCustomSelectors() {
 	const pattern = getHostPattern();
 
-	const { customSelectors } = (await browser.storage.local.get(
-		"customSelectors"
-	)) as Record<string, Record<string, CustomSelectors>>;
+	const customSelectors = await retrieve("customSelectors");
 
 	assertDefined(customSelectors);
 
@@ -130,7 +121,7 @@ export async function resetCustomSelectors() {
 
 	customSelectors[pattern] = { include: [], exclude: [] };
 
-	await browser.storage.local.set({ customSelectors });
+	await store("customSelectors", customSelectors);
 
 	return toUpdateSelector;
 }

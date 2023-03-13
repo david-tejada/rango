@@ -1,18 +1,20 @@
+/* eslint-disable no-await-in-loop */
 import browser from "webextension-polyfill";
 import keyboardClickingIconUrl from "url:../../assets/icon-keyboard-clicking48.png";
+import { Options } from "../../typings/Storage";
 import {
-	StorableRangoOptions,
-	StorableHintsToggle,
-} from "../../typings/RangoOptions";
+	retrieve,
+	storageHas,
+	store,
+	storeIfUndefined,
+} from "../../common/storage";
 
-const defaultOptions: StorableRangoOptions = {
+const defaultOptions: Options = {
 	hintFontSize: 10,
-	hintsToggle: {
-		global: true,
-		tabs: [],
-		hosts: [],
-		paths: [],
-	},
+	hintsToggleGlobal: true,
+	hintsToggleHosts: new Map(),
+	hintsTogglePaths: new Map(),
+	hintsToggleTabs: new Map(),
 	hintWeight: "auto",
 	hintStyle: "boxed",
 	includeSingleLetterHints: true,
@@ -21,53 +23,67 @@ const defaultOptions: StorableRangoOptions = {
 	customSelectors: {},
 };
 
-async function clearUnusedStacks() {
-	const tabs = await browser.tabs.query({});
-	const tabIds = new Set(tabs.map((tab) => tab.id));
-	const storage = await browser.storage.local.get(null);
-	const deletingStacks: Array<Promise<void>> = [];
-	for (const key in storage) {
-		if (key.startsWith("hints-stack-")) {
-			const stackTabId = Number.parseInt(key.replace("hints-stack-", ""), 10);
-			if (!tabIds.has(stackTabId)) {
-				deletingStacks.push(browser.storage.local.remove(key));
+// We only need this function temporarily while the users go from a version
+// below 0.3.5 to a version equal or above it. To be removed in the future.
+async function switchToSyncStorage() {
+	let key: keyof typeof defaultOptions;
+	const storing: Array<Promise<void>> = [];
+
+	for (key in defaultOptions) {
+		if (Object.prototype.hasOwnProperty.call(defaultOptions, key)) {
+			const hasLocal = await storageHas(key, false);
+			if (hasLocal) {
+				const value = await retrieve(key, false);
+				storing.push(store(key, value));
 			}
 		}
 	}
 
-	await Promise.all(deletingStacks);
+	await Promise.all(storing);
+}
+
+async function clearUnusedStacks() {
+	const tabs = await browser.tabs.query({});
+	const tabIds = new Set(tabs.map((tab) => tab.id));
+	const stacks = (await storageHas("hintsStacks"))
+		? await retrieve("hintsStacks")
+		: new Map();
+
+	for (const [tabId] of stacks) {
+		if (!tabIds.has(tabId)) {
+			stacks.delete(tabId);
+		}
+	}
+
+	await store("hintsStacks", stacks);
 }
 
 export async function initStorage() {
+	await switchToSyncStorage();
 	await clearUnusedStacks();
-	const localStorage = await browser.storage.local.get(
-		Object.keys(defaultOptions)
-	);
 
-	if (localStorage["keyboardClicking"]) {
+	let key: keyof Options;
+	const storing: Array<Promise<void>> = [];
+
+	for (key in defaultOptions) {
+		if (Object.prototype.hasOwnProperty.call(defaultOptions, key)) {
+			storing.push(storeIfUndefined(key, defaultOptions[key]));
+		}
+	}
+
+	await Promise.all(storing);
+
+	const keyboardClicking = await retrieve("keyboardClicking");
+
+	if (keyboardClicking) {
 		await (browser.action
 			? browser.action.setIcon({ path: keyboardClickingIconUrl })
 			: browser.browserAction.setIcon({ path: keyboardClickingIconUrl }));
 	}
 
-	let key: keyof StorableRangoOptions;
-	const storing: Array<Promise<void>> = [];
-
-	for (key in defaultOptions) {
-		if (localStorage[key] === undefined) {
-			storing.push(browser.storage.local.set({ [key]: defaultOptions[key] }));
-		}
-	}
-
-	// We clean up the tabs in hintsToggle on start
-	if (localStorage["hintsToggle"]) {
-		const hintsToggle = localStorage["hintsToggle"] as StorableHintsToggle;
-		hintsToggle.tabs = [];
-		storing.push(browser.storage.local.set({ hintsToggle }));
-	}
+	// We clean up the tabs in hintsToggleTabs on start
+	await store("hintsToggleTabs", new Map());
 
 	// Reset tabsByRecency on start
-	await browser.storage.local.set({ tabsByRecency: {} });
-
-	await Promise.all(storing);
+	await store("tabsByRecency", {});
 }

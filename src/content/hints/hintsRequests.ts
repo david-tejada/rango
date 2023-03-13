@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { HintsStack } from "../../typings/HintsStack";
+import { HintsStack } from "../../typings/Storage";
 
 export async function initStack() {
 	return browser.runtime.sendMessage({

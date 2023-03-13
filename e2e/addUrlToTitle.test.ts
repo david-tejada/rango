@@ -7,7 +7,7 @@ beforeAll(async () => {
 test("The URL is attached to the title", async () => {
 	await sleep(500);
 
-	const title = await page.evaluate(() => document.title);
+	const title = await page.title();
 
 	expect(title).toBe("Document - http://localhost:8080/basic.html");
 });
@@ -20,7 +20,7 @@ test("If something in the page changes and the URL changes it updates the title"
 
 	await sleep(200);
 
-	const title = await page.evaluate(() => document.title);
+	const title = await page.title();
 
 	expect(title).toBe("Document - http://localhost:8080/new.html");
 });
@@ -34,7 +34,7 @@ test("If the hash changes the URL in the title is updated", async () => {
 
 	await sleep(200);
 
-	const title = await page.evaluate(() => document.title);
+	const title = await page.title();
 
 	expect(title).toBe("Document - http://localhost:8080/new.html#first");
 });

@@ -612,11 +612,8 @@ export class Hint {
 
 	applyDefaultStyle() {
 		// Retrieve options
-		const hintFontSize = getHintOption("hintFontSize") as number;
-		const fontWeightOption = getHintOption("hintWeight") as
-			| "auto"
-			| "normal"
-			| "bold";
+		const hintFontSize = getHintOption("hintFontSize");
+		const fontWeightOption = getHintOption("hintWeight");
 		const subtleHints = getHintOption("hintStyle") === "subtle";
 		const subtleBackground =
 			subtleHints &&

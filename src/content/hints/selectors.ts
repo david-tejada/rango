@@ -1,9 +1,4 @@
-import browser from "webextension-polyfill";
-
-interface CustomSelectors {
-	include: string[];
-	exclude: string[];
-}
+import { retrieve, store } from "../../common/storage";
 
 const defaultSelector =
 	// Elements
@@ -24,15 +19,12 @@ let includeSelectorAll = "";
 let excludeSelectorAll = "";
 
 export async function updateCustomSelectors() {
-	let { customSelectors } = (await browser.storage.local.get(
-		"customSelectors"
-	)) as Record<string, Record<string, CustomSelectors>>;
+	const customSelectors = await retrieve("customSelectors");
 
 	// This is stored when the extension first runs, so it shouldn't be undefined.
 	// But it is undefined when running tests. This way we also make extra sure.
 	if (!customSelectors) {
-		customSelectors = {};
-		await browser.storage.local.set({ customSelectors });
+		await store("customSelectors", {});
 	}
 
 	let includeSelectors: string[] = [];

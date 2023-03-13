@@ -1,4 +1,5 @@
 import browser from "webextension-polyfill";
+import { retrieve } from "../../common/storage";
 import { assertDefined, isFocusOnClickInput } from "../../typings/TypingUtils";
 import { getHintsInTab } from "../utils/getHintsInTab";
 import { getWrapper } from "../wrappers/wrappers";
@@ -61,7 +62,7 @@ async function keydownHandler(event: KeyboardEvent) {
 		return;
 	}
 
-	// After typing the first character we need to check if any of the hints start with that letter
+	// After typing the first character we need to check if any of the hints stare with that letter
 	const firstCharactersInHints = new Set(
 		getHintsInTab().map((hint) => hint.slice(0, 1))
 	);
@@ -82,9 +83,8 @@ async function keydownHandler(event: KeyboardEvent) {
 		// We need to check if keyboardClicking is on after event.preventDefault()
 		// because if we do it after, due to the async nature of the call the default
 		// behavior
-		const { keyboardClicking } = await browser.storage.local.get(
-			"keyboardClicking"
-		);
+		const keyboardClicking = await retrieve("keyboardClicking");
+
 		if (!keyboardClicking) {
 			return;
 		}

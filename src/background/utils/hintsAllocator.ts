@@ -1,60 +1,38 @@
 import browser from "webextension-polyfill";
 import { Mutex } from "async-mutex";
-import { HintsStack, StorableHintsStack } from "../../typings/HintsStack";
-import { getStored, setStored } from "../../lib/getStored";
+import { HintsStack } from "../../typings/Storage";
+import { retrieve, store } from "../../common/storage";
 import { allHints } from "./allHints";
 
 const mutex = new Mutex();
 
-function stackToStorable(stack: HintsStack): StorableHintsStack {
-	return {
-		free: stack.free,
-		assigned: Array.from(stack.assigned),
-	};
-}
-
-function stackFromStorable(storableStack: StorableHintsStack): HintsStack {
-	return {
-		free: storableStack.free,
-		assigned: new Map(storableStack.assigned),
-	};
-}
-
 export async function getStack(tabId: number): Promise<HintsStack> {
-	const storableStack = (await getStored(`hints-stack-${tabId}`)) as
-		| StorableHintsStack
-		| undefined;
+	const stacks = await retrieve("hintsStacks");
+	let stack = stacks.get(tabId);
 
-	if (!storableStack) {
-		const newStack = {
+	if (!stack) {
+		stack = {
 			free: [...allHints],
 			assigned: new Map(),
 		};
-		await saveStack(newStack, tabId);
-		return newStack;
+		await saveStack(stack, tabId);
 	}
 
-	return stackFromStorable(storableStack);
+	return stack;
 }
 
 async function saveStack(stack: HintsStack, tabId: number) {
-	try {
-		await setStored({
-			[`hints-stack-${tabId}`]: stackToStorable(stack),
-		});
-	} catch (error: unknown) {
-		console.error(error);
-	}
+	const stacks = await retrieve("hintsStacks");
+	stacks.set(tabId, stack);
+	await store("hintsStacks", stacks);
 }
 
 export async function initStack(tabId: number, frameId: number) {
 	if (frameId === 0) {
-		const includeSingleLetterHints = await getStored(
-			"includeSingleLetterHints"
-		);
+		const includeSingleLetterHints = await retrieve("includeSingleLetterHints");
 		// For keyboard clicking we need to get rid of single letter hints so that
 		// all hints are reachable
-		const keyboardClicking = await getStored("keyboardClicking");
+		const keyboardClicking = await retrieve("keyboardClicking");
 		const possibleHints =
 			includeSingleLetterHints && !keyboardClicking
 				? [...allHints]

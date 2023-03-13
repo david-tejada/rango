@@ -1,11 +1,9 @@
-import browser from "webextension-polyfill";
+import { retrieve } from "../../common/storage";
 
 let lastUrlAdded: string | undefined;
 
 export async function addUrlToTitle() {
-	const { urlInTitle } = (await browser.storage.local.get(
-		"urlInTitle"
-	)) as Record<string, boolean>;
+	const urlInTitle = await retrieve("urlInTitle");
 
 	// Here urlInTitle === undefined is mostly for testing purposes. As when we
 	// start the browser sometimes the options haven't been initialized

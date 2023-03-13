@@ -3,6 +3,7 @@ import browser from "webextension-polyfill";
 import "requestidlecallback-polyfill";
 import { ContentRequest } from "../typings/ContentRequest";
 import { TalonAction } from "../typings/RequestFromTalon";
+import { retrieve } from "../common/storage";
 import { cacheHintOptions } from "./options/cacheHintOptions";
 import observe from "./observe";
 import { addUrlToTitle } from "./utils/addUrlToTitle";
@@ -24,9 +25,8 @@ cacheHintOptions()
 	.then(updateCustomSelectors)
 	.then(observe)
 	.then(async () => {
-		const { keyboardClicking } = await browser.storage.local.get(
-			"keyboardClicking"
-		);
+		const keyboardClicking = await retrieve("keyboardClicking");
+
 		if (keyboardClicking) {
 			await initKeyboardClicking();
 		}

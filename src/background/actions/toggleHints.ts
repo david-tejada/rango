@@ -1,19 +1,10 @@
-import {
-	hintsToggleFromStorable,
-	hintsToggleToStorable,
-} from "../../common/HintsToggleFromStorable";
-import { getStored, setStored } from "../../lib/getStored";
-import { StorableHintsToggle } from "../../typings/RangoOptions";
 import { assertDefined } from "../../typings/TypingUtils";
 import { sendRequestToAllTabs } from "../messaging/sendRequestToAllTabs";
 import { sendRequestToCurrentTab } from "../messaging/sendRequestToCurrentTab";
 import { getCurrentTabId } from "../utils/getCurrentTab";
+import { retrieve, store } from "../../common/storage";
 
 export async function toggleHints(level: string, enable?: boolean) {
-	const storableHintsToggle = (await getStored(
-		"hintsToggle"
-	)) as StorableHintsToggle;
-	const hintsToggle = hintsToggleFromStorable(storableHintsToggle);
 	const currentTabId = await getCurrentTabId();
 	const [host, origin, pathname] = (await sendRequestToCurrentTab({
 		type: "getLocation",
@@ -22,10 +13,10 @@ export async function toggleHints(level: string, enable?: boolean) {
 	switch (level) {
 		case "everywhere":
 			if (enable === undefined) {
-				hintsToggle.global = true;
-				hintsToggle.tabs = new Map();
-				hintsToggle.hosts = new Map();
-				hintsToggle.paths = new Map();
+				await store("hintsToggleGlobal", true);
+				await store("hintsToggleTabs", new Map());
+				await store("hintsToggleHosts", new Map());
+				await store("hintsTogglePaths", new Map());
 			}
 
 			break;
@@ -43,46 +34,57 @@ export async function toggleHints(level: string, enable?: boolean) {
 
 		case "global":
 			if (enable !== undefined) {
-				hintsToggle.global = enable;
+				await store("hintsToggleGlobal", enable);
 			}
 
 			break;
 
-		case "tab":
+		case "tab": {
+			const hintsToggleTabs = await retrieve("hintsToggleTabs");
 			if (enable === undefined) {
-				hintsToggle.tabs.delete(currentTabId);
+				hintsToggleTabs.delete(currentTabId);
 			} else {
-				hintsToggle.tabs.set(currentTabId, enable);
+				hintsToggleTabs.set(currentTabId, enable);
 			}
 
-			break;
+			await store("hintsToggleTabs", hintsToggleTabs);
 
-		case "host":
+			break;
+		}
+
+		case "host": {
+			const hintsToggleHosts = await retrieve("hintsToggleHosts");
 			if (host) {
 				if (enable === undefined) {
-					hintsToggle.hosts.delete(host);
+					hintsToggleHosts.delete(host);
 				} else {
-					hintsToggle.hosts.set(host, enable);
+					hintsToggleHosts.set(host, enable);
 				}
 			}
 
-			break;
+			await store("hintsToggleHosts", hintsToggleHosts);
 
-		case "page":
+			break;
+		}
+
+		case "page": {
+			const hintsTogglePaths = await retrieve("hintsTogglePaths");
 			if (origin && pathname) {
 				if (enable === undefined) {
-					hintsToggle.paths.delete(origin + pathname);
+					hintsTogglePaths.delete(origin + pathname);
 				} else {
-					hintsToggle.paths.set(origin + pathname, enable);
+					hintsTogglePaths.set(origin + pathname, enable);
 				}
 			}
 
+			await store("hintsTogglePaths", hintsTogglePaths);
+
 			break;
+		}
 
 		default:
 			break;
 	}
 
-	await setStored({ hintsToggle: hintsToggleToStorable(hintsToggle) });
 	await sendRequestToAllTabs({ type: "updateHintsEnabled" });
 }

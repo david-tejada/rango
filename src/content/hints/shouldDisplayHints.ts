@@ -1,6 +1,5 @@
 import browser from "webextension-polyfill";
-import { hintsToggleFromStorable } from "../../common/HintsToggleFromStorable";
-import { StorableHintsToggle } from "../../typings/RangoOptions";
+import { storeIfUndefined, retrieve } from "../../common/storage";
 
 let navigationToggle: boolean | undefined;
 
@@ -13,25 +12,21 @@ export async function shouldDisplayHints(): Promise<boolean> {
 		return navigationToggle;
 	}
 
-	let { hintsToggle: storableHintsToggle } = (await browser.storage.local.get(
-		"hintsToggle"
-	)) as Record<string, StorableHintsToggle>;
+	// This is initialized when the extension first runs. But it is undefined when
+	// running tests. This way we also make extra sure.
+	await storeIfUndefined("hintsToggleGlobal", true);
 
-	// This is stored when the extension first runs, so it shouldn't be undefined.
-	// But it is undefined when running tests. This way we also make extra sure.
-	if (!storableHintsToggle) {
-		storableHintsToggle = { global: true, tabs: [], hosts: [], paths: [] };
-		await browser.storage.local.set({ hintsToggle: storableHintsToggle });
-	}
+	const hintsToggleGlobal = await retrieve("hintsToggleGlobal");
+	const hintsToggleHosts = await retrieve("hintsToggleHosts");
+	const hintsTogglePaths = await retrieve("hintsTogglePaths");
+	const hintsToggleTabs = await retrieve("hintsToggleTabs");
 
-	const hintsToggle = hintsToggleFromStorable(storableHintsToggle);
-	const { tabs, hosts, paths } = hintsToggle;
 	const { tabId } = (await browser.runtime.sendMessage({
 		type: "getTabId",
 	})) as { tabId: number };
-	const tabSwitch = tabs.get(tabId);
-	const hostSwitch = hosts.get(window.location.host);
-	const pathSwitch = paths.get(
+	const tabSwitch = hintsToggleTabs.get(tabId);
+	const hostSwitch = hintsToggleHosts.get(window.location.host);
+	const pathSwitch = hintsTogglePaths.get(
 		window.location.origin + window.location.pathname
 	);
 
@@ -47,5 +42,5 @@ export async function shouldDisplayHints(): Promise<boolean> {
 		return tabSwitch;
 	}
 
-	return hintsToggle.global;
+	return hintsToggleGlobal;
 }
