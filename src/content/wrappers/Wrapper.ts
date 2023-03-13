@@ -108,7 +108,7 @@ export function addWrappersFrom(root: Element) {
 // example, https://html.spec.whatwg.org/ has circa 288.000 elements. Using this
 // observer we create only wrappers for the elements that are in the viewport +
 // rootMargin.
-export const addWrapperIntersectionObserver = new IntersectionObserver(
+const addWrapperIntersectionObserver = new IntersectionObserver(
 	(entries) => {
 		cacheLayout(
 			entries

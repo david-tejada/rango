@@ -33,7 +33,7 @@ export function removeFromLayoutCache(element: Element) {
 	styles.delete(element);
 }
 
-export function getFirstTextNodes(element: Element) {
+function getFirstTextNodes(element: Element) {
 	const nodes = [];
 
 	const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
@@ -194,10 +194,6 @@ export function getClientDimensions(element: Element) {
 		offsetWidth,
 		offsetHeight,
 	};
-}
-
-export function getTextNodeRect(text: Text) {
-	return textRects.get(text) ?? textNodeRect(text);
 }
 
 export function getCachedStyle(element: Element) {
