@@ -1,33 +1,26 @@
 import browser from "webextension-polyfill";
 import { retrieve } from "../../common/storage";
-import { assertDefined, isFocusOnClickInput } from "../../typings/TypingUtils";
+import { isFocusOnClickInput } from "../../typings/TypingUtils";
 import { getHintsInTab } from "../utils/getHintsInTab";
-import { getWrapper } from "../wrappers/wrappers";
+import { getHintedWrappers } from "../wrappers/wrappers";
 
 let keysPressedBuffer = "";
 let timeoutId: ReturnType<typeof setTimeout>;
 
 export function markHintsAsKeyboardReachable(letter: string) {
-	const hintElements: NodeListOf<HTMLDivElement> =
-		document.querySelectorAll(".rango-hint");
-	const hintsToHighlight = [...hintElements].filter((hintElement) =>
-		hintElement.textContent?.startsWith(letter)
+	const wrappers = getHintedWrappers().filter(
+		(wrapper) => wrapper.hint?.string && wrapper.hint.string.startsWith(letter)
 	);
-	for (const hintElement of hintsToHighlight) {
-		assertDefined(hintElement.textContent);
-		const wrapper = getWrapper(hintElement.textContent);
+	for (const wrapper of wrappers) {
 		wrapper?.hint?.keyHighlight();
 	}
 }
 
 export function restoreKeyboardReachableHints() {
-	const hintElements = document.querySelectorAll(".rango-hint");
+	const wrappers = getHintedWrappers();
 
-	for (const hintElement of hintElements) {
-		if (hintElement.textContent) {
-			const wrapper = getWrapper(hintElement.textContent);
-			wrapper?.hint?.applyDefaultStyle();
-		}
+	for (const wrapper of wrappers) {
+		wrapper.hint?.clearKeyHighlight();
 	}
 }
 
