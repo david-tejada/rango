@@ -1,10 +1,10 @@
 import browser from "webextension-polyfill";
-import iconUrl from "url:../../assets/icon128.png";
+import { urls } from "../../common/urls";
 
 export function notify(title: string, message: string) {
 	void browser.notifications.create("rango-notification", {
 		type: "basic",
-		iconUrl,
+		iconUrl: urls.icon128.href,
 		title,
 		message,
 	});

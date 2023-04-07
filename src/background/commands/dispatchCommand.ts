@@ -31,6 +31,7 @@ const backgroundCommands = new Set([
 	"focusPreviousTab",
 	"historyGoBack",
 	"historyGoForward",
+	"openSettingsPage",
 ]);
 
 export async function dispatchCommand(

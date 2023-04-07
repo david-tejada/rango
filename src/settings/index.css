@@ -1,0 +1,31 @@
+:root {
+	--slate-50: #f8fafc;
+	--slate-100: #f1f5f9;
+	--slate-200: #e2e8f0;
+	--slate-300: #cbd5e1;
+	--slate-400: #94a3b8;
+	--slate-500: #64748b;
+	--slate-600: #475569;
+	--slate-700: #;
+	--slate-800: #1e293b;
+	--slate-900: #0f172a;
+	--green-500: #22c55e;
+	--red-500: #ef4444;
+	--orange-500: #f97316;
+	--orange-600: #ea580c;
+	--orange-700: #c2410c;
+	--blue-600: #2563eb;
+}
+
+html {
+	overflow-y: scroll;
+}
+
+body,
+input,
+label {
+	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
+		Ubuntu, "Helvetica Neue", Oxygen, Cantarell, sans-serif;
+	color: var(--slate-700);
+	font-size: 16px;
+}

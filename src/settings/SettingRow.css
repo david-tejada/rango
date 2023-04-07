@@ -1,0 +1,11 @@
+.SettingRow {
+	border-bottom: 1px solid var(--slate-400);
+}
+
+.SettingRow:last-child {
+	border-bottom: none;
+}
+
+.SettingRow > * {
+	padding: 0.5em 0;
+}

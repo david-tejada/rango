@@ -1,0 +1,34 @@
+.Input {
+	display: grid;
+	grid-template-columns: 2fr 5fr;
+}
+
+.Input div {
+	display: grid;
+}
+
+.Input input {
+	padding: 0.3em;
+	border: 1px solid var(--slate-500);
+	border-radius: 5px;
+}
+
+.Input input[data-is-valid="false"]:focus {
+	outline: 2px solid var(--red-500);
+}
+
+.Input input[data-is-valid="true"]:focus {
+	outline: 2px solid var(--green-500);
+}
+
+.Input input:focus {
+	border-color: transparent;
+}
+
+:not(:focus-within) .show-on-focus {
+	display: none;
+}
+
+.Input input:focus ~ .show-on-focus {
+	display: block;
+}

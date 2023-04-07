@@ -28,6 +28,10 @@
 		"last 1 Firefox version"
 	],
 	"xo": {
+		"extends": [
+			"xo-react",
+			"plugin:react/jsx-runtime"
+		],
 		"parserOptions": {
 			"project": "./tsconfig.xo.json"
 		},
@@ -78,6 +82,7 @@
 					"selector": "variable",
 					"format": [
 						"camelCase",
+						"PascalCase",
 						"UPPER_CASE"
 					]
 				},
@@ -85,6 +90,14 @@
 					"selector": "parameter",
 					"format": [
 						"camelCase"
+					],
+					"leadingUnderscore": "allowSingleOrDouble"
+				},
+				{
+					"selector": "function",
+					"format": [
+						"camelCase",
+						"PascalCase"
 					],
 					"leadingUnderscore": "allowSingleOrDouble"
 				},
@@ -109,6 +122,7 @@
 			"complexity": "off",
 			"no-use-extend-native/no-use-extend-native": "off",
 			"unicorn/no-array-callback-reference": "off",
+			"unicorn/prefer-node-protocol": "off",
 			"@typescript-eslint/ban-types": "off"
 		}
 	},
@@ -118,7 +132,7 @@
 		"bracketSpacing": true
 	},
 	"stylelint": {
-		"extends": "stylelint-config-xo",
+		"extends": "stylelint-config-prettier",
 		"rules": {
 			"string-quotes": "double"
 		}
@@ -133,6 +147,8 @@
 		"color": "^4.2.3",
 		"combinations": "^1.0.0",
 		"intersect": "^1.0.1",
+		"react": "^18.2.0",
+		"react-dom": "^18.2.0",
 		"requestidlecallback-polyfill": "^1.0.2",
 		"specificity": "^0.4.1",
 		"tippy.js": "^6.3.7",
@@ -150,12 +166,16 @@
 		"@types/intersect": "^1.0.0",
 		"@types/jest": "^29.4.0",
 		"@types/jest-environment-puppeteer": "^5.0.3",
+		"@types/react-dom": "^18.0.11",
 		"@types/serve-handler": "^6.1.1",
 		"@types/webextension-polyfill": "^0.8.2",
 		"@typescript-eslint/eslint-plugin": "^5.16.0",
 		"@typescript-eslint/parser": "^5.16.0",
 		"eslint-config-xo": "^0.40.0",
+		"eslint-config-xo-react": "^0.27.0",
 		"eslint-config-xo-typescript": "^0.50.0",
+		"eslint-plugin-react": "^7.32.2",
+		"eslint-plugin-react-hooks": "^4.6.0",
 		"jest": "^29.4.3",
 		"jest-environment-jsdom": "^29.4.3",
 		"jest-puppeteer": "^7.0.1",
@@ -167,7 +187,7 @@
 		"rimraf": "^3.0.2",
 		"serve-handler": "^6.1.5",
 		"stylelint": "^14.6.0",
-		"stylelint-config-xo": "^0.21.0",
+		"stylelint-config-prettier": "^9.0.5",
 		"ts-jest": "^29.0.5",
 		"ts-unused-exports": "^8.0.5",
 		"typescript": "^4.6.3",

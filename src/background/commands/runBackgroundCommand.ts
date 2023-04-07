@@ -1,6 +1,5 @@
 import browser from "webextension-polyfill";
 import { RangoAction } from "../../typings/RangoAction";
-import { sendRequestToAllTabs } from "../messaging/sendRequestToAllTabs";
 import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
 import { notify } from "../utils/notify";
 import { toggleHints } from "../actions/toggleHints";
@@ -38,7 +37,6 @@ export async function runBackgroundCommand(
 		case "toggleHints": {
 			const hintsToggleGlobal = await retrieve("hintsToggleGlobal");
 			await store("hintsToggleGlobal", !hintsToggleGlobal);
-			await sendRequestToAllTabs({ type: "updateHintsEnabled" });
 			break;
 		}
 
@@ -64,36 +62,30 @@ export async function runBackgroundCommand(
 
 		case "includeSingleLetterHints":
 			await store("includeSingleLetterHints", true);
-			await sendRequestToAllTabs({ type: "refreshHints" });
 			break;
 
 		case "excludeSingleLetterHints":
 			await store("includeSingleLetterHints", false);
-			await sendRequestToAllTabs({ type: "refreshHints" });
 			break;
 
 		case "increaseHintSize": {
 			const hintFontSize = await retrieve("hintFontSize");
 			await store("hintFontSize", hintFontSize + 1);
-			await sendRequestToAllTabs({ type: "updateHintsStyle" });
 			break;
 		}
 
 		case "decreaseHintSize": {
 			const hintFontSize = await retrieve("hintFontSize");
 			await store("hintFontSize", hintFontSize - 1);
-			await sendRequestToAllTabs({ type: "updateHintsStyle" });
 			break;
 		}
 
 		case "setHintStyle":
-			await store("hintStyle", command.arg);
-			await sendRequestToAllTabs({ type: "updateHintsStyle" });
+			// TO DO: Notify the user that this setting is no longer available
 			break;
 
 		case "setHintWeight":
 			await store("hintWeight", command.arg);
-			await sendRequestToAllTabs({ type: "updateHintsStyle" });
 			break;
 
 		case "enableUrlInTitle":
@@ -154,6 +146,10 @@ export async function runBackgroundCommand(
 				})`;
 			}
 
+			break;
+
+		case "openSettingsPage":
+			await browser.runtime.openOptionsPage();
 			break;
 
 		default:

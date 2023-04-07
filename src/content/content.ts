@@ -4,7 +4,7 @@ import "requestidlecallback-polyfill";
 import { ContentRequest } from "../typings/ContentRequest";
 import { TalonAction } from "../typings/RequestFromTalon";
 import { retrieve } from "../common/storage";
-import { cacheHintOptions } from "./options/cacheHintOptions";
+import { cacheSettings } from "./settings/cacheSettings";
 import observe from "./observe";
 import { addUrlToTitle } from "./utils/addUrlToTitle";
 import {
@@ -19,16 +19,19 @@ import { updateCustomSelectors } from "./hints/selectors";
 import { getHintStringsInUse, reclaimHints } from "./wrappers/wrappers";
 import { reclaimHintsFromCache } from "./hints/hintsCache";
 import { loadDevtoolsUtils } from "./utils/devtoolsUtils";
+import { watchSettingsChanges } from "./settings/watchSettingsChanges";
 
-cacheHintOptions()
-	.then(addUrlToTitle)
+watchSettingsChanges();
+
+addUrlToTitle()
 	.then(updateCustomSelectors)
+	.then(cacheSettings)
 	.then(observe)
 	.then(async () => {
 		const keyboardClicking = await retrieve("keyboardClicking");
 
 		if (keyboardClicking) {
-			await initKeyboardClicking();
+			initKeyboardClicking();
 		}
 	})
 	.catch((error) => {
@@ -78,10 +81,6 @@ browser.runtime.onMessage.addListener(
 
 				case "restoreKeyboardReachableHints":
 					restoreKeyboardReachableHints();
-					break;
-
-				case "initKeyboardNavigation":
-					await initKeyboardClicking();
 					break;
 
 				case "checkIfDocumentHasFocus":

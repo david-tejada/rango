@@ -115,6 +115,10 @@ async function keydownHandler(event: KeyboardEvent) {
 	}
 }
 
-export async function initKeyboardClicking() {
+export function initKeyboardClicking() {
 	window.addEventListener("keydown", keydownHandler, true);
+}
+
+export function stopKeyboardClicking() {
+	window.removeEventListener("keydown", keydownHandler, true);
 }

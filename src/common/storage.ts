@@ -1,5 +1,12 @@
+/* eslint-disable no-await-in-loop */
 import browser from "webextension-polyfill";
-import { Storage } from "../typings/Storage";
+import { StorageSchema } from "../typings/StorageSchema";
+import {
+	defaultSettings,
+	isSetting,
+	isValidSetting,
+	Settings,
+} from "./settings";
 
 const useLocalStorage = new Set([
 	"hintsToggleTabs",
@@ -32,11 +39,13 @@ function reviver(_key: string, value: any) {
 	return value as unknown;
 }
 
-export async function store<T extends keyof Storage>(
+export async function store<T extends keyof StorageSchema>(
 	key: T,
-	value: Storage[T],
+	value: StorageSchema[T],
 	sync?: boolean
 ): Promise<void> {
+	if (isSetting(key) && !isValidSetting(key, value)) return;
+
 	const stringified = JSON.stringify(value, replacer);
 
 	await (sync === false || (sync === undefined && useLocalStorage.has(key))
@@ -44,7 +53,7 @@ export async function store<T extends keyof Storage>(
 		: browser.storage.sync.set({ [key]: stringified }));
 }
 
-export async function storageHas<T extends keyof Storage>(
+export async function storageHas<T extends keyof StorageSchema>(
 	key: T,
 	sync?: boolean
 ) {
@@ -58,9 +67,9 @@ export async function storageHas<T extends keyof Storage>(
 	return value !== undefined;
 }
 
-export async function storeIfUndefined<T extends keyof Storage>(
+export async function storeIfUndefined<T extends keyof StorageSchema>(
 	key: T,
-	value: Storage[T],
+	value: StorageSchema[T],
 	sync?: boolean
 ): Promise<void> {
 	const stored = await storageHas(key, sync);
@@ -70,10 +79,10 @@ export async function storeIfUndefined<T extends keyof Storage>(
 	}
 }
 
-export async function retrieve<T extends keyof Storage>(
+export async function retrieve<T extends keyof StorageSchema>(
 	key: T,
 	sync?: boolean
-): Promise<Storage[T]> {
+): Promise<StorageSchema[T]> {
 	const retrieved =
 		sync === false || (sync === undefined && useLocalStorage.has(key))
 			? await browser.storage.local.get(key)
@@ -82,8 +91,21 @@ export async function retrieve<T extends keyof Storage>(
 	const [jsonString] = Object.values(retrieved) as [string];
 
 	try {
-		return JSON.parse(jsonString, reviver) as Storage[T];
+		return JSON.parse(jsonString, reviver) as StorageSchema[T];
 	} catch {
-		return jsonString as Storage[T];
+		return jsonString as StorageSchema[T];
 	}
+}
+
+export async function retrieveSettings() {
+	const settings: any = {};
+	let key: keyof Settings;
+
+	for (key in defaultSettings) {
+		if (Object.prototype.hasOwnProperty.call(defaultSettings, key)) {
+			settings[key] = await retrieve(key);
+		}
+	}
+
+	return settings as Settings;
 }

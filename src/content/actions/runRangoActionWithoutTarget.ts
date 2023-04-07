@@ -1,12 +1,8 @@
 import { RangoActionWithoutTarget } from "../../typings/RangoAction";
 import { setNavigationToggle } from "../hints/shouldDisplayHints";
-import { updateHintsEnabled } from "../observe";
-import { cacheHintOptions } from "../options/cacheHintOptions";
 import {
 	displayMoreOrLessHints,
-	refreshHints,
 	updateHintablesBySelector,
-	updateHintsStyle,
 } from "../wrappers/updateWrappers";
 import { updateCustomSelectors } from "../hints/selectors";
 import { resetCustomSelectors } from "../hints/customHintsEdit";
@@ -129,41 +125,6 @@ export async function runRangoActionWithoutTarget(
 		case "unhoverAll":
 			blur();
 			unhoverAll();
-			break;
-
-		case "refreshHints":
-			await cacheHintOptions();
-			await refreshHints();
-			break;
-
-		case "refreshHintsOnIdle":
-			await cacheHintOptions();
-			window.requestIdleCallback(async () => {
-				await refreshHints();
-			});
-			break;
-
-		case "updateHintsStyle":
-			await cacheHintOptions();
-			updateHintsStyle();
-			break;
-
-		case "updateHintsStyleOnIdle":
-			window.requestIdleCallback(async () => {
-				await cacheHintOptions();
-				updateHintsStyle();
-			});
-			break;
-
-		case "updateHintsEnabled":
-			await updateHintsEnabled();
-			break;
-
-		case "updateHintsEnabledOnIdle":
-			window.requestIdleCallback(async () => {
-				await updateHintsEnabled();
-			});
-
 			break;
 
 		case "enableHintsNavigation":

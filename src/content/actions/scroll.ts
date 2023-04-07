@@ -1,4 +1,5 @@
 import { isHtmlElement } from "../../typings/TypingUtils";
+import { getCachedSetting } from "../settings/cacheSettings";
 import { getUserScrollableContainer } from "../utils/getUserScrollableContainer";
 import { Wrapper } from "../wrappers/Wrapper";
 
@@ -27,9 +28,14 @@ function getScrollBehavior() {
 	// Scroll tests fail if behavior is "smooth"
 	if (process.env["NODE_ENV"] !== "production") return "instant";
 
-	const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+	const scrollBehavior = getCachedSetting("scrollBehavior");
 
-	return !mediaQuery || mediaQuery.matches ? "instant" : "smooth";
+	if (scrollBehavior === "auto") {
+		const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+		return !mediaQuery || mediaQuery.matches ? "instant" : "smooth";
+	}
+
+	return scrollBehavior;
 }
 
 /**

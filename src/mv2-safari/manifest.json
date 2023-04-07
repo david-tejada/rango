@@ -33,6 +33,10 @@
 			"run_at": "document_idle"
 		}
 	],
+	"options_ui": {
+		"page": "../settings/index.html",
+		"open_in_tab": true
+	},
 	"background": {
 		"persistent": false,
 		"scripts": ["../background/background.ts"]

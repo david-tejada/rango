@@ -1,0 +1,31 @@
+.RadioGroup {
+	display: grid;
+	grid-template-columns: 2fr 5fr;
+}
+
+.Radio {
+	background-color: var(--slate-200);
+	border-radius: 4px;
+	padding: 6px;
+	display: flex;
+}
+
+.Radio + .Radio {
+	margin-top: 0.5em;
+}
+
+.Radio label {
+	margin-left: 1rem;
+}
+
+.Radio:has(:checked) {
+	background-color: var(--slate-300);
+}
+
+.Radio:focus-within {
+	outline: 2px solid var(--blue-600);
+}
+
+.Radio input {
+	outline: none;
+}

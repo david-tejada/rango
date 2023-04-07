@@ -1,5 +1,4 @@
 import { assertDefined } from "../../typings/TypingUtils";
-import { sendRequestToAllTabs } from "../messaging/sendRequestToAllTabs";
 import { sendRequestToCurrentTab } from "../messaging/sendRequestToCurrentTab";
 import { getCurrentTabId } from "../utils/getCurrentTab";
 import { retrieve, store } from "../../common/storage";
@@ -85,6 +84,4 @@ export async function toggleHints(level: string, enable?: boolean) {
 		default:
 			break;
 	}
-
-	await sendRequestToAllTabs({ type: "updateHintsEnabled" });
 }

@@ -14,7 +14,6 @@ interface ReclaimHints {
 interface SimpleContentRequest {
 	type:
 		| "getLocation"
-		| "initKeyboardNavigation"
 		| "restoreKeyboardReachableHints"
 		| "checkIfDocumentHasFocus"
 		| "getHintStringsInUse";

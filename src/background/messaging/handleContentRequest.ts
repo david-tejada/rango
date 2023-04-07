@@ -19,6 +19,7 @@ export async function handleContentRequest(
 ) {
 	assertDefined(sender.tab);
 	const tabId = sender.tab.id;
+	const isActive = sender.tab.active;
 	assertDefined(tabId);
 	const frameId = sender.frameId ?? 0;
 
@@ -100,6 +101,9 @@ export async function handleContentRequest(
 				type: "restoreKeyboardReachableHints",
 			});
 			break;
+
+		case "tabIsActive":
+			return isActive;
 
 		default:
 			console.error(request);

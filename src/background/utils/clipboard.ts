@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import offscreenDocumentUrl from "url:./offscreen.html";
+import { urls } from "../../common/urls";
 
 import {
 	RequestFromTalon,
@@ -17,7 +17,7 @@ async function getClipboardManifestV3(): Promise<string | undefined> {
 	if (hasDocument) await chrome.offscreen.closeDocument();
 
 	await chrome.offscreen.createDocument({
-		url: offscreenDocumentUrl,
+		url: urls.offscreenDocument.href,
 		reasons: [chrome.offscreen.Reason.CLIPBOARD],
 		justification: "Read the request from Talon from the clipboard",
 	});
@@ -33,7 +33,7 @@ async function copyToClipboardManifestV3(text: string) {
 	if (hasDocument) await chrome.offscreen.closeDocument();
 
 	await chrome.offscreen.createDocument({
-		url: offscreenDocumentUrl,
+		url: urls.offscreenDocument.href,
 		reasons: [chrome.offscreen.Reason.CLIPBOARD],
 		justification: "Write the response to Talon to the clipboard",
 	});

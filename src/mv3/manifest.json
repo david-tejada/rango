@@ -32,6 +32,10 @@
 		"service_worker": "../background/background.ts",
 		"type": "module"
 	},
+	"options_ui": {
+		"page": "../settings/index.html",
+		"open_in_tab": true
+	},
 	"commands": {
 		"get-talon-request": {
 			"suggested_key": {

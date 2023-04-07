@@ -26,12 +26,6 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "disableHintsNavigation"
 		| "excludeSingleLetterHints"
 		| "includeSingleLetterHints"
-		| "refreshHints"
-		| "refreshHintsOnIdle"
-		| "updateHintsStyle"
-		| "updateHintsStyleOnIdle"
-		| "updateHintsEnabled"
-		| "updateHintsEnabledOnIdle"
 		| "enableUrlInTitle"
 		| "disableUrlInTitle"
 		| "increaseHintSize"
@@ -39,7 +33,8 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "includeOrExcludeMoreSelectors"
 		| "includeOrExcludeLessSelectors"
 		| "confirmSelectorsCustomization"
-		| "resetCustomSelectors";
+		| "resetCustomSelectors"
+		| "openSettingsPage";
 }
 
 interface RangoActionWithoutTargetWithStringArg {

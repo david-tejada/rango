@@ -70,6 +70,8 @@ export function updateHintsStyle() {
 	for (const wrapper of getHintedWrappers()) {
 		wrapper.hint!.applyDefaultStyle();
 	}
+
+	updatePositionAll();
 }
 
 export function getExtraHintsToggle() {

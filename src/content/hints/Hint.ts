@@ -1,6 +1,5 @@
 import Color from "color";
 import { rgbaToRgb } from "../../lib/rgbaToRgb";
-import { getHintOption } from "../options/cacheHintOptions";
 import { getEffectiveBackgroundColor } from "../utils/getEffectiveBackgroundColor";
 import { getFirstTextNodeDescendant } from "../utils/nodeUtils";
 import { createsStackingContext } from "../utils/createsStackingContext";
@@ -13,6 +12,10 @@ import {
 } from "../wrappers/wrappers";
 import { debounce } from "../../lib/debounceAndThrottle";
 import { updatePositionAll } from "../wrappers/updateWrappers";
+import {
+	getCachedSetting,
+	getCachedSettingAll,
+} from "../settings/cacheSettings";
 import {
 	matchesMarkedForInclusion,
 	matchesMarkedForExclusion,
@@ -229,7 +232,7 @@ export class Hint {
 	constructor(target: Element) {
 		this.target = target;
 
-		this.borderWidth = 1;
+		this.borderWidth = getCachedSetting("hintBorderWidth");
 
 		this.shadowHost = document.createElement("div");
 		this.shadowHost.className = "rango-hint";
@@ -262,7 +265,6 @@ export class Hint {
 			display: "none",
 			"user-select": "none",
 			position: "absolute",
-			"border-radius": "20%",
 			"line-height": "1.25",
 			"font-family": "monospace",
 			padding: "0 0.15em",
@@ -324,44 +326,67 @@ export class Hint {
 		if (matchesMarkedForExclusion(this.target)) {
 			backgroundColor = new Color("red");
 			color = new Color("white");
-			this.borderColor = new Color("white");
+			this.borderColor = color;
 		} else if (matchesMarkedForInclusion(this.target)) {
 			backgroundColor = new Color("green");
 			color = new Color("white");
 			this.borderColor = new Color("white");
 		} else {
+			const customBackgroundColor = getCachedSetting("hintBackgroundColor");
+			const customFontColor = getCachedSetting("hintFontColor");
+			const backgroundOpacity = getCachedSetting("hintBackgroundOpacity");
+
 			this.firstTextNodeDescendant = getFirstTextNodeDescendant(this.target);
-			backgroundColor = new Color(getEffectiveBackgroundColor(this.target));
 
-			const elementToGetColorFrom = this.firstTextNodeDescendant?.parentElement;
-			const colorString = window.getComputedStyle(
-				elementToGetColorFrom ?? this.target
-			).color;
-			color = rgbaToRgb(new Color(colorString || "black"), backgroundColor);
+			if (customBackgroundColor) {
+				const colorObject = new Color(customBackgroundColor);
+				const alpha = colorObject.alpha();
+				backgroundColor =
+					alpha === 1 ? colorObject.alpha(backgroundOpacity) : colorObject;
+			} else {
+				backgroundColor = new Color(
+					getEffectiveBackgroundColor(this.target)
+				).alpha(backgroundOpacity);
+			}
 
-			if (!elementToGetColorFrom) {
-				if (backgroundColor.isDark() && color.isDark()) {
-					color = new Color("white");
-				}
+			if (customFontColor && customBackgroundColor) {
+				color = new Color(customFontColor);
+			} else {
+				const elementToGetColorFrom =
+					this.firstTextNodeDescendant?.parentElement;
+				const colorString = window.getComputedStyle(
+					elementToGetColorFrom ?? this.target
+				).color;
+				color = rgbaToRgb(new Color(colorString || "black"), backgroundColor);
 
-				if (backgroundColor.isLight() && color.isLight()) {
-					color = new Color("black");
+				if (!elementToGetColorFrom) {
+					if (backgroundColor.isDark() && color.isDark()) {
+						color = new Color("white");
+					}
+
+					if (backgroundColor.isLight() && color.isLight()) {
+						color = new Color("black");
+					}
 				}
 			}
 
-			if (backgroundColor.contrast(color) < 4) {
+			if (
+				backgroundColor.contrast(color) <
+					getCachedSetting("hintMinimumContrastRatio") &&
+				!customFontColor
+			) {
 				color = backgroundColor.isLight()
 					? new Color("black")
 					: new Color("white");
 			}
 
-			this.borderWidth = 1;
+			this.borderWidth = getCachedSetting("hintBorderWidth");
 			this.borderColor = new Color(color).alpha(0.3);
 		}
 
 		if (this.keyEmphasis) {
 			this.borderColor = new Color(this.color).alpha(0.7);
-			this.borderWidth = 2;
+			this.borderWidth += 1;
 		}
 
 		this.backgroundColor = backgroundColor;
@@ -370,15 +395,12 @@ export class Hint {
 
 	updateColors() {
 		this.computeColors();
-		const subtleHints = getHintOption("hintStyle") === "subtle";
 
 		if (!this.freezeColors) {
 			setStyleProperties(this.inner, {
 				"background-color": this.backgroundColor.string(),
 				color: this.color.string(),
-				border: subtleHints
-					? "0"
-					: `${this.borderWidth}px solid ${this.borderColor.string()}`,
+				border: `${this.borderWidth}px solid ${this.borderColor.string()}`,
 			});
 		}
 	}
@@ -611,34 +633,33 @@ export class Hint {
 	}
 
 	applyDefaultStyle() {
-		// Retrieve options
-		const hintFontSize = getHintOption("hintFontSize");
-		const fontWeightOption = getHintOption("hintWeight");
-		const subtleHints = getHintOption("hintStyle") === "subtle";
-		const subtleBackground =
-			subtleHints &&
-			window.getComputedStyle(this.target).display.includes("inline");
+		const {
+			hintFontFamily,
+			hintFontSize,
+			hintWeight,
+			hintBorderWidth,
+			hintBorderRadius,
+			hintUppercaseLetters,
+		} = getCachedSettingAll();
 
 		this.computeColors();
 
-		let fontWeight;
-		if (fontWeightOption === "auto") {
-			fontWeight =
-				this.backgroundColor.contrast(this.color) < 7 && hintFontSize < 14
+		const fontWeight =
+			hintWeight === "auto"
+				? this.backgroundColor.contrast(this.color) < 7 && hintFontSize < 14
 					? "bold"
-					: "normal";
-		} else {
-			fontWeight = `${fontWeightOption}`;
-		}
+					: "normal"
+				: hintWeight;
 
 		setStyleProperties(this.inner, {
-			"background-color": subtleBackground
-				? "transparent"
-				: this.backgroundColor.string(),
+			"background-color": this.backgroundColor.string(),
 			color: this.color.string(),
-			border: subtleHints ? "0" : `1px solid ${this.borderColor.string()}`,
+			border: `${hintBorderWidth}px solid ${this.borderColor.string()}`,
+			"font-family": hintFontFamily,
 			"font-size": `${hintFontSize}px`,
 			"font-weight": fontWeight,
+			"border-radius": `${hintBorderRadius}px`,
+			"text-transform": hintUppercaseLetters ? "uppercase" : "none",
 		});
 	}
 
@@ -649,6 +670,7 @@ export class Hint {
 
 	clearKeyHighlight() {
 		this.keyEmphasis = false;
+		this.borderWidth = getCachedSetting("hintBorderWidth");
 		this.updateColors();
 	}
 }

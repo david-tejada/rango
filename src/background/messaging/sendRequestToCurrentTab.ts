@@ -70,11 +70,6 @@ export async function sendRequestToCurrentTab(
 		});
 	}
 
-	if (request.type === "refreshHints") {
-		// We need to send the request to all frames
-		return browser.tabs.sendMessage(currentTabId, request);
-	}
-
 	return browser.tabs.sendMessage(currentTabId, request, {
 		frameId: 0,
 	});

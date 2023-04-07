@@ -37,7 +37,8 @@ interface SimpleBackgroundRequest {
 		| "initStack"
 		| "getTabId"
 		| "restoreKeyboardReachableHints"
-		| "getHintsStackForTab";
+		| "getHintsStackForTab"
+		| "tabIsActive";
 }
 
 export type BackgroundRequest =
