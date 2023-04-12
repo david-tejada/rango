@@ -12,10 +12,10 @@ beforeEach(async () => {
 
 test("It shows the tooltip when we issue the 'show' command", async () => {
 	await rangoCommandWithTarget("showLink", ["a"]);
-	await page.waitForSelector("#rango-tooltip");
+	await page.waitForSelector(".rango-tooltip");
 
 	const tooltipContent = await page.$eval(
-		"#rango-tooltip",
+		".rango-tooltip",
 		(tooltip) => tooltip.textContent
 	);
 
@@ -24,13 +24,13 @@ test("It shows the tooltip when we issue the 'show' command", async () => {
 
 test("It removes the tooltip when the element scrolls", async () => {
 	await rangoCommandWithTarget("showLink", ["a"]);
-	await page.waitForSelector("#rango-tooltip");
+	await page.waitForSelector(".rango-tooltip");
 
 	await rangoCommandWithoutTarget("scrollDownPage");
 	await sleep(250);
 
 	const tooltipContent = await page.$eval(
-		"#rango-tooltip",
+		".rango-tooltip",
 		(tooltip) => tooltip.textContent
 	);
 
