@@ -3,14 +3,13 @@ import { ElementWrapper } from "../../typings/ElementWrapper";
 import { assertDefined } from "../../typings/TypingUtils";
 import { setStyleProperties } from "./setStyleProperties";
 
-const tooltipAnchor = document.createElement("div");
-tooltipAnchor.id = "rango-tooltip";
-
 export function showTooltip(
 	wrapper: ElementWrapper,
 	text: string,
 	duration: number
 ) {
+	const tooltipAnchor = document.createElement("div");
+	tooltipAnchor.className = "rango-tooltip";
 	assertDefined(wrapper.hint);
 
 	const { x, y, width, height } = wrapper.hint.inner.getBoundingClientRect();
