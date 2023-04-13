@@ -8,6 +8,7 @@ import {
 } from "../../common/storage";
 import { Settings, defaultSettings } from "../../common/settings";
 import { urls } from "../../common/urls";
+import { trackRecentTabs } from "./trackRecentTabs";
 
 // We only need this function temporarily while the users go from a version
 // below 0.3.5 to a version equal or above it. To be removed in the future.
@@ -56,7 +57,7 @@ async function clearUnusedStacks() {
 	await store("hintsStacks", stacks);
 }
 
-export async function initStorage() {
+export async function initBackgroundScript() {
 	const switchedToSyncStorage = await retrieve("switchedToSyncStorage");
 	if (!switchedToSyncStorage) await switchToSyncStorage();
 
@@ -87,4 +88,7 @@ export async function initStorage() {
 
 	// Reset tabsByRecency on start
 	await store("tabsByRecency", {});
+
+	// Track tabs to be able to use the command "tab back"
+	await trackRecentTabs();
 }

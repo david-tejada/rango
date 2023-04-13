@@ -1,0 +1,20 @@
+.TogglesStatusMessage {
+	min-width: 220px;
+}
+
+.ToggleStatus {
+	display: flex;
+	justify-content: space-between;
+	font-size: 16px;
+	text-transform: none;
+	line-height: 1.8;
+}
+
+.ToggleStatus.set ~ .ToggleStatus.set,
+.ToggleStatus.unset {
+	opacity: 40%;
+}
+
+.ToggleStatus.header {
+	padding-bottom: 1em;
+}

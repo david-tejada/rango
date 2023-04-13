@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { ContentRequest } from "../../typings/ContentRequest";
+import { RequestFromBackground } from "../../typings/RequestFromBackground";
 import { TalonAction } from "../../typings/RequestFromTalon";
 import { isPromiseFulfilledResult } from "../../typings/TypingUtils";
 import { getCurrentTabId } from "../utils/getCurrentTab";
@@ -8,7 +8,7 @@ import { splitRequestsByFrame } from "../utils/splitRequestsByFrame";
 let lastScrollFrameId = 0;
 
 export async function sendRequestToCurrentTab(
-	request: ContentRequest
+	request: RequestFromBackground
 ): Promise<unknown> {
 	const currentTabId = await getCurrentTabId();
 

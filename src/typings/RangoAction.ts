@@ -21,9 +21,8 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "displayExcludedHints"
 		| "displayLessHints"
 		| "toggleHints"
+		| "displayTogglesStatus"
 		| "toggleKeyboardClicking"
-		| "enableHintsNavigation"
-		| "disableHintsNavigation"
 		| "excludeSingleLetterHints"
 		| "includeSingleLetterHints"
 		| "enableUrlInTitle"
@@ -37,13 +36,21 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "openSettingsPage";
 }
 
-interface RangoActionWithoutTargetWithStringArg {
-	type:
-		| "copyLocationProperty"
-		| "enableHints"
-		| "disableHints"
-		| "resetToggleLevel";
-	arg: string;
+export interface RangoActionUpdateToggles {
+	type: "enableHints" | "disableHints" | "resetToggleLevel";
+	arg: "everywhere" | "global" | "tab" | "host" | "page" | "now";
+}
+
+interface RangoActionCopyLocationProperty {
+	type: "copyLocationProperty";
+	arg:
+		| "href"
+		| "hostname"
+		| "host"
+		| "origin"
+		| "pathname"
+		| "port"
+		| "protocol";
 }
 
 interface RangoActionSetHintStyle {
@@ -111,7 +118,7 @@ interface RangoActionWithTargetsWithOptionalNumberArg {
 	arg?: number;
 }
 
-interface RangoActionWithTargetsAndStrinArg {
+interface RangoActionInsertToField {
 	type: "insertToField";
 	target: string[];
 	arg: string;
@@ -120,14 +127,15 @@ interface RangoActionWithTargetsAndStrinArg {
 export type RangoActionWithTarget =
 	| RangoActionWithTargets
 	| RangoActionWithTargetsWithOptionalNumberArg
-	| RangoActionWithTargetsAndStrinArg;
+	| RangoActionInsertToField;
 
 export type RangoActionWithoutTarget =
 	| RangoActionWithoutTargetWithoutArg
-	| RangoActionWithoutTargetWithStringArg
+	| RangoActionUpdateToggles
 	| RangoActionWithoutTargetWithNumberArg
 	| RangoActionWithoutTargetWithOptionalNumberArg
 	| RangoActionSetHintStyle
-	| RangoActionSetHintWeight;
+	| RangoActionSetHintWeight
+	| RangoActionCopyLocationProperty;
 
 export type RangoAction = RangoActionWithTarget | RangoActionWithoutTarget;

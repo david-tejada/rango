@@ -14,10 +14,10 @@ export function copyElementTextContentToClipboard(
 
 		if (textContent) {
 			textContents.push(textContent);
+			showTooltip(wrapper, "Copied!", 1500);
+		} else {
+			showTooltip(wrapper, "No text content to copy", 1500);
 		}
-
-		const message = textContent ? "Copied!" : "No text content to copy";
-		showTooltip(wrapper, message, 1500);
 	}
 
 	return textContents.length > 0 ? textContents.join("\n") : undefined;
@@ -34,10 +34,10 @@ export function copyLinkToClipboard(
 		if (wrapper.element instanceof HTMLAnchorElement) {
 			href = wrapper.element.href;
 			hrefs.push(href);
+			showTooltip(wrapper, "Copied!", 1500);
+		} else {
+			showTooltip(wrapper, "Not a link", 1500);
 		}
-
-		const message = href ? "Copied!" : "Not a link";
-		showTooltip(wrapper, message, 1500);
 	}
 
 	return hrefs.length > 0 ? hrefs.join("\n") : undefined;

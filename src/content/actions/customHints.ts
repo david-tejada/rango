@@ -204,4 +204,6 @@ export async function saveCustomSelectors() {
 	await updateCustomSelectors();
 	updateHintablesBySelector(addedSelectors.join(", "));
 	displayMoreOrLessHints({ extra: false, excluded: false });
+
+	return addedSelectors.length > 0;
 }

@@ -4,7 +4,6 @@ import { urls } from "../../common/urls";
 
 export async function toggleKeyboardClicking() {
 	const keyboardClicking = await retrieve("keyboardClicking");
-
 	await store("keyboardClicking", !keyboardClicking);
 }
 

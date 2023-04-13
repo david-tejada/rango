@@ -35,13 +35,13 @@ interface ReclaimHintsFromOtherFrames {
 interface SimpleBackgroundRequest {
 	type:
 		| "initStack"
-		| "getTabId"
+		| "getContentScriptContext"
 		| "restoreKeyboardReachableHints"
 		| "getHintsStackForTab"
-		| "tabIsActive";
+		| "isCurrentTab";
 }
 
-export type BackgroundRequest =
+export type RequestFromContent =
 	| SimpleBackgroundRequest
 	| OpenInNewTab
 	| ClaimHints

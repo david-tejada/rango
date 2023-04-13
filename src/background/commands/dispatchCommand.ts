@@ -13,6 +13,7 @@ const backgroundCommands = new Set([
 	"decreaseHintSize",
 	"setHintStyle",
 	"setHintWeight",
+	"copyLocationProperty",
 	"copyCurrentTabMarkdownUrl",
 	"enableUrlInTitle",
 	"disableUrlInTitle",

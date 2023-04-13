@@ -1,13 +1,14 @@
 import browser from "webextension-polyfill";
 import { RangoAction } from "../../typings/RangoAction";
 import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
-import { notify } from "../utils/notify";
-import { toggleHints } from "../actions/toggleHints";
+import { notify, notifySettingRemoved } from "../utils/notify";
+import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { closeTabsInWindow } from "../actions/closeTabsInWindow";
 import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
 import { focusPreviousTab } from "../actions/focusPreviousTab";
 import { sendRequestToCurrentTab } from "../messaging/sendRequestToCurrentTab";
 import { retrieve, store } from "../../common/storage";
+import { assertDefined } from "../../typings/TypingUtils";
 
 export async function runBackgroundCommand(
 	command: RangoAction
@@ -34,38 +35,35 @@ export async function runBackgroundCommand(
 
 			break;
 
-		case "toggleHints": {
-			const hintsToggleGlobal = await retrieve("hintsToggleGlobal");
-			await store("hintsToggleGlobal", !hintsToggleGlobal);
+		case "toggleHints":
+			await toggleHintsGlobal();
 			break;
-		}
 
 		case "enableHints": {
-			await toggleHints(command.arg, true);
-
+			await updateHintsToggle(command.arg, true);
 			break;
 		}
 
 		case "disableHints":
-			await toggleHints(command.arg, false);
-
+			await updateHintsToggle(command.arg, false);
 			break;
 
 		case "resetToggleLevel":
-			await toggleHints(command.arg);
-
+			await updateHintsToggle(command.arg);
 			break;
 
 		case "toggleKeyboardClicking":
 			await toggleKeyboardClicking();
 			break;
 
+		// To be removed in v0.4
 		case "includeSingleLetterHints":
-			await store("includeSingleLetterHints", true);
-			break;
-
 		case "excludeSingleLetterHints":
-			await store("includeSingleLetterHints", false);
+		case "setHintStyle":
+		case "setHintWeight":
+		case "enableUrlInTitle":
+		case "disableUrlInTitle":
+			await notifySettingRemoved();
 			break;
 
 		case "increaseHintSize": {
@@ -79,24 +77,6 @@ export async function runBackgroundCommand(
 			await store("hintFontSize", hintFontSize - 1);
 			break;
 		}
-
-		case "setHintStyle":
-			// TO DO: Notify the user that this setting is no longer available
-			break;
-
-		case "setHintWeight":
-			await store("hintWeight", command.arg);
-			break;
-
-		case "enableUrlInTitle":
-			await store("urlInTitle", true);
-			notify("Url in title enabled", "Refresh the page to update the title");
-			break;
-
-		case "disableUrlInTitle":
-			await store("urlInTitle", false);
-			notify("Url in title disabled", "Refresh the page to update the title");
-			break;
 
 		case "closeOtherTabsInWindow":
 			await closeTabsInWindow("other");
@@ -128,7 +108,6 @@ export async function runBackgroundCommand(
 
 		case "cloneCurrentTab":
 			await browser.tabs.duplicate(currentTabId);
-
 			break;
 
 		case "moveCurrentTabToNewWindow":
@@ -139,14 +118,21 @@ export async function runBackgroundCommand(
 			await focusPreviousTab();
 			break;
 
-		case "copyCurrentTabMarkdownUrl":
-			if (currentTab.url && currentTab.title) {
-				return `[${currentTab.title.replace(` - ${currentTab.url}`, "")}](${
-					currentTab.url
-				})`;
-			}
+		case "copyLocationProperty": {
+			assertDefined(currentTab.url);
+			await notify("Copied to the clipboard", { type: "success" });
+			const url = new URL(currentTab.url);
+			const result = url[command.arg];
+			return result;
+		}
 
-			break;
+		case "copyCurrentTabMarkdownUrl":
+			assertDefined(currentTab.url);
+			assertDefined(currentTab.title);
+			await notify("Copied to the clipboard", { type: "success" });
+			return `[${currentTab.title.replace(` - ${currentTab.url}`, "")}](${
+				currentTab.url
+			})`;
 
 		case "openSettingsPage":
 			await browser.runtime.openOptionsPage();

@@ -33,6 +33,17 @@ export interface StorageSchema {
 	hintsTogglePaths: Map<string, boolean>;
 	hintsToggleTabs: Map<number, boolean>;
 
+	// Notifications
+	enableNotifications: boolean;
+	toastPosition:
+		| "top-right"
+		| "top-center"
+		| "top-left"
+		| "bottom-right"
+		| "bottom-center"
+		| "bottom-left";
+	toastTransition: "slide" | "flip" | "zoom" | "bounce";
+
 	// Other settings
 	urlInTitle: boolean;
 	keyboardClicking: boolean;

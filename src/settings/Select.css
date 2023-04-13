@@ -1,0 +1,16 @@
+.Select {
+	display: grid;
+	grid-template-columns: 2fr 5fr;
+}
+
+.Select select {
+	background-color: var(--slate-200);
+	border-radius: 4px;
+	padding: 6px;
+	border: none;
+	text-indent: 0.2em;
+}
+
+.Select.disabled {
+	color: var(--neutral-500);
+}

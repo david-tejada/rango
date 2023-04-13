@@ -1,48 +1,29 @@
 import browser from "webextension-polyfill";
 // eslint-disable-next-line import/no-unassigned-import
 import "requestidlecallback-polyfill";
-import { ContentRequest } from "../typings/ContentRequest";
+import { RequestFromBackground } from "../typings/RequestFromBackground";
 import { TalonAction } from "../typings/RequestFromTalon";
-import { retrieve } from "../common/storage";
-import { cacheSettings } from "./settings/cacheSettings";
-import observe from "./observe";
-import { addUrlToTitle } from "./utils/addUrlToTitle";
 import {
 	markHintsAsKeyboardReachable,
-	initKeyboardClicking,
 	restoreKeyboardReachableHints,
 } from "./actions/keyboardClicking";
 import { updateHintsInTab } from "./utils/getHintsInTab";
 import { runRangoActionWithTarget } from "./actions/runRangoActionWithTarget";
 import { runRangoActionWithoutTarget } from "./actions/runRangoActionWithoutTarget";
-import { updateCustomSelectors } from "./hints/selectors";
 import { getHintStringsInUse, reclaimHints } from "./wrappers/wrappers";
 import { reclaimHintsFromCache } from "./hints/hintsCache";
-import { loadDevtoolsUtils } from "./utils/devtoolsUtils";
-import { watchSettingsChanges } from "./settings/watchSettingsChanges";
+import { notify, notifyTogglesStatus } from "./notify/notify";
+import { initContentScript } from "./setup/initContentScript";
+import { setNavigationToggle } from "./settings/toggles";
+import { updateHintsEnabled } from "./observe";
 
-watchSettingsChanges();
-
-addUrlToTitle()
-	.then(updateCustomSelectors)
-	.then(cacheSettings)
-	.then(observe)
-	.then(async () => {
-		const keyboardClicking = await retrieve("keyboardClicking");
-
-		if (keyboardClicking) {
-			initKeyboardClicking();
-		}
-	})
-	.catch((error) => {
-		console.error(error);
-	});
-
-loadDevtoolsUtils();
+(async () => {
+	await initContentScript();
+})();
 
 browser.runtime.onMessage.addListener(
 	async (
-		request: ContentRequest
+		request: RequestFromBackground
 	): Promise<string | string[] | TalonAction[] | boolean | undefined> => {
 		if ("target" in request) {
 			return runRangoActionWithTarget(request);
@@ -51,6 +32,10 @@ browser.runtime.onMessage.addListener(
 		try {
 			switch (request.type) {
 				// SCRIPT REQUESTS
+
+				case "displayToastNotification":
+					await notify(request.text, request.options);
+					break;
 
 				case "getHintStringsInUse":
 					return getHintStringsInUse();
@@ -63,13 +48,6 @@ browser.runtime.onMessage.addListener(
 
 					return reclaimed;
 				}
-
-				case "getLocation":
-					return [
-						window.location.host,
-						window.location.origin,
-						window.location.pathname,
-					];
 
 				case "updateHintsInTab":
 					updateHintsInTab(request.hints);
@@ -85,6 +63,12 @@ browser.runtime.onMessage.addListener(
 
 				case "checkIfDocumentHasFocus":
 					return document.hasFocus();
+
+				case "updateNavigationToggle":
+					setNavigationToggle(request.enable);
+					await updateHintsEnabled();
+					await notifyTogglesStatus();
+					break;
 
 				default: {
 					const result = await runRangoActionWithoutTarget(request);

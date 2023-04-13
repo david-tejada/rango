@@ -1,9 +1,9 @@
-import { retrieve } from "../../common/storage";
+import { getCachedSetting } from "../settings/cacheSettings";
 
 let lastUrlAdded: string | undefined;
 
 export async function addUrlToTitle() {
-	const urlInTitle = await retrieve("urlInTitle");
+	const urlInTitle = getCachedSetting("urlInTitle");
 
 	// Here urlInTitle === undefined is mostly for testing purposes. As when we
 	// start the browser sometimes the options haven't been initialized

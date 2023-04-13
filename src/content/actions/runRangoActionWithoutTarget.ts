@@ -1,11 +1,12 @@
+import { toast } from "react-toastify";
 import { RangoActionWithoutTarget } from "../../typings/RangoAction";
-import { setNavigationToggle } from "../hints/shouldDisplayHints";
 import {
 	displayMoreOrLessHints,
 	updateHintablesBySelector,
 } from "../wrappers/updateWrappers";
 import { updateCustomSelectors } from "../hints/selectors";
 import { resetCustomSelectors } from "../hints/customHintsEdit";
+import { notify, notifyTogglesStatus } from "../notify/notify";
 import {
 	includeOrExcludeMoreOrLessSelectors,
 	saveCustomSelectors,
@@ -37,6 +38,10 @@ export async function runRangoActionWithoutTarget(
 
 		case "navigateToPreviousPage":
 			navigateToPreviousPage();
+			break;
+
+		case "displayTogglesStatus":
+			await notifyTogglesStatus();
 			break;
 
 		case "scrollUpPage":
@@ -99,40 +104,30 @@ export async function runRangoActionWithoutTarget(
 			displayMoreOrLessHints({ extra: false, excluded: false });
 			break;
 
-		case "confirmSelectorsCustomization":
-			await saveCustomSelectors();
+		case "confirmSelectorsCustomization": {
+			const saved = await saveCustomSelectors();
+			await (saved
+				? notify("Custom selectors saved", { type: "success" })
+				: notify("No selectors to save", { type: "warning" }));
 			break;
+		}
 
 		case "resetCustomSelectors": {
 			const toUpdateSelector = await resetCustomSelectors();
 			await updateCustomSelectors();
 			updateHintablesBySelector(toUpdateSelector);
+			await (toUpdateSelector
+				? notify("Custom selectors reset", { type: "success" })
+				: notify("No custom selectors found for the current page", {
+						type: "warning",
+				  }));
 			break;
 		}
-
-		case "copyLocationProperty":
-			return window.location[
-				request.arg as
-					| "href"
-					| "hostname"
-					| "host"
-					| "origin"
-					| "pathname"
-					| "port"
-					| "protocol"
-			];
 
 		case "unhoverAll":
 			blur();
 			unhoverAll();
-			break;
-
-		case "enableHintsNavigation":
-			setNavigationToggle(true);
-			break;
-
-		case "disableHintsNavigation":
-			setNavigationToggle(false);
+			toast.dismiss();
 			break;
 
 		case "includeOrExcludeMoreSelectors":

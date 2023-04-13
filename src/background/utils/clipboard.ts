@@ -85,10 +85,9 @@ export async function getRequestFromClipboard(): Promise<
 			}
 		}
 	} else {
-		notify(
-			"Error getting the request",
-			"Rango was unable to read the request present on the clipboard"
-		);
+		await notify("Unable to read the request present on the clipboard", {
+			type: "error",
+		});
 	}
 
 	return undefined;

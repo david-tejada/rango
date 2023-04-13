@@ -1,6 +1,6 @@
 import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
-import { BackgroundRequest } from "../../typings/BackgroundRequest";
+import { RequestFromContent } from "../../typings/RequestFromContent";
 import { assertDefined } from "../../typings/TypingUtils";
 import {
 	claimHints,
@@ -9,17 +9,21 @@ import {
 	reclaimHintsFromOtherFrames,
 	releaseHints,
 } from "../utils/hintsAllocator";
+import { getCurrentTabId } from "../utils/getCurrentTab";
 import { sendRequestToCurrentTab } from "./sendRequestToCurrentTab";
 
 const mutex = new Mutex();
 
-export async function handleContentRequest(
-	request: BackgroundRequest,
+export async function handleRequestFromContent(
+	request: RequestFromContent,
 	sender: browser.Runtime.MessageSender
 ) {
 	assertDefined(sender.tab);
 	const tabId = sender.tab.id;
-	const isActive = sender.tab.active;
+	const lastFocusedWindow = await browser.windows.getLastFocused();
+	const isCurrentTab =
+		sender.tab.active && sender.tab.windowId === lastFocusedWindow.id;
+	const currentTabId = await getCurrentTabId();
 	assertDefined(tabId);
 	const frameId = sender.frameId ?? 0;
 
@@ -78,8 +82,8 @@ export async function handleContentRequest(
 
 			break;
 
-		case "getTabId": {
-			return { tabId };
+		case "getContentScriptContext": {
+			return { tabId, frameId, currentTabId };
 		}
 
 		case "clickHintInFrame":
@@ -102,8 +106,8 @@ export async function handleContentRequest(
 			});
 			break;
 
-		case "tabIsActive":
-			return isActive;
+		case "isCurrentTab":
+			return isCurrentTab;
 
 		default:
 			console.error(request);

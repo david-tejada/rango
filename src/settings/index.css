@@ -15,6 +15,7 @@
 	--orange-600: #ea580c;
 	--orange-700: #c2410c;
 	--blue-600: #2563eb;
+	--neutral-500: #a3a3a3;
 }
 
 html {
@@ -23,6 +24,7 @@ html {
 
 body,
 input,
+select,
 label {
 	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
 		Ubuntu, "Helvetica Neue", Oxygen, Cantarell, sans-serif;

@@ -7,6 +7,8 @@ import {
 	initKeyboardClicking,
 	stopKeyboardClicking,
 } from "../actions/keyboardClicking";
+import { notify, notifyTogglesStatus } from "../notify/notify";
+import { addUrlToTitle } from "../utils/addUrlToTitle";
 import { cacheSettings, getCachedSetting } from "./cacheSettings";
 
 async function handleSettingsChanges(changes: browser.Storage.StorageChange) {
@@ -18,15 +20,25 @@ async function handleSettingsChanges(changes: browser.Storage.StorageChange) {
 
 	if (isToggleChange) {
 		await updateHintsEnabled();
+		await notifyTogglesStatus();
 		return;
 	}
 
 	if ("keyboardClicking" in changes) {
-		if (getCachedSetting("keyboardClicking")) {
+		const keyboardClicking = getCachedSetting("keyboardClicking");
+
+		if (keyboardClicking) {
 			initKeyboardClicking();
 		} else {
 			stopKeyboardClicking();
 		}
+
+		const status = keyboardClicking ? "enabled" : "disabled";
+
+		await notify(`Keyboard clicking ${status}`, {
+			icon: status,
+			toastId: "keyboardToggle",
+		});
 
 		await refreshHints();
 		return;
@@ -34,6 +46,11 @@ async function handleSettingsChanges(changes: browser.Storage.StorageChange) {
 
 	if ("includeSingleLetterHints" in changes) {
 		await refreshHints();
+		return;
+	}
+
+	if ("urlInTitle" in changes) {
+		await addUrlToTitle();
 		return;
 	}
 
@@ -48,11 +65,7 @@ export function watchSettingsChanges() {
 		if (Object.keys(changes).includes("hintsStacks")) return;
 
 		if (hasMatchingKeys(defaultSettings, changes)) {
-			const isActive = (await browser.runtime.sendMessage({
-				type: "tabIsActive",
-			})) as boolean;
-
-			if (isActive) {
+			if (document.visibilityState === "visible") {
 				await handleSettingsChanges(changes);
 			} else {
 				window.requestIdleCallback(async () => {

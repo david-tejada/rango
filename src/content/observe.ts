@@ -1,4 +1,4 @@
-import { shouldDisplayHints } from "./hints/shouldDisplayHints";
+import { getToggles } from "./settings/toggles";
 import {
 	addWrappersFrom,
 	mutationObserver,
@@ -10,7 +10,7 @@ let enabled = false;
 const config = { attributes: true, childList: true, subtree: true };
 
 export async function updateHintsEnabled() {
-	const newEnabled = await shouldDisplayHints();
+	const newEnabled = getToggles().computed;
 
 	if (!enabled && newEnabled) {
 		await observe();
@@ -25,8 +25,7 @@ export async function updateHintsEnabled() {
 }
 
 export default async function observe() {
-	enabled = await shouldDisplayHints();
-
+	enabled = getToggles().computed;
 	if (enabled) {
 		// We observe all the initial elements before any mutation
 		if (document.body) addWrappersFrom(document.body);

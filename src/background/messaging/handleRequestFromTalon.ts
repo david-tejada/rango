@@ -1,12 +1,13 @@
 import { promiseWrap } from "../../lib/promiseWrap";
-import { sendRequestToCurrentTab } from "../messaging/sendRequestToCurrentTab";
 import {
 	getRequestFromClipboard,
 	writeResponseToClipboard,
 } from "../utils/clipboard";
-import { dispatchCommand } from "./dispatchCommand";
+import { notify } from "../utils/notify";
+import { dispatchCommand } from "../commands/dispatchCommand";
+import { sendRequestToCurrentTab } from "./sendRequestToCurrentTab";
 
-export async function handleTalonRequest() {
+export async function handleRequestFromTalon() {
 	try {
 		const request = await getRequestFromClipboard();
 		if (process.env["NODE_ENV"] !== "production") {
@@ -52,6 +53,7 @@ export async function handleTalonRequest() {
 	} catch (error: unknown) {
 		if (error instanceof Error) {
 			console.error(error);
+			await notify(error.message, { type: "error" });
 		}
 	}
 }

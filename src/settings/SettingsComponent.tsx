@@ -11,6 +11,7 @@ import { NumberInput } from "./NumberInput";
 import { Radio, RadioGroup } from "./RadioGroup";
 import { SettingRow } from "./SettingRow";
 import { TextInput } from "./TextInput";
+import { Option, Select } from "./Select";
 
 export function SettingsComponent() {
 	const [storedSettings, setStoredSettings] = useState(defaultSettingsMutable);
@@ -322,6 +323,53 @@ export function SettingsComponent() {
 						</Radio>
 						<Radio value="smooth">smooth</Radio>
 						<Radio value="instant">instant</Radio>
+					</RadioGroup>
+				</SettingRow>
+			</SettingsGroup>
+			<SettingsGroup label="Notifications">
+				<SettingRow>
+					<Toggle
+						label="Enable notifications"
+						isPressed={settings.enableNotifications}
+						onClick={() => {
+							handleChange(
+								"enableNotifications",
+								!settings.enableNotifications
+							);
+						}}
+					/>
+				</SettingRow>
+				<SettingRow>
+					<Select
+						label="Position"
+						defaultValue={settings.toastPosition}
+						isDisabled={!settings.enableNotifications}
+						onChange={(value) => {
+							handleChange("toastPosition", value);
+						}}
+					>
+						<Option value="top-left">top-left</Option>
+						<Option value="top-center">top-center</Option>
+						<Option value="top-right">top-right</Option>
+						<Option value="bottom-left">bottom-left</Option>
+						<Option value="bottom-center">bottom-center</Option>
+						<Option value="bottom-right">bottom-right</Option>
+					</Select>
+				</SettingRow>
+				<SettingRow>
+					<RadioGroup
+						label="Transition"
+						name="toastTransition"
+						defaultValue={settings.toastTransition}
+						isDisabled={!settings.enableNotifications}
+						onChange={(value) => {
+							handleChange("toastTransition", value);
+						}}
+					>
+						<Radio value="bounce">bounce</Radio>
+						<Radio value="slide">slide</Radio>
+						<Radio value="flip">flip</Radio>
+						<Radio value="zoom">zoom</Radio>
 					</RadioGroup>
 				</SettingRow>
 			</SettingsGroup>

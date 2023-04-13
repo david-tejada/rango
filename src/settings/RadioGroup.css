@@ -3,6 +3,10 @@
 	grid-template-columns: 2fr 5fr;
 }
 
+.RadioGroup.disabled {
+	color: var(--neutral-500);
+}
+
 .Radio {
 	background-color: var(--slate-200);
 	border-radius: 4px;
@@ -12,10 +16,6 @@
 
 .Radio + .Radio {
 	margin-top: 0.5em;
-}
-
-.Radio label {
-	margin-left: 1rem;
 }
 
 .Radio:has(:checked) {
@@ -28,4 +28,8 @@
 
 .Radio input {
 	outline: none;
+}
+
+.Radio .body {
+	margin-left: 0.5rem;
 }

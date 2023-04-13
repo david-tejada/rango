@@ -1,13 +1,21 @@
 import { assertDefined } from "../../typings/TypingUtils";
 import { sendRequestToCurrentTab } from "../messaging/sendRequestToCurrentTab";
-import { getCurrentTabId } from "../utils/getCurrentTab";
+import { getCurrentTab } from "../utils/getCurrentTab";
 import { retrieve, store } from "../../common/storage";
+import { RangoActionUpdateToggles } from "../../typings/RangoAction";
 
-export async function toggleHints(level: string, enable?: boolean) {
-	const currentTabId = await getCurrentTabId();
-	const [host, origin, pathname] = (await sendRequestToCurrentTab({
-		type: "getLocation",
-	})) as string[];
+export async function toggleHintsGlobal() {
+	const hintsToggleGlobal = await retrieve("hintsToggleGlobal");
+	await store("hintsToggleGlobal", !hintsToggleGlobal);
+}
+
+export async function updateHintsToggle(
+	level: RangoActionUpdateToggles["arg"],
+	enable?: boolean
+) {
+	const currentTab = await getCurrentTab();
+	assertDefined(currentTab.url);
+	const { host, origin, pathname } = new URL(currentTab.url);
 
 	switch (level) {
 		case "everywhere":
@@ -16,34 +24,33 @@ export async function toggleHints(level: string, enable?: boolean) {
 				await store("hintsToggleTabs", new Map());
 				await store("hintsToggleHosts", new Map());
 				await store("hintsTogglePaths", new Map());
+				await sendRequestToCurrentTab({
+					type: "updateNavigationToggle",
+					enable,
+				});
 			}
 
 			break;
 
 		case "now": {
-			assertDefined(enable);
-			const requestType = enable
-				? "enableHintsNavigation"
-				: "disableHintsNavigation";
 			await sendRequestToCurrentTab({
-				type: requestType,
+				type: "updateNavigationToggle",
+				enable,
 			});
 			break;
 		}
 
 		case "global":
-			if (enable !== undefined) {
-				await store("hintsToggleGlobal", enable);
-			}
-
+			await store("hintsToggleGlobal", enable === undefined ? true : enable);
 			break;
 
 		case "tab": {
 			const hintsToggleTabs = await retrieve("hintsToggleTabs");
+			assertDefined(currentTab.id);
 			if (enable === undefined) {
-				hintsToggleTabs.delete(currentTabId);
+				hintsToggleTabs.delete(currentTab.id);
 			} else {
-				hintsToggleTabs.set(currentTabId, enable);
+				hintsToggleTabs.set(currentTab.id, enable);
 			}
 
 			await store("hintsToggleTabs", hintsToggleTabs);

@@ -143,12 +143,16 @@
 		"maxParallelRequests": 20
 	},
 	"dependencies": {
+		"@fortawesome/fontawesome-svg-core": "^6.4.0",
+		"@fortawesome/free-solid-svg-icons": "^6.4.0",
+		"@fortawesome/react-fontawesome": "^0.2.0",
 		"async-mutex": "^0.3.2",
 		"color": "^4.2.3",
 		"combinations": "^1.0.0",
 		"intersect": "^1.0.1",
 		"react": "^18.2.0",
 		"react-dom": "^18.2.0",
+		"react-toastify": "^9.1.2",
 		"requestidlecallback-polyfill": "^1.0.2",
 		"specificity": "^0.4.1",
 		"tippy.js": "^6.3.7",
