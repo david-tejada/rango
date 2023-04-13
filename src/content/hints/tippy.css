@@ -5,6 +5,7 @@
 
 [data-tippy-root] {
 	max-width: calc(100vw - 10px);
+	width: max-content;
 }
 
 .tippy-box {
