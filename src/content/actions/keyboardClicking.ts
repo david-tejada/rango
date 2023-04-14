@@ -55,7 +55,8 @@ async function keydownHandler(event: KeyboardEvent) {
 		return;
 	}
 
-	// After typing the first character we need to check if any of the hints stare with that letter
+	// After typing the first character we need to check if any of the hints start
+	// with that letter
 	const firstCharactersInHints = new Set(
 		getHintsInTab().map((hint) => hint.slice(0, 1))
 	);
