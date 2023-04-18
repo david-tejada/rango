@@ -25,6 +25,7 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "toggleKeyboardClicking"
 		| "excludeSingleLetterHints"
 		| "includeSingleLetterHints"
+		| "refreshHints"
 		| "enableUrlInTitle"
 		| "disableUrlInTitle"
 		| "increaseHintSize"

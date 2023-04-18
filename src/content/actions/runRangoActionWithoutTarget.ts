@@ -2,6 +2,7 @@ import { toast } from "react-toastify";
 import { RangoActionWithoutTarget } from "../../typings/RangoAction";
 import {
 	displayMoreOrLessHints,
+	refreshHints,
 	updateHintablesBySelector,
 } from "../wrappers/updateWrappers";
 import { updateCustomSelectors } from "../hints/selectors";
@@ -128,6 +129,10 @@ export async function runRangoActionWithoutTarget(
 			blur();
 			unhoverAll();
 			toast.dismiss();
+			break;
+
+		case "refreshHints":
+			await refreshHints();
 			break;
 
 		case "includeOrExcludeMoreSelectors":
