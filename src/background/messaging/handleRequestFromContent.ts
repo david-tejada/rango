@@ -1,18 +1,16 @@
-import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
 import { RequestFromContent } from "../../typings/RequestFromContent";
 import { assertDefined } from "../../typings/TypingUtils";
 import {
 	claimHints,
-	getStack,
 	initStack,
 	reclaimHintsFromOtherFrames,
 	releaseHints,
-} from "../utils/hintsAllocator";
+	storeHintsInFrame,
+	withStack,
+} from "../hints/hintsAllocator";
 import { getCurrentTabId } from "../utils/getCurrentTab";
-import { sendRequestToCurrentTab } from "./sendRequestToCurrentTab";
-
-const mutex = new Mutex();
+import { sendRequestToContent } from "./sendRequestToContent";
 
 export async function handleRequestFromContent(
 	request: RequestFromContent,
@@ -27,39 +25,36 @@ export async function handleRequestFromContent(
 	assertDefined(tabId);
 	const frameId = sender.frameId ?? 0;
 
-	if (
-		[
-			"initStack",
-			"claimHints",
-			"releaseHints",
-			"reclaimHintsFromOtherFrames",
-			"getHintsStackForTab",
-		].includes(request.type)
-	) {
-		return mutex.runExclusive(async () => {
-			switch (request.type) {
-				case "initStack":
-					return initStack(tabId, frameId);
-
-				case "claimHints":
-					return claimHints(request.amount, tabId, frameId);
-
-				case "reclaimHintsFromOtherFrames":
-					return reclaimHintsFromOtherFrames(tabId, frameId, request.amount);
-
-				case "releaseHints":
-					return releaseHints(request.hints, tabId);
-
-				case "getHintsStackForTab":
-					return getStack(tabId);
-
-				default:
-					break;
-			}
-		});
-	}
-
 	switch (request.type) {
+		case "initStack":
+			// This is to be extra safe as we already make sure we are only sending
+			// this request from the main frame of the content script
+			if (frameId !== 0) {
+				console.warn(
+					"Ignoring request to initiate stack that doesn't come from the main frame"
+				);
+				return;
+			}
+
+			return initStack(tabId);
+
+		case "claimHints":
+			return claimHints(tabId, frameId, request.amount);
+
+		case "reclaimHintsFromOtherFrames":
+			return reclaimHintsFromOtherFrames(tabId, frameId, request.amount);
+
+		case "releaseHints":
+			return releaseHints(tabId, request.hints);
+
+		case "storeHintsInFrame":
+			return storeHintsInFrame(tabId, frameId, request.hints);
+
+		case "getHintsStackForTab":
+			return withStack(tabId, async (stack) => {
+				return stack;
+			});
+
 		case "openInNewTab":
 			await browser.tabs.create({
 				url: request.url,
@@ -87,23 +82,29 @@ export async function handleRequestFromContent(
 		}
 
 		case "clickHintInFrame":
-			await sendRequestToCurrentTab({
+			await sendRequestToContent({
 				type: "clickElement",
 				target: [request.hint],
 			});
 			break;
 
 		case "markHintsAsKeyboardReachable":
-			await browser.tabs.sendMessage(tabId, {
-				type: "markHintsAsKeyboardReachable",
-				letter: request.letter,
-			});
+			await sendRequestToContent(
+				{
+					type: "markHintsAsKeyboardReachable",
+					letter: request.letter,
+				},
+				tabId
+			);
 			break;
 
 		case "restoreKeyboardReachableHints":
-			await browser.tabs.sendMessage(tabId, {
-				type: "restoreKeyboardReachableHints",
-			});
+			await sendRequestToContent(
+				{
+					type: "restoreKeyboardReachableHints",
+				},
+				tabId
+			);
 			break;
 
 		case "isCurrentTab":

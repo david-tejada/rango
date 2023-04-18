@@ -1,5 +1,5 @@
 import { assertDefined } from "../../typings/TypingUtils";
-import { sendRequestToCurrentTab } from "../messaging/sendRequestToCurrentTab";
+import { sendRequestToContent } from "../messaging/sendRequestToContent";
 import { getCurrentTab } from "../utils/getCurrentTab";
 import { retrieve, store } from "../../common/storage";
 import { RangoActionUpdateToggles } from "../../typings/RangoAction";
@@ -24,7 +24,7 @@ export async function updateHintsToggle(
 				await store("hintsToggleTabs", new Map());
 				await store("hintsToggleHosts", new Map());
 				await store("hintsTogglePaths", new Map());
-				await sendRequestToCurrentTab({
+				await sendRequestToContent({
 					type: "updateNavigationToggle",
 					enable,
 				});
@@ -33,7 +33,7 @@ export async function updateHintsToggle(
 			break;
 
 		case "now": {
-			await sendRequestToCurrentTab({
+			await sendRequestToContent({
 				type: "updateNavigationToggle",
 				enable,
 			});

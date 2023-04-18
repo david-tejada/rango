@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { ToastOptions } from "react-toastify";
-import { sendRequestToCurrentTab } from "../messaging/sendRequestToCurrentTab";
+import { sendRequestToContent } from "../messaging/sendRequestToContent";
 import { urls } from "../../common/urls";
 import { retrieve } from "../../common/storage";
 
@@ -8,7 +8,7 @@ export async function notify(text: string, options?: ToastOptions) {
 	if (!(await retrieve("enableNotifications"))) return;
 
 	try {
-		await sendRequestToCurrentTab({
+		await sendRequestToContent({
 			type: "displayToastNotification",
 			text,
 			options,

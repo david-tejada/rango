@@ -27,14 +27,15 @@ interface SimpleContentRequest {
 	type:
 		| "restoreKeyboardReachableHints"
 		| "checkIfDocumentHasFocus"
-		| "getHintStringsInUse";
+		| "onCompleted";
 }
 
-export type RequestFromBackground =
+export type RequestFromBackground = { frameId?: number } & (
 	| RangoAction
 	| SimpleContentRequest
 	| UpdateHintsInTab
 	| MarkHintsAsKeyboardReachable
 	| ReclaimHints
 	| DisplayToastNotification
-	| UpdateNavigationToggle;
+	| UpdateNavigationToggle
+);

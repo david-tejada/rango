@@ -6,7 +6,7 @@ import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { closeTabsInWindow } from "../actions/closeTabsInWindow";
 import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
 import { focusPreviousTab } from "../actions/focusPreviousTab";
-import { sendRequestToCurrentTab } from "../messaging/sendRequestToCurrentTab";
+import { sendRequestToContent } from "../messaging/sendRequestToContent";
 import { retrieve, store } from "../../common/storage";
 import { assertDefined } from "../../typings/TypingUtils";
 
@@ -19,7 +19,7 @@ export async function runBackgroundCommand(
 	switch (command.type) {
 		case "historyGoBack":
 			try {
-				await sendRequestToCurrentTab(command);
+				await sendRequestToContent(command);
 			} catch {
 				await browser.tabs.goBack();
 			}
@@ -28,7 +28,7 @@ export async function runBackgroundCommand(
 
 		case "historyGoForward":
 			try {
-				await sendRequestToCurrentTab(command);
+				await sendRequestToContent(command);
 			} catch {
 				await browser.tabs.goForward();
 			}

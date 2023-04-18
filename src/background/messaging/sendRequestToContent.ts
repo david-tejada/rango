@@ -7,14 +7,19 @@ import { splitRequestsByFrame } from "../utils/splitRequestsByFrame";
 
 let lastScrollFrameId = 0;
 
-export async function sendRequestToCurrentTab(
-	request: RequestFromBackground
+// Sends a request to the content script. If tabId is not specified it will
+// send it to the current tab. If frameId is not specified it will send it to
+// the main frame (frameId 0).
+export async function sendRequestToContent(
+	request: RequestFromBackground,
+	tabId?: number,
+	frameId?: number
 ): Promise<unknown> {
-	const currentTabId = await getCurrentTabId();
+	const targetTabId = tabId ?? (await getCurrentTabId());
 
 	if ("target" in request) {
 		// We need to take into account that the targets could be in different frames
-		const frameIds = await splitRequestsByFrame(currentTabId, request);
+		const frameIds = await splitRequestsByFrame(targetTabId, request);
 
 		// We don't need to worry about the number of hints said, if it was more
 		// than one the action would have changed to "clickElement"
@@ -29,7 +34,7 @@ export async function sendRequestToCurrentTab(
 						lastScrollFrameId = frameId;
 					}
 
-					return browser.tabs.sendMessage(currentTabId, rangoAction, {
+					return browser.tabs.sendMessage(targetTabId, rangoAction, {
 						frameId,
 					});
 				}
@@ -65,12 +70,15 @@ export async function sendRequestToCurrentTab(
 		}
 	} else if (/^scroll.*AtElement$/.test(request.type)) {
 		// This is for the "up/down/left/right again" commands
-		return browser.tabs.sendMessage(currentTabId, request, {
+		return browser.tabs.sendMessage(targetTabId, request, {
 			frameId: lastScrollFrameId,
 		});
 	}
 
-	return browser.tabs.sendMessage(currentTabId, request, {
-		frameId: 0,
+	frameId = frameId ?? 0;
+	request.frameId = frameId;
+
+	return browser.tabs.sendMessage(targetTabId, request, {
+		frameId,
 	});
 }

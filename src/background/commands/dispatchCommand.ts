@@ -1,6 +1,6 @@
 import { ResponseToTalon, TalonAction } from "../../typings/RequestFromTalon";
 import { RangoAction } from "../../typings/RangoAction";
-import { sendRequestToCurrentTab } from "../messaging/sendRequestToCurrentTab";
+import { sendRequestToContent } from "../messaging/sendRequestToContent";
 import { constructTalonResponse } from "../utils/constructTalonResponse";
 import { runBackgroundCommand } from "./runBackgroundCommand";
 
@@ -40,7 +40,7 @@ export async function dispatchCommand(
 ): Promise<ResponseToTalon> {
 	const result = (await (backgroundCommands.has(command.type)
 		? runBackgroundCommand(command)
-		: sendRequestToCurrentTab(command))) as string | TalonAction[] | undefined;
+		: sendRequestToContent(command))) as string | TalonAction[] | undefined;
 
 	if (typeof result === "string") {
 		return constructTalonResponse([
@@ -61,7 +61,7 @@ export async function dispatchCommand(
 		);
 
 		if (focusActionIndex !== -1) {
-			const documentHasFocus = await sendRequestToCurrentTab({
+			const documentHasFocus = await sendRequestToContent({
 				type: "checkIfDocumentHasFocus",
 			});
 

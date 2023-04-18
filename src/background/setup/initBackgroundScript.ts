@@ -8,6 +8,7 @@ import {
 } from "../../common/storage";
 import { Settings, defaultSettings } from "../../common/settings";
 import { urls } from "../../common/urls";
+import { watchNavigation } from "../hints/watchNavigation";
 import { trackRecentTabs } from "./trackRecentTabs";
 
 // We only need this function temporarily while the users go from a version
@@ -91,4 +92,6 @@ export async function initBackgroundScript() {
 
 	// Track tabs to be able to use the command "tab back"
 	await trackRecentTabs();
+
+	watchNavigation();
 }

@@ -10,21 +10,29 @@ import {
 import { updateHintsInTab } from "./utils/getHintsInTab";
 import { runRangoActionWithTarget } from "./actions/runRangoActionWithTarget";
 import { runRangoActionWithoutTarget } from "./actions/runRangoActionWithoutTarget";
-import { getHintStringsInUse, reclaimHints } from "./wrappers/wrappers";
+import { reclaimHints } from "./wrappers/wrappers";
 import { reclaimHintsFromCache } from "./hints/hintsCache";
 import { notify, notifyTogglesStatus } from "./notify/notify";
 import { initContentScript } from "./setup/initContentScript";
 import { setNavigationToggle } from "./settings/toggles";
 import { updateHintsEnabled } from "./observe";
+import { getFrameId } from "./setup/contentScriptContext";
+import { deleteHintsInFrame } from "./hints/hintsInFrame";
+import { synchronizeHints } from "./hints/hintsRequests";
 
-(async () => {
-	await initContentScript();
-})();
+// Sending to specific frames from the background script is buggy in Safari, we
+// need to check that the request was actually intended for this frame.
+async function isWrongFrame(request: RequestFromBackground) {
+	const frameId = await getFrameId();
+	return request.frameId !== undefined && frameId !== request.frameId;
+}
 
 browser.runtime.onMessage.addListener(
 	async (
 		request: RequestFromBackground
 	): Promise<string | string[] | TalonAction[] | boolean | undefined> => {
+		if (await isWrongFrame(request)) return;
+
 		if ("target" in request) {
 			return runRangoActionWithTarget(request);
 		}
@@ -32,13 +40,13 @@ browser.runtime.onMessage.addListener(
 		try {
 			switch (request.type) {
 				// SCRIPT REQUESTS
+				case "onCompleted":
+					await synchronizeHints();
+					break;
 
 				case "displayToastNotification":
 					await notify(request.text, request.options);
 					break;
-
-				case "getHintStringsInUse":
-					return getHintStringsInUse();
 
 				case "reclaimHints": {
 					const reclaimed = reclaimHintsFromCache(request.amount);
@@ -46,6 +54,7 @@ browser.runtime.onMessage.addListener(
 						reclaimed.push(...reclaimHints(request.amount - reclaimed.length));
 					}
 
+					deleteHintsInFrame(reclaimed);
 					return reclaimed;
 				}
 
@@ -82,3 +91,11 @@ browser.runtime.onMessage.addListener(
 		return undefined;
 	}
 );
+
+(async () => {
+	try {
+		await initContentScript();
+	} catch (error: unknown) {
+		console.error(error);
+	}
+})();

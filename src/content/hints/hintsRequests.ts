@@ -1,30 +1,70 @@
 import browser from "webextension-polyfill";
+import { Mutex } from "async-mutex";
 import { HintsStack } from "../../typings/StorageSchema";
+import {
+	addHintsInFrame,
+	clearHintsInFrame,
+	deleteHintsInFrame,
+	getHintsInFrame,
+} from "./hintsInFrame";
+
+const mutex = new Mutex();
 
 export async function initStack() {
-	return browser.runtime.sendMessage({
-		type: "initStack",
+	return mutex.runExclusive(async () => {
+		clearHintsInFrame();
+		return browser.runtime.sendMessage({
+			type: "initStack",
+		});
+	});
+}
+
+export async function synchronizeHints() {
+	await mutex.runExclusive(async () => {
+		const hintsInFrame = getHintsInFrame();
+		if (hintsInFrame.length > 0) {
+			await browser.runtime.sendMessage({
+				type: "storeHintsInFrame",
+				hints: hintsInFrame,
+			});
+		}
 	});
 }
 
 export async function claimHints(amount: number): Promise<string[]> {
-	return browser.runtime.sendMessage({
-		type: "claimHints",
-		amount,
-	}) as Promise<string[]>;
+	return mutex.runExclusive(async () => {
+		const claimed = (await browser.runtime.sendMessage({
+			type: "claimHints",
+			amount,
+		})) as string[];
+
+		addHintsInFrame(claimed);
+
+		return claimed;
+	});
 }
 
 export async function reclaimHintsFromOtherFrames(amount: number) {
-	return browser.runtime.sendMessage({
-		type: "reclaimHintsFromOtherFrames",
-		amount,
-	}) as Promise<string[]>;
+	return mutex.runExclusive(async () => {
+		const reclaimed = (await browser.runtime.sendMessage({
+			type: "reclaimHintsFromOtherFrames",
+			amount,
+		})) as string[];
+
+		addHintsInFrame(reclaimed);
+
+		return reclaimed;
+	});
 }
 
 export async function releaseHints(hints: string[]) {
-	return browser.runtime.sendMessage({
-		type: "releaseHints",
-		hints,
+	await mutex.runExclusive(async () => {
+		deleteHintsInFrame(hints);
+
+		await browser.runtime.sendMessage({
+			type: "releaseHints",
+			hints,
+		});
 	});
 }
 

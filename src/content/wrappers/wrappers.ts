@@ -68,10 +68,6 @@ export function getWrappersWithin(element: Element): ElementWrapper[] {
 	return result;
 }
 
-export function getHintStringsInUse() {
-	return [...wrappersHinted.keys()];
-}
-
 export function setHintedWrapper(hint: string, element: Element) {
 	const wrapper = getWrapper(element);
 	if (wrapper) wrappersHinted.set(hint, wrapper);

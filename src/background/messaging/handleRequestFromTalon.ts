@@ -5,7 +5,7 @@ import {
 } from "../utils/clipboard";
 import { notify } from "../utils/notify";
 import { dispatchCommand } from "../commands/dispatchCommand";
-import { sendRequestToCurrentTab } from "./sendRequestToCurrentTab";
+import { sendRequestToContent } from "./sendRequestToContent";
 
 export async function handleRequestFromTalon() {
 	try {
@@ -27,7 +27,7 @@ export async function handleRequestFromTalon() {
 			} else {
 				// If no content script is running focusedDocument will be undefined
 				const [focusedDocument] = await promiseWrap(
-					sendRequestToCurrentTab({
+					sendRequestToContent({
 						type: "checkIfDocumentHasFocus",
 					})
 				);

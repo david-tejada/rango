@@ -32,6 +32,11 @@ interface ReclaimHintsFromOtherFrames {
 	amount: number;
 }
 
+interface StoreHintsInFrame {
+	type: "storeHintsInFrame";
+	hints: string[];
+}
+
 interface SimpleBackgroundRequest {
 	type:
 		| "initStack"
@@ -49,4 +54,5 @@ export type RequestFromContent =
 	| OpenInBackgroundTab
 	| ClickHintInFrame
 	| MarkHintsAsKeyboardReachable
-	| ReclaimHintsFromOtherFrames;
+	| ReclaimHintsFromOtherFrames
+	| StoreHintsInFrame;
