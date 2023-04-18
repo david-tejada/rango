@@ -153,7 +153,7 @@ describe("Now toggle", () => {
 	});
 });
 
-describe.only("Precedence", () => {
+describe("Precedence", () => {
 	test("Tab off", async () => {
 		await page.waitForSelector(".rango-hint");
 		await rangoCommandWithoutTarget("disableHints", "tab");
