@@ -105,7 +105,7 @@ describe("With hints in other frames", () => {
 	});
 
 	beforeEach(async () => {
-		await page.goto("http://localhost:8080/singleLinkMainframe.html");
+		await page.goto("http://localhost:8080/singleLinkMainFrame.html");
 		await page.bringToFront();
 		await page.waitForSelector("iframe");
 	});
