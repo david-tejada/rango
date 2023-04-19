@@ -115,4 +115,17 @@ describe("With hints in other frames", () => {
 		const contentFrame = (await frame!.contentFrame())!;
 		await testKeyboardClickingHighlighting(contentFrame);
 	});
+
+	test("Typing the hint characters clicks the link", async () => {
+		const frame = await page.$("iframe");
+		const contentFrame = (await frame!.contentFrame())!;
+		await contentFrame.waitForSelector(".rango-hint");
+
+		await keyboard.type(Key.A);
+		await keyboard.type(Key.A);
+
+		await contentFrame.waitForNavigation();
+
+		expect(contentFrame.url()).toBe("http://localhost:8080/singleLink.html#");
+	});
 });
