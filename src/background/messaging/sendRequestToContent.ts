@@ -7,6 +7,11 @@ import { splitRequestsByFrame } from "../utils/splitRequestsByFrame";
 
 let lastScrollFrameId = 0;
 
+const toAllFrames = new Set([
+	"markHintsAsKeyboardReachable",
+	"restoreKeyboardReachableHints",
+]);
+
 // Sends a request to the content script. If tabId is not specified it will
 // send it to the current tab. If frameId is not specified it will send it to
 // the main frame (frameId 0).
@@ -75,7 +80,7 @@ export async function sendRequestToContent(
 		});
 	}
 
-	frameId = frameId ?? 0;
+	frameId = frameId ?? toAllFrames.has(request.type) ? undefined : 0;
 	request.frameId = frameId;
 
 	return browser.tabs.sendMessage(targetTabId, request, {
