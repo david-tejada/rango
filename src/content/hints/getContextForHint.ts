@@ -8,7 +8,7 @@ import {
 
 declare global {
 	interface CSSStyleDeclaration {
-		contentVisibility?: string;
+		contentVisibility: string;
 	}
 }
 
@@ -175,6 +175,14 @@ export function getAptContainer(origin: Element) {
 		}
 
 		const { display } = getCachedStyle(current);
+
+		if (
+			current.matches("thead, tbody, tfoot, caption, colgroup, col, tr, th, td")
+		) {
+			const table = current.closest("table");
+
+			if (table) return table;
+		}
 
 		if (current.tagName !== "DETAILS" && display !== "contents") {
 			return current;
