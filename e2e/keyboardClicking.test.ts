@@ -40,7 +40,7 @@ async function testKeyboardClickingHighlighting(page: Page | Frame) {
 	expect(borderColorAfterCompletion).toMatch(/^rgba\(.+0\.3\)$/);
 }
 
-describe("With hints in main frame", () => {
+describe("Keyboard clicking toggling", () => {
 	beforeEach(async () => {
 		await page.goto("http://localhost:8080/singleLink.html");
 		await page.bringToFront();
@@ -56,6 +56,31 @@ describe("With hints in main frame", () => {
 		expect(doubleHint).not.toBeNull();
 	});
 
+	test("The hints become single again after deactivating keyboard clicking", async () => {
+		await rangoCommandWithoutTarget("toggleKeyboardClicking");
+		await page.waitForSelector(".rango-hint[data-hint='a']");
+
+		const singleHint = await page.$(".rango-hint[data-hint='a']");
+
+		expect(singleHint).not.toBeNull();
+	});
+});
+
+describe("With hints in main frame", () => {
+	beforeAll(async () => {
+		await rangoCommandWithoutTarget("toggleKeyboardClicking");
+	});
+
+	afterAll(async () => {
+		await rangoCommandWithoutTarget("toggleKeyboardClicking");
+	});
+
+	beforeEach(async () => {
+		await page.goto("http://localhost:8080/singleLink.html");
+		await page.bringToFront();
+		await page.waitForSelector(".rango-hint");
+	});
+
 	test("Typing the hint characters clicks the link", async () => {
 		await keyboard.type(Key.A);
 		await keyboard.type(Key.A);
@@ -68,27 +93,21 @@ describe("With hints in main frame", () => {
 	test("Typing one hint character marks the hint with a border 1px wider and opacity 0.7 and resets after typing the second character", async () => {
 		await testKeyboardClickingHighlighting(page);
 	});
-
-	test("The hints become single again after deactivating keyboard clicking", async () => {
-		await rangoCommandWithoutTarget("toggleKeyboardClicking");
-		await page.waitForSelector(".rango-hint[data-hint='a']");
-
-		const singleHint = await page.$(".rango-hint[data-hint='a']");
-
-		expect(singleHint).not.toBeNull();
-	});
 });
 
 describe("With hints in other frames", () => {
+	beforeAll(async () => {
+		await rangoCommandWithoutTarget("toggleKeyboardClicking");
+	});
+
+	afterAll(async () => {
+		await rangoCommandWithoutTarget("toggleKeyboardClicking");
+	});
+
 	beforeEach(async () => {
 		await page.goto("http://localhost:8080/singleLinkMainframe.html");
 		await page.bringToFront();
 		await page.waitForSelector("iframe");
-		await rangoCommandWithoutTarget("toggleKeyboardClicking");
-	});
-
-	afterEach(async () => {
-		await rangoCommandWithoutTarget("toggleKeyboardClicking");
 	});
 
 	test("Typing one hint character marks the hint with a border 1px wider and opacity 0.7 and resets after typing the second character", async () => {
