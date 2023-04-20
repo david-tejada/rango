@@ -5,6 +5,16 @@ export function isVisible(element: Element): boolean {
 	const { width, height } = getBoundingClientRect(element);
 
 	if (visibility === "hidden" || width < 5 || height < 5 || opacity === "0") {
+		// This handles custom checkboxes or toggle buttons where the input/button
+		// element is hidden and replaced with an stylized sibling.
+		if (
+			element.matches("input[type='checkbox'], button") &&
+			element.parentElement &&
+			isVisible(element.parentElement)
+		) {
+			return true;
+		}
+
 		return false;
 	}
 
