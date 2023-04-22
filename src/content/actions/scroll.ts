@@ -43,8 +43,8 @@ function getScrollBehavior() {
  * the rectangle that is actually intersecting the viewport
  */
 function getIntersectionWithViewport(element: Element): DOMRect {
-	const viewportHeight = document.documentElement.clientHeight;
-	const viewportWidth = document.documentElement.clientWidth;
+	const viewportHeight = window.innerHeight;
+	const viewportWidth = window.innerWidth;
 
 	const { left, right, top, bottom } = element.getBoundingClientRect();
 
