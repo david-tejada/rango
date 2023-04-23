@@ -395,23 +395,27 @@ export class Wrapper {
 		const pointerTarget = getPointerTarget(this.element);
 		this.hint?.flash();
 
-		if (
-			this.element instanceof HTMLAnchorElement &&
-			(this.element.getAttribute("target") === "_blank" ||
-				this.element.closest(
-					"[contenteditable=''], [contenteditable='true']"
-				)) &&
-			this.element.getAttribute("href")
-		) {
-			// In Firefox if we click a link with target="_blank" we get a popup message
-			// saying "Firefox prevented this site from opening a popup". In order to
-			// avoid that we open a new tab with the url of the href of the link.
-			// Sometimes websites use links with target="_blank" but don't open a new tab.
-			// They probably prevent the default behavior with javascript. For example Slack
-			// has this for opening a thread in the side panel. So here we make sure that
-			// there is a href attribute before we open the link in a new tab.
-			void openInNewTab([this]);
-			return false;
+		if (this.element instanceof HTMLAnchorElement) {
+			const closestContentEditable = this.element.closest("[contenteditable]");
+			const isWithinContentEditable =
+				closestContentEditable instanceof HTMLElement &&
+				closestContentEditable.isContentEditable;
+
+			if (
+				(this.element.getAttribute("target") === "_blank" ||
+					isWithinContentEditable) &&
+				this.element.getAttribute("href")
+			) {
+				// In Firefox if we click a link with target="_blank" we get a popup message
+				// saying "Firefox prevented this site from opening a popup". In order to
+				// avoid that we open a new tab with the url of the href of the link.
+				// Sometimes websites use links with target="_blank" but don't open a new tab.
+				// They probably prevent the default behavior with javascript. For example Slack
+				// has this for opening a thread in the side panel. So here we make sure that
+				// there ContentEditable a href attribute before we open the link in a new tab.
+				void openInNewTab([this]);
+				return false;
+			}
 		}
 
 		// Some pages expect a some hover event prior to the click and if there
