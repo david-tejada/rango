@@ -2,6 +2,36 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.4.0](https://github.com/david-tejada/rango/releases/tag/v0.4.0) - 2023-04-25
+
+### Changed
+
+- Use sync storage to keep settings synchronized across computers.
+
+### Added
+
+- Add toast notifications to provide better user feedback.
+- Create a settings page to enable users to manage their preferences.
+- Add command `rango settings` to open the setting page.
+- Add command `rango open {page}` to quickly open some pages related to Rango like the readme, issues, new issue or sponsors.
+- Add page What's New to show the user the new features and changes when the extension updates.
+
+### Removed
+
+- Remove commands for changing the hint weight and style (boxed or subtle) as this can be now accomplished using the settings page.
+
+### Fixed
+
+- Fix hints sometimes not reacting to commands after navigating back or forward in the page history.
+- Fix allocation of hints in Safari when the user has the option "Preload Top Hit in the background" enabled.
+- Fix some checkboxes and toggle buttons not receiving hints, considering cases where the input/button element is hidden and replaced with a stylized sibling.
+- Handle cases where hints are deleted by the page.
+- Fix scrolling behavior to ensure the correct scroll amount in various pages. Issue #94.
+- Fix issue with hints modifying the aspect of tables with `table-layout: fixed`. Issue #92.
+- Fix keyboard clicking not working in iframes.
+- Fix tooltip not always displaying correctly.
+- Fix some editable elements not receiving focus when clicked or having the cursor placed in the wrong position when using the `post` command.
+
 ## [0.3.4](https://github.com/david-tejada/rango/releases/tag/v0.3.4) - 2023-02-24
 
 ### Fixed

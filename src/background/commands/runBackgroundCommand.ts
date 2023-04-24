@@ -56,7 +56,7 @@ export async function runBackgroundCommand(
 			await toggleKeyboardClicking();
 			break;
 
-		// To be removed in v0.4
+		// To be removed in v0.5
 		case "includeSingleLetterHints":
 		case "excludeSingleLetterHints":
 		case "setHintStyle":
