@@ -94,4 +94,12 @@ export async function initBackgroundScript() {
 	await trackRecentTabs();
 
 	watchNavigation();
+
+	if (await retrieve("showWhatsNewPageOnUpdate")) {
+		const version = browser.runtime.getManifest().version;
+		if ((await retrieve("lastWhatsNewPageShowed")) !== version) {
+			await browser.tabs.create({ url: urls.whatsNewPage.href });
+			await store("lastWhatsNewPageShowed", version);
+		}
+	}
 }

@@ -10,4 +10,5 @@ export const urls = {
 		"../background/utils/offscreen.html",
 		import.meta.url
 	),
+	whatsNewPage: new URL("../pages/whatsNew/index.html", import.meta.url),
 } as const;

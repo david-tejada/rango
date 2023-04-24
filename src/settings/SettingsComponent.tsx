@@ -80,6 +80,18 @@ export function SettingsComponent() {
 						}}
 					/>
 				</SettingRow>
+				<SettingRow>
+					<Toggle
+						label="Show What's New page after updating"
+						isPressed={settings.showWhatsNewPageOnUpdate}
+						onClick={() => {
+							handleChange(
+								"showWhatsNewPageOnUpdate",
+								!settings.showWhatsNewPageOnUpdate
+							);
+						}}
+					/>
+				</SettingRow>
 			</SettingsGroup>
 
 			<SettingsGroup label="Hints appearance">

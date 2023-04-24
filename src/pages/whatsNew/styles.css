@@ -1,0 +1,75 @@
+body {
+	font-family: Nunito, sans-serif;
+	font-size: 16px;
+	color: #2c3e50;
+	margin: 0;
+	padding: 0;
+}
+
+.container {
+	max-width: 800px;
+	margin: 0 auto;
+	padding: 1rem;
+}
+
+p,
+li {
+	line-height: 1.5;
+}
+
+code {
+	border-radius: 3px;
+	background-color: #e2e8f0;
+	padding: 0.2em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin-top: 1.6em;
+}
+
+h1 {
+	text-align: center;
+}
+
+a {
+	color: #34495e;
+}
+
+.cta {
+	display: block;
+	text-align: center;
+	margin-top: 1rem;
+	margin: 1em auto;
+	width: max-content;
+	background-image: linear-gradient(
+		320deg,
+		hsl(177deg 94% 38%) 0%,
+		hsl(178deg 83% 40%) 11%,
+		hsl(179deg 76% 42%) 22%,
+		hsl(180deg 69% 43%) 33%,
+		hsl(182deg 64% 45%) 44%,
+		hsl(183deg 60% 46%) 56%,
+		hsl(184deg 56% 48%) 67%,
+		hsl(185deg 52% 49%) 78%,
+		hsl(186deg 49% 50%) 89%,
+		hsl(187deg 48% 52%) 100%
+	);
+	color: white;
+	font-size: 1.6em;
+	padding: 1em 4em;
+	text-decoration: none;
+	border-radius: 4px;
+}
+
+.cta:hover {
+	color: #292524;
+}
+
+li + li {
+	margin-top: 0.6em;
+}

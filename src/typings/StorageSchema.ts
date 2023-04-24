@@ -49,6 +49,8 @@ export interface StorageSchema {
 	keyboardClicking: boolean;
 	customSelectors: Record<string, CustomSelectors>;
 	switchedToSyncStorage: boolean;
+	showWhatsNewPageOnUpdate: boolean;
+	lastWhatsNewPageShowed: string;
 
 	// Other data
 	tabsByRecency: Record<number, number[]>;

@@ -25,6 +25,7 @@ export const defaultSettings = {
 	urlInTitle: true,
 	keyboardClicking: false,
 	customSelectors: {},
+	showWhatsNewPageOnUpdate: true,
 } as const;
 
 export type Settings = {

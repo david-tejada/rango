@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>What's new - Rango</title>
+		<link rel="stylesheet" href="styles.css" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			rel="shortcut icon"
+			href="../../assets/icon.svg"
+			type="image/x-icon"
+		/>
+		<link
+			href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Quicksand:wght@300;400;500;600;700&display=swap"
+			rel="stylesheet"
+		/>
+	</head>
+	<body>
+		<div class="container">
+			<h1>Rango has been updated to version 0.4.0</h1>
+			<section>
+				<h2>What's new?</h2>
+				<p>
+					Hello, my dear friends! I have been hard at work to bring you all a
+					couple of highly requested features:
+					<strong>settings page</strong> and <strong>notifications</strong>.
+					With the setting page you can now change things like the font used for
+					the hints, the opacity, whether to use lower or upper case and more.
+					You can open the setting page with the command
+					<code>rango settings</code>. Toast notifications give you much needed
+					feedback when using commands like <code>copy page address</code> or
+					when toggling the hints.
+				</p>
+			</section>
+			<section>
+				<h2>Update rango-talon</h2>
+				<p>
+					You need to update rango-talon to be able to use the new commands.
+				</p>
+			</section>
+			<section>
+				<h2>Become a sponsor</h2>
+				<p>
+					There is still a lot of work to do, features to add and bugs to fix. I
+					would like to be able to continue working on Rango full time to bring
+					you all those goodies. To be able to do that I need your support. If
+					Rango makes your life easier when navigating the web and has become an
+					essential tool for you, please consider becoming a sponsor. You just
+					have to click this big button below or use the command
+					<code>rango open sponsor</code>.
+				</p>
+				<a
+					href="https://github.com/sponsors/david-tejada"
+					target="_blank"
+					class="cta"
+					>Become a sponsor</a
+				>
+			</section>
+			<section>
+				<h2>Changelog for v0.4.0</h2>
+				<h4>Changed</h4>
+				<ul>
+					<li>
+						Use sync storage to keep settings synchronized across computers.
+					</li>
+				</ul>
+				<h4>Added</h4>
+				<ul>
+					<li>Add toast notifications to provide better user feedback.</li>
+					<li>
+						Create a settings page to enable users to manage their preferences.
+					</li>
+					<li>
+						Add command <code>rango settings</code> to open the setting page.
+					</li>
+					<li>
+						Add command <code>rango open {page}</code> to quickly open some
+						pages related to Rango like the readme, issues, new issue or
+						sponsors.
+					</li>
+					<li>
+						Add page What's New to show the user the new features and changes
+						when the extension updates.
+					</li>
+				</ul>
+				<h4>Removed</h4>
+				<ul>
+					<li>
+						Remove commands for changing the hint weight and style (boxed or
+						subtle) as this can be now accomplished using the settings page.
+					</li>
+				</ul>
+				<h4>Fixed</h4>
+				<ul>
+					<li>
+						Fix hints sometimes not reacting to commands after navigating back
+						or forward in the page history.
+					</li>
+					<li>
+						Fix allocation of hints in Safari when the user has the option
+						"Preload Top Hit in the background" enabled.
+					</li>
+					<li>
+						Fix some checkboxes and toggle buttons not receiving hints,
+						considering cases where the input/button element is hidden and
+						replaced with a stylized sibling.
+					</li>
+					<li>Handle cases where hints are deleted by the page.</li>
+					<li>
+						Fix scrolling behavior to ensure the correct scroll amount in
+						various pages. Issue #94.
+					</li>
+					<li>
+						Fix issue with hints modifying the aspect of tables with
+						<code>table-layout: fixed</code>. Issue #92.
+					</li>
+					<li>Fix keyboard clicking not working in iframes.</li>
+					<li>Fix tooltip not always displaying correctly.</li>
+					<li>
+						Fix some editable elements not receiving focus when clicked or
+						having the cursor placed in the wrong position when using the
+						<code>post</code>
+						command.
+					</li>
+				</ul>
+				<a
+					href="https://github.com/david-tejada/rango/blob/main/CHANGELOG.md"
+					target="_blank"
+					>View the entire changelog</a
+				>
+			</section>
+		</div>
+	</body>
+</html>
