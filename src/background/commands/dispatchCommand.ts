@@ -33,6 +33,7 @@ const backgroundCommands = new Set([
 	"historyGoBack",
 	"historyGoForward",
 	"openSettingsPage",
+	"openPageInNewTab",
 ]);
 
 export async function dispatchCommand(

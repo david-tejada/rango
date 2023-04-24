@@ -138,6 +138,10 @@ export async function runBackgroundCommand(
 			await browser.runtime.openOptionsPage();
 			break;
 
+		case "openPageInNewTab":
+			await browser.tabs.create({ url: command.arg });
+			break;
+
 		default:
 			break;
 	}

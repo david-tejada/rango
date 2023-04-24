@@ -125,6 +125,11 @@ interface RangoActionInsertToField {
 	arg: string;
 }
 
+interface RangoActionOpenPageInNewTab {
+	type: "openPageInNewTab";
+	arg: string;
+}
+
 export type RangoActionWithTarget =
 	| RangoActionWithTargets
 	| RangoActionWithTargetsWithOptionalNumberArg
@@ -137,6 +142,7 @@ export type RangoActionWithoutTarget =
 	| RangoActionWithoutTargetWithOptionalNumberArg
 	| RangoActionSetHintStyle
 	| RangoActionSetHintWeight
-	| RangoActionCopyLocationProperty;
+	| RangoActionCopyLocationProperty
+	| RangoActionOpenPageInNewTab;
 
 export type RangoAction = RangoActionWithTarget | RangoActionWithoutTarget;
