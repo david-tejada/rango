@@ -30,6 +30,10 @@ In Chrome, navigate to [chrome://extensions/shortcuts](chrome://extensions/short
 
 In Edge, navigate to [edge://extensions/shortcuts](edge://extensions/shortcuts).
 
+## Settings
+
+There are several settings you can adjust to change the appearance of the hints and the overall behavior of the extension. To open the settings page you just need to use the command `rango settings`.
+
 ## Usage
 
 **Note**: The notation `<target>` in this readme can refer to a single or multiple hints chained with the word `and`. For example, the command `click any and bat` would click on the elements marked with the hints `a` and `b`. Most Rango commands accept multiple hints as target.
@@ -272,24 +276,10 @@ half down <user.rango_target>:
 - `tab close previous [<number>]`: Closes the amount of tabs specified (or one if no number is given) to the left of the current tab.
 - `tab close next [<number>]`: Closes the amount of tabs specified (or one if no number is given) to the right of the current tab.
 
-#### Attach the URL to the title
-
-This is useful to, for example, be able to use in a context header the property `browser.host`.
-
-`address in title on`: Turns on the setting to add the URL to the title
-`address in title off`: Turns off the setting to add the URL to the title
-
-### Modify Hints Appearance
+### Modify Hints Size
 
 - `hint bigger`: Increase the size of the hints.
 - `hint smaller`: Decrease the size of the hints.
-- `hint (boxed | subtle)`: Change the style of the hints. `boxed` is the default where all hints appear with a border and a solid background. `subtle` removes the border and, in inline elements, the hint background is transparent.
-- `hint weight (auto | bold | normal)`: `auto` takes into account the hint contrast and size to calculate the font weight. With the other two modes the hints are all bold or normal.
-
-#### Exclude or Include Single Letter Hints
-
-- `hint exclude singles`: Exclude single letter hints. Useful to minimize misclicks when using direct clicking.
-- `hint include singles`: Include single letter hints.
 
 ### Show and Hide the Hints
 
@@ -300,17 +290,18 @@ This is useful to, for example, be able to use in a context header the property 
   - `page`: The hints will always be on/off for the current page.
   - `host`: The hints will always be on/off for the current host.
   - `tab`: The hints will always be on/off for the current tab.
+  - `global`: The hints will be on/off globally.
   - If we just say `hints on` the hints are toggled globally in all tabs and in all windows. This is the lowest level of priority, if any of the previous toggles are set they will take precedence over this one.
-- `hints reset (page | host | tab | everywhere)`: clears the toggles for these selected level.
+- `hints reset (page | host | tab | global | everywhere)`: clears the toggles for the selected level.
 
 #### Other ways to toggle the hints on and off:
 
 - Using the keyboard shortcut `ctrl-shift-space`.
 - Clicking on the Rango icon in the toolbar.
 
-### Changing Hints Font Family
+### Opening Rango Related Pages
 
-If you find hints text difficult to read, apart from using the commands for changing the hints size and font weight, you can change the monospace font in the browser settings and the hints will render with that font.
+- The command `rango open {page}` opens a Rango related page in a new tab. The pages are: sponsor, readme, issues, new issue and changelog.
 
 ## Known Issues and Limitations
 
