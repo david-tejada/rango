@@ -2,6 +2,12 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.4.1](https://github.com/david-tejada/rango/releases/tag/v0.4.1) - 2023-04-25
+
+### Fixed
+
+- Fix hints toggle status displaying without using any of the hint toggle commands.
+
 ## [0.4.0](https://github.com/david-tejada/rango/releases/tag/v0.4.0) - 2023-04-25
 
 ### Changed
