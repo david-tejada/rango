@@ -18,6 +18,10 @@ interface DisplayToastNotification {
 	options?: ToastOptions;
 }
 
+interface AllowToastNotification {
+	type: "allowToastNotification";
+}
+
 interface UpdateNavigationToggle {
 	type: "updateNavigationToggle";
 	enable: boolean | undefined;
@@ -38,4 +42,5 @@ export type RequestFromBackground = { frameId?: number } & (
 	| ReclaimHints
 	| DisplayToastNotification
 	| UpdateNavigationToggle
+	| AllowToastNotification
 );

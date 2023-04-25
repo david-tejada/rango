@@ -12,7 +12,11 @@ import { runRangoActionWithTarget } from "./actions/runRangoActionWithTarget";
 import { runRangoActionWithoutTarget } from "./actions/runRangoActionWithoutTarget";
 import { reclaimHints } from "./wrappers/wrappers";
 import { reclaimHintsFromCache } from "./hints/hintsCache";
-import { notify, notifyTogglesStatus } from "./notify/notify";
+import {
+	allowToastNotification,
+	notify,
+	notifyTogglesStatus,
+} from "./notify/notify";
 import { initContentScript } from "./setup/initContentScript";
 import { setNavigationToggle } from "./settings/toggles";
 import { updateHintsEnabled } from "./observe";
@@ -77,6 +81,10 @@ browser.runtime.onMessage.addListener(
 					setNavigationToggle(request.enable);
 					await updateHintsEnabled();
 					await notifyTogglesStatus();
+					break;
+
+				case "allowToastNotification":
+					allowToastNotification();
 					break;
 
 				default: {
