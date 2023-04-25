@@ -95,7 +95,10 @@ export async function initBackgroundScript() {
 
 	watchNavigation();
 
-	if (await retrieve("showWhatsNewPageOnUpdate")) {
+	if (
+		(await retrieve("showWhatsNewPageOnUpdate")) &&
+		process.env["NODE_ENV"] === "production"
+	) {
 		const version = browser.runtime.getManifest().version;
 		if ((await retrieve("lastWhatsNewPageShowed")) !== version) {
 			await browser.tabs.create({ url: urls.whatsNewPage.href });
