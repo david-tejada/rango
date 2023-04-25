@@ -13,7 +13,6 @@ let notificationAllowed = false;
 // command. For example, we reset hintsToggleTabs every time the extension
 // starts
 export function allowToastNotification() {
-	console.log("Toast notifications allowed");
 	notificationAllowed = true;
 
 	setTimeout(() => {
