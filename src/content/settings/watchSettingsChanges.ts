@@ -11,7 +11,20 @@ import { notify, notifyTogglesStatus } from "../notify/notify";
 import { addUrlToTitle } from "../utils/addUrlToTitle";
 import { cacheSettings, getCachedSetting } from "./cacheSettings";
 
-async function handleSettingsChanges(changes: browser.Storage.StorageChange) {
+async function handleSettingsChanges(
+	changes: Record<string, browser.Storage.StorageChange>
+) {
+	let hasActuallyChanged = false;
+
+	for (const key of Object.keys(changes)) {
+		const change = changes[key];
+		if (change && change.oldValue !== change.newValue) {
+			hasActuallyChanged = true;
+		}
+	}
+
+	if (!hasActuallyChanged) return;
+
 	await cacheSettings();
 
 	const isToggleChange = Object.keys(changes).some((key) =>
