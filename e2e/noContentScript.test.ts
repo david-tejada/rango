@@ -1,6 +1,9 @@
 import { clipboard } from "@nut-tree/nut-js";
 import { ResponseToTalon } from "../src/typings/RequestFromTalon";
-import { rangoCommandWithTarget } from "./utils/rangoCommands";
+import {
+	rangoCommandWithTarget,
+	rangoCommandWithoutTarget,
+} from "./utils/rangoCommands";
 import { sleep } from "./utils/testHelpers";
 
 beforeEach(async () => {
@@ -18,5 +21,21 @@ describe("Direct clicking", () => {
 		);
 
 		expect(found).toBeTruthy();
+	});
+});
+
+describe("Background commands", () => {
+	test("Commands that don't need the content script are still able to run", async () => {
+		await rangoCommandWithoutTarget("copyLocationProperty", "href");
+		const clip = await clipboard.getContent();
+		const response = JSON.parse(clip) as ResponseToTalon;
+		const action = response.actions[0]!;
+
+		expect(action).toBeDefined();
+
+		const textToCopy = action.textToCopy;
+
+		expect(textToCopy).toBeDefined();
+		expect(textToCopy).toBe("chrome://new-tab-page/");
 	});
 });
