@@ -2,6 +2,12 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.4.2](https://github.com/david-tejada/rango/releases/tag/v0.4.2) - 2023-04-28
+
+### Fixed
+
+- Fix bug introduced in v0.4.1 where no command is able to run if there is no content script.
+
 ## [0.4.1](https://github.com/david-tejada/rango/releases/tag/v0.4.1) - 2023-04-25
 
 ### Fixed
@@ -11,8 +17,6 @@ All notable changes to the Rango extension will be documented in this file.
 ## [0.4.0](https://github.com/david-tejada/rango/releases/tag/v0.4.0) - 2023-04-25
 
 ### Changed
-
-- Use sync storage to keep settings synchronized across computers.
 
 ### Added
 
