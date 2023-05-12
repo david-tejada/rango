@@ -274,6 +274,7 @@ export class Hint {
 			"word-break": "keep-all",
 			"text-transform": "none",
 			"overflow-wrap": "normal",
+			"letter-spacing": "normal",
 		});
 
 		this.outer.append(this.inner);
