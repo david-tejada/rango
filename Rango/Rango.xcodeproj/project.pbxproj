@@ -7,19 +7,28 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		E14D40B02A11904700F6246A /* icon.d20d9b97.svg in Resources */ = {isa = PBXBuildFile; fileRef = E14D409F2A11904700F6246A /* icon.d20d9b97.svg */; };
+		E14D40B12A11904700F6246A /* tippy.e52cbc8f.css in Resources */ = {isa = PBXBuildFile; fileRef = E14D40A02A11904700F6246A /* tippy.e52cbc8f.css */; };
+		E14D40B22A11904700F6246A /* background.ec971b02.js in Resources */ = {isa = PBXBuildFile; fileRef = E14D40A12A11904700F6246A /* background.ec971b02.js */; };
+		E14D40B32A11904700F6246A /* offscreen.7cb32de6.js in Resources */ = {isa = PBXBuildFile; fileRef = E14D40A22A11904700F6246A /* offscreen.7cb32de6.js */; };
+		E14D40B52A11904700F6246A /* whatsNew.0b415932.html in Resources */ = {isa = PBXBuildFile; fileRef = E14D40A42A11904700F6246A /* whatsNew.0b415932.html */; };
+		E14D40B62A11904700F6246A /* whatsNew.306aef15.css in Resources */ = {isa = PBXBuildFile; fileRef = E14D40A52A11904700F6246A /* whatsNew.306aef15.css */; };
+		E14D40B72A11904700F6246A /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = E14D40A62A11904700F6246A /* manifest.json */; };
+		E14D40B82A11904700F6246A /* icon-keyboard-clicking48.ac857c64.png in Resources */ = {isa = PBXBuildFile; fileRef = E14D40A72A11904700F6246A /* icon-keyboard-clicking48.ac857c64.png */; };
+		E14D40B92A11904700F6246A /* icon.f5383140.svg in Resources */ = {isa = PBXBuildFile; fileRef = E14D40A82A11904700F6246A /* icon.f5383140.svg */; };
+		E14D40BB2A11904700F6246A /* settings.c244465d.css in Resources */ = {isa = PBXBuildFile; fileRef = E14D40AA2A11904700F6246A /* settings.c244465d.css */; };
+		E14D40BC2A11904700F6246A /* settings.af26f380.js in Resources */ = {isa = PBXBuildFile; fileRef = E14D40AB2A11904700F6246A /* settings.af26f380.js */; };
+		E14D40BD2A11904700F6246A /* offscreen.c67d5c05.html in Resources */ = {isa = PBXBuildFile; fileRef = E14D40AC2A11904700F6246A /* offscreen.c67d5c05.html */; };
+		E14D40BE2A11904700F6246A /* settings.a2733222.html in Resources */ = {isa = PBXBuildFile; fileRef = E14D40AD2A11904700F6246A /* settings.a2733222.html */; };
+		E14D40BF2A11904700F6246A /* content.996713f7.css in Resources */ = {isa = PBXBuildFile; fileRef = E14D40AE2A11904700F6246A /* content.996713f7.css */; };
+		E14D40C02A11904700F6246A /* icon48.ace12d5e.png in Resources */ = {isa = PBXBuildFile; fileRef = E14D40AF2A11904700F6246A /* icon48.ace12d5e.png */; };
 		E17BC8F8285E2315007EB9C6 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17BC8F7285E2315007EB9C6 /* Application.swift */; };
 		E18784B3298EEFB50028A679 /* UserSpecific.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E18784B1298EEFB50028A679 /* UserSpecific.xcconfig */; };
 		E18784B4298EEFB50028A679 /* UserSpecific.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E18784B1298EEFB50028A679 /* UserSpecific.xcconfig */; };
 		E18784B5298EEFB50028A679 /* RangoVersion.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E18784B2298EEFB50028A679 /* RangoVersion.xcconfig */; };
 		E18784B6298EEFB50028A679 /* RangoVersion.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E18784B2298EEFB50028A679 /* RangoVersion.xcconfig */; };
-		E18A7D53298ED9B7000801AD /* icon48.ace12d5e.png in Resources */ = {isa = PBXBuildFile; fileRef = E18A7D4B298ED9B7000801AD /* icon48.ace12d5e.png */; };
 		E18A7D54298ED9B7000801AD /* icon128.8b6ee0ac.png in Resources */ = {isa = PBXBuildFile; fileRef = E18A7D4C298ED9B7000801AD /* icon128.8b6ee0ac.png */; };
 		E18A7D55298ED9B7000801AD /* content.d5600b6a.js in Resources */ = {isa = PBXBuildFile; fileRef = E18A7D4D298ED9B7000801AD /* content.d5600b6a.js */; };
-		E18A7D56298ED9B7000801AD /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = E18A7D4E298ED9B7000801AD /* manifest.json */; };
-		E18A7D57298ED9B7000801AD /* background.ec971b02.js in Resources */ = {isa = PBXBuildFile; fileRef = E18A7D4F298ED9B7000801AD /* background.ec971b02.js */; };
-		E18A7D58298ED9B7000801AD /* icon128.b2125553.png in Resources */ = {isa = PBXBuildFile; fileRef = E18A7D50298ED9B7000801AD /* icon128.b2125553.png */; };
-		E18A7D59298ED9B7000801AD /* icon-keyboard-clicking48.cd245b3d.png in Resources */ = {isa = PBXBuildFile; fileRef = E18A7D51298ED9B7000801AD /* icon-keyboard-clicking48.cd245b3d.png */; };
-		E18A7D5A298ED9B7000801AD /* icon48.79c125ec.png in Resources */ = {isa = PBXBuildFile; fileRef = E18A7D52298ED9B7000801AD /* icon48.79c125ec.png */; };
 		E1AEB977284D1D7800154974 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AEB976284D1D7800154974 /* AppDelegate.swift */; };
 		E1AEB97A284D1D7800154974 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E1AEB978284D1D7800154974 /* Main.storyboard */; };
 		E1AEB98C284D1D7800154974 /* Rango Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E1AEB98B284D1D7800154974 /* Rango Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
@@ -57,17 +66,26 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		E14D409F2A11904700F6246A /* icon.d20d9b97.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = icon.d20d9b97.svg; sourceTree = "<group>"; };
+		E14D40A02A11904700F6246A /* tippy.e52cbc8f.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = tippy.e52cbc8f.css; sourceTree = "<group>"; };
+		E14D40A12A11904700F6246A /* background.ec971b02.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = background.ec971b02.js; sourceTree = "<group>"; };
+		E14D40A22A11904700F6246A /* offscreen.7cb32de6.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = offscreen.7cb32de6.js; sourceTree = "<group>"; };
+		E14D40A42A11904700F6246A /* whatsNew.0b415932.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = whatsNew.0b415932.html; sourceTree = "<group>"; };
+		E14D40A52A11904700F6246A /* whatsNew.306aef15.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = whatsNew.306aef15.css; sourceTree = "<group>"; };
+		E14D40A62A11904700F6246A /* manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
+		E14D40A72A11904700F6246A /* icon-keyboard-clicking48.ac857c64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-keyboard-clicking48.ac857c64.png"; sourceTree = "<group>"; };
+		E14D40A82A11904700F6246A /* icon.f5383140.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = icon.f5383140.svg; sourceTree = "<group>"; };
+		E14D40AA2A11904700F6246A /* settings.c244465d.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = settings.c244465d.css; sourceTree = "<group>"; };
+		E14D40AB2A11904700F6246A /* settings.af26f380.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = settings.af26f380.js; sourceTree = "<group>"; };
+		E14D40AC2A11904700F6246A /* offscreen.c67d5c05.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = offscreen.c67d5c05.html; sourceTree = "<group>"; };
+		E14D40AD2A11904700F6246A /* settings.a2733222.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = settings.a2733222.html; sourceTree = "<group>"; };
+		E14D40AE2A11904700F6246A /* content.996713f7.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = content.996713f7.css; sourceTree = "<group>"; };
+		E14D40AF2A11904700F6246A /* icon48.ace12d5e.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon48.ace12d5e.png; sourceTree = "<group>"; };
 		E17BC8F7285E2315007EB9C6 /* Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
 		E18784B1298EEFB50028A679 /* UserSpecific.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = UserSpecific.xcconfig; sourceTree = "<group>"; };
 		E18784B2298EEFB50028A679 /* RangoVersion.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = RangoVersion.xcconfig; sourceTree = "<group>"; };
-		E18A7D4B298ED9B7000801AD /* icon48.ace12d5e.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon48.ace12d5e.png; sourceTree = "<group>"; };
 		E18A7D4C298ED9B7000801AD /* icon128.8b6ee0ac.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon128.8b6ee0ac.png; sourceTree = "<group>"; };
 		E18A7D4D298ED9B7000801AD /* content.d5600b6a.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = content.d5600b6a.js; sourceTree = "<group>"; };
-		E18A7D4E298ED9B7000801AD /* manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
-		E18A7D4F298ED9B7000801AD /* background.ec971b02.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = background.ec971b02.js; sourceTree = "<group>"; };
-		E18A7D50298ED9B7000801AD /* icon128.b2125553.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon128.b2125553.png; sourceTree = "<group>"; };
-		E18A7D51298ED9B7000801AD /* icon-keyboard-clicking48.cd245b3d.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-keyboard-clicking48.cd245b3d.png"; sourceTree = "<group>"; };
-		E18A7D52298ED9B7000801AD /* icon48.79c125ec.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon48.79c125ec.png; sourceTree = "<group>"; };
 		E1AEB956284D1D7700154974 /* Base */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = Base; path = ../Base.lproj/Main.html; sourceTree = "<group>"; };
 		E1AEB957284D1D7700154974 /* Icon.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = Icon.png; sourceTree = "<group>"; };
 		E1AEB958284D1D7700154974 /* Style.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = Style.css; sourceTree = "<group>"; };
@@ -117,14 +135,23 @@
 		E18A7D4A298ED9B7000801AD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				E18A7D4B298ED9B7000801AD /* icon48.ace12d5e.png */,
-				E18A7D4C298ED9B7000801AD /* icon128.8b6ee0ac.png */,
+				E14D40A12A11904700F6246A /* background.ec971b02.js */,
+				E14D40AE2A11904700F6246A /* content.996713f7.css */,
 				E18A7D4D298ED9B7000801AD /* content.d5600b6a.js */,
-				E18A7D4E298ED9B7000801AD /* manifest.json */,
-				E18A7D4F298ED9B7000801AD /* background.ec971b02.js */,
-				E18A7D50298ED9B7000801AD /* icon128.b2125553.png */,
-				E18A7D51298ED9B7000801AD /* icon-keyboard-clicking48.cd245b3d.png */,
-				E18A7D52298ED9B7000801AD /* icon48.79c125ec.png */,
+				E14D40A72A11904700F6246A /* icon-keyboard-clicking48.ac857c64.png */,
+				E14D409F2A11904700F6246A /* icon.d20d9b97.svg */,
+				E14D40A82A11904700F6246A /* icon.f5383140.svg */,
+				E14D40AF2A11904700F6246A /* icon48.ace12d5e.png */,
+				E18A7D4C298ED9B7000801AD /* icon128.8b6ee0ac.png */,
+				E14D40A62A11904700F6246A /* manifest.json */,
+				E14D40A22A11904700F6246A /* offscreen.7cb32de6.js */,
+				E14D40AC2A11904700F6246A /* offscreen.c67d5c05.html */,
+				E14D40AD2A11904700F6246A /* settings.a2733222.html */,
+				E14D40AB2A11904700F6246A /* settings.af26f380.js */,
+				E14D40AA2A11904700F6246A /* settings.c244465d.css */,
+				E14D40A02A11904700F6246A /* tippy.e52cbc8f.css */,
+				E14D40A42A11904700F6246A /* whatsNew.0b415932.html */,
+				E14D40A52A11904700F6246A /* whatsNew.306aef15.css */,
 			);
 			name = Resources;
 			path = "../../dist-mv2-safari";
@@ -298,16 +325,25 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E18A7D59298ED9B7000801AD /* icon-keyboard-clicking48.cd245b3d.png in Resources */,
-				E18A7D58298ED9B7000801AD /* icon128.b2125553.png in Resources */,
-				E18A7D56298ED9B7000801AD /* manifest.json in Resources */,
+				E14D40B62A11904700F6246A /* whatsNew.306aef15.css in Resources */,
+				E14D40B92A11904700F6246A /* icon.f5383140.svg in Resources */,
 				E18784B6298EEFB50028A679 /* RangoVersion.xcconfig in Resources */,
 				E18784B4298EEFB50028A679 /* UserSpecific.xcconfig in Resources */,
-				E18A7D53298ED9B7000801AD /* icon48.ace12d5e.png in Resources */,
-				E18A7D5A298ED9B7000801AD /* icon48.79c125ec.png in Resources */,
+				E14D40BB2A11904700F6246A /* settings.c244465d.css in Resources */,
+				E14D40BF2A11904700F6246A /* content.996713f7.css in Resources */,
+				E14D40BE2A11904700F6246A /* settings.a2733222.html in Resources */,
+				E14D40B32A11904700F6246A /* offscreen.7cb32de6.js in Resources */,
+				E14D40B02A11904700F6246A /* icon.d20d9b97.svg in Resources */,
+				E14D40B12A11904700F6246A /* tippy.e52cbc8f.css in Resources */,
+				E14D40C02A11904700F6246A /* icon48.ace12d5e.png in Resources */,
+				E14D40BD2A11904700F6246A /* offscreen.c67d5c05.html in Resources */,
+				E14D40B72A11904700F6246A /* manifest.json in Resources */,
 				E18A7D54298ED9B7000801AD /* icon128.8b6ee0ac.png in Resources */,
-				E18A7D57298ED9B7000801AD /* background.ec971b02.js in Resources */,
+				E14D40BC2A11904700F6246A /* settings.af26f380.js in Resources */,
+				E14D40B22A11904700F6246A /* background.ec971b02.js in Resources */,
 				E18A7D55298ED9B7000801AD /* content.d5600b6a.js in Resources */,
+				E14D40B52A11904700F6246A /* whatsNew.0b415932.html in Resources */,
+				E14D40B82A11904700F6246A /* icon-keyboard-clicking48.ac857c64.png in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -484,7 +520,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "macOS (Extension)/Rango.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -514,7 +550,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "macOS (Extension)/Rango.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -547,7 +583,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "macOS (App)/Rango.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -582,7 +618,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = "macOS (App)/Rango.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 4;
+				CURRENT_PROJECT_VERSION = 5;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
