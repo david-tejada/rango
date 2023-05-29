@@ -15,7 +15,7 @@ import {
 import { unhoverAll } from "./hoverElement";
 import { scroll } from "./scroll";
 import { navigateToNextPage, navigateToPreviousPage } from "./pagination";
-import { blur } from "./focus";
+import { blur, focusFirstInput } from "./focus";
 
 export async function runRangoActionWithoutTarget(
 	request: RangoActionWithoutTarget
@@ -43,6 +43,10 @@ export async function runRangoActionWithoutTarget(
 
 		case "displayTogglesStatus":
 			await notifyTogglesStatus();
+			break;
+
+		case "focusFirstInput":
+			await focusFirstInput();
 			break;
 
 		case "scrollUpPage":
