@@ -11,6 +11,7 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "cloneCurrentTab"
 		| "moveCurrentTabToNewWindow"
 		| "focusPreviousTab"
+		| "focusFirstInput"
 		| "unhoverAll"
 		| "copyCurrentTabMarkdownUrl"
 		| "scrollUpAtElement"
