@@ -121,6 +121,7 @@ export async function runRangoActionWithoutTarget(
 			const toUpdateSelector = await resetCustomSelectors();
 			await updateCustomSelectors();
 			updateHintablesBySelector(toUpdateSelector);
+			await refreshHints();
 			await (toUpdateSelector
 				? notify("Custom selectors reset", { type: "success" })
 				: notify("No custom selectors found for the current page", {
