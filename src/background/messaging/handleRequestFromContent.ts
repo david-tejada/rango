@@ -10,6 +10,7 @@ import {
 	withStack,
 } from "../hints/hintsAllocator";
 import { getCurrentTabId } from "../utils/getCurrentTab";
+import { openInNewTab } from "../actions/openInNewTab";
 import { sendRequestToContent } from "./sendRequestToContent";
 
 export async function handleRequestFromContent(
@@ -56,24 +57,11 @@ export async function handleRequestFromContent(
 			});
 
 		case "openInNewTab":
-			await browser.tabs.create({
-				url: request.url,
-			});
+			await openInNewTab([request.url], true);
 			break;
 
 		case "openInBackgroundTab":
-			try {
-				await Promise.all(
-					request.links.map(async (link) =>
-						browser.tabs.create({
-							url: link,
-							active: false,
-						})
-					)
-				);
-			} catch (error: unknown) {
-				console.error(error);
-			}
+			await openInNewTab(request.links, false);
 
 			break;
 

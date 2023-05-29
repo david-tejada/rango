@@ -51,6 +51,7 @@ export interface StorageSchema {
 	switchedToSyncStorage: boolean;
 	showWhatsNewPageOnUpdate: boolean;
 	lastWhatsNewPageShowed: string;
+	newTabPosition: "relatedAfterCurrent" | "afterCurrent" | "atEnd";
 
 	// Other data
 	tabsByRecency: Record<number, number[]>;

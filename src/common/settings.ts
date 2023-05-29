@@ -26,6 +26,7 @@ export const defaultSettings = {
 	keyboardClicking: false,
 	customSelectors: {},
 	showWhatsNewPageOnUpdate: true,
+	newTabPosition: "relatedAfterCurrent",
 } as const;
 
 export type Settings = {

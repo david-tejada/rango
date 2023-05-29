@@ -92,6 +92,33 @@ export function SettingsComponent() {
 						}}
 					/>
 				</SettingRow>
+				<SettingRow>
+					<RadioGroup
+						label="New tab position"
+						name="newTabPosition"
+						defaultValue={settings.newTabPosition}
+						onChange={(value) => {
+							handleChange("newTabPosition", value);
+						}}
+					>
+						<Radio value="relatedAfterCurrent">
+							Related after current
+							<p className="small">
+								Open new tabs next to the last tab that was opened from the
+								current tab or next to the current tab if no previous tab was
+								opened from the current tab.
+							</p>
+						</Radio>
+						<Radio value="afterCurrent">
+							After current
+							<p className="small">Open new tabs next to the current tab.</p>
+						</Radio>
+						<Radio value="atEnd">
+							At end
+							<p className="small">Open all tabs at the end of the tabstrip.</p>
+						</Radio>
+					</RadioGroup>
+				</SettingRow>
 			</SettingsGroup>
 
 			<SettingsGroup label="Hints appearance">
