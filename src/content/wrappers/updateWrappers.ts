@@ -60,6 +60,7 @@ export async function refreshHints() {
 	showExcludedHints = false;
 	for (const wrapper of getHintedWrappers()) {
 		wrapper.remove();
+		wrapper.hint?.applyDefaultStyle();
 	}
 
 	await clearHintsCache();
