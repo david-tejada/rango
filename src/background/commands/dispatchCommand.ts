@@ -39,12 +39,6 @@ const backgroundCommands = new Set([
 export async function dispatchCommand(
 	command: RangoAction
 ): Promise<ResponseToTalon> {
-	try {
-		await sendRequestToContent({ type: "allowToastNotification" });
-	} catch {
-		// No content script. We do nothing.
-	}
-
 	const result = (await (backgroundCommands.has(command.type)
 		? runBackgroundCommand(command)
 		: sendRequestToContent(command))) as string | TalonAction[] | undefined;

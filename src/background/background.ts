@@ -4,6 +4,7 @@ import { toggleHintsGlobal, updateHintsToggle } from "./actions/toggleHints";
 import { toggleKeyboardClicking } from "./actions/toggleKeyboardClicking";
 import { handleRequestFromTalon } from "./messaging/handleRequestFromTalon";
 import { handleRequestFromContent } from "./messaging/handleRequestFromContent";
+import { sendRequestToContent } from "./messaging/sendRequestToContent";
 
 (async () => {
 	await initBackgroundScript();
@@ -18,6 +19,12 @@ browser.runtime.onMessage.addListener(handleRequestFromContent);
 });
 
 browser.commands.onCommand.addListener(async (internalCommand: string) => {
+	try {
+		await sendRequestToContent({ type: "allowToastNotification" });
+	} catch {
+		// No content script. We do nothing.
+	}
+
 	if (
 		internalCommand === "get-talon-request" ||
 		internalCommand === "get-talon-request-alternative"
@@ -31,6 +38,10 @@ browser.commands.onCommand.addListener(async (internalCommand: string) => {
 
 	if (internalCommand === "disable-hints") {
 		await updateHintsToggle("global", false);
+	}
+
+	if (internalCommand === "enable-hints") {
+		await updateHintsToggle("global", true);
 	}
 
 	if (internalCommand === "toggle-keyboard-clicking") {

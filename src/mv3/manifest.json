@@ -65,6 +65,9 @@
 			},
 			"description": "Disable hints"
 		},
+		"enable-hints": {
+			"description": "Enable hints"
+		},
 		"toggle-keyboard-clicking": {
 			"description": "Toggle keyboard clicking"
 		}

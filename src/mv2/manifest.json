@@ -69,6 +69,13 @@
 			},
 			"description": "Disable hints"
 		},
+		"enable-hints": {
+			"suggested_key": {
+				"default": "Ctrl+Shift+6",
+				"mac": "MacCtrl+Shift+6"
+			},
+			"description": "Enable hints"
+		},
 		"toggle-keyboard-clicking": {
 			"suggested_key": {
 				"default": "Ctrl+Shift+5",
