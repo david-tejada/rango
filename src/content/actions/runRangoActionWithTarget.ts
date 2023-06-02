@@ -99,7 +99,7 @@ export async function runRangoActionWithTarget(
 			return copyElementTextContentToClipboard(wrappers);
 
 		case "insertToField":
-			insertToField(wrappers, request.arg);
+			await insertToField(wrappers, request.arg);
 			break;
 
 		case "setSelectionBefore":
