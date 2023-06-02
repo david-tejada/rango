@@ -98,6 +98,8 @@ export async function runRangoActionWithTarget(
 		case "copyElementTextContent":
 			return copyElementTextContentToClipboard(wrappers);
 
+		// This is not used anymore. I leave it here for now for backwards
+		// compatibility - 2023-06-02
 		case "insertToField":
 			await insertToField(wrappers, request.arg);
 			break;
@@ -114,6 +116,8 @@ export async function runRangoActionWithTarget(
 			await setSelectionAfter(wrapper);
 			break;
 
+		// This is not used anymore. I leave it here for now for backwards
+		// compatibility - 2023-06-02
 		case "focusAndDeleteContents":
 			return focusAndDeleteContents(wrapper);
 
