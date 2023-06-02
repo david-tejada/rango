@@ -5,6 +5,8 @@ import {
 } from "../utils/clipboard";
 import { notify } from "../utils/notify";
 import { dispatchCommand } from "../commands/dispatchCommand";
+import { shouldTryToFocusDocument } from "../utils/shouldTryToFocusDocument";
+import { constructTalonResponse } from "../utils/constructTalonResponse";
 import { sendRequestToContent } from "./sendRequestToContent";
 
 export async function handleRequestFromTalon() {
@@ -46,6 +48,19 @@ export async function handleRequestFromTalon() {
 					return;
 				}
 			}
+		}
+
+		// For these three actions we need to make sure that the document is focused
+		// or they might fail
+		if (
+			(request.action.type === "setSelectionAfter" ||
+				request.action.type === "setSelectionBefore" ||
+				request.action.type === "tryToFocusElementAndCheckIsEditable") &&
+			(await shouldTryToFocusDocument())
+		) {
+			const response = constructTalonResponse([{ name: "focusPageAndResend" }]);
+			await writeResponseToClipboard(response);
+			return;
 		}
 
 		const response = await dispatchCommand(request.action);

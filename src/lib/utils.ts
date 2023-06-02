@@ -6,3 +6,11 @@ export function hasMatchingKeys(object1: object, object2: object): boolean {
 
 	return keys1.some((key) => keys2.includes(key));
 }
+
+export async function sleep(ms: number) {
+	return new Promise((resolve) => {
+		setTimeout(() => {
+			resolve(true);
+		}, ms);
+	});
+}

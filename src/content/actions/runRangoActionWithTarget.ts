@@ -1,7 +1,8 @@
 import { RangoActionWithTarget } from "../../typings/RangoAction";
 import { assertDefined } from "../../typings/TypingUtils";
-import { getWrapper } from "../wrappers/wrappers";
+import { getWrapper, getWrapperForElement } from "../wrappers/wrappers";
 import { TalonAction } from "../../typings/RequestFromTalon";
+import { tryToFocusOnEditable } from "../utils/tryToFocusOnEditable";
 import { clickElement } from "./clickElement";
 import {
 	copyElementTextContentToClipboard,
@@ -27,15 +28,33 @@ export async function runRangoActionWithTarget(
 		(wrapper) => wrapper.isIntersectingViewport
 	);
 
+	// If the user says, for example, "pre cap" and the element with the hint "c"
+	// is actually already focused but the document itself is not focused, once we
+	// focus the document the hint will disappear and we won't get any wrappers
+	// with that hint.
 	if (wrappers.length === 0) {
-		// We don't need to worry about the number of hints said, if it was more
-		// than one the action would have changed to "clickElement"
-		return request.type === "directClickElement"
-			? [{ name: "typeTargetCharacters" }]
-			: undefined;
+		if (
+			request.type === "setSelectionAfter" ||
+			request.type === "setSelectionBefore" ||
+			request.type === "tryToFocusElementAndCheckIsEditable"
+		) {
+			const activeElementWrapper = document.activeElement
+				? getWrapperForElement(document.activeElement)
+				: undefined;
+			if (activeElementWrapper) {
+				wrappers.push(activeElementWrapper);
+			}
+		} else {
+			// We don't need to worry about the number of hints said, if it was more
+			// than one the action would have changed to "clickElement"
+			return request.type === "directClickElement"
+				? [{ name: "typeTargetCharacters" }]
+				: undefined;
+		}
 	}
 
-	// Wrapper for scroll, if there's more than one target we take the first and ignore the rest
+	// Wrapper for scroll, if there's more than one target we take the first and
+	// ignore the rest
 	const wrapper = wrappers[0];
 	assertDefined(wrapper);
 
@@ -43,6 +62,13 @@ export async function runRangoActionWithTarget(
 		case "clickElement":
 		case "directClickElement":
 			return clickElement(wrappers);
+
+		case "tryToFocusElementAndCheckIsEditable": {
+			// This might result in a Talon time out exception if tryToFocusOnEditable
+			// causes a navigation, as the current content script is stopped.
+			const isEditable = await tryToFocusOnEditable(wrapper);
+			return [{ name: "responseValue", value: isEditable }];
+		}
 
 		case "focusElement":
 			return focus(wrappers);
@@ -77,11 +103,15 @@ export async function runRangoActionWithTarget(
 			break;
 
 		case "setSelectionBefore":
-			setSelectionBefore(wrapper);
+			// This might result in a Talon time out exception if setSelectionBefofre
+			// causes a navigation, as the current content script is stopped.
+			await setSelectionBefore(wrapper);
 			break;
 
 		case "setSelectionAfter":
-			setSelectionAfter(wrapper);
+			// This might result in a Talon time out exception if setSelectionAfter
+			// causes a navigation, as the current content script is stopped.
+			await setSelectionAfter(wrapper);
 			break;
 
 		case "focusAndDeleteContents":

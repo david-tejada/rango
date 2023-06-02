@@ -91,6 +91,7 @@ interface RangoActionWithTargets {
 	type:
 		| "openInBackgroundTab"
 		| "clickElement"
+		| "tryToFocusElementAndCheckIsEditable"
 		| "focusElement"
 		| "directClickElement"
 		| "openInNewTab"

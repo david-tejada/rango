@@ -1,13 +1,10 @@
+import { sleep } from "../../lib/utils";
 import { ElementWrapper } from "../../typings/ElementWrapper";
 import { assertDefined } from "../../typings/TypingUtils";
-
-// Selection.modify is not part of any specification so we have to augment the
-// Selection type
-declare global {
-	interface Selection {
-		modify(s: string, t: string, u: string): void;
-	}
-}
+import { elementIsEditable } from "../utils/domUtils";
+import { findFirstTextNode, findLastTextNode } from "../utils/nodeUtils";
+import { tryToFocusOnEditable } from "../utils/tryToFocusOnEditable";
+import { getWrapperForElement } from "../wrappers/wrappers";
 
 export function setSelectionAtEdge(target: Element, atStart: boolean) {
 	if (
@@ -17,8 +14,14 @@ export function setSelectionAtEdge(target: Element, atStart: boolean) {
 		const selectionOffset = atStart ? 0 : target.value.length;
 		target.setSelectionRange(selectionOffset, selectionOffset);
 	} else {
+		const textNode = atStart
+			? findFirstTextNode(target)
+			: findLastTextNode(target);
+
+		const targetNode = textNode ? textNode.parentElement! : target;
+
 		const range = document.createRange();
-		range.selectNodeContents(target);
+		range.selectNodeContents(targetNode);
 
 		range.collapse(atStart);
 		const selection = window.getSelection();
@@ -28,16 +31,28 @@ export function setSelectionAtEdge(target: Element, atStart: boolean) {
 	}
 }
 
-export function setSelectionBefore(wrapper: ElementWrapper) {
-	if (!(wrapper.element instanceof HTMLElement)) return;
+async function getWrapperForSelection(wrapper: ElementWrapper) {
+	const activeElementIsEditable = await tryToFocusOnEditable(wrapper);
+	await sleep(20);
 
-	setSelectionAtEdge(wrapper.element, true);
-	wrapper.element.focus();
+	if (elementIsEditable(wrapper.element)) {
+		return wrapper;
+	}
+
+	if (activeElementIsEditable) {
+		const targetWrapper = getWrapperForElement(document.activeElement!);
+		if (targetWrapper) return targetWrapper;
+	}
+
+	return undefined;
 }
 
-export function setSelectionAfter(wrapper: ElementWrapper) {
-	if (!(wrapper.element instanceof HTMLElement)) return;
+export async function setSelectionBefore(wrapper: ElementWrapper) {
+	const editableWrapper = await getWrapperForSelection(wrapper);
+	if (editableWrapper) setSelectionAtEdge(editableWrapper.element, true);
+}
 
-	setSelectionAtEdge(wrapper.element, false);
-	wrapper.element.focus();
+export async function setSelectionAfter(wrapper: ElementWrapper) {
+	const editableWrapper = await getWrapperForSelection(wrapper);
+	if (editableWrapper) setSelectionAtEdge(editableWrapper.element, false);
 }

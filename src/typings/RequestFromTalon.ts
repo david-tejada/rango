@@ -6,21 +6,54 @@ export interface RequestFromTalon {
 	action: RangoAction;
 }
 
-export interface TalonAction {
-	name:
-		| "copyToClipboard"
-		| "typeTargetCharacters"
-		| "key"
-		| "editDelete"
-		| "sleep"
-		| "focusPage";
-	main?: true;
-	previousName?: "noHintFound" | "editDeleteAfterDelay";
-	textToCopy?: string;
-	text?: string;
-	key?: string;
+interface TalonActionCopyToClipboard {
+	name: "copyToClipboard";
+	textToCopy: string;
+}
+
+interface TalonActionTypeTargetCharacters {
+	name: "typeTargetCharacters";
+	previousName?: "noHintFound";
+}
+
+interface TalonActionKey {
+	name: "key";
+	key: string;
+}
+
+interface TalonActionEditDelete {
+	name: "editDelete";
+	previousName?: "editDeleteAfterDelay";
+}
+
+interface TalonActionSleep {
+	name: "sleep";
 	ms?: number;
 }
+
+interface TalonActionFocusPage {
+	name: "focusPage";
+}
+
+interface TalonActionFocusPageAndResend {
+	name: "focusPageAndResend";
+}
+
+interface TalonActionResponseValue {
+	name: "responseValue";
+	value: any;
+}
+
+export type TalonAction = { main?: true } & (
+	| TalonActionCopyToClipboard
+	| TalonActionTypeTargetCharacters
+	| TalonActionKey
+	| TalonActionEditDelete
+	| TalonActionSleep
+	| TalonActionFocusPage
+	| TalonActionFocusPageAndResend
+	| TalonActionResponseValue
+);
 
 export interface ResponseToTalon {
 	type: "response";
