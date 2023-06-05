@@ -187,10 +187,12 @@ const containerResizeObserver = new ResizeObserver(() => {
 	updatePositionAll();
 });
 
-// If there are some changes to the target element itself we need to recompute
-// the context in case the element we used to position the hint is removed or
-// something else changes
-const targetMutationObserver = new MutationObserver((entries) => {
+/**
+ * Mutation Observer to keep track of changes to the target elements themselves
+ * so that we can recompute the context in case the element we used to position
+ * the hint is removed or something else changes.
+ */
+const targetsMutationObserver = new MutationObserver((entries) => {
 	// We filter out the entries of adding or removing hints
 	const filtered = entries.filter(
 		(entry) =>
@@ -209,7 +211,7 @@ const targetMutationObserver = new MutationObserver((entries) => {
 		) {
 			const wrapper = getWrapperForElement(entry.target);
 
-			if (wrapper?.hint?.container) {
+			if (wrapper?.hint?.container && wrapper.element.isConnected) {
 				wrapper.hint.computeHintContext();
 				wrapper.hint.position();
 			}
@@ -313,7 +315,7 @@ export class Hint {
 				: this.container.host;
 		containerResizeObserver.observe(containerToObserve);
 
-		targetMutationObserver.observe(this.target, {
+		targetsMutationObserver.observe(this.target, {
 			attributes: true,
 			childList: true,
 			subtree: true,
