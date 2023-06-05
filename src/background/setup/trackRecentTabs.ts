@@ -6,6 +6,7 @@
 import browser from "webextension-polyfill";
 import { Mutex } from "async-mutex";
 import { retrieve, store } from "../../common/storage";
+import { getCurrentTab } from "../utils/getCurrentTab";
 
 const mutex = new Mutex();
 
@@ -38,6 +39,12 @@ async function updateRecentTab(
 }
 
 export async function trackRecentTabs() {
+	// We need to track the initial tab when the browser first opens
+	const currentTab = await getCurrentTab();
+	if (currentTab.windowId && currentTab.id) {
+		await updateRecentTab(currentTab.windowId, currentTab.id, false);
+	}
+
 	browser.tabs.onActivated.addListener(async (activeInfo) => {
 		await updateRecentTab(activeInfo.windowId, activeInfo.tabId, false);
 	});
