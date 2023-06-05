@@ -12,7 +12,8 @@ export function focusesOnclick(element: Element): boolean {
 		return true;
 	}
 
-	if (element.getAttribute("contenteditable") === "true") {
+	const contentEditable = element.getAttribute("contenteditable");
+	if (contentEditable === "" || contentEditable === "true") {
 		return true;
 	}
 

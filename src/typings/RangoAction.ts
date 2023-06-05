@@ -35,7 +35,8 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "includeOrExcludeLessSelectors"
 		| "confirmSelectorsCustomization"
 		| "resetCustomSelectors"
-		| "openSettingsPage";
+		| "openSettingsPage"
+		| "requestTimedOut";
 }
 
 export interface RangoActionUpdateToggles {
@@ -91,6 +92,7 @@ interface RangoActionWithTargets {
 	type:
 		| "openInBackgroundTab"
 		| "clickElement"
+		| "tryToFocusElementAndCheckIsEditable"
 		| "focusElement"
 		| "directClickElement"
 		| "openInNewTab"

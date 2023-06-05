@@ -1,6 +1,7 @@
 import { TalonAction } from "../../typings/RequestFromTalon";
 import { notify } from "../notify/notify";
 import { dispatchKeyDown, dispatchKeyUp } from "../utils/dispatchEvents";
+import { editableElementSelector } from "../utils/domUtils";
 import { Wrapper } from "../wrappers/Wrapper";
 import { getWrapperForElement } from "../wrappers/wrappers";
 
@@ -34,9 +35,7 @@ export function focus(wrappers: Wrapper[]): TalonAction[] | undefined {
 }
 
 export async function focusFirstInput() {
-	const firstInput = document.querySelector(
-		"input:not(:is([type='button'], [type='checkbox'], [type='color'], [type='file'], [type='hidden'], [type='image'], [type='radio'], [type='reset'], [type='submit'])), textarea, [contenteditable=''], [contenteditable='true']"
-	);
+	const firstInput = document.querySelector(editableElementSelector);
 
 	if (!firstInput) {
 		await notify("No input found", { type: "error" });

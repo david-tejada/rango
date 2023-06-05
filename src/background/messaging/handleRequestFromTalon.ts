@@ -5,7 +5,11 @@ import {
 } from "../utils/clipboard";
 import { notify } from "../utils/notify";
 import { dispatchCommand } from "../commands/dispatchCommand";
+import { shouldTryToFocusDocument } from "../utils/shouldTryToFocusDocument";
+import { constructTalonResponse } from "../utils/constructTalonResponse";
 import { sendRequestToContent } from "./sendRequestToContent";
+
+let talonIsWaitingForResponse = false;
 
 export async function handleRequestFromTalon() {
 	try {
@@ -17,6 +21,8 @@ export async function handleRequestFromTalon() {
 		if (!request) {
 			return;
 		}
+
+		talonIsWaitingForResponse = !(request.action.type === "requestTimedOut");
 
 		if (request.action.type === "directClickElement") {
 			// We only need to differentiate between "directClickElement" and
@@ -48,8 +54,24 @@ export async function handleRequestFromTalon() {
 			}
 		}
 
+		// For these three actions we need to make sure that the document is focused
+		// or they might fail
+		if (
+			(request.action.type === "setSelectionAfter" ||
+				request.action.type === "setSelectionBefore" ||
+				request.action.type === "tryToFocusElementAndCheckIsEditable") &&
+			(await shouldTryToFocusDocument())
+		) {
+			const response = constructTalonResponse([{ name: "focusPageAndResend" }]);
+			await writeResponseToClipboard(response);
+			return;
+		}
+
 		const response = await dispatchCommand(request.action);
-		await writeResponseToClipboard(response);
+		if (talonIsWaitingForResponse) {
+			await writeResponseToClipboard(response);
+			talonIsWaitingForResponse = false;
+		}
 	} catch (error: unknown) {
 		if (error instanceof Error) {
 			console.error(error);

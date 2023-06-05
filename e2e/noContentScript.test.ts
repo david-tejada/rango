@@ -33,7 +33,7 @@ describe("Background commands", () => {
 
 		expect(action).toBeDefined();
 
-		const textToCopy = action.textToCopy;
+		const textToCopy = "textToCopy" in action ? action.textToCopy : undefined;
 
 		expect(textToCopy).toBeDefined();
 		expect(textToCopy).toBe("chrome://new-tab-page/");

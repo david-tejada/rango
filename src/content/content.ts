@@ -87,6 +87,10 @@ browser.runtime.onMessage.addListener(
 					allowToastNotification();
 					break;
 
+				case "tryToFocusPage":
+					window.focus();
+					break;
+
 				default: {
 					const result = await runRangoActionWithoutTarget(request);
 					return result;
