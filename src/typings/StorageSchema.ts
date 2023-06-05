@@ -50,7 +50,7 @@ export interface StorageSchema {
 	customSelectors: Record<string, CustomSelectors>;
 	switchedToSyncStorage: boolean;
 	showWhatsNewPageOnUpdate: boolean;
-	lastWhatsNewPageShowed: string;
+	lastWhatsNewPageShowed?: string;
 	newTabPosition: "relatedAfterCurrent" | "afterCurrent" | "atEnd";
 
 	// Other data

@@ -99,10 +99,21 @@ export async function initBackgroundScript() {
 		(await retrieve("showWhatsNewPageOnUpdate")) &&
 		process.env["NODE_ENV"] === "production"
 	) {
-		const version = browser.runtime.getManifest().version;
-		if ((await retrieve("lastWhatsNewPageShowed")) !== version) {
+		const currentVersion = browser.runtime.getManifest().version;
+		const [currentMajor, currentMinor] = currentVersion.split(".") as [
+			string,
+			string,
+			string
+		];
+
+		const lastWhatsNewPageShowed = await retrieve("lastWhatsNewPageShowed");
+		const [lastMajor, lastMinor] = lastWhatsNewPageShowed
+			? lastWhatsNewPageShowed.split(".")
+			: [undefined, undefined];
+
+		if (currentMajor !== lastMajor || currentMinor !== lastMinor) {
 			await browser.tabs.create({ url: urls.whatsNewPage.href });
-			await store("lastWhatsNewPageShowed", version);
+			await store("lastWhatsNewPageShowed", currentVersion);
 		}
 	}
 }
