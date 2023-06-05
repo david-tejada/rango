@@ -35,7 +35,8 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "includeOrExcludeLessSelectors"
 		| "confirmSelectorsCustomization"
 		| "resetCustomSelectors"
-		| "openSettingsPage";
+		| "openSettingsPage"
+		| "requestTimedOut";
 }
 
 export interface RangoActionUpdateToggles {

@@ -9,6 +9,8 @@ import { shouldTryToFocusDocument } from "../utils/shouldTryToFocusDocument";
 import { constructTalonResponse } from "../utils/constructTalonResponse";
 import { sendRequestToContent } from "./sendRequestToContent";
 
+let talonIsWaitingForResponse = false;
+
 export async function handleRequestFromTalon() {
 	try {
 		const request = await getRequestFromClipboard();
@@ -19,6 +21,8 @@ export async function handleRequestFromTalon() {
 		if (!request) {
 			return;
 		}
+
+		talonIsWaitingForResponse = !(request.action.type === "requestTimedOut");
 
 		if (request.action.type === "directClickElement") {
 			// We only need to differentiate between "directClickElement" and
@@ -64,7 +68,10 @@ export async function handleRequestFromTalon() {
 		}
 
 		const response = await dispatchCommand(request.action);
-		await writeResponseToClipboard(response);
+		if (talonIsWaitingForResponse) {
+			await writeResponseToClipboard(response);
+			talonIsWaitingForResponse = false;
+		}
 	} catch (error: unknown) {
 		if (error instanceof Error) {
 			console.error(error);
