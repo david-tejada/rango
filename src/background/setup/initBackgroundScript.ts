@@ -94,7 +94,7 @@ export async function initBackgroundScript() {
 			await storeIfUndefined("tabsByRecency", {});
 			// When updating we don't have to track the current tab as it's already
 			// being tracked
-			await trackRecentTabs(reason !== "update");
+			if (reason !== "update") await trackRecentTabs();
 
 			// If this is an update the content scrips either reload (Firefox) or stop
 			// completely (Chrome), either way we need to reset the hints stacks
@@ -118,8 +118,16 @@ export async function initBackgroundScript() {
 
 		await store("hintsToggleTabs", new Map());
 		await store("tabsByRecency", {});
-		await trackRecentTabs(true);
+		await trackRecentTabs();
 
 		watchNavigation();
 	});
+
+	// This is to track recent tabs when the background script/service worker is
+	// restarted. First we need to make sure tabsByRecency has already been
+	// initialized either onInstalled or onStartup.
+	const tabsByRecency = await retrieve("tabsByRecency");
+	if (tabsByRecency) {
+		await trackRecentTabs();
+	}
 }
