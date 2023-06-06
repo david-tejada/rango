@@ -11,8 +11,10 @@ import { urls } from "../../common/urls";
 import { watchNavigation } from "../hints/watchNavigation";
 import { trackRecentTabs } from "./trackRecentTabs";
 
-// We only need this function temporarily while the users go from a version
-// below 0.3.5 to a version equal or above it. To be removed in the future.
+/**
+ * We only need this function temporarily while the users go from a version
+ * below 0.3.5 to a version equal or above it. To be removed in the future.
+ */
 async function switchToSyncStorage() {
 	let key: keyof Settings;
 
@@ -43,77 +45,81 @@ async function switchToSyncStorage() {
 	await store("switchedToSyncStorage", true);
 }
 
-async function clearUnusedStacks() {
-	const tabs = await browser.tabs.query({});
-	const tabIds = new Set(tabs.map((tab) => tab.id));
-	const stacksAvailable = await storageHas("hintsStacks");
-	const stacks = stacksAvailable ? await retrieve("hintsStacks") : new Map();
-
-	for (const [tabId] of stacks) {
-		if (!tabIds.has(tabId)) {
-			stacks.delete(tabId);
-		}
-	}
-
-	await store("hintsStacks", stacks);
+async function resetHintsStacks() {
+	await store("hintsStacks", new Map());
 }
 
 export async function initBackgroundScript() {
-	const switchedToSyncStorage = await retrieve("switchedToSyncStorage");
-	if (!switchedToSyncStorage) await switchToSyncStorage();
+	browser.runtime.onInstalled.addListener(
+		async ({ reason, previousVersion }) => {
+			if (reason !== "install" && reason !== "update") return;
 
-	await clearUnusedStacks();
+			const switchedToSyncStorage = await retrieve("switchedToSyncStorage");
+			if (!switchedToSyncStorage) await switchToSyncStorage();
 
-	let key: keyof typeof defaultSettings;
-	const storing: Array<Promise<void>> = [];
+			let key: keyof typeof defaultSettings;
+			const storing: Array<Promise<void>> = [];
 
-	for (key in defaultSettings) {
-		if (Object.prototype.hasOwnProperty.call(defaultSettings, key)) {
-			storing.push(storeIfUndefined(key, defaultSettings[key]));
+			for (key in defaultSettings) {
+				if (Object.prototype.hasOwnProperty.call(defaultSettings, key)) {
+					storing.push(storeIfUndefined(key, defaultSettings[key]));
+				}
+			}
+
+			await Promise.all(storing);
+
+			if (
+				reason === "update" &&
+				(await retrieve("showWhatsNewPageOnUpdate")) &&
+				process.env["NODE_ENV"] === "production"
+			) {
+				const currentVersion = browser.runtime.getManifest().version;
+				const [currentMajor, currentMinor] = currentVersion.split(".") as [
+					string,
+					string,
+					string
+				];
+				const [previousMajor, previousMinor] = previousVersion!.split(".") as [
+					string,
+					string,
+					string
+				];
+
+				if (currentMajor !== previousMajor || currentMinor !== previousMinor) {
+					await browser.tabs.create({ url: urls.whatsNewPage.href });
+				}
+			}
+
+			await storeIfUndefined("hintsToggleTabs", new Map());
+			await storeIfUndefined("tabsByRecency", {});
+			// When updating we don't have to track the current tab as it's already
+			// being tracked
+			await trackRecentTabs(reason !== "update");
+
+			// If this is an update the content scrips either reload (Firefox) or stop
+			// completely (Chrome), either way we need to reset the hints stacks
+			await resetHintsStacks();
+
+			watchNavigation();
 		}
-	}
+	);
 
-	await Promise.all(storing);
+	browser.runtime.onStartup.addListener(async () => {
+		await resetHintsStacks();
 
-	const keyboardClicking = await retrieve("keyboardClicking");
-	if (keyboardClicking) {
-		await (browser.action
-			? browser.action.setIcon({ path: urls.iconKeyboard48.pathname })
-			: browser.browserAction.setIcon({
-					path: urls.iconKeyboard48.pathname,
-			  }));
-	}
-
-	// We clean up the tabs in hintsToggleTabs on start
-	await store("hintsToggleTabs", new Map());
-
-	// Reset tabsByRecency on start
-	await store("tabsByRecency", {});
-
-	// Track tabs to be able to use the command "tab back"
-	await trackRecentTabs();
-
-	watchNavigation();
-
-	if (
-		(await retrieve("showWhatsNewPageOnUpdate")) &&
-		process.env["NODE_ENV"] === "production"
-	) {
-		const currentVersion = browser.runtime.getManifest().version;
-		const [currentMajor, currentMinor] = currentVersion.split(".") as [
-			string,
-			string,
-			string
-		];
-
-		const lastWhatsNewPageShowed = await retrieve("lastWhatsNewPageShowed");
-		const [lastMajor, lastMinor] = lastWhatsNewPageShowed
-			? lastWhatsNewPageShowed.split(".")
-			: [undefined, undefined];
-
-		if (currentMajor !== lastMajor || currentMinor !== lastMinor) {
-			await browser.tabs.create({ url: urls.whatsNewPage.href });
-			await store("lastWhatsNewPageShowed", currentVersion);
+		const keyboardClicking = await retrieve("keyboardClicking");
+		if (keyboardClicking) {
+			await (browser.action
+				? browser.action.setIcon({ path: urls.iconKeyboard48.pathname })
+				: browser.browserAction.setIcon({
+						path: urls.iconKeyboard48.pathname,
+				  }));
 		}
-	}
+
+		await store("hintsToggleTabs", new Map());
+		await store("tabsByRecency", {});
+		await trackRecentTabs(true);
+
+		watchNavigation();
+	});
 }
