@@ -38,11 +38,16 @@ async function updateRecentTab(
 	});
 }
 
-export async function trackRecentTabs() {
-	// We need to track the initial tab when the browser first opens
-	const currentTab = await getCurrentTab();
-	if (currentTab.windowId && currentTab.id) {
-		await updateRecentTab(currentTab.windowId, currentTab.id, false);
+/**
+ * Start tracking tabs to be able to use the command `focusPreviousTab`.
+ */
+export async function trackRecentTabs(trackCurrentTab: boolean) {
+	if (trackCurrentTab) {
+		// We need to track the initial tab when the browser first opens
+		const currentTab = await getCurrentTab();
+		if (currentTab.windowId && currentTab.id) {
+			await updateRecentTab(currentTab.windowId, currentTab.id, false);
+		}
 	}
 
 	browser.tabs.onActivated.addListener(async (activeInfo) => {
