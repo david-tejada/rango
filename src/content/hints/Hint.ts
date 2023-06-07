@@ -1,4 +1,5 @@
 import Color from "color";
+import { debounce } from "lodash";
 import { rgbaToRgb } from "../../lib/rgbaToRgb";
 import { getEffectiveBackgroundColor } from "../utils/getEffectiveBackgroundColor";
 import { getFirstTextNodeDescendant } from "../utils/nodeUtils";
@@ -10,7 +11,6 @@ import {
 	getWrapperForElement,
 	setHintedWrapper,
 } from "../wrappers/wrappers";
-import { debounce } from "../../lib/debounceAndThrottle";
 import { updatePositionAll } from "../wrappers/updateWrappers";
 import {
 	getCachedSetting,

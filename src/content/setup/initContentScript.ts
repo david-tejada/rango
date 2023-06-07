@@ -3,7 +3,7 @@ import { updateCustomSelectors } from "../hints/selectors";
 import observe from "../observe";
 import { cacheSettings, getCachedSetting } from "../settings/cacheSettings";
 import { watchSettingsChanges } from "../settings/watchSettingsChanges";
-import { addUrlToTitle } from "../utils/addUrlToTitle";
+import { initTitleDecoration } from "../utils/decorateTitle";
 import { loadDevtoolsUtils } from "../utils/devtoolsUtils";
 import { loadContentScriptContext } from "./contentScriptContext";
 
@@ -13,7 +13,7 @@ export async function initContentScript() {
 	await loadContentScriptContext();
 	await updateCustomSelectors();
 	await cacheSettings();
-	await addUrlToTitle();
+	await initTitleDecoration();
 	await observe();
 	if (getCachedSetting("keyboardClicking")) initKeyboardClicking();
 }

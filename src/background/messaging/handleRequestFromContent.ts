@@ -11,6 +11,7 @@ import {
 } from "../hints/hintsAllocator";
 import { getCurrentTabId } from "../utils/getCurrentTab";
 import { openInNewTab } from "../actions/openInNewTab";
+import { getTabMarker } from "../misc/tabMarkers";
 import { sendRequestToContent } from "./sendRequestToContent";
 
 export async function handleRequestFromContent(
@@ -97,6 +98,9 @@ export async function handleRequestFromContent(
 
 		case "isCurrentTab":
 			return isCurrentTab;
+
+		case "getTabMarker":
+			return getTabMarker(tabId);
 
 		default:
 			console.error(request);

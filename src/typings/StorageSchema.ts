@@ -8,6 +8,12 @@ export type HintsStack = {
 	assigned: Map<string, number>;
 };
 
+export type TabMarkers = {
+	free: string[];
+	tabIdsToMarkers: Map<number, string>;
+	markersToTabIds: Map<string, number>;
+};
+
 export interface StorageSchema {
 	// Hint style
 	hintUppercaseLetters: boolean;
@@ -46,6 +52,8 @@ export interface StorageSchema {
 
 	// Other settings
 	urlInTitle: boolean;
+	includeTabMarkers: boolean;
+	uppercaseTabMarkers: boolean;
 	keyboardClicking: boolean;
 	customSelectors: Record<string, CustomSelectors>;
 	switchedToSyncStorage: boolean;
@@ -55,6 +63,7 @@ export interface StorageSchema {
 	// Other data
 	tabsByRecency: Record<number, number[]>;
 	hintsStacks: Map<number, HintsStack>;
+	tabMarkers: TabMarkers;
 
 	// Legacy
 	hintsToggle: {

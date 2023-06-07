@@ -8,7 +8,7 @@ import {
 	stopKeyboardClicking,
 } from "../actions/keyboardClicking";
 import { notify, notifyTogglesStatus } from "../notify/notify";
-import { addUrlToTitle } from "../utils/addUrlToTitle";
+import { initTitleDecoration } from "../utils/decorateTitle";
 import { cacheSettings, getCachedSetting } from "./cacheSettings";
 
 async function handleSettingsChanges(
@@ -62,8 +62,12 @@ async function handleSettingsChanges(
 		return;
 	}
 
-	if ("urlInTitle" in changes) {
-		await addUrlToTitle();
+	if (
+		"urlInTitle" in changes ||
+		"includeTabMarkers" in changes ||
+		"uppercaseTabMarkers" in changes
+	) {
+		await initTitleDecoration();
 		return;
 	}
 

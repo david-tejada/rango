@@ -8,10 +8,11 @@ import {
 	Settings,
 } from "./settings";
 
-const useLocalStorage = new Set([
+const useLocalStorage = new Set<keyof StorageSchema>([
 	"hintsToggleTabs",
 	"tabsByRecency",
 	"hintsStacks",
+	"tabMarkers",
 ]);
 
 // https://stackoverflow.com/a/56150320

@@ -4,12 +4,12 @@ beforeAll(async () => {
 	await page.goto("http://localhost:8080/basic.html");
 });
 
-test("The URL is attached to the title", async () => {
+test("The URL and the tab marker are attached to the title", async () => {
 	await sleep(500);
 
 	const title = await page.title();
 
-	expect(title).toBe("Document - http://localhost:8080/basic.html");
+	expect(title).toBe("A | Document - http://localhost:8080/basic.html");
 });
 
 test("If something in the page changes and the URL changes it updates the title", async () => {
@@ -22,7 +22,7 @@ test("If something in the page changes and the URL changes it updates the title"
 
 	const title = await page.title();
 
-	expect(title).toBe("Document - http://localhost:8080/new.html");
+	expect(title).toBe("A | Document - http://localhost:8080/new.html");
 });
 
 test("If the hash changes the URL in the title is updated", async () => {
@@ -36,5 +36,5 @@ test("If the hash changes the URL in the title is updated", async () => {
 
 	const title = await page.title();
 
-	expect(title).toBe("Document - http://localhost:8080/new.html#first");
+	expect(title).toBe("A | Document - http://localhost:8080/new.html#first");
 });

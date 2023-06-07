@@ -1,4 +1,4 @@
-import { throttle } from "../../lib/debounceAndThrottle";
+import { throttle } from "lodash";
 import {
 	clearMarkedForInclusionOrExclusion,
 	popCustomSelectorsToUpdate,

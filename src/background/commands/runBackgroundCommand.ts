@@ -9,6 +9,7 @@ import { focusPreviousTab } from "../actions/focusPreviousTab";
 import { sendRequestToContent } from "../messaging/sendRequestToContent";
 import { retrieve, store } from "../../common/storage";
 import { assertDefined } from "../../typings/TypingUtils";
+import { activateTabs } from "../actions/activateTabs";
 
 export async function runBackgroundCommand(
 	command: RangoAction
@@ -17,6 +18,11 @@ export async function runBackgroundCommand(
 	const currentTabId = await getCurrentTabId();
 
 	switch (command.type) {
+		case "activateTabs": {
+			await activateTabs(command.target);
+			break;
+		}
+
 		case "historyGoBack":
 			try {
 				await sendRequestToContent(command);

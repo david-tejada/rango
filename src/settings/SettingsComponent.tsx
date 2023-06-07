@@ -63,16 +63,6 @@ export function SettingsComponent() {
 			<SettingsGroup label="General">
 				<SettingRow>
 					<Toggle
-						label="Include URL in title"
-						isPressed={settings.urlInTitle}
-						onClick={() => {
-							handleChange("urlInTitle", !settings.urlInTitle);
-						}}
-					/>
-				</SettingRow>
-
-				<SettingRow>
-					<Toggle
 						label="Keyboard clicking"
 						isPressed={settings.keyboardClicking}
 						onClick={() => {
@@ -118,6 +108,42 @@ export function SettingsComponent() {
 							<p className="small">Open all tabs at the end of the tabstrip.</p>
 						</Radio>
 					</RadioGroup>
+				</SettingRow>
+			</SettingsGroup>
+
+			<SettingsGroup label="Title decorators">
+				<SettingRow>
+					<Toggle
+						label="Include URL in title"
+						isPressed={settings.urlInTitle}
+						onClick={() => {
+							handleChange("urlInTitle", !settings.urlInTitle);
+						}}
+					/>
+				</SettingRow>
+
+				<SettingRow>
+					<Toggle
+						label="Include tab marker in title"
+						isPressed={settings.includeTabMarkers}
+						onClick={() => {
+							handleChange("includeTabMarkers", !settings.includeTabMarkers);
+						}}
+					/>
+				</SettingRow>
+
+				<SettingRow>
+					<Toggle
+						label="Use uppercase tab markers"
+						isPressed={settings.uppercaseTabMarkers}
+						isDisabled={!settings.includeTabMarkers}
+						onClick={() => {
+							handleChange(
+								"uppercaseTabMarkers",
+								!settings.uppercaseTabMarkers
+							);
+						}}
+					/>
 				</SettingRow>
 			</SettingsGroup>
 
