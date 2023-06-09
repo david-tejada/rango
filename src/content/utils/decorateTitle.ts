@@ -31,6 +31,10 @@ function getTitleSuffix() {
 	return "";
 }
 
+export function getTitleBeforeDecoration() {
+	return titleBeforeDecoration;
+}
+
 function removeDecorations(prefix?: string) {
 	if (prefix && document.title.startsWith(prefix)) {
 		document.title = document.title.slice(prefix.length);

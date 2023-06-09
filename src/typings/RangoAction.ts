@@ -44,7 +44,7 @@ export interface RangoActionUpdateToggles {
 	arg: "everywhere" | "global" | "tab" | "host" | "page" | "now";
 }
 
-interface RangoActionCopyLocationProperty {
+export interface RangoActionCopyLocationProperty {
 	type: "copyLocationProperty";
 	arg:
 		| "href"

@@ -23,6 +23,7 @@ import { updateHintsEnabled } from "./observe";
 import { getFrameId } from "./setup/contentScriptContext";
 import { deleteHintsInFrame } from "./hints/hintsInFrame";
 import { synchronizeHints } from "./hints/hintsRequests";
+import { getTitleBeforeDecoration } from "./utils/decorateTitle";
 
 // Sending to specific frames from the background script is buggy in Safari, we
 // need to check that the request was actually intended for this frame.
@@ -90,6 +91,9 @@ browser.runtime.onMessage.addListener(
 				case "tryToFocusPage":
 					window.focus();
 					break;
+
+				case "getTitleBeforeDecoration":
+					return getTitleBeforeDecoration();
 
 				default: {
 					const result = await runRangoActionWithoutTarget(request);

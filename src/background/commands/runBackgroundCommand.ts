@@ -1,15 +1,15 @@
 import browser from "webextension-polyfill";
 import { RangoAction } from "../../typings/RangoAction";
 import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
-import { notify, notifySettingRemoved } from "../utils/notify";
+import { notifySettingRemoved } from "../utils/notify";
 import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { closeTabsInWindow } from "../actions/closeTabsInWindow";
 import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
 import { focusPreviousTab } from "../actions/focusPreviousTab";
 import { sendRequestToContent } from "../messaging/sendRequestToContent";
 import { retrieve, store } from "../../common/storage";
-import { assertDefined } from "../../typings/TypingUtils";
 import { activateTabs } from "../actions/activateTabs";
+import { copyLocationProperty, copyMarkdownUrl } from "../actions/copyTabInfo";
 
 export async function runBackgroundCommand(
 	command: RangoAction
@@ -124,21 +124,11 @@ export async function runBackgroundCommand(
 			await focusPreviousTab();
 			break;
 
-		case "copyLocationProperty": {
-			assertDefined(currentTab.url);
-			await notify("Copied to the clipboard", { type: "success" });
-			const url = new URL(currentTab.url);
-			const result = url[command.arg];
-			return result;
-		}
+		case "copyLocationProperty":
+			return copyLocationProperty(currentTab, command.arg);
 
 		case "copyCurrentTabMarkdownUrl":
-			assertDefined(currentTab.url);
-			assertDefined(currentTab.title);
-			await notify("Copied to the clipboard", { type: "success" });
-			return `[${currentTab.title.replace(` - ${currentTab.url}`, "")}](${
-				currentTab.url
-			})`;
+			return copyMarkdownUrl(currentTab);
 
 		case "openSettingsPage":
 			await browser.runtime.openOptionsPage();
