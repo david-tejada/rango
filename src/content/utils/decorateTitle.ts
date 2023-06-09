@@ -1,31 +1,29 @@
 import browser from "webextension-polyfill";
 import { throttle } from "lodash";
 import { getCachedSetting } from "../settings/cacheSettings";
-import { retrieve } from "../../common/storage";
+
+// Settings
+let urlInTitle: boolean;
+let includeTabMarkers: boolean;
+let uppercaseTabMarkers: boolean;
 
 let lastUrlAdded: string | undefined;
 let titleBeforeDecoration: string | undefined;
 let titleAfterDecoration: string | undefined;
 
 async function getTitlePrefix() {
-	const includeTabMarkers = await retrieve("includeTabMarkers");
-
 	if (!includeTabMarkers) return "";
 
 	const tabMarker = (await browser.runtime.sendMessage({
 		type: "getTabMarker",
 	})) as string;
 
-	const tabMarkerUppercase = await retrieve("uppercaseTabMarkers");
+	const marker = uppercaseTabMarkers ? tabMarker.toUpperCase() : tabMarker;
 
-	return tabMarkerUppercase
-		? `${tabMarker.toUpperCase()} | `
-		: `${tabMarker} | `;
+	return `${marker} | `;
 }
 
-async function getTitleSuffix() {
-	const urlInTitle = await retrieve("urlInTitle");
-
+function getTitleSuffix() {
 	if (urlInTitle) {
 		return ` - ${window.location.href}`;
 	}
@@ -33,27 +31,29 @@ async function getTitleSuffix() {
 	return "";
 }
 
-async function removeDecorations(prefix: string) {
-	if (document.title.startsWith(prefix)) {
+function removeDecorations(prefix?: string) {
+	if (prefix && document.title.startsWith(prefix)) {
 		document.title = document.title.slice(prefix.length);
 	}
 
-	if (await retrieve("urlInTitle")) {
-		const possibleSuffix = ` - ${lastUrlAdded ?? window.location.href}`;
-		if (document.title.endsWith(possibleSuffix)) {
-			document.title = document.title.slice(0, -possibleSuffix.length);
-		}
+	if (!prefix) {
+		document.title = document.title.replace(/^[a-z]{1,2} \| /i, "");
+	}
+
+	const possibleSuffix = ` - ${lastUrlAdded ?? window.location.href}`;
+	if (document.title.endsWith(possibleSuffix)) {
+		document.title = document.title.slice(0, -possibleSuffix.length);
 	}
 }
 
 async function decorateTitle() {
 	const prefix = await getTitlePrefix();
-	const suffix = await getTitleSuffix();
+	const suffix = getTitleSuffix();
 
 	// Make extra sure we don't duplicate the prefix or suffix. Prevents
 	// decorations from being added multiple times when the extension is updated
 	// and in some other difficult to reproduce situations.
-	await removeDecorations(prefix);
+	removeDecorations(prefix);
 
 	if (document.title !== titleAfterDecoration) {
 		titleBeforeDecoration = document.title;
@@ -80,25 +80,37 @@ const throttledMutationCallback = throttle(async () => {
 	}
 }, 500);
 
+let mutationObserver: MutationObserver | undefined;
+
 export async function initTitleDecoration() {
-	const urlInTitle = getCachedSetting("urlInTitle");
+	const previousUrlInTitle = urlInTitle;
+	const previousIncludeTabMarkers = includeTabMarkers;
 
-	await decorateTitle();
+	urlInTitle = getCachedSetting("urlInTitle");
+	includeTabMarkers = getCachedSetting("includeTabMarkers");
+	uppercaseTabMarkers = getCachedSetting("uppercaseTabMarkers");
 
-	// Here urlInTitle === undefined is mostly for testing purposes. As when we
-	// start the browser sometimes the options haven't been initialized
+	if (
+		(previousUrlInTitle && !urlInTitle) ||
+		(previousIncludeTabMarkers && !includeTabMarkers)
+	) {
+		removeDecorations();
+	}
+
+	if (urlInTitle || includeTabMarkers) {
+		await decorateTitle();
+	} else {
+		mutationObserver?.disconnect();
+	}
+
 	if (urlInTitle) {
 		window.addEventListener("hashchange", async () => {
 			await decorateTitle();
 		});
 	}
 
-	if (
-		urlInTitle ||
-		urlInTitle === undefined ||
-		(await retrieve("includeTabMarkers"))
-	) {
-		const mutationObserver = new MutationObserver(throttledMutationCallback);
+	if (urlInTitle || includeTabMarkers) {
+		mutationObserver ??= new MutationObserver(throttledMutationCallback);
 
 		mutationObserver.observe(document, {
 			attributes: true,
