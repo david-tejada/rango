@@ -99,8 +99,6 @@ export async function initBackgroundScript() {
 			// If this is an update the content scrips either reload (Firefox) or stop
 			// completely (Chrome), either way we need to reset the hints stacks
 			await resetHintsStacks();
-
-			watchNavigation();
 		}
 	);
 
@@ -119,8 +117,6 @@ export async function initBackgroundScript() {
 		await store("hintsToggleTabs", new Map());
 		await store("tabsByRecency", {});
 		await trackRecentTabs();
-
-		watchNavigation();
 	});
 
 	// This is to track recent tabs when the background script/service worker is
@@ -130,4 +126,6 @@ export async function initBackgroundScript() {
 	if (tabsByRecency) {
 		await trackRecentTabs();
 	}
+
+	watchNavigation();
 }
