@@ -36,7 +36,11 @@ export function getTitleBeforeDecoration() {
 }
 
 function removeDecorations(prefix?: string) {
-	if (prefix && document.title.startsWith(prefix)) {
+	if (
+		prefix &&
+		(document.title.startsWith(prefix.toUpperCase()) ||
+			document.title.startsWith(prefix.toLowerCase()))
+	) {
 		document.title = document.title.slice(prefix.length);
 	}
 
