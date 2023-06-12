@@ -8,7 +8,7 @@ import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
 import { focusPreviousTab } from "../actions/focusPreviousTab";
 import { sendRequestToContent } from "../messaging/sendRequestToContent";
 import { retrieve, store } from "../../common/storage";
-import { activateTabs } from "../actions/activateTabs";
+import { activateTab } from "../actions/activateTab";
 import { copyLocationProperty, copyMarkdownUrl } from "../actions/copyTabInfo";
 import { promiseWrap } from "../../lib/promiseWrap";
 
@@ -19,8 +19,8 @@ export async function runBackgroundCommand(
 	const currentTabId = currentTab?.id;
 
 	switch (command.type) {
-		case "activateTabs": {
-			await activateTabs(command.target);
+		case "activateTab": {
+			await activateTab(command.target);
 			break;
 		}
 

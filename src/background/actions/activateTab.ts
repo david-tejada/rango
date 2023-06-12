@@ -21,7 +21,7 @@ async function getFirstTabByWindow(markers: string[]) {
  * it will activate the given tabs as long as they belong to different windows.
  * It will focus the window of the first tab provided.
  */
-export async function activateTabs(markers: string[]) {
+export async function activateTab(markers: string[]) {
 	const splitTabs = await getFirstTabByWindow(markers);
 
 	for (const [index, tab] of splitTabs.entries()) {
