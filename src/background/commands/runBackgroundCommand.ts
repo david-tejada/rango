@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { RangoAction } from "../../typings/RangoAction";
-import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
+import { getCurrentTab } from "../utils/getCurrentTab";
 import { notifySettingRemoved } from "../utils/notify";
 import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { closeTabsInWindow } from "../actions/closeTabsInWindow";
@@ -10,12 +10,13 @@ import { sendRequestToContent } from "../messaging/sendRequestToContent";
 import { retrieve, store } from "../../common/storage";
 import { activateTabs } from "../actions/activateTabs";
 import { copyLocationProperty, copyMarkdownUrl } from "../actions/copyTabInfo";
+import { promiseWrap } from "../../lib/promiseWrap";
 
 export async function runBackgroundCommand(
 	command: RangoAction
 ): Promise<string | undefined> {
-	const currentTab = await getCurrentTab();
-	const currentTabId = await getCurrentTabId();
+	const [currentTab] = await promiseWrap(getCurrentTab());
+	const currentTabId = currentTab?.id;
 
 	switch (command.type) {
 		case "activateTabs": {
@@ -113,7 +114,10 @@ export async function runBackgroundCommand(
 			break;
 
 		case "cloneCurrentTab":
-			await browser.tabs.duplicate(currentTabId);
+			if (currentTabId) {
+				await browser.tabs.duplicate(currentTabId);
+			}
+
 			break;
 
 		case "moveCurrentTabToNewWindow":
@@ -125,10 +129,18 @@ export async function runBackgroundCommand(
 			break;
 
 		case "copyLocationProperty":
-			return copyLocationProperty(currentTab, command.arg);
+			if (currentTab) {
+				return copyLocationProperty(currentTab, command.arg);
+			}
+
+			break;
 
 		case "copyCurrentTabMarkdownUrl":
-			return copyMarkdownUrl(currentTab);
+			if (currentTab) {
+				return copyMarkdownUrl(currentTab);
+			}
+
+			break;
 
 		case "openSettingsPage":
 			await browser.runtime.openOptionsPage();
