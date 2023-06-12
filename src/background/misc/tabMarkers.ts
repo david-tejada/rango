@@ -55,3 +55,15 @@ export async function releaseMarker(tabId: number) {
 browser.tabs.onRemoved.addListener(async (tabId) => {
 	await releaseMarker(tabId);
 });
+
+// In Chrome when a tab is discarded it changes its id
+browser.tabs.onReplaced.addListener(async (addedTabId, removedTabId) => {
+	await withTabMarkers(({ tabIdsToMarkers, markersToTabIds }) => {
+		const tabMarker = tabIdsToMarkers.get(removedTabId);
+		if (!tabMarker) return;
+
+		tabIdsToMarkers.delete(removedTabId);
+		tabIdsToMarkers.set(addedTabId, tabMarker);
+		markersToTabIds.set(tabMarker, addedTabId);
+	});
+});

@@ -28,6 +28,8 @@ export async function activateTabs(markers: string[]) {
 		await browser.tabs.update(tab.id, { active: true });
 		if (index === 0) {
 			await browser.windows.update(tab.windowId!, { focused: true });
+		} else if (tab.discarded) {
+			await browser.tabs.reload(tab.id);
 		}
 	}
 }
