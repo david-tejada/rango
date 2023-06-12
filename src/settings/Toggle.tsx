@@ -3,15 +3,21 @@ import "./Toggle.css";
 type ToggleProps = {
 	label: string;
 	isPressed: boolean;
+	isDisabled?: boolean;
 	onClick(): void;
 };
 
-export function Toggle({ label, isPressed, onClick }: ToggleProps) {
+export function Toggle({ label, isPressed, isDisabled, onClick }: ToggleProps) {
 	return (
-		<div className="Toggle">
+		<div className={`Toggle ${isDisabled ? "disabled" : ""}`}>
 			<label>
 				{label}
-				<button type="button" aria-pressed={isPressed} onClick={onClick} />
+				<button
+					type="button"
+					disabled={isDisabled}
+					aria-pressed={isPressed}
+					onClick={onClick}
+				/>
 			</label>
 		</div>
 	);

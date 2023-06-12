@@ -23,6 +23,8 @@ export const defaultSettings = {
 	toastTransition: "bounce",
 	includeSingleLetterHints: true,
 	urlInTitle: true,
+	includeTabMarkers: true,
+	uppercaseTabMarkers: true,
 	keyboardClicking: false,
 	customSelectors: {},
 	showWhatsNewPageOnUpdate: true,

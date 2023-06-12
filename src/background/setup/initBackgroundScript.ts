@@ -9,6 +9,7 @@ import {
 import { Settings, defaultSettings } from "../../common/settings";
 import { urls } from "../../common/urls";
 import { watchNavigation } from "../hints/watchNavigation";
+import { allHints } from "../utils/allHints";
 import { trackRecentTabs } from "./trackRecentTabs";
 
 /**
@@ -47,6 +48,14 @@ async function switchToSyncStorage() {
 
 async function resetHintsStacks() {
 	await store("hintsStacks", new Map());
+}
+
+async function resetTabMarkers() {
+	await store("tabMarkers", {
+		free: [...allHints],
+		tabIdsToMarkers: new Map(),
+		markersToTabIds: new Map(),
+	});
 }
 
 export async function initBackgroundScript() {
@@ -92,18 +101,21 @@ export async function initBackgroundScript() {
 
 			await storeIfUndefined("hintsToggleTabs", new Map());
 			await storeIfUndefined("tabsByRecency", {});
-			// When updating we don't have to track the current tab as it's already
-			// being tracked
-			if (reason !== "update") await trackRecentTabs();
 
 			// If this is an update the content scrips either reload (Firefox) or stop
 			// completely (Chrome), either way we need to reset the hints stacks
 			await resetHintsStacks();
+
+			if (reason === "install") {
+				await resetTabMarkers();
+				await trackRecentTabs();
+			}
 		}
 	);
 
 	browser.runtime.onStartup.addListener(async () => {
 		await resetHintsStacks();
+		await resetTabMarkers();
 
 		const keyboardClicking = await retrieve("keyboardClicking");
 		if (keyboardClicking) {

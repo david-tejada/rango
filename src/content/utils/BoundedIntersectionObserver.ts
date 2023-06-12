@@ -5,7 +5,7 @@
  * plus rootMargin.
  */
 
-import { throttle } from "../../lib/debounceAndThrottle";
+import { throttle } from "lodash";
 import { assertDefined } from "../../typings/TypingUtils";
 
 function isIntersectingViewportMargin(target: Element, margin: number) {

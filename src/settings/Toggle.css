@@ -3,6 +3,10 @@
 	justify-content: space-between;
 }
 
+.Toggle.disabled label {
+	color: var(--neutral-500);
+}
+
 .Toggle:focus {
 	border-radius: 5px;
 }
@@ -23,6 +27,10 @@
 
 .Toggle button[aria-pressed="true"] {
 	background-color: var(--green-500);
+}
+
+.Toggle.disabled button[aria-pressed="true"] {
+	background-color: var(--slate-300);
 }
 
 .Toggle:focus-within {

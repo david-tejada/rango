@@ -32,7 +32,8 @@ interface SimpleContentRequest {
 		| "restoreKeyboardReachableHints"
 		| "checkIfDocumentHasFocus"
 		| "onCompleted"
-		| "tryToFocusPage";
+		| "tryToFocusPage"
+		| "getTitleBeforeDecoration";
 }
 
 export type RequestFromBackground = { frameId?: number } & (

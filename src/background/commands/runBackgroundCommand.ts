@@ -1,22 +1,29 @@
 import browser from "webextension-polyfill";
 import { RangoAction } from "../../typings/RangoAction";
-import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
-import { notify, notifySettingRemoved } from "../utils/notify";
+import { getCurrentTab } from "../utils/getCurrentTab";
+import { notifySettingRemoved } from "../utils/notify";
 import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { closeTabsInWindow } from "../actions/closeTabsInWindow";
 import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
 import { focusPreviousTab } from "../actions/focusPreviousTab";
 import { sendRequestToContent } from "../messaging/sendRequestToContent";
 import { retrieve, store } from "../../common/storage";
-import { assertDefined } from "../../typings/TypingUtils";
+import { activateTab } from "../actions/activateTab";
+import { copyLocationProperty, copyMarkdownUrl } from "../actions/copyTabInfo";
+import { promiseWrap } from "../../lib/promiseWrap";
 
 export async function runBackgroundCommand(
 	command: RangoAction
 ): Promise<string | undefined> {
-	const currentTab = await getCurrentTab();
-	const currentTabId = await getCurrentTabId();
+	const [currentTab] = await promiseWrap(getCurrentTab());
+	const currentTabId = currentTab?.id;
 
 	switch (command.type) {
+		case "activateTab": {
+			await activateTab(command.target);
+			break;
+		}
+
 		case "historyGoBack":
 			try {
 				await sendRequestToContent(command);
@@ -107,7 +114,10 @@ export async function runBackgroundCommand(
 			break;
 
 		case "cloneCurrentTab":
-			await browser.tabs.duplicate(currentTabId);
+			if (currentTabId) {
+				await browser.tabs.duplicate(currentTabId);
+			}
+
 			break;
 
 		case "moveCurrentTabToNewWindow":
@@ -118,21 +128,19 @@ export async function runBackgroundCommand(
 			await focusPreviousTab();
 			break;
 
-		case "copyLocationProperty": {
-			assertDefined(currentTab.url);
-			await notify("Copied to the clipboard", { type: "success" });
-			const url = new URL(currentTab.url);
-			const result = url[command.arg];
-			return result;
-		}
+		case "copyLocationProperty":
+			if (currentTab) {
+				return copyLocationProperty(currentTab, command.arg);
+			}
+
+			break;
 
 		case "copyCurrentTabMarkdownUrl":
-			assertDefined(currentTab.url);
-			assertDefined(currentTab.title);
-			await notify("Copied to the clipboard", { type: "success" });
-			return `[${currentTab.title.replace(` - ${currentTab.url}`, "")}](${
-				currentTab.url
-			})`;
+			if (currentTab) {
+				return copyMarkdownUrl(currentTab);
+			}
+
+			break;
 
 		case "openSettingsPage":
 			await browser.runtime.openOptionsPage();

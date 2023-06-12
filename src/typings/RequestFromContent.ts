@@ -37,17 +37,18 @@ interface StoreHintsInFrame {
 	hints: string[];
 }
 
-interface SimpleBackgroundRequest {
+interface SimpleRequestFromContent {
 	type:
 		| "initStack"
 		| "getContentScriptContext"
 		| "restoreKeyboardReachableHints"
 		| "getHintsStackForTab"
-		| "isCurrentTab";
+		| "isCurrentTab"
+		| "getTabMarker";
 }
 
 export type RequestFromContent =
-	| SimpleBackgroundRequest
+	| SimpleRequestFromContent
 	| OpenInNewTab
 	| ClaimHints
 	| ReleaseHints

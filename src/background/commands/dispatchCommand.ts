@@ -34,6 +34,7 @@ const backgroundCommands = new Set([
 	"historyGoForward",
 	"openSettingsPage",
 	"openPageInNewTab",
+	"activateTab",
 ]);
 
 export async function dispatchCommand(
