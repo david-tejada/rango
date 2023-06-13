@@ -1,3 +1,9 @@
+*,
+*::before,
+*::after {
+	box-sizing: border-box;
+}
+
 :root {
 	--slate-50: #f8fafc;
 	--slate-100: #f1f5f9;
@@ -28,5 +34,5 @@ select,
 label {
 	font-family: Nunito, sans-serif;
 	color: var(--slate-700);
-	font-size: 16px;
+	font-size: 1rem;
 }
