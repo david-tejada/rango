@@ -1,0 +1,24 @@
+.Alert {
+	padding: 0.5em;
+	border-radius: 0.5em;
+	margin-top: 0.5em;
+	display: flex;
+	align-items: center;
+}
+
+.Alert.warning {
+	background-color: #fef08a;
+}
+
+.Alert.info {
+	background-color: #bae6fd;
+}
+
+.Alert .icon {
+	margin-right: 0.7em;
+	margin-left: 0.5em;
+}
+
+.Alert p {
+	margin: 0;
+}

@@ -29,6 +29,7 @@ export const defaultSettings = {
 	customSelectors: {},
 	showWhatsNewPageOnUpdate: true,
 	newTabPosition: "relatedAfterCurrent",
+	hasSeenSettingsPage: false,
 } as const;
 
 export type Settings = {
