@@ -20,14 +20,7 @@ const icons = {
 };
 
 type ToastIconProps = {
-	iconType:
-		| "info"
-		| "warning"
-		| "success"
-		| "error"
-		| "unset"
-		| "enabled"
-		| "disabled";
+	iconType: keyof typeof icons;
 };
 
 export function ToastIcon({ iconType }: ToastIconProps) {
