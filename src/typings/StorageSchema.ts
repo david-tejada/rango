@@ -49,6 +49,7 @@ export interface StorageSchema {
 		| "bottom-center"
 		| "bottom-left";
 	toastTransition: "slide" | "flip" | "zoom" | "bounce";
+	toastDuration: number;
 
 	// Other settings
 	urlInTitle: boolean;

@@ -21,6 +21,7 @@ export const defaultSettings = {
 	enableNotifications: true,
 	toastPosition: "top-center",
 	toastTransition: "bounce",
+	toastDuration: 5000,
 	includeSingleLetterHints: true,
 	urlInTitle: true,
 	includeTabMarkers: true,

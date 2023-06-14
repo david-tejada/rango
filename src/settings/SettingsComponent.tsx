@@ -434,6 +434,19 @@ export function SettingsComponent() {
 						<Option value="bottom-right">bottom-right</Option>
 					</Select>
 				</SettingRow>
+
+				<SettingRow>
+					<NumberInput
+						label="Duration (ms)"
+						defaultValue={settings.toastDuration}
+						isValid={isValidSetting("toastDuration", settings.toastDuration)}
+						onChange={(value) => {
+							handleChange("toastDuration", value);
+						}}
+						onBlur={handleBlur}
+					/>
+				</SettingRow>
+
 				<SettingRow>
 					<RadioGroup
 						label="Transition"
