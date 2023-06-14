@@ -1,5 +1,6 @@
 import { getToggles } from "../settings/toggles";
 import { ToastIcon } from "./ToastIcon";
+import { ToastMessage } from "./ToastMessage";
 import "./ToastTogglesMessage.css";
 
 function getIconType(value: boolean | undefined) {
@@ -10,16 +11,11 @@ function getIconType(value: boolean | undefined) {
 type ToggleStatusProps = {
 	label: string;
 	status: boolean | undefined;
-	isHeader?: boolean;
 };
 
-function ToggleStatus({ label, status, isHeader }: ToggleStatusProps) {
+function ToggleStatus({ label, status }: ToggleStatusProps) {
 	return (
-		<div
-			className={`ToggleStatus ${status === undefined ? "unset" : "set"} ${
-				isHeader ? "header" : ""
-			}`}
-		>
+		<div className={`ToggleStatus ${status === undefined ? "unset" : "set"}`}>
 			{label}
 			<ToastIcon iconType={getIconType(status)} />
 		</div>
@@ -30,12 +26,12 @@ export function TogglesStatusMessage() {
 	const { navigation, path, host, tab, global } = getToggles();
 
 	return (
-		<div className="TogglesStatusMessage">
+		<ToastMessage>
 			<ToggleStatus label="Now" status={navigation} />
 			<ToggleStatus label="Page" status={path} />
 			<ToggleStatus label="Host" status={host} />
 			<ToggleStatus label="Tab" status={tab} />
 			<ToggleStatus label="Global" status={global} />
-		</div>
+		</ToastMessage>
 	);
 }

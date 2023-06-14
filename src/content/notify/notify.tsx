@@ -61,11 +61,20 @@ export async function notify(text: string, options?: ToastOptions) {
 
 	if (options?.toastId && toast.isActive(options.toastId)) {
 		toast.update(options.toastId, {
-			render: <ToastMessage text={text} />,
+			render: (
+				<ToastMessage>
+					<p>{text}</p>
+				</ToastMessage>
+			),
 			...options,
 		});
 	} else {
-		toast(<ToastMessage text={text} />, options);
+		toast(
+			<ToastMessage>
+				<p>{text}</p>
+			</ToastMessage>,
+			options
+		);
 	}
 }
 

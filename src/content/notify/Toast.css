@@ -1,21 +1,21 @@
-.Toastify__toast-container {
+#rango-toast .Toastify__toast-container {
 	width: auto;
-	max-width: 400px;
+	max-width: 30rem;
 }
 
-.Toastify__toast {
-	border-radius: 8px !important;
+#rango-toast .Toastify__toast {
+	border-radius: 0.5rem !important;
 }
 
-.Toastify__toast-body {
+#rango-toast .Toastify__toast-body {
 	font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto,
 		Ubuntu, "Helvetica Neue", Oxygen, Cantarell, sans-serif !important;
 	color: var(--toastify-text-color-light) !important;
 }
 
-.Toastify__toast-body h6,
-.Toastify__toast-body p {
-	font-size: 16px !important;
+#rango-toast .Toastify__toast-body h2,
+#rango-toast .Toastify__toast-body p {
+	font-size: 1rem !important;
 	text-transform: none !important;
 	letter-spacing: initial !important;
 	line-height: 1.4 !important;
@@ -23,19 +23,37 @@
 		Ubuntu, "Helvetica Neue", Oxygen, Cantarell, sans-serif !important;
 	color: var(--toastify-text-color-light) !important;
 	padding: 0 !important;
-}
-
-.Toastify__toast-icon {
-	margin-right: 1em;
-}
-
-.Toastify__toast-body h6 {
 	margin: 0 !important;
+}
+
+#rango-toast .Toastify__toast-body h2 {
+	border: 0 !important;
 	font-weight: bold !important;
 	color: var(--toastify-text-color-light) !important;
 }
 
-.Toastify__toast-body p {
-	margin: 0 !important;
+#rango-toast .Toastify__toast-body p {
 	margin-top: 0.1em !important;
+}
+
+#rango-toast .Toastify__toast-body footer {
+	margin-top: 0.7rem !important;
+	font-size: 0.75rem !important;
+	text-align: right;
+}
+
+#rango-toast .Toastify__toast-body footer code {
+	padding: 0.2em 0.4em !important;
+	border-radius: 0.3em !important;
+	background-color: #e5e5e5 !important;
+	color: var(--toastify-text-color-light) !important;
+	text-shadow: unset !important;
+}
+
+#rango-toast .Toastify__toast-icon {
+	margin-right: 1em !important;
+	margin-top: 1em !important;
+	align-self: start !important;
+	height: 1.2em !important;
+	width: 1.2em !important;
 }

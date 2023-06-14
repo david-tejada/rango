@@ -1,12 +1,15 @@
 type ToastMessageProps = {
-	text: string;
+	children: React.ReactNode;
 };
 
-export function ToastMessage({ text }: ToastMessageProps) {
+export function ToastMessage({ children }: ToastMessageProps) {
 	return (
-		<div>
-			<h6>Rango</h6>
-			<p>{text}</p>
+		<div className="ToastMessage">
+			<h2>Rango</h2>
+			{children}
+			<footer>
+				To close say <code>dismiss</code>
+			</footer>
 		</div>
 	);
 }

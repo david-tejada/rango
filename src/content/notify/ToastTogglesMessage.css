@@ -1,20 +1,13 @@
-.TogglesStatusMessage {
-	min-width: 220px;
-}
-
-.ToggleStatus {
+#rango-toast .ToggleStatus {
 	display: flex;
 	justify-content: space-between;
-	font-size: 16px;
+	font-size: 1rem;
 	text-transform: none;
 	line-height: 1.8;
+	min-width: 12rem;
 }
 
-.ToggleStatus.set ~ .ToggleStatus.set,
-.ToggleStatus.unset {
+#rango-toast .ToggleStatus.set ~ .ToggleStatus.set,
+#rango-toast .ToggleStatus.unset {
 	opacity: 40%;
-}
-
-.ToggleStatus.header {
-	padding-bottom: 1em;
 }
