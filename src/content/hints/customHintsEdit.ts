@@ -1,5 +1,8 @@
+import browser from "webextension-polyfill";
 import { retrieve, store } from "../../common/storage";
 import { assertDefined } from "../../typings/TypingUtils";
+import { CustomSelectors } from "../../typings/StorageSchema";
+import { isMainframe } from "../setup/contentScriptContext";
 
 export interface SelectorAlternative {
 	selector: string;
@@ -75,33 +78,32 @@ export function pickSelectorAlternative(options: {
 	selectorsToUpdate.push(selector);
 }
 
+/**
+ * Stores the custom selectors for the frame. Since we need to make sure that
+ * different frames don't store at the same time, it sends the request to the
+ * background script to store them where the storage is handled with a mutex
+ *
+ * @returns An array with all the selectors added (included and excluded)
+ */
 export async function storeCustomSelectors() {
 	const pattern = getHostPattern();
-
-	const customSelectors = await retrieve("customSelectors");
-
-	assertDefined(customSelectors);
-
-	const customForPattern = customSelectors[pattern] ?? {
-		include: [],
-		exclude: [],
-	};
-
 	const addedSelectors = [...includeSelectors, ...excludeSelectors];
 
-	customForPattern.include = [
-		...new Set([...customForPattern.include, ...includeSelectors]),
-	];
-	customForPattern.exclude = [
-		...new Set([...customForPattern.exclude, ...excludeSelectors]),
-	];
+	const selectors: CustomSelectors = {
+		include: includeSelectors,
+		exclude: excludeSelectors,
+	};
+
+	// Even if both include and exclude are empty arrays we need to send the
+	// message to the background script to handle notifications
+	await browser.runtime.sendMessage({
+		type: "storeCustomSelectors",
+		pattern,
+		selectors,
+	});
 
 	includeSelectors = [];
 	excludeSelectors = [];
-
-	customSelectors[pattern] = customForPattern;
-
-	await store("customSelectors", customSelectors);
 
 	return addedSelectors;
 }

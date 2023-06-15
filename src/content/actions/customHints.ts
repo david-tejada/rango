@@ -199,7 +199,7 @@ export function includeOrExcludeMoreOrLessSelectors(more: boolean) {
 	updateRecentCustomSelectors();
 }
 
-export async function saveCustomSelectors() {
+export async function confirmSelectorsCustomization() {
 	const addedSelectors = await storeCustomSelectors();
 	await updateCustomSelectors();
 	updateHintablesBySelector(addedSelectors.join(", "));

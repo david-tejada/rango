@@ -1,4 +1,4 @@
-interface CustomSelectors {
+export interface CustomSelectors {
 	include: string[];
 	exclude: string[];
 }

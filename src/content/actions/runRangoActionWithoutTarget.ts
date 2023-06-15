@@ -10,7 +10,7 @@ import { resetCustomSelectors } from "../hints/customHintsEdit";
 import { notify, notifyTogglesStatus } from "../notify/notify";
 import {
 	includeOrExcludeMoreOrLessSelectors,
-	saveCustomSelectors,
+	confirmSelectorsCustomization,
 } from "./customHints";
 import { unhoverAll } from "./hoverElement";
 import { scroll } from "./scroll";
@@ -110,10 +110,7 @@ export async function runRangoActionWithoutTarget(
 			break;
 
 		case "confirmSelectorsCustomization": {
-			const saved = await saveCustomSelectors();
-			await (saved
-				? notify("Custom selectors saved", { type: "success" })
-				: notify("No selectors to save", { type: "warning" }));
+			await confirmSelectorsCustomization();
 			break;
 		}
 

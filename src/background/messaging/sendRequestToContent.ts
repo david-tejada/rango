@@ -10,6 +10,13 @@ let lastScrollFrameId = 0;
 const toAllFrames = new Set([
 	"markHintsAsKeyboardReachable",
 	"restoreKeyboardReachableHints",
+	"displayExtraHints",
+	"displayExcludedHints",
+	"displayLessHints",
+	"confirmSelectorsCustomization",
+	"includeOrExcludeMoreSelectors",
+	"includeOrExcludeLessSelectors",
+	"resetCustomSelectors",
 ]);
 
 // Sends a request to the content script. If tabId is not specified it will
