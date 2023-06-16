@@ -16,7 +16,7 @@
 		"lint:css": "stylelint src/**/*.css",
 		"lint:js": "xo",
 		"lint": "run-p lint:* check-types",
-		"pretest": "NODE_ENV=test run-p lint:* build:mv3",
+		"pretest": "NODE_ENV=test run-p lint:* unused-exports build:mv3",
 		"test": "jest --runInBand",
 		"watch": "parcel watch src/mv2/manifest.json --dist-dir dist-mv2 --no-cache --no-hmr",
 		"watch:mv3": "parcel watch src/mv3/manifest.json --dist-dir dist-mv3 --no-cache --no-hmr",
