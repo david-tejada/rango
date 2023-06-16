@@ -48,6 +48,7 @@
 	background-color: #e5e5e5 !important;
 	color: var(--toastify-text-color-light) !important;
 	text-shadow: unset !important;
+	font-size: inherit;
 }
 
 #rango-toast .Toastify__toast-icon {

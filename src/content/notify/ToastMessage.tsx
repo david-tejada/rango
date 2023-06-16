@@ -8,7 +8,7 @@ export function ToastMessage({ children }: ToastMessageProps) {
 			<h2>Rango</h2>
 			{children}
 			<footer>
-				To close say <code>dismiss</code>
+				<code>dismiss</code> to close
 			</footer>
 		</div>
 	);
