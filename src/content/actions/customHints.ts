@@ -16,7 +16,6 @@ import {
 import {
 	pickSelectorAlternative,
 	SelectorAlternative,
-	storeCustomSelectors,
 	updateSelectorAlternatives,
 } from "../hints/customHintsEdit";
 
@@ -199,11 +198,8 @@ export function includeOrExcludeMoreOrLessSelectors(more: boolean) {
 	updateRecentCustomSelectors();
 }
 
-export async function confirmSelectorsCustomization() {
-	const addedSelectors = await storeCustomSelectors();
+export async function handleCustomSelectorsChange(affectedSelectors: string[]) {
 	await updateCustomSelectors();
-	updateHintablesBySelector(addedSelectors.join(", "));
+	updateHintablesBySelector(affectedSelectors.join(", "));
 	displayMoreOrLessHints({ extra: false, excluded: false });
-
-	return addedSelectors.length > 0;
 }

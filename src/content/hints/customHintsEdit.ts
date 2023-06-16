@@ -1,8 +1,5 @@
 import browser from "webextension-polyfill";
-import { retrieve, store } from "../../common/storage";
-import { assertDefined } from "../../typings/TypingUtils";
-import { CustomSelectors } from "../../typings/StorageSchema";
-import { isMainframe } from "../setup/contentScriptContext";
+import { CustomSelectorsForPattern } from "../../typings/StorageSchema";
 
 export interface SelectorAlternative {
 	selector: string;
@@ -82,14 +79,11 @@ export function pickSelectorAlternative(options: {
  * Stores the custom selectors for the frame. Since we need to make sure that
  * different frames don't store at the same time, it sends the request to the
  * background script to store them where the storage is handled with a mutex
- *
- * @returns An array with all the selectors added (included and excluded)
  */
-export async function storeCustomSelectors() {
+export async function confirmSelectorsCustomization() {
 	const pattern = getHostPattern();
-	const addedSelectors = [...includeSelectors, ...excludeSelectors];
 
-	const selectors: CustomSelectors = {
+	const selectors: CustomSelectorsForPattern = {
 		include: includeSelectors,
 		exclude: excludeSelectors,
 	};
@@ -104,28 +98,17 @@ export async function storeCustomSelectors() {
 
 	includeSelectors = [];
 	excludeSelectors = [];
-
-	return addedSelectors;
 }
 
 export async function resetCustomSelectors() {
 	const pattern = getHostPattern();
 
-	const customSelectors = await retrieve("customSelectors");
+	const selectorsRemoved = (await browser.runtime.sendMessage({
+		type: "resetCustomSelectors",
+		pattern,
+	})) as string[];
 
-	assertDefined(customSelectors);
-
-	const customForPattern = customSelectors[pattern];
-
-	const toUpdateSelector = customForPattern
-		? [...customForPattern.include, ...customForPattern.exclude].join(", ")
-		: "";
-
-	customSelectors[pattern] = { include: [], exclude: [] };
-
-	await store("customSelectors", customSelectors);
-
-	return toUpdateSelector;
+	return selectorsRemoved.join(", ");
 }
 
 // I had to create this function to avoid dependency cycle if I were to import

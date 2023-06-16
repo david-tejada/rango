@@ -1,4 +1,4 @@
-export interface CustomSelectors {
+export interface CustomSelectorsForPattern {
 	include: string[];
 	exclude: string[];
 }
@@ -56,7 +56,7 @@ export interface StorageSchema {
 	includeTabMarkers: boolean;
 	uppercaseTabMarkers: boolean;
 	keyboardClicking: boolean;
-	customSelectors: Record<string, CustomSelectors>;
+	customSelectors: Map<string, CustomSelectorsForPattern>;
 	switchedToSyncStorage: boolean;
 	showWhatsNewPageOnUpdate: boolean;
 	newTabPosition: "relatedAfterCurrent" | "afterCurrent" | "atEnd";

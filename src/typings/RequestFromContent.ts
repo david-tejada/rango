@@ -1,4 +1,4 @@
-import { CustomSelectors } from "./StorageSchema";
+import { CustomSelectorsForPattern } from "./StorageSchema";
 
 interface OpenInNewTab {
 	type: "openInNewTab";
@@ -42,7 +42,12 @@ interface StoreHintsInFrame {
 export interface StoreCustomSelectors {
 	type: "storeCustomSelectors";
 	pattern: string;
-	selectors: CustomSelectors;
+	selectors: CustomSelectorsForPattern;
+}
+
+interface ResetCustomSelectors {
+	type: "resetCustomSelectors";
+	pattern: string;
 }
 
 interface SimpleRequestFromContent {
@@ -65,4 +70,5 @@ export type RequestFromContent =
 	| MarkHintsAsKeyboardReachable
 	| ReclaimHintsFromOtherFrames
 	| StoreHintsInFrame
-	| StoreCustomSelectors;
+	| StoreCustomSelectors
+	| ResetCustomSelectors;

@@ -6,12 +6,12 @@ import {
 	updateHintablesBySelector,
 } from "../wrappers/updateWrappers";
 import { updateCustomSelectors } from "../hints/selectors";
-import { resetCustomSelectors } from "../hints/customHintsEdit";
-import { notify, notifyTogglesStatus } from "../notify/notify";
 import {
-	includeOrExcludeMoreOrLessSelectors,
 	confirmSelectorsCustomization,
-} from "./customHints";
+	resetCustomSelectors,
+} from "../hints/customHintsEdit";
+import { notifyTogglesStatus } from "../notify/notify";
+import { includeOrExcludeMoreOrLessSelectors } from "./customHints";
 import { unhoverAll } from "./hoverElement";
 import { scroll } from "./scroll";
 import { navigateToNextPage, navigateToPreviousPage } from "./pagination";
@@ -116,14 +116,13 @@ export async function runRangoActionWithoutTarget(
 
 		case "resetCustomSelectors": {
 			const toUpdateSelector = await resetCustomSelectors();
-			await updateCustomSelectors();
-			updateHintablesBySelector(toUpdateSelector);
-			await refreshHints();
-			await (toUpdateSelector
-				? notify("Custom selectors reset", { type: "success" })
-				: notify("No custom selectors found for the current page", {
-						type: "warning",
-				  }));
+
+			if (toUpdateSelector) {
+				await updateCustomSelectors();
+				updateHintablesBySelector(toUpdateSelector);
+				await refreshHints();
+			}
+
 			break;
 		}
 

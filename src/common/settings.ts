@@ -1,5 +1,8 @@
 import Color from "color";
-import { StorageSchema } from "../typings/StorageSchema";
+import {
+	CustomSelectorsForPattern,
+	StorageSchema,
+} from "../typings/StorageSchema";
 
 export const defaultSettings = {
 	hintUppercaseLetters: false,
@@ -15,9 +18,9 @@ export const defaultSettings = {
 	hintMinimumContrastRatio: 4,
 	scrollBehavior: "auto",
 	hintsToggleGlobal: true,
-	hintsToggleHosts: new Map(),
-	hintsTogglePaths: new Map(),
-	hintsToggleTabs: new Map(),
+	hintsToggleHosts: new Map<string, boolean>(),
+	hintsTogglePaths: new Map<string, boolean>(),
+	hintsToggleTabs: new Map<number, boolean>(),
 	enableNotifications: true,
 	toastPosition: "top-center",
 	toastTransition: "bounce",
@@ -27,7 +30,7 @@ export const defaultSettings = {
 	includeTabMarkers: true,
 	uppercaseTabMarkers: true,
 	keyboardClicking: false,
-	customSelectors: {},
+	customSelectors: new Map<string, CustomSelectorsForPattern>(),
 	showWhatsNewPageOnUpdate: true,
 	newTabPosition: "relatedAfterCurrent",
 	hasSeenSettingsPage: false,

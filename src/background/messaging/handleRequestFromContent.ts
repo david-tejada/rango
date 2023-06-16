@@ -12,7 +12,10 @@ import {
 import { getCurrentTabId } from "../utils/getCurrentTab";
 import { openInNewTab } from "../actions/openInNewTab";
 import { getTabMarker } from "../misc/tabMarkers";
-import { storeCustomSelectors } from "../utils/storeCustomSelectors";
+import {
+	resetCustomSelectors,
+	storeCustomSelectors,
+} from "../utils/storeCustomSelectors";
 import { sendRequestToContent } from "./sendRequestToContent";
 
 export async function handleRequestFromContent(
@@ -106,6 +109,9 @@ export async function handleRequestFromContent(
 		case "storeCustomSelectors":
 			await storeCustomSelectors(request);
 			break;
+
+		case "resetCustomSelectors":
+			return resetCustomSelectors(request.pattern);
 
 		default:
 			console.error(request);

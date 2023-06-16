@@ -36,6 +36,11 @@ interface SimpleContentRequest {
 		| "getTitleBeforeDecoration";
 }
 
+interface HandleCustomSelectorsChange {
+	type: "handleCustomSelectorsChange";
+	affectedSelectors: string[];
+}
+
 export type RequestFromBackground = { frameId?: number } & (
 	| RangoAction
 	| SimpleContentRequest
@@ -45,4 +50,5 @@ export type RequestFromBackground = { frameId?: number } & (
 	| DisplayToastNotification
 	| UpdateNavigationToggle
 	| AllowToastNotification
+	| HandleCustomSelectorsChange
 );
