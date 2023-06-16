@@ -4,10 +4,17 @@ type ToggleProps = {
 	label: string;
 	isPressed: boolean;
 	isDisabled?: boolean;
+	children?: React.ReactNode;
 	onClick(): void;
 };
 
-export function Toggle({ label, isPressed, isDisabled, onClick }: ToggleProps) {
+export function Toggle({
+	label,
+	isPressed,
+	isDisabled,
+	children,
+	onClick,
+}: ToggleProps) {
 	return (
 		<div className={`Toggle ${isDisabled ? "disabled" : ""}`}>
 			<label>
@@ -19,6 +26,7 @@ export function Toggle({ label, isPressed, isDisabled, onClick }: ToggleProps) {
 					onClick={onClick}
 				/>
 			</label>
+			{children}
 		</div>
 	);
 }

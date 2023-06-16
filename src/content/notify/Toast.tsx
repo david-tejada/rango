@@ -19,7 +19,6 @@ export function Toast() {
 			pauseOnHover
 			pauseOnFocusLoss={false}
 			autoClose={5000}
-			closeButton={false}
 			newestOnTop={false}
 			rtl={false}
 			theme="light"

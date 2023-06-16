@@ -5,7 +5,7 @@ import { TabMarkers } from "../../typings/StorageSchema";
 
 const mutex = new Mutex();
 
-export async function withTabMarkers<T>(
+async function withTabMarkers<T>(
 	callback: (tabMarkers: TabMarkers) => T
 ): Promise<T> {
 	return mutex.runExclusive(async () => {
@@ -42,7 +42,7 @@ export async function getTabIdForMarker(marker: string) {
 	});
 }
 
-export async function releaseMarker(tabId: number) {
+async function releaseMarker(tabId: number) {
 	const marker = await getTabMarker(tabId);
 	await withTabMarkers(({ free, tabIdsToMarkers, markersToTabIds }) => {
 		tabIdsToMarkers.delete(tabId);

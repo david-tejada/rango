@@ -12,6 +12,7 @@ import { Radio, RadioGroup } from "./RadioGroup";
 import { SettingRow } from "./SettingRow";
 import { TextInput } from "./TextInput";
 import { Option, Select } from "./Select";
+import { Alert } from "./Alert";
 
 export function SettingsComponent() {
 	const [storedSettings, setStoredSettings] = useState(defaultSettingsMutable);
@@ -68,7 +69,11 @@ export function SettingsComponent() {
 						onClick={() => {
 							handleChange("keyboardClicking", !settings.keyboardClicking);
 						}}
-					/>
+					>
+						<p className="explanation">
+							Be able to click elements by typing the hint letters.
+						</p>
+					</Toggle>
 				</SettingRow>
 				<SettingRow>
 					<Toggle
@@ -152,13 +157,21 @@ export function SettingsComponent() {
 					<Toggle
 						label="Include single letter hints"
 						isPressed={settings.includeSingleLetterHints}
+						isDisabled={settings.keyboardClicking}
 						onClick={() => {
 							handleChange(
 								"includeSingleLetterHints",
 								!settings.includeSingleLetterHints
 							);
 						}}
-					/>
+					>
+						{settings.keyboardClicking && (
+							<p className="explanation">
+								This setting is disabled while keyboard clicking is enabled.
+								Hints must consist of two letters so all are keyboard reachable.
+							</p>
+						)}
+					</Toggle>
 				</SettingRow>
 				<SettingRow>
 					<Toggle
@@ -278,9 +291,9 @@ export function SettingsComponent() {
 						onBlur={handleBlur}
 					>
 						{!storedSettings.hintBackgroundColor && settings.hintFontColor && (
-							<p className="small warning">
+							<Alert type="warning">
 								No background color set. This value will be ignored.
-							</p>
+							</Alert>
 						)}
 						<p className="small show-on-focus">
 							Use a{" "}
@@ -421,6 +434,19 @@ export function SettingsComponent() {
 						<Option value="bottom-right">bottom-right</Option>
 					</Select>
 				</SettingRow>
+
+				<SettingRow>
+					<NumberInput
+						label="Duration (ms)"
+						defaultValue={settings.toastDuration}
+						isValid={isValidSetting("toastDuration", settings.toastDuration)}
+						onChange={(value) => {
+							handleChange("toastDuration", value);
+						}}
+						onBlur={handleBlur}
+					/>
+				</SettingRow>
+
 				<SettingRow>
 					<RadioGroup
 						label="Transition"

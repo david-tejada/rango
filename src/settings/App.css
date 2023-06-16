@@ -21,10 +21,13 @@ h1 {
 	line-height: 1.4;
 }
 
-.warning {
-	color: var(--orange-600);
-}
-
 .SettingRow > * > label {
 	padding-top: 0.3em;
+}
+
+.explanation {
+	margin-top: 0.2em;
+	margin-bottom: 0.4em;
+	color: var(--slate-500);
+	font-size: 0.9em;
 }

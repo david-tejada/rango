@@ -9,7 +9,7 @@ const defaultSelector =
 	// Attributes
 	"[contenteditable='true'], [contenteditable='']";
 
-const hintableSelector = `:is(${defaultSelector}):not([aria-hidden='true']`;
+const hintableSelector = `:is(${defaultSelector}):not([aria-hidden='true'], .Toastify__close-button)`;
 
 export const extraSelector =
 	defaultSelector +

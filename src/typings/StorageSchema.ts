@@ -49,6 +49,7 @@ export interface StorageSchema {
 		| "bottom-center"
 		| "bottom-left";
 	toastTransition: "slide" | "flip" | "zoom" | "bounce";
+	toastDuration: number;
 
 	// Other settings
 	urlInTitle: boolean;
@@ -59,6 +60,7 @@ export interface StorageSchema {
 	switchedToSyncStorage: boolean;
 	showWhatsNewPageOnUpdate: boolean;
 	newTabPosition: "relatedAfterCurrent" | "afterCurrent" | "atEnd";
+	hasSeenSettingsPage: boolean;
 
 	// Other data
 	tabsByRecency: Record<number, number[]>;

@@ -2,6 +2,7 @@ import { ToastOptions, toast } from "react-toastify";
 import { createRoot } from "react-dom/client";
 import { getCachedSetting } from "../settings/cacheSettings";
 import { isCurrentTab, isMainframe } from "../setup/contentScriptContext";
+import { retrieve } from "../../common/storage";
 import { Toast } from "./Toast";
 import { ToastMessage } from "./ToastMessage";
 import { TogglesStatusMessage } from "./ToastTogglesMessage";
@@ -51,6 +52,10 @@ export async function notify(text: string, options?: ToastOptions) {
 
 	renderToast();
 
+	const autoClose = await retrieve("toastDuration");
+
+	options = Object.assign({ autoClose }, options);
+
 	if (options?.icon === "enabled") {
 		options.icon = <ToastIcon iconType="enabled" />;
 	}
@@ -61,11 +66,20 @@ export async function notify(text: string, options?: ToastOptions) {
 
 	if (options?.toastId && toast.isActive(options.toastId)) {
 		toast.update(options.toastId, {
-			render: <ToastMessage text={text} />,
+			render: (
+				<ToastMessage>
+					<p>{text}</p>
+				</ToastMessage>
+			),
 			...options,
 		});
 	} else {
-		toast(<ToastMessage text={text} />, options);
+		toast(
+			<ToastMessage>
+				<p>{text}</p>
+			</ToastMessage>,
+			options
+		);
 	}
 }
 
@@ -74,9 +88,11 @@ export async function notifyTogglesStatus() {
 
 	renderToast();
 
+	const autoClose = await retrieve("toastDuration");
+
 	if (toast.isActive("toggles")) {
 		toast.update("toggles");
 	} else {
-		toast(<TogglesStatusMessage />, { toastId: "toggles" });
+		toast(<TogglesStatusMessage />, { autoClose, toastId: "toggles" });
 	}
 }
