@@ -17,7 +17,6 @@ const toAllFrames = new Set([
 	"includeOrExcludeMoreSelectors",
 	"includeOrExcludeLessSelectors",
 	"resetCustomSelectors",
-	"handleCustomSelectorsChange",
 ]);
 
 // Sends a request to the content script. If tabId is not specified it will

@@ -110,16 +110,19 @@ export async function runRangoActionWithoutTarget(
 			break;
 
 		case "confirmSelectorsCustomization": {
-			await confirmSelectorsCustomization();
+			const selectorsAdded = await confirmSelectorsCustomization();
+			await updateCustomSelectors();
+			updateHintablesBySelector(selectorsAdded.join(", "));
+			displayMoreOrLessHints({ extra: false, excluded: false });
 			break;
 		}
 
 		case "resetCustomSelectors": {
-			const toUpdateSelector = await resetCustomSelectors();
+			const customSelectorsRemoved = await resetCustomSelectors();
 
-			if (toUpdateSelector) {
+			if (customSelectorsRemoved) {
 				await updateCustomSelectors();
-				updateHintablesBySelector(toUpdateSelector);
+				updateHintablesBySelector(customSelectorsRemoved.join(", "));
 				await refreshHints();
 			}
 

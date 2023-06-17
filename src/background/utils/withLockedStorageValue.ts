@@ -14,10 +14,15 @@ function getMutexForStorageValue(name: keyof StorageSchema) {
 }
 
 /**
- * Retrieves and executes the callback for a given storage variable. It makes
- * sure there are no race conditions by locking the variable with a mutex.
+ * Retrieves a given storage variable and executes the callback with the value
+ * as argument. It makes sure there are no race conditions by locking the
+ * variable with a mutex.
+ *
+ * @param name The name of the storage item
+ * @param callback The callback to execute on the value
+ * @returns The result of the callback
  */
-export async function withLockedStorageValue<T extends keyof StorageSchema, U>(
+export async function withLockedStorageAccess<T extends keyof StorageSchema, U>(
 	name: T,
 	callback: (value: StorageSchema[T]) => Promise<U>
 ): Promise<U> {

@@ -39,7 +39,7 @@ interface StoreHintsInFrame {
 	hints: string[];
 }
 
-export interface StoreCustomSelectors {
+interface StoreCustomSelectors {
 	type: "storeCustomSelectors";
 	pattern: string;
 	selectors: CustomSelectorsForPattern;

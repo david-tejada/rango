@@ -1,107 +1,137 @@
+import assertNever from "assert-never";
 import { debounce } from "lodash";
-import { StoreCustomSelectors } from "../../typings/RequestFromContent";
-import { sendRequestToContent } from "../messaging/sendRequestToContent";
+import { CustomSelectorsForPattern } from "../../typings/StorageSchema";
 import { notify } from "./notify";
-import { withLockedStorageValue } from "./withLockedStorageValue";
+import { withLockedStorageAccess } from "./withLockedStorageValue";
 
-let notificationTimeout: ReturnType<typeof setTimeout> | undefined;
 let notifySuccess = false;
-let modifiedSelectors = new Set<string>();
+const modifiedSelectors = new Set<string>();
+let batchUpdatePromise: Promise<void> | undefined;
+let batchUpdatePromiseResolve: (() => void) | undefined;
 
-const updateCustomSelectorsHints = debounce(async () => {
-	await sendRequestToContent({
-		type: "handleCustomSelectorsChange",
-		affectedSelectors: [...modifiedSelectors],
-	});
-}, 50);
+type ActionType = "store" | "reset";
+type ActionNotificationMessages = { success: string; fail: string };
+
+const messages: Record<ActionType, ActionNotificationMessages> = {
+	store: {
+		success: "Custom selectors saved",
+		fail: "No selectors to save",
+	},
+	reset: {
+		success: "Custom selectors reset",
+		fail: "No custom selectors for the current page",
+	},
+};
 
 /**
- * Since the action `confirmSelectorsCustomization` is sent to all frames, in
- * order to notify if the action was successful we need to check if there were
- * custom selectors marked in any of the frames. Depending on that we will show
- * a `success` or `warning` notification.
+ * Notifies with a toast message and resets to the initial state once enough
+ * time has passed since the last call to the function. It also calls
+ * `batchUpdatePromiseResolve` so all the ongoing calls to
+ * `updateCustomSelectors` can finish.
  */
-async function handleCustomSelectorsNotification(
-	customSelectorsModified: boolean,
-	successMessage: string,
-	failMessage: string
-) {
-	if (customSelectorsModified) notifySuccess = true;
+const debouncedNotifyAndReset = debounce(async (action: ActionType) => {
+	const message = notifySuccess
+		? messages[action].success
+		: messages[action].fail;
+	const type = notifySuccess ? "success" : "warning";
 
-	if (!notificationTimeout) {
-		notificationTimeout = setTimeout(async () => {
-			const message = notifySuccess ? successMessage : failMessage;
-			const type = notifySuccess ? "success" : "warning";
+	await notify(message, { type });
 
-			await updateCustomSelectorsHints();
-			await notify(message, { type });
-			notificationTimeout = undefined;
-			notifySuccess = false;
-			modifiedSelectors = new Set<string>();
-		}, 200);
+	// Reset the success flag and clear the set after the debounce period.
+	notifySuccess = false;
+	modifiedSelectors.clear();
+
+	if (batchUpdatePromiseResolve) {
+		batchUpdatePromiseResolve();
+		batchUpdatePromiseResolve = undefined;
+		batchUpdatePromise = undefined;
 	}
-}
+}, 200);
 
-export async function storeCustomSelectors({
-	pattern,
-	selectors,
-}: StoreCustomSelectors) {
-	return withLockedStorageValue("customSelectors", async (customSelectors) => {
-		const customForPattern = customSelectors.get(pattern) ?? {
-			include: [],
-			exclude: [],
-		};
-
-		customForPattern.include = [
-			...new Set([...customForPattern.include, ...selectors.include]),
-		];
-		customForPattern.exclude = [
-			...new Set([...customForPattern.exclude, ...selectors.exclude]),
-		];
-
-		customSelectors.set(pattern, customForPattern);
-
-		const customSelectorsAdded = [...selectors.include, ...selectors.exclude];
-		if (customSelectorsAdded.length > 0) {
-			for (const selector of customSelectorsAdded) {
-				modifiedSelectors.add(selector);
-			}
-		}
-
-		await handleCustomSelectorsNotification(
-			customSelectorsAdded.length > 0,
-			"Custom selectors saved",
-			"No selectors to save"
-		);
-	});
-}
-
-export async function resetCustomSelectors(pattern: string) {
-	const selectorsRemoved = await withLockedStorageValue(
+async function updateCustomSelectors(
+	action: ActionType,
+	pattern: string,
+	selectors?: CustomSelectorsForPattern
+) {
+	const selectorsAffected = await withLockedStorageAccess(
 		"customSelectors",
 		async (customSelectors) => {
-			const selectorsForPattern = customSelectors.get(pattern);
+			const selectorsForPattern = customSelectors.get(pattern) ?? {
+				include: [],
+				exclude: [],
+			};
 
-			if (!selectorsForPattern) return [];
+			if (action === "store") {
+				if (!selectors) throw new Error("No selectors provided to store");
 
-			const { include, exclude } = selectorsForPattern;
+				selectorsForPattern.include = Array.from(
+					new Set([...selectorsForPattern.include, ...selectors.include])
+				);
+				selectorsForPattern.exclude = Array.from(
+					new Set([...selectorsForPattern.exclude, ...selectors.exclude])
+				);
+				customSelectors.set(pattern, selectorsForPattern);
+				return [...selectors.include, ...selectors.exclude];
+			}
 
-			customSelectors.delete(pattern);
-			return [...include, ...exclude];
+			if (action === "reset") {
+				customSelectors.delete(pattern);
+				return selectorsForPattern
+					? [...selectorsForPattern.include, ...selectorsForPattern.exclude]
+					: [];
+			}
+
+			return assertNever(action);
 		}
 	);
 
-	if (selectorsRemoved.length > 0) {
-		for (const selector of selectorsRemoved) {
-			modifiedSelectors.add(selector);
-		}
+	// Update notifySuccess to true if any of the calls within the debounce period is successful.
+	if (selectorsAffected.length > 0) notifySuccess = true;
+
+	for (const selector of selectorsAffected) {
+		modifiedSelectors.add(selector);
 	}
 
-	await handleCustomSelectorsNotification(
-		selectorsRemoved.length > 0,
-		"Custom selectors reset",
-		"No custom selectors for the current page"
-	);
+	await debouncedNotifyAndReset(action);
 
-	return [...modifiedSelectors];
+	if (batchUpdatePromise) {
+		await batchUpdatePromise;
+	} else {
+		batchUpdatePromise = new Promise((resolve) => {
+			batchUpdatePromiseResolve = resolve;
+		});
+		await batchUpdatePromise;
+	}
+}
+
+/**
+ * Stores the custom selectors for the given URL pattern. It handles being
+ * called multiple times to handle multiple frames wanting to change the custom
+ * selectors. It waits for a sequence of calls to finish before returning. Once
+ * calls have stopped it notifies if storing the custom selectors was
+ * successful, that is if any of the calls in the sequence resulted in custom
+ * selectors being added.
+ *
+ * @param pattern The URL pattern where selectors apply
+ * @param selectors An object with `include` and `exclude` CSS selectors for the given pattern
+ */
+export async function storeCustomSelectors(
+	pattern: string,
+	selectors: CustomSelectorsForPattern
+) {
+	await updateCustomSelectors("store", pattern, selectors);
+}
+
+/**
+ * Resets the custom selectors for the given URL pattern. It handles being
+ * called multiple times to handle multiple frames wanting to reset the custom
+ * selectors. It waits for a sequence of calls to finish before returning. Once
+ * calls have stopped it notifies if resetting the custom selectors was
+ * successful, that is if any of the calls in the sequence resulted in custom
+ * selectors being removed.
+ *
+ * @param pattern The URL pattern where selectors apply
+ */
+export async function resetCustomSelectors(pattern: string) {
+	await updateCustomSelectors("reset", pattern);
 }

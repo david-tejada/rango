@@ -1,5 +1,6 @@
 import browser from "webextension-polyfill";
 import { CustomSelectorsForPattern } from "../../typings/StorageSchema";
+import { retrieve } from "../../common/storage";
 
 export interface SelectorAlternative {
 	selector: string;
@@ -20,6 +21,18 @@ function getHostPattern() {
 	}
 
 	return window.location.href;
+}
+
+async function getCustomSelectorsAll() {
+	const pattern = getHostPattern();
+	const customSelectors = await retrieve("customSelectors");
+	const customForPattern = customSelectors.get(pattern);
+
+	if (!customForPattern) return [];
+
+	const { include, exclude } = customForPattern;
+
+	return [...include, ...exclude];
 }
 
 export function updateSelectorAlternatives(
@@ -76,14 +89,17 @@ export function pickSelectorAlternative(options: {
 }
 
 /**
- * Stores the custom selectors for the frame. Since we need to make sure that
- * different frames don't store at the same time, it sends the request to the
- * background script to store them where the storage is handled with a mutex
+ * Stores the custom selectors for the URL pattern of the current frame. To
+ * avoid multiple frames changing the custom selectors at the same time a
+ * message is sent to the background script where that is handled safely.
+ *
+ * @returns An array with the selectors that were added
  */
 export async function confirmSelectorsCustomization() {
 	const pattern = getHostPattern();
+	const customSelectorsBefore = await getCustomSelectorsAll();
 
-	const selectors: CustomSelectorsForPattern = {
+	const newCustomSelectors: CustomSelectorsForPattern = {
 		include: includeSelectors,
 		exclude: excludeSelectors,
 	};
@@ -93,22 +109,40 @@ export async function confirmSelectorsCustomization() {
 	await browser.runtime.sendMessage({
 		type: "storeCustomSelectors",
 		pattern,
-		selectors,
+		selectors: newCustomSelectors,
 	});
+
+	const customSelectorsAfter = await getCustomSelectorsAll();
 
 	includeSelectors = [];
 	excludeSelectors = [];
+
+	const customSelectorsBeforeSet = new Set(customSelectorsBefore);
+
+	const customSelectorsAdded = customSelectorsAfter.filter(
+		(selector) => !customSelectorsBeforeSet.has(selector)
+	);
+
+	return customSelectorsAdded;
 }
 
+/**
+ * Resets the custom selectors for the URL pattern of the current frame. To
+ * avoid multiple frames changing the custom selectors at the same time a
+ * message is sent to the background script where that is handled safely.
+ *
+ * @returns An array with the selectors that were removed
+ */
 export async function resetCustomSelectors() {
 	const pattern = getHostPattern();
+	const customSelectorsBefore = await getCustomSelectorsAll();
 
-	const selectorsRemoved = (await browser.runtime.sendMessage({
+	await browser.runtime.sendMessage({
 		type: "resetCustomSelectors",
 		pattern,
-	})) as string[];
+	});
 
-	return selectorsRemoved.join(", ");
+	return customSelectorsBefore;
 }
 
 // I had to create this function to avoid dependency cycle if I were to import

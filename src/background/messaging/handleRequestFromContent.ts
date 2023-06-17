@@ -107,7 +107,7 @@ export async function handleRequestFromContent(
 			return getTabMarker(tabId);
 
 		case "storeCustomSelectors":
-			await storeCustomSelectors(request);
+			await storeCustomSelectors(request.pattern, request.selectors);
 			break;
 
 		case "resetCustomSelectors":

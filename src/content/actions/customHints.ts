@@ -1,12 +1,7 @@
 import intersect from "intersect";
 import { ElementWrapper } from "../../typings/ElementWrapper";
-import {
-	displayMoreOrLessHints,
-	updateHintablesBySelector,
-	updateRecentCustomSelectors,
-} from "../wrappers/updateWrappers";
+import { updateRecentCustomSelectors } from "../wrappers/updateWrappers";
 import { deepGetElements } from "../utils/deepGetElements";
-import { updateCustomSelectors } from "../hints/selectors";
 import { generatePossibleSelectors } from "../utils/generatePossibleSelectors";
 import {
 	getSpecificityValue,
@@ -196,10 +191,4 @@ export function includeOrExcludeMoreOrLessSelectors(more: boolean) {
 	const step = more ? 1 : -1;
 	pickSelectorAlternative({ step });
 	updateRecentCustomSelectors();
-}
-
-export async function handleCustomSelectorsChange(affectedSelectors: string[]) {
-	await updateCustomSelectors();
-	updateHintablesBySelector(affectedSelectors.join(", "));
-	displayMoreOrLessHints({ extra: false, excluded: false });
 }
