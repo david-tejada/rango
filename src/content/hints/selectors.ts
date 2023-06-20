@@ -18,28 +18,35 @@ export const extraSelector =
 let includeSelectorAll = "";
 let excludeSelectorAll = "";
 
+/**
+ * Updates the variables `includeSelectorAll` and `excludeSelectorAll` that are
+ * used when checking if an element should be hinted.
+ */
 export async function updateCustomSelectors() {
 	const customSelectors = await retrieve("customSelectors");
 
 	// This is stored when the extension first runs, so it shouldn't be undefined.
 	// But it is undefined when running tests. This way we also make extra sure.
 	if (!customSelectors) {
-		await store("customSelectors", {});
+		await store("customSelectors", new Map());
 	}
 
-	let includeSelectors: string[] = [];
-	let excludeSelectors: string[] = [];
+	let include: string[] = [];
+	let exclude: string[] = [];
 
-	for (const [key, value] of Object.entries(customSelectors)) {
-		const re = new RegExp(key);
-		if (re.test(window.location.href)) {
-			includeSelectors = value.include;
-			excludeSelectors = value.exclude;
+	for (const [
+		pattern,
+		customSelectorsForPattern,
+	] of customSelectors.entries()) {
+		const patternRe = new RegExp(pattern);
+
+		if (patternRe.test(window.location.href)) {
+			({ include, exclude } = customSelectorsForPattern);
 		}
 	}
 
-	includeSelectorAll = includeSelectors.join(", ");
-	excludeSelectorAll = excludeSelectors.join(", ");
+	includeSelectorAll = include.join(", ");
+	excludeSelectorAll = exclude.join(", ");
 }
 
 export function getExcludeSelectorAll() {

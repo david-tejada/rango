@@ -1,6 +1,9 @@
 /* eslint-disable no-await-in-loop */
 import browser from "webextension-polyfill";
-import { StorageSchema } from "../typings/StorageSchema";
+import {
+	CustomSelectorsForPattern,
+	StorageSchema,
+} from "../typings/StorageSchema";
 import {
 	defaultSettings,
 	isSetting,
@@ -92,7 +95,22 @@ export async function retrieve<T extends keyof StorageSchema>(
 	const [jsonString] = Object.values(retrieved) as [string];
 
 	try {
-		return JSON.parse(jsonString, reviver) as StorageSchema[T];
+		const parsedValue = JSON.parse(jsonString, reviver) as StorageSchema[T];
+
+		// Handle customSelectors type conversion from an object to a Map. This is
+		// only necessary temporarily in order not to lose user's customizations.
+		// Introduced in v0.5.0.
+		if (key === "customSelectors" && !(parsedValue instanceof Map)) {
+			const customSelectorsMap = new Map<string, CustomSelectorsForPattern>(
+				Object.entries(parsedValue)
+			);
+
+			await store<"customSelectors">(key, customSelectorsMap, sync);
+
+			return customSelectorsMap as StorageSchema[T];
+		}
+
+		return parsedValue;
 	} catch {
 		return jsonString as StorageSchema[T];
 	}

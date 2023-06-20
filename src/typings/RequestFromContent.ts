@@ -1,3 +1,5 @@
+import { CustomSelectorsForPattern } from "./StorageSchema";
+
 interface OpenInNewTab {
 	type: "openInNewTab";
 	url: string;
@@ -37,6 +39,17 @@ interface StoreHintsInFrame {
 	hints: string[];
 }
 
+interface StoreCustomSelectors {
+	type: "storeCustomSelectors";
+	pattern: string;
+	selectors: CustomSelectorsForPattern;
+}
+
+interface ResetCustomSelectors {
+	type: "resetCustomSelectors";
+	pattern: string;
+}
+
 interface SimpleRequestFromContent {
 	type:
 		| "initStack"
@@ -56,4 +69,6 @@ export type RequestFromContent =
 	| ClickHintInFrame
 	| MarkHintsAsKeyboardReachable
 	| ReclaimHintsFromOtherFrames
-	| StoreHintsInFrame;
+	| StoreHintsInFrame
+	| StoreCustomSelectors
+	| ResetCustomSelectors;
