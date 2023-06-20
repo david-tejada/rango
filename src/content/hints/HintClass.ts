@@ -4,7 +4,7 @@ import { rgbaToRgb } from "../../lib/rgbaToRgb";
 import { getEffectiveBackgroundColor } from "../utils/getEffectiveBackgroundColor";
 import { getFirstTextNodeDescendant } from "../utils/nodeUtils";
 import { createsStackingContext } from "../utils/createsStackingContext";
-import { HintableMark } from "../../typings/ElementWrapper";
+import { Hint } from "../../typings/Hint";
 import {
 	clearHintedWrapper,
 	getWrapper,
@@ -34,9 +34,9 @@ import {
 	removeFromLayoutCache,
 } from "./layoutCache";
 
-const hintQueue: Set<Hint> = new Set();
+const hintQueue: Set<HintClass> = new Set();
 
-function addToHintQueue(hint: Hint) {
+function addToHintQueue(hint: HintClass) {
 	hintQueue.add(hint);
 	processHintQueue();
 }
@@ -228,9 +228,13 @@ const shadowHostMutationObserver = new MutationObserver((entries) => {
 	}
 });
 
-export interface Hint extends HintableMark {}
+// =============================================================================
+// HINT CLASS
+// =============================================================================
 
-export class Hint {
+export interface HintClass extends Hint {}
+
+export class HintClass implements Hint {
 	constructor(target: Element) {
 		this.target = target;
 

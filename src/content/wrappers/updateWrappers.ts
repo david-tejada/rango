@@ -59,7 +59,7 @@ export async function refreshHints() {
 	showExtraHints = false;
 	showExcludedHints = false;
 	for (const wrapper of getHintedWrappers()) {
-		wrapper.remove();
+		wrapper.suspend();
 		wrapper.hint?.applyDefaultStyle();
 	}
 

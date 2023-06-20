@@ -1,0 +1,44 @@
+import Color from "color";
+
+export interface Hint {
+	/**
+	 * The Element the hint is referencing.
+	 */
+	target: Element;
+	shadowHost: HTMLDivElement;
+	outer: HTMLDivElement;
+	inner: HTMLDivElement;
+	container: HTMLElement | ShadowRoot;
+	limitParent: HTMLElement;
+	availableSpaceLeft?: number;
+	availableSpaceTop?: number;
+	wrapperRelative?: boolean;
+	elementToPositionHint: Element | SVGElement | Text;
+	zIndex?: number;
+	positioned: boolean;
+	wasReattached: boolean;
+	color: Color;
+	backgroundColor: Color;
+	borderColor: Color;
+	borderWidth: number;
+	keyEmphasis?: boolean;
+	freezeColors?: boolean;
+	firstTextNodeDescendant?: Text;
+	string?: string;
+
+	// Methods
+	setBackgroundColor(color?: string): void;
+	computeHintContext(): void;
+	computeColors(): void;
+	updateColors(): void;
+	claim(): string | undefined;
+	position(): void;
+	display(): void;
+	flash(ms?: number): void;
+	clearFlash(): void;
+	release(keepInCache?: boolean): void;
+	reattach(): void;
+	applyDefaultStyle(): void;
+	keyHighlight(): void;
+	clearKeyHighlight(): void;
+}

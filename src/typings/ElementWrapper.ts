@@ -1,21 +1,28 @@
-import Color from "color";
 import { BoundedIntersectionObserver } from "../content/utils/BoundedIntersectionObserver";
+import { Hint } from "./Hint";
 
+/**
+ * A wrapper for a DOM Element.
+ *
+ * The reason for having this interface instead of just the class ElementWrapperClass
+ * is to avoid cycle dependencies since ElementWrapperClass must import other modules
+ * that also import ElementWrapper.
+ */
 export interface ElementWrapper {
 	element: Element;
 
 	isIntersecting?: boolean;
 	observingIntersection?: boolean;
 	isIntersectingViewport?: boolean;
-	isHintable: boolean;
 	isActiveFocusable: boolean;
+	isHintable: boolean;
 	shouldBeHinted?: boolean;
 
 	// These properties are only needed for hintables
 	intersectionObserver?: BoundedIntersectionObserver;
 	userScrollableContainer?: HTMLElement;
 	effectiveBackgroundColor?: string;
-	hint?: HintableMark;
+	hint?: Hint;
 
 	// Methods
 	updateIsHintable(): void;
@@ -27,45 +34,13 @@ export interface ElementWrapper {
 	click(): boolean;
 	hover(): void;
 	unhover(): void;
-	remove(): void;
-}
 
-export interface HintableMark {
-	target: Element;
-	shadowHost: HTMLDivElement;
-	outer: HTMLDivElement;
-	inner: HTMLDivElement;
-	container: HTMLElement | ShadowRoot;
-	limitParent: HTMLElement;
-	availableSpaceLeft?: number;
-	availableSpaceTop?: number;
-	wrapperRelative?: boolean;
-	elementToPositionHint: Element | SVGElement | Text;
-	zIndex?: number;
-	positioned: boolean;
-	wasReattached: boolean;
-	color: Color;
-	backgroundColor: Color;
-	borderColor: Color;
-	borderWidth: number;
-	keyEmphasis?: boolean;
-	freezeColors?: boolean;
-	firstTextNodeDescendant?: Text;
-	string?: string;
-
-	// Methods
-	setBackgroundColor(color?: string): void;
-	computeHintContext(): void;
-	computeColors(): void;
-	updateColors(): void;
-	claim(): string | undefined;
-	position(): void;
-	display(): void;
-	flash(ms?: number): void;
-	clearFlash(): void;
-	release(keepInCache?: boolean): void;
-	reattach(): void;
-	applyDefaultStyle(): void;
-	keyHighlight(): void;
-	clearKeyHighlight(): void;
+	/**
+	 * Removes the wrapped Element from all the observers. Resets its properties
+	 * `shouldBeHinted` and `isIntersectingViewport` to undefined. If the element
+	 * has a Hint it releases it.
+	 *
+	 * This method should be called when the element is removed from the DOM.
+	 */
+	suspend(): void;
 }

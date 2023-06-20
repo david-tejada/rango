@@ -99,7 +99,7 @@ export function deleteWrapper(target: Element) {
 
 		if (wrapper?.hint?.string) wrappersHinted.delete(wrapper.hint.string);
 
-		wrapper?.remove();
+		wrapper?.suspend();
 
 		wrappersAll.delete(element);
 	}
@@ -107,7 +107,7 @@ export function deleteWrapper(target: Element) {
 
 export function clearWrappersAll() {
 	for (const wrapper of wrappersAll.values()) {
-		wrapper?.remove();
+		wrapper?.suspend();
 	}
 
 	wrappersAll.clear();
