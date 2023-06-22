@@ -190,21 +190,20 @@ const mutationObserverConfig = {
 	subtree: true,
 };
 
-const selectorFilter =
-	":not(head, head *, .rango-hint, #rango-copy-paste-area)";
+const elementsToSkip = "head, head *, .rango-hint, #rango-toast";
 
 const mutationCallback: MutationCallback = (mutationList) => {
 	let stylesMightHaveChanged = false;
 
 	for (const mutationRecord of mutationList) {
 		for (const node of mutationRecord.addedNodes) {
-			if (node instanceof Element && node.matches(selectorFilter)) {
+			if (node instanceof Element && !node.matches(elementsToSkip)) {
 				addWrappersFrom(node);
 			}
 		}
 
 		for (const node of mutationRecord.removedNodes) {
-			if (node instanceof Element && node.matches(selectorFilter)) {
+			if (node instanceof Element && !node.matches(elementsToSkip)) {
 				deleteWrapper(node);
 			}
 		}
@@ -212,7 +211,7 @@ const mutationCallback: MutationCallback = (mutationList) => {
 		if (
 			mutationRecord.attributeName &&
 			mutationRecord.target instanceof Element &&
-			mutationRecord.target.matches(selectorFilter)
+			!mutationRecord.target.matches(elementsToSkip)
 		) {
 			stylesMightHaveChanged = true;
 

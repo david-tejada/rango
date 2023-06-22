@@ -2,13 +2,14 @@ import browser from "webextension-polyfill";
 import { defaultSettings } from "../../common/settings";
 import { hasMatchingKeys } from "../../lib/utils";
 import { updateHintsEnabled } from "../observe";
-import { refreshHints, updateHintsStyle } from "../wrappers/updateWrappers";
+import { updateHintsStyle } from "../wrappers/updateWrappers";
 import {
 	initKeyboardClicking,
 	stopKeyboardClicking,
 } from "../actions/keyboardClicking";
 import { notify, notifyTogglesStatus } from "../notify/notify";
 import { initTitleDecoration } from "../utils/decorateTitle";
+import { refresh } from "../wrappers/refresh";
 import { cacheSettings, getCachedSetting } from "./cacheSettings";
 
 async function handleSettingsChanges(
@@ -53,12 +54,12 @@ async function handleSettingsChanges(
 			toastId: "keyboardToggle",
 		});
 
-		await refreshHints();
+		await refresh({ hintsCharacters: true });
 		return;
 	}
 
 	if ("includeSingleLetterHints" in changes) {
-		await refreshHints();
+		await refresh({ hintsCharacters: true });
 		return;
 	}
 

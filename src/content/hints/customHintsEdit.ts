@@ -1,6 +1,7 @@
 import browser from "webextension-polyfill";
 import { CustomSelectorsForPattern } from "../../typings/StorageSchema";
 import { retrieve } from "../../common/storage";
+import { refresh } from "../wrappers/refresh";
 
 export interface SelectorAlternative {
 	selector: string;
@@ -13,7 +14,7 @@ let excludeSelectors: string[] = [];
 let selectorAlternatives: SelectorAlternative[] = [];
 let lastSelectorAlternativeUsed = -1;
 let lastModeUsed: "include" | "exclude";
-let selectorsToUpdate: string[] = [];
+// let selectorsToUpdate: string[] = [];
 
 function getHostPattern() {
 	if (window.location.protocol.includes("http")) {
@@ -45,6 +46,8 @@ export function pickSelectorAlternative(options: {
 	mode?: "include" | "exclude";
 	step?: 1 | -1;
 }) {
+	const selectorsToUpdate = new Set<string>();
+
 	// If we are not selecting a different alternative we need to reset the
 	// lastSelectorAlternativeUsed
 	if (!options.step) lastSelectorAlternativeUsed = -1;
@@ -70,7 +73,7 @@ export function pickSelectorAlternative(options: {
 			mode === "include" ? includeSelectors.pop() : excludeSelectors.pop();
 	}
 
-	if (removed) selectorsToUpdate.push(removed);
+	if (removed) selectorsToUpdate.add(removed);
 
 	if (index < 0) {
 		lastSelectorAlternativeUsed = -1;
@@ -85,7 +88,9 @@ export function pickSelectorAlternative(options: {
 		excludeSelectors.push(selector);
 	}
 
-	selectorsToUpdate.push(selector);
+	selectorsToUpdate.add(selector);
+
+	return [...selectorsToUpdate];
 }
 
 /**
@@ -145,21 +150,14 @@ export async function resetCustomSelectors() {
 	return customSelectorsBefore;
 }
 
-// I had to create this function to avoid dependency cycle if I were to import
-// some function from the updateWrappers module. This function is called from
-// the updateWrappers module instead.
-export function popCustomSelectorsToUpdate() {
-	const result = selectorsToUpdate.join(", ");
-	selectorsToUpdate = [];
-
-	return result;
-}
-
-export function clearMarkedForInclusionOrExclusion() {
+export async function clearMarkedForInclusionOrExclusion() {
+	const filterSelectors = [...includeSelectors, ...excludeSelectors];
 	includeSelectors = [];
 	excludeSelectors = [];
 	selectorAlternatives = [];
 	lastSelectorAlternativeUsed = -1;
+
+	await refresh({ hintsColors: true, isHintable: true }, { filterSelectors });
 }
 
 export function matchesMarkedForInclusion(target: Element) {

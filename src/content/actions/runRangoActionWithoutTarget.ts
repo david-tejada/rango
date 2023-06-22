@@ -98,22 +98,22 @@ export async function runRangoActionWithoutTarget(
 			break;
 
 		case "displayExtraHints":
-			displayMoreOrLessHints({ extra: true });
+			await displayMoreOrLessHints({ extra: true });
 			break;
 
 		case "displayExcludedHints":
-			displayMoreOrLessHints({ excluded: true });
+			await displayMoreOrLessHints({ excluded: true });
 			break;
 
 		case "displayLessHints":
-			displayMoreOrLessHints({ extra: false, excluded: false });
+			await displayMoreOrLessHints({ extra: false, excluded: false });
 			break;
 
 		case "confirmSelectorsCustomization": {
 			const selectorsAdded = await confirmSelectorsCustomization();
 			await updateCustomSelectors();
 			updateHintablesBySelector(selectorsAdded.join(", "));
-			displayMoreOrLessHints({ extra: false, excluded: false });
+			await displayMoreOrLessHints({ extra: false, excluded: false });
 			break;
 		}
 
@@ -140,11 +140,11 @@ export async function runRangoActionWithoutTarget(
 			break;
 
 		case "includeOrExcludeMoreSelectors":
-			includeOrExcludeMoreOrLessSelectors(true);
+			await includeOrExcludeMoreOrLessSelectors(true);
 			break;
 
 		case "includeOrExcludeLessSelectors":
-			includeOrExcludeMoreOrLessSelectors(false);
+			await includeOrExcludeMoreOrLessSelectors(false);
 			break;
 
 		default:

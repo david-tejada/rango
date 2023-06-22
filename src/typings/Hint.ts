@@ -36,7 +36,15 @@ export interface Hint {
 	display(): void;
 	flash(ms?: number): void;
 	clearFlash(): void;
-	release(keepInCache?: boolean): void;
+
+	/**
+	 * Releases a hint and removes it from hintedWrappers.
+	 *
+	 * @param returnToStack Return the hint string to the stack to be reused again. Default is `true`.
+	 * @param removeElement Remove the hint element from the DOM. Default is `true`.
+	 * @returns
+	 */
+	release(keepInCache?: boolean, removeElement?: boolean): void;
 	reattach(): void;
 	applyDefaultStyle(): void;
 	keyHighlight(): void;

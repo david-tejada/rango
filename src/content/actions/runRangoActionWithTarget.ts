@@ -150,11 +150,11 @@ export async function runRangoActionWithTarget(
 			break;
 
 		case "includeExtraSelectors":
-			includeOrExcludeExtraSelectors(wrappers, "include");
+			await includeOrExcludeExtraSelectors(wrappers, "include");
 			break;
 
 		case "excludeExtraSelectors":
-			includeOrExcludeExtraSelectors(wrappers, "exclude");
+			await includeOrExcludeExtraSelectors(wrappers, "exclude");
 			break;
 
 		default:

@@ -1,8 +1,5 @@
 import { throttle } from "lodash";
-import {
-	clearMarkedForInclusionOrExclusion,
-	popCustomSelectorsToUpdate,
-} from "../hints/customHintsEdit";
+import { clearMarkedForInclusionOrExclusion } from "../hints/customHintsEdit";
 import { clearHintsCache } from "../hints/hintsCache";
 import { extraSelector, getExcludeSelectorAll } from "../hints/selectors";
 import {
@@ -10,6 +7,7 @@ import {
 	getHintedWrappers,
 	getWrappersBySelector,
 } from "./wrappers";
+import { refresh } from "./refresh";
 
 let showExtraHints = false;
 let showExcludedHints = false;
@@ -34,12 +32,6 @@ export const updateShouldBeHintedAll = throttle(() => {
 	}
 }, 300);
 
-function updateIsHintableAll() {
-	for (const wrapper of getAllWrappers()) {
-		wrapper.updateIsHintable();
-	}
-}
-
 export function updateHintablesBySelector(selector: string) {
 	const wrappers = getWrappersBySelector(selector);
 
@@ -49,22 +41,18 @@ export function updateHintablesBySelector(selector: string) {
 	}
 }
 
-export function updateRecentCustomSelectors() {
-	const selectorToUpdate = popCustomSelectorsToUpdate();
-	updateHintablesBySelector(selectorToUpdate);
-}
-
 export async function refreshHints() {
-	clearMarkedForInclusionOrExclusion();
+	await clearMarkedForInclusionOrExclusion();
 	showExtraHints = false;
 	showExcludedHints = false;
-	for (const wrapper of getHintedWrappers()) {
-		wrapper.suspend();
-		wrapper.hint?.applyDefaultStyle();
-	}
+	await refresh({ hintsColors: true, hintsCharacters: true, isHintable: true });
+	// for (const wrapper of getHintedWrappers()) {
+	// 	wrapper.suspend();
+	// 	wrapper.hint?.applyDefaultStyle();
+	// }
 
-	await clearHintsCache();
-	updateIsHintableAll();
+	// await clearHintsCache();
+	// updateIsHintableAll();
 }
 
 export function updateHintsStyle() {
@@ -83,7 +71,7 @@ export function getShowExcludedToggle() {
 	return showExcludedHints;
 }
 
-export function displayMoreOrLessHints(options: {
+export async function displayMoreOrLessHints(options: {
 	extra?: boolean;
 	excluded?: boolean;
 }) {
@@ -95,5 +83,6 @@ export function displayMoreOrLessHints(options: {
 	const excludeSelector = getExcludeSelectorAll();
 	let selector = extraSelector;
 	if (excludeSelector) selector = `${selector}, ${excludeSelector}`;
-	updateHintablesBySelector(selector);
+	// updateHintablesBySelector(selector);
+	await refresh({ isHintable: true }, { filterSelectors: [selector] });
 }

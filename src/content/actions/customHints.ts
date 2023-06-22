@@ -1,6 +1,5 @@
 import intersect from "intersect";
 import { ElementWrapper } from "../../typings/ElementWrapper";
-import { updateRecentCustomSelectors } from "../wrappers/updateWrappers";
 import { deepGetElements } from "../utils/deepGetElements";
 import { generatePossibleSelectors } from "../utils/generatePossibleSelectors";
 import {
@@ -13,6 +12,7 @@ import {
 	SelectorAlternative,
 	updateSelectorAlternatives,
 } from "../hints/customHintsEdit";
+import { refresh } from "../wrappers/refresh";
 
 function getChildNumber(target: Element) {
 	if (!target.parentElement) return undefined;
@@ -173,7 +173,7 @@ function getCommonSelectors(targets: Element[]) {
 	return intersect(selectorLists);
 }
 
-export function includeOrExcludeExtraSelectors(
+export async function includeOrExcludeExtraSelectors(
 	wrappers: ElementWrapper[],
 	mode: "include" | "exclude"
 ) {
@@ -183,12 +183,12 @@ export function includeOrExcludeExtraSelectors(
 	if (commonSelectors.length === 0) return;
 
 	updateSelectorAlternatives(getSelectorAlternatives(commonSelectors));
-	pickSelectorAlternative({ mode });
-	updateRecentCustomSelectors();
+	const filterSelectors = pickSelectorAlternative({ mode });
+	await refresh({ hintsColors: true, isHintable: true }, { filterSelectors });
 }
 
-export function includeOrExcludeMoreOrLessSelectors(more: boolean) {
+export async function includeOrExcludeMoreOrLessSelectors(more: boolean) {
 	const step = more ? 1 : -1;
-	pickSelectorAlternative({ step });
-	updateRecentCustomSelectors();
+	const filterSelectors = pickSelectorAlternative({ step });
+	await refresh({ hintsColors: true, isHintable: true }, { filterSelectors });
 }

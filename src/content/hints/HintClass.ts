@@ -579,7 +579,7 @@ export class HintClass implements Hint {
 		this.freezeColors = false;
 	}
 
-	release(returnToStack = true) {
+	release(returnToStack = true, removeElement = true) {
 		if (hintQueue.has(this)) hintQueue.delete(this);
 
 		// Checking this.string is safer than check in this.inner.textContent as the
@@ -591,9 +591,11 @@ export class HintClass implements Hint {
 
 		clearHintedWrapper(this.string);
 
-		setStyleProperties(this.inner, {
-			display: "none",
-		});
+		if (removeElement) {
+			setStyleProperties(this.inner, {
+				display: "none",
+			});
+		}
 
 		if (returnToStack) pushHint(this.string);
 		this.inner.textContent = "";
@@ -603,7 +605,9 @@ export class HintClass implements Hint {
 		// minimizes the possibility of something weird happening. Like in the
 		// YouTube search suggestions where the page inserts elements within the
 		// hints if they are not removed.
-		this.shadowHost.remove();
+		if (removeElement) {
+			this.shadowHost.remove();
+		}
 
 		/* eslint-disable @typescript-eslint/no-dynamic-delete */
 		delete this.shadowHost.dataset["hint"];
