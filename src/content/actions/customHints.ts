@@ -183,12 +183,20 @@ export async function includeOrExcludeExtraSelectors(
 	if (commonSelectors.length === 0) return;
 
 	updateSelectorAlternatives(getSelectorAlternatives(commonSelectors));
-	const filterSelectors = pickSelectorAlternative({ mode });
-	await refresh({ hintsColors: true, isHintable: true }, { filterSelectors });
+	const selectorsToRefresh = pickSelectorAlternative({ mode });
+	await refresh({
+		hintsColors: true,
+		isHintable: true,
+		filterIn: selectorsToRefresh,
+	});
 }
 
 export async function includeOrExcludeMoreOrLessSelectors(more: boolean) {
 	const step = more ? 1 : -1;
-	const filterSelectors = pickSelectorAlternative({ step });
-	await refresh({ hintsColors: true, isHintable: true }, { filterSelectors });
+	const selectorsToRefresh = pickSelectorAlternative({ step });
+	await refresh({
+		hintsColors: true,
+		isHintable: true,
+		filterIn: selectorsToRefresh,
+	});
 }

@@ -1,65 +1,96 @@
 import { throttle } from "lodash";
-import { RequireAtLeastOne } from "../../typings/TypingUtils";
 import { cacheHints, clearHintsCache } from "../hints/hintsCache";
 import { getAllWrappers, getHintedWrappers } from "./wrappers";
 
-type WhatToRefresh = RequireAtLeastOne<{
-	// Only affect hinted wrappers
+type Options = {
+	// Only affect ElementWrappers with an active Hint
 	hintsColors?: boolean;
 	hintsPosition?: boolean;
 	hintsCharacters?: boolean;
 
-	// Affect all wrappers
+	// Affect all ElementWrappers
 	isHintable?: boolean;
 	shouldBeHinted?: boolean;
-}>;
 
-type Options = {
-	filterSelectors?: string[];
-};
-
-/**
- * Combined whatToRefresh flags since the last `throttledRefresh` callback run.
- */
-let combinedWhatToRefresh: WhatToRefresh = {
-	// WhatToRefresh requires at least one property to be defined
-	hintsColors: false,
+	// Refresh only ElementWrappers matching one of these selectors
+	filterIn?: string[];
 };
 
 /**
  * Combined options since the last `throttledRefresh` callback run.
  */
 let combinedOptions: Options = {
-	filterSelectors: [],
+	filterIn: [],
 };
 
 /**
- * Get the element wrappers that need to be updated. It takes into account all
- * the combined calls to `refreshHints` since the last `throttledRefresh` func
- * call.
+ * Combine two sets of Options. For simplicity we don't relate the feature to
+ * update with its `filterIn` selectors. For example, given the next two set of
+ * Options:
  *
- * @returns An array of ElementWrapper(s) that need to be updated.
+ * options1: `{hintsColors: true, filterIn: [".button"]}`
+ *
+ * options2: `{isHintable: true, filterIn: [".checkbox"]}`
+ *
+ * Ideally, we should combine them in a way so that wrappers that match
+ * `.button` update their `hintsColors` and those that match `.checkbox` update
+ * their `isHintable`. We instead join the options resulting in the equivalent of:
+ *
+ * combined: `{hintsColors: true, isHintable: true, filterIn: [".button", ".checkbox"]}`
+ *
+ * @param existingOptions Combined Options so far.
+ * @param newOptions Options to combine into existingOptions.
+ * @returns The combined Options object.
  */
-function getElementWrappersToUpdate() {
-	const { hintsCharacters, isHintable, shouldBeHinted } = combinedWhatToRefresh;
+function combineOptions(existingOptions: Options, newOptions: Options) {
+	const combined: Options = { ...existingOptions };
+
+	let key: keyof Options;
+	for (key in newOptions) {
+		if (Object.prototype.hasOwnProperty.call(newOptions, key)) {
+			if (key === "filterIn") {
+				if (!existingOptions.filterIn) continue;
+
+				combined.filterIn = [
+					...existingOptions.filterIn,
+					...(newOptions.filterIn ?? []),
+				];
+			} else {
+				combined[key] ||= Boolean(newOptions[key]);
+			}
+		}
+	}
+
+	// We remove the filterSelectors if any of the calls doesn't have one.
+	if (!newOptions.filterIn) {
+		combined.filterIn = undefined;
+	}
+
+	return combined;
+}
+
+/**
+ * Get the element wrappers that need to be updated based on the Options passed.
+ *
+ * @param options The Options object to compute the affected ElementWrappers.
+ * @returns An array of ElementWrappers that need to be updated.
+ */
+function getElementWrappersToUpdate(options: Options) {
+	const { hintsCharacters, isHintable, shouldBeHinted } = options;
 
 	const wrappersToUpdate =
 		isHintable || shouldBeHinted ? getAllWrappers() : getHintedWrappers();
 
 	// Filter element wrappers
-	const { filterSelectors } = combinedOptions;
+	const { filterIn: includeSelectors } = combinedOptions;
 
-	const selectorsToFilter = [...(filterSelectors ?? [])];
-
-	const filterSelector = selectorsToFilter.join(", ");
-
-	if (!filterSelector) {
+	if (!includeSelectors?.length) {
 		return wrappersToUpdate;
 	}
 
 	return wrappersToUpdate.filter(
 		(wrapper) =>
-			wrapper.element.matches(filterSelector) ||
+			wrapper.element.matches(includeSelectors.join(", ")) ||
 			// With `hintsCharacters: true` we must refresh all wrappers that have a
 			// hint since all the hints must be refreshed.
 			(hintsCharacters && wrapper.hint?.string)
@@ -68,18 +99,15 @@ function getElementWrappersToUpdate() {
 
 const throttledRefresh = throttle(
 	async () => {
-		console.log("throttledRefresh()", combinedWhatToRefresh, combinedOptions);
 		const {
 			hintsColors,
 			hintsPosition,
 			hintsCharacters,
 			isHintable,
 			shouldBeHinted,
-		} = combinedWhatToRefresh;
+		} = combinedOptions;
 
-		const wrappersToUpdate = getElementWrappersToUpdate();
-
-		// console.log(wrappersToUpdate);
+		const wrappersToUpdate = getElementWrappersToUpdate(combinedOptions);
 
 		if (hintsCharacters) {
 			await clearHintsCache();
@@ -90,6 +118,7 @@ const throttledRefresh = throttle(
 			const hintsAdditional = wrappersToUpdate.filter(
 				(wrapper) => wrapper.isIntersecting && !wrapper.isIntersectingViewport
 			).length;
+
 			await cacheHints(hintsNecessary, hintsAdditional);
 		}
 
@@ -97,26 +126,24 @@ const throttledRefresh = throttle(
 			if (isHintable) {
 				wrapper.updateIsHintable();
 			} else if (shouldBeHinted) {
-				// At the end of ElementWrapper.isHintable()
-				// ElementWrapper.shouldBeHinted() is called so this branch only must be
-				// executed if !isHintable
 				wrapper.updateShouldBeHinted();
 			}
 
 			if (hintsColors) wrapper.hint?.updateColors();
-			if (hintsPosition) wrapper.hint?.position();
+
+			// Any call to modify a Hint's properties will also position it.
+			if (hintsPosition && !hintsColors && !hintsCharacters) {
+				wrapper.hint?.position();
+			}
+
 			if (hintsCharacters && wrapper.shouldBeHinted) {
 				wrapper.hint?.release(false, false);
 				wrapper.hint?.claim();
 			}
 		}
 
-		combinedWhatToRefresh = {
-			// WhatToRefresh requires at least one property to be defined
-			hintsColors: false,
-		};
 		combinedOptions = {
-			filterSelectors: [],
+			filterIn: [],
 		};
 	},
 	100,
@@ -126,95 +153,27 @@ const throttledRefresh = throttle(
 /**
  * Refresh hints and/or hintable status of element wrappers.
  *
- * @param whatToRefresh What hint features or element wrapper properties to refresh:
- * @param {boolean} [whatToRefresh.hintsColors] Refresh hint colors of existing hints.
- * @param {boolean} [whatToRefresh.hintsPosition] Refresh hint position of existing hints.
- * @param {boolean} [whatToRefresh.hintsCharacters] Refresh hint characters of existing hints.
- * @param {boolean} [whatToRefresh.isHintable] Recompute isHintable for all element wrappers.
- * @param {boolean} [whatToRefresh.shouldBeHinted] Recompute shouldBeHinted for all element wrappers.
- *
- * @param options Selector options and other options.
- * @param {string[]} [options.filterSelector] Recompute only element wrappers matching this selector.
+ * @param options What Hint features or ElementWrapper properties to refresh:
+ * @param {boolean} [options.hintsColors] Refresh colors for active Hints.
+ * @param {boolean} [options.hintsPosition] Refresh position for active Hints.
+ * @param {boolean} [options.hintsCharacters] Refresh characters for active Hints.
+ * @param {boolean} [options.isHintable] Recompute isHintable for ElementWrappers.
+ * @param {boolean} [options.shouldBeHinted] Recompute shouldBeHinted for ElementWrappers.
+ * @param {string[]} [options.filterIn] Filter in only ElementWrappers matching this selectors.
  */
-export async function refresh(whatToRefresh: WhatToRefresh, options?: Options) {
-	console.log("refresh()", whatToRefresh, options);
-	let key: keyof WhatToRefresh;
-	for (key in whatToRefresh) {
-		if (Object.prototype.hasOwnProperty.call(whatToRefresh, key)) {
-			combinedWhatToRefresh[key] ||= Boolean(whatToRefresh[key]);
-		}
+export async function refresh(options?: Options) {
+	// `refresh()` should update isHintable for all ElementWrappers when no
+	// options are passed.
+	options ??= { isHintable: true };
+
+	// Apart from `filterIn` we need at least one option for what to update. So if
+	// something like `refresh({filterIn: [".ofLink"]})` is passed we assume the
+	// property to update is isHintable.
+	if (Object.keys(options).filter((key) => key !== "filterIn").length === 0) {
+		options.isHintable = true;
 	}
 
-	// In theory, the options could be different for different whatToRefresh
-	// properties (of differing calls to hintsRefresh) but we just combine them
-	// all for simplicity. If any of the calls to hintsRefresh doesn't have any
-	// filter we just removed all the options from the combinedFilters.
-
-	// We combine the filters
-	if (options?.filterSelectors) {
-		combinedOptions.filterSelectors = [
-			...(combinedOptions.filterSelectors ?? []),
-			...options.filterSelectors,
-		];
-	}
-
-	// // We calculate the rest of the options
-	// let optionKey: keyof Options;
-	// for (optionKey in options) {
-	// 	if (
-	// 		Object.prototype.hasOwnProperty.call(options, optionKey) &&
-	// 		optionKey !== "filterSelectors"
-	// 	) {
-	// 		combinedOptions[optionKey] ||= Boolean(options![optionKey]);
-	// 	}
-	// }
-
-	combinedOptions = options ? Object.assign(combinedOptions, options) : {};
+	combinedOptions = combineOptions(combinedOptions, options);
 
 	await throttledRefresh();
 }
-
-// =============================================================================
-// EXAMPLES
-// =============================================================================
-
-// updateStyleAll()
-// refresh({ hintsColors: true });
-
-// // updatePositionAll()
-// refresh({ hintsPosition: true });
-
-// // updateShouldBeHintedAll()
-// refresh({ shouldBeHinted: true });
-
-// // updateIsHintableAll()
-// refresh({ isHintable: true });
-
-// // updateHintablesBySelector(selector)
-// refresh(
-// 	{
-// 		hintsColors: true,
-// 		isHintable: true,
-// 	},
-// 	{ filterSelector: ".some-selector" }
-// );
-
-// // updateRecentCustomSelectors()
-// refresh({ isHintable: true }, { clearMarked: true });
-
-// // refreshHints() for resetCustomSelectors
-// refresh(
-// 	{
-// 		isHintable: true,
-// 	},
-// 	{ filterSelector: "custom-selectors-removed", clearMarked: true }
-// );
-
-// // refreshHints() for watchSettingsChanges
-// refresh({ hintsCharacters: true });
-
-// // Call in mutation observer when styles might have changed
-// refresh({ hintsPosition: true, hintsColors: true, shouldBeHinted: true });
-
-// // Call in mutation observer when styles didn't change
-// refresh({ hintsPosition: true });

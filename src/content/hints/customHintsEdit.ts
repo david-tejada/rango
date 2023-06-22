@@ -14,7 +14,6 @@ let excludeSelectors: string[] = [];
 let selectorAlternatives: SelectorAlternative[] = [];
 let lastSelectorAlternativeUsed = -1;
 let lastModeUsed: "include" | "exclude";
-// let selectorsToUpdate: string[] = [];
 
 function getHostPattern() {
 	if (window.location.protocol.includes("http")) {
@@ -151,13 +150,17 @@ export async function resetCustomSelectors() {
 }
 
 export async function clearMarkedForInclusionOrExclusion() {
-	const filterSelectors = [...includeSelectors, ...excludeSelectors];
+	const markedSelectors = [...includeSelectors, ...excludeSelectors];
 	includeSelectors = [];
 	excludeSelectors = [];
 	selectorAlternatives = [];
 	lastSelectorAlternativeUsed = -1;
 
-	await refresh({ hintsColors: true, isHintable: true }, { filterSelectors });
+	await refresh({
+		hintsColors: true,
+		isHintable: true,
+		filterIn: markedSelectors,
+	});
 }
 
 export function matchesMarkedForInclusion(target: Element) {

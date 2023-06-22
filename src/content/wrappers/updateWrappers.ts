@@ -1,6 +1,5 @@
 import { throttle } from "lodash";
 import { clearMarkedForInclusionOrExclusion } from "../hints/customHintsEdit";
-import { clearHintsCache } from "../hints/hintsCache";
 import { extraSelector, getExcludeSelectorAll } from "../hints/selectors";
 import {
 	getAllWrappers,
@@ -46,13 +45,6 @@ export async function refreshHints() {
 	showExtraHints = false;
 	showExcludedHints = false;
 	await refresh({ hintsColors: true, hintsCharacters: true, isHintable: true });
-	// for (const wrapper of getHintedWrappers()) {
-	// 	wrapper.suspend();
-	// 	wrapper.hint?.applyDefaultStyle();
-	// }
-
-	// await clearHintsCache();
-	// updateIsHintableAll();
 }
 
 export function updateHintsStyle() {
@@ -83,6 +75,5 @@ export async function displayMoreOrLessHints(options: {
 	const excludeSelector = getExcludeSelectorAll();
 	let selector = extraSelector;
 	if (excludeSelector) selector = `${selector}, ${excludeSelector}`;
-	// updateHintablesBySelector(selector);
-	await refresh({ isHintable: true }, { filterSelectors: [selector] });
+	await refresh({ isHintable: true, filterIn: [selector] });
 }
