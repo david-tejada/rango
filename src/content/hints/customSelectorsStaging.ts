@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
 import { CustomSelectorsForPattern } from "../../typings/StorageSchema";
 import { retrieve } from "../../common/storage";
-import { refresh } from "../wrappers/refresh";
+import { updateCustomSelectors } from "./selectors";
 
 export interface SelectorAlternative {
 	selector: string;
@@ -23,6 +23,12 @@ function getHostPattern() {
 	return window.location.href;
 }
 
+/**
+ * Retrieve the saved selectors for the current host pattern
+ *
+ * @returns An array with the saved "include" and "exclude" selectors for the
+ * current host pattern
+ */
 async function getCustomSelectorsAll() {
 	const pattern = getHostPattern();
 	const customSelectors = await retrieve("customSelectors");
@@ -127,6 +133,8 @@ export async function confirmSelectorsCustomization() {
 		(selector) => !customSelectorsBeforeSet.has(selector)
 	);
 
+	await updateCustomSelectors();
+
 	return customSelectorsAdded;
 }
 
@@ -146,21 +154,16 @@ export async function resetCustomSelectors() {
 		pattern,
 	});
 
+	await updateCustomSelectors();
+
 	return customSelectorsBefore;
 }
 
-export async function clearMarkedForInclusionOrExclusion() {
-	const markedSelectors = [...includeSelectors, ...excludeSelectors];
+export async function resetStagedSelectors() {
 	includeSelectors = [];
 	excludeSelectors = [];
 	selectorAlternatives = [];
 	lastSelectorAlternativeUsed = -1;
-
-	await refresh({
-		hintsColors: true,
-		isHintable: true,
-		filterIn: markedSelectors,
-	});
 }
 
 export function matchesMarkedForInclusion(target: Element) {

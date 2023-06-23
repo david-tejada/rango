@@ -17,12 +17,7 @@ import {
 } from "../utils/dispatchEvents";
 import { matchesCustomExclude, matchesCustomInclude } from "../hints/selectors";
 import { cacheLayout, clearLayoutCache } from "../hints/layoutCache";
-import {
-	getExtraHintsToggle,
-	updatePositionAll,
-	updateShouldBeHintedAll,
-	updateStyleAll,
-} from "./updateWrappers";
+import { getExtraHintsToggle } from "./updateWrappers";
 import {
 	addWrapper,
 	deleteWrapper,
@@ -30,6 +25,7 @@ import {
 	getWrapperForElement,
 	clearHintedWrapper,
 } from "./wrappers";
+import { refresh } from "./refresh";
 
 // =============================================================================
 // HELPER FUNCTIONS
@@ -192,7 +188,24 @@ const mutationObserverConfig = {
 
 const elementsToSkip = "head, head *, .rango-hint, #rango-toast";
 
-const mutationCallback: MutationCallback = (mutationList) => {
+function isNonRangoMutation(mutation: MutationRecord) {
+	const isRangoMutation =
+		mutation.attributeName === "data-hint" ||
+		(mutation.addedNodes.length === 1 &&
+			mutation.addedNodes[0]! instanceof Element &&
+			mutation.addedNodes[0]!.className === "rango-hint") ||
+		(mutation.removedNodes.length === 1 &&
+			mutation.removedNodes[0]! instanceof Element &&
+			mutation.removedNodes[0]!.className === "rango-hint");
+
+	return !isRangoMutation;
+}
+
+const mutationCallback: MutationCallback = async (mutationList) => {
+	const nonRangoMutations = mutationList.filter(isNonRangoMutation);
+
+	if (nonRangoMutations.length === 0) return;
+
 	let stylesMightHaveChanged = false;
 
 	for (const mutationRecord of mutationList) {
@@ -234,12 +247,11 @@ const mutationCallback: MutationCallback = (mutationList) => {
 		}
 	}
 
-	updatePositionAll();
-
-	if (stylesMightHaveChanged) {
-		updateStyleAll();
-		updateShouldBeHintedAll();
-	}
+	await refresh({
+		hintsPosition: true,
+		hintsColors: stylesMightHaveChanged,
+		shouldBeHinted: stylesMightHaveChanged,
+	});
 };
 
 export const mutationObserver = new MutationObserver(mutationCallback);

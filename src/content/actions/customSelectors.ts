@@ -11,7 +11,7 @@ import {
 	pickSelectorAlternative,
 	SelectorAlternative,
 	updateSelectorAlternatives,
-} from "../hints/customHintsEdit";
+} from "../hints/customSelectorsStaging";
 import { refresh } from "../wrappers/refresh";
 
 function getChildNumber(target: Element) {

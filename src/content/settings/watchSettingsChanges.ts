@@ -2,7 +2,6 @@ import browser from "webextension-polyfill";
 import { defaultSettings } from "../../common/settings";
 import { hasMatchingKeys } from "../../lib/utils";
 import { updateHintsEnabled } from "../observe";
-import { updateHintsStyle } from "../wrappers/updateWrappers";
 import {
 	initKeyboardClicking,
 	stopKeyboardClicking,
@@ -72,7 +71,7 @@ async function handleSettingsChanges(
 		return;
 	}
 
-	updateHintsStyle();
+	await refresh({ hintsStyle: true, hintsPosition: true });
 }
 
 export function watchSettingsChanges() {

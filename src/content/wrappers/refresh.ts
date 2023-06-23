@@ -4,6 +4,7 @@ import { getAllWrappers, getHintedWrappers } from "./wrappers";
 
 type Options = {
 	// Only affect ElementWrappers with an active Hint
+	hintsStyle?: boolean;
 	hintsColors?: boolean;
 	hintsPosition?: boolean;
 	hintsCharacters?: boolean;
@@ -100,6 +101,7 @@ function getElementWrappersToUpdate(options: Options) {
 const throttledRefresh = throttle(
 	async () => {
 		const {
+			hintsStyle,
 			hintsColors,
 			hintsPosition,
 			hintsCharacters,
@@ -129,10 +131,14 @@ const throttledRefresh = throttle(
 				wrapper.updateShouldBeHinted();
 			}
 
+			if (!wrapper.hint?.isActive) continue;
+
+			if (hintsStyle) wrapper.hint?.applyDefaultStyle();
 			if (hintsColors) wrapper.hint?.updateColors();
 
-			// Any call to modify a Hint's properties will also position it.
-			if (hintsPosition && !hintsColors && !hintsCharacters) {
+			// Whenever we call Hint.claim() the hint gets positioned, so here we
+			// prevent Hint.position() to be called twice.
+			if (hintsPosition && !hintsCharacters) {
 				wrapper.hint?.position();
 			}
 
@@ -146,12 +152,13 @@ const throttledRefresh = throttle(
 			filterIn: [],
 		};
 	},
-	100,
+	10,
 	{ leading: false }
 );
 
 /**
- * Refresh hints and/or hintable status of element wrappers.
+ * Refresh hints and/or hintable status of element wrappers. If no options are
+ * passed it will recalculate isHintable for all ElementWrappers.
  *
  * @param options What Hint features or ElementWrapper properties to refresh:
  * @param {boolean} [options.hintsColors] Refresh colors for active Hints.

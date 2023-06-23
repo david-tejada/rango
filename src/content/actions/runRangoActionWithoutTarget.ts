@@ -3,15 +3,14 @@ import { RangoActionWithoutTarget } from "../../typings/RangoAction";
 import {
 	displayMoreOrLessHints,
 	refreshHints,
-	updateHintablesBySelector,
 } from "../wrappers/updateWrappers";
-import { updateCustomSelectors } from "../hints/selectors";
 import {
 	confirmSelectorsCustomization,
 	resetCustomSelectors,
-} from "../hints/customHintsEdit";
+} from "../hints/customSelectorsStaging";
 import { notifyTogglesStatus } from "../notify/notify";
-import { includeOrExcludeMoreOrLessSelectors } from "./customHints";
+import { refresh } from "../wrappers/refresh";
+import { includeOrExcludeMoreOrLessSelectors } from "./customSelectors";
 import { unhoverAll } from "./hoverElement";
 import { scroll } from "./scroll";
 import { navigateToNextPage, navigateToPreviousPage } from "./pagination";
@@ -111,19 +110,24 @@ export async function runRangoActionWithoutTarget(
 
 		case "confirmSelectorsCustomization": {
 			const selectorsAdded = await confirmSelectorsCustomization();
-			await updateCustomSelectors();
-			updateHintablesBySelector(selectorsAdded.join(", "));
+
+			if (selectorsAdded.length > 0) {
+				await refresh({
+					hintsStyle: true,
+					isHintable: true,
+					filterIn: selectorsAdded,
+				});
+			}
+
 			await displayMoreOrLessHints({ extra: false, excluded: false });
 			break;
 		}
 
 		case "resetCustomSelectors": {
-			const customSelectorsRemoved = await resetCustomSelectors();
+			const selectorsRemoved = await resetCustomSelectors();
 
-			if (customSelectorsRemoved) {
-				await updateCustomSelectors();
-				updateHintablesBySelector(customSelectorsRemoved.join(", "));
-				await refreshHints();
+			if (selectorsRemoved.length > 0) {
+				await refresh({ filterIn: selectorsRemoved });
 			}
 
 			break;

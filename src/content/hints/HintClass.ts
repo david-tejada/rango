@@ -11,15 +11,15 @@ import {
 	getWrapperForElement,
 	setHintedWrapper,
 } from "../wrappers/wrappers";
-import { updatePositionAll } from "../wrappers/updateWrappers";
 import {
 	getCachedSetting,
 	getCachedSettingAll,
 } from "../settings/cacheSettings";
+import { refresh } from "../wrappers/refresh";
 import {
 	matchesMarkedForInclusion,
 	matchesMarkedForExclusion,
-} from "./customHintsEdit";
+} from "./customSelectorsStaging";
 import { getElementToPositionHint } from "./getElementToPositionHint";
 import { getAptContainer, getContextForHint } from "./getContextForHint";
 import { popHint, pushHint } from "./hintsCache";
@@ -93,6 +93,7 @@ const processHintQueue = debounce(() => {
 		hint.position();
 		setHintedWrapper(hint.string!, hint.target);
 		hint.shadowHost.dataset["hint"] = hint.string;
+		hint.isActive = true;
 
 		// This is here for debugging and testing purposes
 		if (
@@ -183,8 +184,30 @@ const containerMutationObserver = new MutationObserver((entries) => {
 	}
 });
 
-const containerResizeObserver = new ResizeObserver(() => {
-	updatePositionAll();
+// Keeps track of entries that have been triggered at least once by the
+// containerResizeObserver
+const entriesSeen = new Set();
+
+/**
+ * Resize Observer to reposition Hints when the element that contains them
+ * changes size
+ */
+const containerResizeObserver = new ResizeObserver(async (entries) => {
+	let shouldRefresh = false;
+
+	for (const entry of entries) {
+		// We need to check that this is not the initial ResizeObserver trigger that
+		// happens when you first observe an element
+		if (entriesSeen.has(entry.target)) {
+			shouldRefresh = true;
+		} else {
+			entriesSeen.add(entry.target);
+		}
+	}
+
+	if (shouldRefresh) {
+		await refresh({ hintsPosition: true });
+	}
 });
 
 /**
@@ -237,6 +260,7 @@ export interface HintClass extends Hint {}
 export class HintClass implements Hint {
 	constructor(target: Element) {
 		this.target = target;
+		this.isActive = false;
 
 		this.borderWidth = getCachedSetting("hintBorderWidth");
 
@@ -429,6 +453,10 @@ export class HintClass implements Hint {
 	}
 
 	position() {
+		// This guards against Hint.position being called before its context has
+		// been computed. For example, if it's
+		if (!this.container) return;
+
 		// We need to calculate this here the first time the hint is appended
 		if (this.wrapperRelative === undefined) {
 			const { display } = window.getComputedStyle(
@@ -581,6 +609,7 @@ export class HintClass implements Hint {
 
 	release(returnToStack = true, removeElement = true) {
 		if (hintQueue.has(this)) hintQueue.delete(this);
+		this.isActive = false;
 
 		// Checking this.string is safer than check in this.inner.textContent as the
 		// latter could be removed by a page script

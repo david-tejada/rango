@@ -6,6 +6,7 @@ export interface Hint {
 	 */
 	target: Element;
 	shadowHost: HTMLDivElement;
+	isActive: boolean;
 	outer: HTMLDivElement;
 	inner: HTMLDivElement;
 	container: HTMLElement | ShadowRoot;
