@@ -2,13 +2,29 @@ import combinations from "combinations";
 import { calculate } from "specificity";
 import { combineArrays } from "./combineArrays";
 
-// Given an array of selectors that represent selectors at different dom levels,
-// for example: ["div.root.base", "div#container", "main", "article",
-// "span.button.green-button"], being the last element the target element. It
-// returns an array of all the possible selectors for that target element. Tag
-// names that include ids or classes won't appear by themselves in the return
-// value (for example, not "div div main article span.button", but this instead
-// will appear "div.root main span.button")
+/**
+ * Given an array of selectors for elements starting from the root until the
+ * target element, it returns an array of all the possible selectors that would
+ * match the target element. Tag names that include ids or classes won't appear
+ * by themselves in the return value (for example, not "div div main article
+ * div.button", but this instead will appear "div.root main div.button").
+ *
+ * @param selectors The array of selectors for elements starting from the root until the target element
+ * @param maxClasses The maximum amount of classes to include for a given selector
+ * @returns An array of selectors that would match the target element
+ *
+ * @example
+ *
+ * generatePossibleSelectors(["html.no-js", "main", "div#page.my-page", "div.button.button-primary"])
+ * // ["div",
+ * // ".button",
+ * // ".button-primary",
+ * // "div.button",
+ * // "div.button-primary",
+ * // ...49 more items
+ * // "html.no-js main div.my-page .button.button-primary",
+ * // "html.no-js main div.my-page div.button.button-primary"]
+ */
 export function generatePossibleSelectors(
 	selectors: string[],
 	maxClasses = 7

@@ -1,6 +1,7 @@
 import browser from "webextension-polyfill";
-import { CustomSelectorsForPattern } from "../../typings/StorageSchema";
 import { retrieve } from "../../common/storage";
+import { CustomSelectorsForPattern } from "../../typings/StorageSchema";
+import { refresh } from "../wrappers/refresh";
 import { updateCustomSelectors } from "./selectors";
 
 export interface SelectorAlternative {
@@ -142,8 +143,6 @@ export async function confirmSelectorsCustomization() {
  * Resets the custom selectors for the URL pattern of the current frame. To
  * avoid multiple frames changing the custom selectors at the same time a
  * message is sent to the background script where that is handled safely.
- *
- * @returns An array with the selectors that were removed
  */
 export async function resetCustomSelectors() {
 	const pattern = getHostPattern();
@@ -155,15 +154,18 @@ export async function resetCustomSelectors() {
 	});
 
 	await updateCustomSelectors();
-
-	return customSelectorsBefore;
+	await resetStagedSelectors();
+	await refresh({ filterIn: customSelectorsBefore });
 }
 
 export async function resetStagedSelectors() {
+	const unstagedSelectors = [...includeSelectors, ...excludeSelectors];
 	includeSelectors = [];
 	excludeSelectors = [];
 	selectorAlternatives = [];
 	lastSelectorAlternativeUsed = -1;
+
+	return unstagedSelectors;
 }
 
 export function matchesMarkedForInclusion(target: Element) {

@@ -98,6 +98,34 @@ function getElementWrappersToUpdate(options: Options) {
 	);
 }
 
+// I am a bit unsure about this. It seems to work fine but what would happen if
+// while this function is executing an element intersects and claims a hint? We
+// would probably get a repeated hint or a single or double letter hint that
+// doesn't belong. I will leave it like this for the moment. This function will
+// not be called often anyway, just when the user manually refreshes the hints
+// or changes some settings like `keyboardClicking` or
+// `includeSingleLetterHints`.
+async function refreshHintsCharacters() {
+	const wrappersToRefresh = getHintedWrappers();
+	for (const wrapper of wrappersToRefresh) {
+		wrapper.hint?.release();
+	}
+
+	const hintsNecessary = wrappersToRefresh.filter(
+		(wrapper) => wrapper.isIntersectingViewport
+	).length;
+	const hintsAdditional = wrappersToRefresh.filter(
+		(wrapper) => wrapper.isIntersecting && !wrapper.isIntersectingViewport
+	).length;
+
+	await clearHintsCache();
+	await cacheHints(hintsNecessary, hintsAdditional);
+
+	for (const wrapper of wrappersToRefresh) {
+		wrapper.hint?.claim();
+	}
+}
+
 const throttledRefresh = throttle(
 	async () => {
 		const {
@@ -111,18 +139,8 @@ const throttledRefresh = throttle(
 
 		const wrappersToUpdate = getElementWrappersToUpdate(combinedOptions);
 
-		if (hintsCharacters) {
-			await clearHintsCache();
-
-			const hintsNecessary = wrappersToUpdate.filter(
-				(wrapper) => wrapper.isIntersectingViewport
-			).length;
-			const hintsAdditional = wrappersToUpdate.filter(
-				(wrapper) => wrapper.isIntersecting && !wrapper.isIntersectingViewport
-			).length;
-
-			await cacheHints(hintsNecessary, hintsAdditional);
-		}
+		// We need to update all the hints characters at once
+		if (hintsCharacters) await refreshHintsCharacters();
 
 		for (const wrapper of wrappersToUpdate) {
 			if (isHintable) {
@@ -131,20 +149,15 @@ const throttledRefresh = throttle(
 				wrapper.updateShouldBeHinted();
 			}
 
-			if (!wrapper.hint?.isActive) continue;
-
 			if (hintsStyle) wrapper.hint?.applyDefaultStyle();
 			if (hintsColors) wrapper.hint?.updateColors();
+
+			if (!wrapper.hint?.isActive) continue;
 
 			// Whenever we call Hint.claim() the hint gets positioned, so here we
 			// prevent Hint.position() to be called twice.
 			if (hintsPosition && !hintsCharacters) {
 				wrapper.hint?.position();
-			}
-
-			if (hintsCharacters && wrapper.shouldBeHinted) {
-				wrapper.hint?.release(false, false);
-				wrapper.hint?.claim();
 			}
 		}
 

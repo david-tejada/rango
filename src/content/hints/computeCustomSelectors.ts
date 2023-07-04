@@ -11,8 +11,7 @@ import {
 	pickSelectorAlternative,
 	SelectorAlternative,
 	updateSelectorAlternatives,
-} from "../hints/customSelectorsStaging";
-import { refresh } from "../wrappers/refresh";
+} from "./customSelectorsStaging";
 
 function getChildNumber(target: Element) {
 	if (!target.parentElement) return undefined;
@@ -24,6 +23,13 @@ function getChildNumber(target: Element) {
 	return undefined;
 }
 
+/**
+ * Get the CSS selector for the target Element. It will return a selector in the
+ * shape of `div#banner.button.button-red`.
+ *
+ * @param target The Element to retrieve its CSS selector
+ * @returns The CSS selector for the Element
+ */
 function getSelector(target: Element) {
 	let result = target.tagName.toLowerCase();
 
@@ -52,6 +58,20 @@ function getAncestorWithSignificantSelector(target: Element) {
 	return closest ?? undefined;
 }
 
+/**
+ * Get an array of significant selectors starting from the root of the DOM until
+ * the target Element. Examples of non-significant selectors would be `div`, `a`
+ * or `button`.
+ *
+ * @param target An Element
+ * @returns An array of significant selectors starting from the root of the DOM
+ *
+ * @example
+ *
+ * getSignificantSelectors(document.querySelector(".button-red"))
+ * // [ "html.no-js", "main", "div#page.my-page", "div.button.button-nice.button-red" ]
+ *
+ */
 function getSignificantSelectors(target: Element) {
 	const result: string[] = [];
 
@@ -67,6 +87,40 @@ function getSignificantSelectors(target: Element) {
 	return [...new Set(result)];
 }
 
+/**
+ * Given an array of selectors for elements starting from root until the target
+ * element, return selector alternatives that match different amount of
+ * elements. For a given amount of elements matching we just take the
+ * selector with the lowest specificity or the first one we encounter. For
+ * example, if the selectors ".button-primary" and "div.button-primary" match
+ * two elements each we would just take ".button-primary" as the specificity is
+ * lower.
+ *
+ * @param selectorList And array of selectors for elements starting from root until the target element
+ * @returns An array of objects in the shape { selector, specificity, elementsMatching }. Ordered by the amount of elements matching.
+ *
+ * @example
+ *
+ * getSelectorAlternatives(["html.no-js", "main", "div#page.my-page", "div.button.button-primary"])
+ * // [
+ * //   {
+ * //     "selector": ".button-primary",
+ * //     "specificity": 10,
+ * //     "elementsMatching": 2
+ * //   },
+ * //   {
+ * //     "selector": "div.my-page div",
+ * //     "specificity": 12,
+ * //     "elementsMatching": 4
+ * //   },
+ * //   {
+ * //     "selector": "div",
+ * //     "specificity": 1,
+ * //     "elementsMatching": 5
+ * //   }
+ * // ]
+ * //
+ */
 function getSelectorAlternatives(selectorList: string[]) {
 	const possibleSelectors = generatePossibleSelectors(selectorList);
 
@@ -125,6 +179,34 @@ function getSelectorAlternatives(selectorList: string[]) {
 	});
 }
 
+/**
+ * Given an array of Elements get an array of common significant selectors
+ * starting from the root until the target Element.
+ *
+ * @param targets An array of Elements to compute the list of common selectors
+ * @returns An array of common selectors for the target elements
+ *
+ * @example
+ *
+ * // Given targets with these significant selectors:
+ * // [
+ * //   [
+ * //     "html.no-js",
+ * //     "main",
+ * //     "div#page.my-page",
+ * //     "div.button.button-primary"
+ * //   ],
+ * //   [
+ * //     "html.no-js",
+ * //     "main",
+ * //     "div#page.my-page",
+ * //     "div.button.button-secondary"
+ * //   ]
+ * // ]
+ *
+ * getCommonSelectors(targets)
+ * // [ "html.no-js", "main", "div#page.my-page", "div.button" ]
+ */
 function getCommonSelectors(targets: Element[]) {
 	const selectorLists = targets.map((element) =>
 		getSignificantSelectors(element)
@@ -173,7 +255,15 @@ function getCommonSelectors(targets: Element[]) {
 	return intersect(selectorLists);
 }
 
-export async function includeOrExcludeExtraSelectors(
+/**
+ * Computes the custom selectors for a given array of ElementWrappers. This
+ * function does NOT refresh the hints.
+ *
+ * @param wrappers An array of ElementWrappers
+ * @param mode "include" or "exclude"
+ * @returns The selectors that have been affected
+ */
+export async function computeCustomSelectors(
 	wrappers: ElementWrapper[],
 	mode: "include" | "exclude"
 ) {
@@ -182,21 +272,34 @@ export async function includeOrExcludeExtraSelectors(
 	const commonSelectors = getCommonSelectors(elements);
 	if (commonSelectors.length === 0) return;
 
-	updateSelectorAlternatives(getSelectorAlternatives(commonSelectors));
+	const selectorAlternatives = getSelectorAlternatives(commonSelectors);
+	updateSelectorAlternatives(selectorAlternatives);
 	const selectorsToRefresh = pickSelectorAlternative({ mode });
-	await refresh({
-		hintsColors: true,
-		isHintable: true,
-		filterIn: selectorsToRefresh,
-	});
+	return selectorsToRefresh;
 }
 
-export async function includeOrExcludeMoreOrLessSelectors(more: boolean) {
+async function includeOrExcludeMoreOrLessSelectors(more: boolean) {
 	const step = more ? 1 : -1;
-	const selectorsToRefresh = pickSelectorAlternative({ step });
-	await refresh({
-		hintsColors: true,
-		isHintable: true,
-		filterIn: selectorsToRefresh,
-	});
+	const selectorsAffected = pickSelectorAlternative({ step });
+	return selectorsAffected;
+}
+
+/**
+ * Pick the next selector alternative with more matches and update the custom
+ * selectors accordingly. This function does NOT refresh the hints.
+ *
+ * @returns The selectors that have been affected
+ */
+export async function customSelectorsMore() {
+	return includeOrExcludeMoreOrLessSelectors(true);
+}
+
+/**
+ * Pick the next selector alternative with less matches and update the custom
+ * selectors accordingly. This function does NOT refresh the hints.
+ *
+ * @returns The selectors that have been affected
+ */
+export async function customSelectorsLess() {
+	return includeOrExcludeMoreOrLessSelectors(false);
 }

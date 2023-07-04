@@ -50,12 +50,6 @@ export function getWrapperForElement(element: Element) {
 	return wrappersAll.get(element);
 }
 
-export function getWrappersBySelector(selector: string) {
-	const elements = deepGetElements(document.body, false, selector);
-
-	return elements.map((element) => getWrapper(element));
-}
-
 export function getWrappersWithin(element: Element): ElementWrapper[] {
 	const result: ElementWrapper[] = [];
 

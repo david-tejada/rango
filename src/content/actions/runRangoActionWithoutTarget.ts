@@ -10,7 +10,10 @@ import {
 } from "../hints/customSelectorsStaging";
 import { notifyTogglesStatus } from "../notify/notify";
 import { refresh } from "../wrappers/refresh";
-import { includeOrExcludeMoreOrLessSelectors } from "./customSelectors";
+import {
+	customSelectorsLess,
+	customSelectorsMore,
+} from "../hints/computeCustomSelectors";
 import { unhoverAll } from "./hoverElement";
 import { scroll } from "./scroll";
 import { navigateToNextPage, navigateToPreviousPage } from "./pagination";
@@ -124,12 +127,7 @@ export async function runRangoActionWithoutTarget(
 		}
 
 		case "resetCustomSelectors": {
-			const selectorsRemoved = await resetCustomSelectors();
-
-			if (selectorsRemoved.length > 0) {
-				await refresh({ filterIn: selectorsRemoved });
-			}
-
+			await resetCustomSelectors();
 			break;
 		}
 
@@ -143,13 +141,33 @@ export async function runRangoActionWithoutTarget(
 			await refreshHints();
 			break;
 
-		case "includeOrExcludeMoreSelectors":
-			await includeOrExcludeMoreOrLessSelectors(true);
-			break;
+		case "includeOrExcludeMoreSelectors": {
+			const selectorsToRefresh = await customSelectorsMore();
 
-		case "includeOrExcludeLessSelectors":
-			await includeOrExcludeMoreOrLessSelectors(false);
+			if (selectorsToRefresh) {
+				await refresh({
+					hintsColors: true,
+					isHintable: true,
+					filterIn: selectorsToRefresh,
+				});
+			}
+
 			break;
+		}
+
+		case "includeOrExcludeLessSelectors": {
+			const selectorsToRefresh = await customSelectorsLess();
+
+			if (selectorsToRefresh) {
+				await refresh({
+					hintsColors: true,
+					isHintable: true,
+					filterIn: selectorsToRefresh,
+				});
+			}
+
+			break;
+		}
 
 		default:
 			break;

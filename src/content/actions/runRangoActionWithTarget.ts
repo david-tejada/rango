@@ -3,6 +3,8 @@ import { assertDefined } from "../../typings/TypingUtils";
 import { getWrapper, getWrapperForElement } from "../wrappers/wrappers";
 import { TalonAction } from "../../typings/RequestFromTalon";
 import { tryToFocusOnEditable } from "../utils/tryToFocusOnEditable";
+import { computeCustomSelectors } from "../hints/computeCustomSelectors";
+import { refresh } from "../wrappers/refresh";
 import { clickElement } from "./clickElement";
 import {
 	copyElementTextContentToClipboard,
@@ -13,7 +15,6 @@ import { scroll, snapScroll } from "./scroll";
 import { hoverElement } from "./hoverElement";
 import { openInBackgroundTab, openInNewTab } from "./openInNewTab";
 import { showTitleAndHref } from "./showTitleAndHref";
-import { includeOrExcludeExtraSelectors } from "./customSelectors";
 import { insertToField } from "./insertToField";
 import { setSelectionAfter, setSelectionBefore } from "./setSelection";
 import { focusAndDeleteContents } from "./focusAndDeleteContents";
@@ -149,13 +150,31 @@ export async function runRangoActionWithTarget(
 			snapScroll("center", wrapper);
 			break;
 
-		case "includeExtraSelectors":
-			await includeOrExcludeExtraSelectors(wrappers, "include");
+		case "includeExtraSelectors": {
+			const selectorsToRefresh = await computeCustomSelectors(
+				wrappers,
+				"include"
+			);
+			await refresh({
+				hintsColors: true,
+				isHintable: true,
+				filterIn: selectorsToRefresh,
+			});
 			break;
+		}
 
-		case "excludeExtraSelectors":
-			await includeOrExcludeExtraSelectors(wrappers, "exclude");
+		case "excludeExtraSelectors": {
+			const selectorsToRefresh = await computeCustomSelectors(
+				wrappers,
+				"exclude"
+			);
+			await refresh({
+				hintsColors: true,
+				isHintable: true,
+				filterIn: selectorsToRefresh,
+			});
 			break;
+		}
 
 		default:
 			break;

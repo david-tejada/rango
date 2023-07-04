@@ -33,5 +33,5 @@ export async function displayMoreOrLessHints(options: {
 	let selector = extraSelector;
 	if (excludeSelector) selector = `${selector}, ${excludeSelector}`;
 
-	await refresh({ isHintable: true, filterIn: [selector] });
+	await refresh({ hintsColors: true, isHintable: true, filterIn: [selector] });
 }
