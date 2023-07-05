@@ -1,31 +1,31 @@
 import { ElementWrapper } from "../../typings/ElementWrapper";
-import { isHintable } from "../utils/isHintable";
-import { isDisabled } from "../utils/isDisabled";
-import { isVisible } from "../utils/isVisible";
-import { cacheHints } from "../hints/hintsCache";
-import { getUserScrollableContainer } from "../utils/getUserScrollableContainer";
-import { BoundedIntersectionObserver } from "../utils/BoundedIntersectionObserver";
-import { HintClass } from "../hints/HintClass";
-import { deepGetElements } from "../utils/deepGetElements";
-import { getPointerTarget } from "../utils/getPointerTarget";
-import { focusesOnclick } from "../utils/focusesOnclick";
+import { getExtraHintsToggle } from "../actions/customHints";
 import { openInNewTab } from "../actions/openInNewTab";
+import { HintClass } from "../hints/HintClass";
+import { cacheHints } from "../hints/hintsCache";
+import { cacheLayout, clearLayoutCache } from "../hints/layoutCache";
+import { matchesCustomExclude, matchesCustomInclude } from "../hints/selectors";
+import { BoundedIntersectionObserver } from "../utils/BoundedIntersectionObserver";
+import { deepGetElements } from "../utils/deepGetElements";
 import {
 	dispatchClick,
 	dispatchHover,
 	dispatchUnhover,
 } from "../utils/dispatchEvents";
-import { matchesCustomExclude, matchesCustomInclude } from "../hints/selectors";
-import { cacheLayout, clearLayoutCache } from "../hints/layoutCache";
-import { getExtraHintsToggle } from "./updateWrappers";
+import { focusesOnclick } from "../utils/focusesOnclick";
+import { getPointerTarget } from "../utils/getPointerTarget";
+import { getUserScrollableContainer } from "../utils/getUserScrollableContainer";
+import { isDisabled } from "../utils/isDisabled";
+import { isHintable } from "../utils/isHintable";
+import { isVisible } from "../utils/isVisible";
+import { refresh } from "./refresh";
 import {
 	addWrapper,
-	deleteWrapper,
-	getWrappersWithin,
-	getWrapperForElement,
 	clearHintedWrapper,
+	deleteWrapper,
+	getWrapperForElement,
+	getWrappersWithin,
 } from "./wrappers";
-import { refresh } from "./refresh";
 
 // =============================================================================
 // HELPER FUNCTIONS

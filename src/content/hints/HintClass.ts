@@ -16,10 +16,7 @@ import {
 	getCachedSettingAll,
 } from "../settings/cacheSettings";
 import { refresh } from "../wrappers/refresh";
-import {
-	matchesMarkedForInclusion,
-	matchesMarkedForExclusion,
-} from "./customSelectorsStaging";
+import { matchesStagedSelector } from "./customSelectorsStaging";
 import { getElementToPositionHint } from "./getElementToPositionHint";
 import { getAptContainer, getContextForHint } from "./getContextForHint";
 import { popHint, pushHint } from "./hintsCache";
@@ -354,11 +351,11 @@ export class HintClass implements Hint {
 		let backgroundColor;
 		let color;
 
-		if (matchesMarkedForExclusion(this.target)) {
+		if (matchesStagedSelector(this.target, false)) {
 			backgroundColor = new Color("red");
 			color = new Color("white");
 			this.borderColor = color;
-		} else if (matchesMarkedForInclusion(this.target)) {
+		} else if (matchesStagedSelector(this.target, true)) {
 			backgroundColor = new Color("green");
 			color = new Color("white");
 			this.borderColor = new Color("white");

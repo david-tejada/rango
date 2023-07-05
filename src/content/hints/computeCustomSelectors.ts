@@ -1,5 +1,4 @@
 import intersect from "intersect";
-import { ElementWrapper } from "../../typings/ElementWrapper";
 import { deepGetElements } from "../utils/deepGetElements";
 import { generatePossibleSelectors } from "../utils/generatePossibleSelectors";
 import {
@@ -7,11 +6,7 @@ import {
 	isValidSelector,
 	selectorToArray,
 } from "../utils/selectorUtils";
-import {
-	pickSelectorAlternative,
-	SelectorAlternative,
-	updateSelectorAlternatives,
-} from "./customSelectorsStaging";
+import { SelectorAlternative } from "../../typings/SelectorAlternative";
 
 function getChildNumber(target: Element) {
 	if (!target.parentElement) return undefined;
@@ -69,7 +64,7 @@ function getAncestorWithSignificantSelector(target: Element) {
  * @example
  *
  * getSignificantSelectors(document.querySelector(".button-red"))
- * // [ "html.no-js", "main", "div#page.my-page", "div.button.button-nice.button-red" ]
+ * // [ "html.no-js", "main", "div#page.my-page", "div.button.button-red" ]
  *
  */
 function getSignificantSelectors(target: Element) {
@@ -85,98 +80,6 @@ function getSignificantSelectors(target: Element) {
 	// We remove duplicates for simplicity even though the same class name could
 	// be used at different levels
 	return [...new Set(result)];
-}
-
-/**
- * Given an array of selectors for elements starting from root until the target
- * element, return selector alternatives that match different amount of
- * elements. For a given amount of elements matching we just take the
- * selector with the lowest specificity or the first one we encounter. For
- * example, if the selectors ".button-primary" and "div.button-primary" match
- * two elements each we would just take ".button-primary" as the specificity is
- * lower.
- *
- * @param selectorList And array of selectors for elements starting from root until the target element
- * @returns An array of objects in the shape { selector, specificity, elementsMatching }. Ordered by the amount of elements matching.
- *
- * @example
- *
- * getSelectorAlternatives(["html.no-js", "main", "div#page.my-page", "div.button.button-primary"])
- * // [
- * //   {
- * //     "selector": ".button-primary",
- * //     "specificity": 10,
- * //     "elementsMatching": 2
- * //   },
- * //   {
- * //     "selector": "div.my-page div",
- * //     "specificity": 12,
- * //     "elementsMatching": 4
- * //   },
- * //   {
- * //     "selector": "div",
- * //     "specificity": 1,
- * //     "elementsMatching": 5
- * //   }
- * // ]
- * //
- */
-function getSelectorAlternatives(selectorList: string[]) {
-	const possibleSelectors = generatePossibleSelectors(selectorList);
-
-	const alternatives: SelectorAlternative[] = [];
-
-	for (const selector of possibleSelectors) {
-		let amountOfElementsMatching = 0;
-
-		try {
-			// We use querySelectorAll here for speed as deepGetElements is much
-			// slower
-			amountOfElementsMatching = document.querySelectorAll(selector).length;
-		} catch (error: unknown) {
-			if (error instanceof DOMException) {
-				amountOfElementsMatching = 0;
-			}
-		}
-
-		// If no element match the selector the elements are shadow dom elements
-		if (!amountOfElementsMatching) {
-			amountOfElementsMatching = deepGetElements(
-				document.body,
-				false,
-				selector
-			).length;
-		}
-
-		const specificityValue = getSpecificityValue(selector);
-
-		const alternativeWithSameMatching = alternatives.find(
-			(alternative) => alternative.elementsMatching === amountOfElementsMatching
-		);
-
-		if (!alternativeWithSameMatching) {
-			alternatives.push({
-				selector,
-				specificity: specificityValue,
-				elementsMatching: amountOfElementsMatching,
-			});
-		} else if (specificityValue <= alternativeWithSameMatching.specificity) {
-			// For every selector alternative that matches a certain amount of
-			// elements we want to store the lowest specificity selector. This is so
-			// that if we include selectors in one page they would match similar
-			// selector in different pages/areas of the page. Because of the order of
-			// selectors returned by generatePossibleSelectors this also ensures that
-			// using "<=" we get selectors closes to the target element.
-			alternativeWithSameMatching.selector = selector;
-			alternativeWithSameMatching.specificity = specificityValue;
-		}
-	}
-
-	return alternatives.sort((a, b) => {
-		if (a.elementsMatching > b.elementsMatching) return +1;
-		if (a.elementsMatching < b.elementsMatching) return -1;
-		return 0;
-	});
 }
 
 /**
@@ -256,50 +159,96 @@ function getCommonSelectors(targets: Element[]) {
 }
 
 /**
- * Computes the custom selectors for a given array of ElementWrappers. This
- * function does NOT refresh the hints.
+ * Given an array of elements return selector alternatives that match different
+ * amount of elements. For a given amount of elements matching we just take the
+ * selector with the lowest specificity or the first one we encounter. For
+ * example, if the selectors ".button-primary" and "div.button-primary" match
+ * two elements each we would just take ".button-primary" as the specificity is
+ * lower.
  *
- * @param wrappers An array of ElementWrappers
- * @param mode "include" or "exclude"
- * @returns The selectors that have been affected
+ * @param elements An array of Elements
+ * @returns An array of objects in the shape { selector, specificity, elementsMatching }. Ordered by the amount of elements matching.
+ *
+ * @example
+ *
+ * Having element1 and element2 these common selectors: ["html.no-js", "main", "div#page.my-page", "div.button.button-primary"]
+ * getSelectorAlternatives([element1, element2])
+ * // [
+ * //   {
+ * //     "selector": ".button-primary",
+ * //     "specificity": 10,
+ * //     "elementsMatching": 2
+ * //   },
+ * //   {
+ * //     "selector": "div.my-page div",
+ * //     "specificity": 12,
+ * //     "elementsMatching": 4
+ * //   },
+ * //   {
+ * //     "selector": "div",
+ * //     "specificity": 1,
+ * //     "elementsMatching": 5
+ * //   }
+ * // ]
+ * //
  */
-export async function computeCustomSelectors(
-	wrappers: ElementWrapper[],
-	mode: "include" | "exclude"
-) {
-	const elements = wrappers.map((wrapper) => wrapper.element);
-
+export function getSelectorAlternatives(elements: Element[]) {
 	const commonSelectors = getCommonSelectors(elements);
-	if (commonSelectors.length === 0) return;
+	if (commonSelectors.length === 0) return [];
 
-	const selectorAlternatives = getSelectorAlternatives(commonSelectors);
-	updateSelectorAlternatives(selectorAlternatives);
-	const selectorsToRefresh = pickSelectorAlternative({ mode });
-	return selectorsToRefresh;
-}
+	const possibleSelectors = generatePossibleSelectors(commonSelectors);
 
-async function includeOrExcludeMoreOrLessSelectors(more: boolean) {
-	const step = more ? 1 : -1;
-	const selectorsAffected = pickSelectorAlternative({ step });
-	return selectorsAffected;
-}
+	const alternatives: SelectorAlternative[] = [];
 
-/**
- * Pick the next selector alternative with more matches and update the custom
- * selectors accordingly. This function does NOT refresh the hints.
- *
- * @returns The selectors that have been affected
- */
-export async function customSelectorsMore() {
-	return includeOrExcludeMoreOrLessSelectors(true);
-}
+	for (const selector of possibleSelectors) {
+		let amountOfElementsMatching = 0;
 
-/**
- * Pick the next selector alternative with less matches and update the custom
- * selectors accordingly. This function does NOT refresh the hints.
- *
- * @returns The selectors that have been affected
- */
-export async function customSelectorsLess() {
-	return includeOrExcludeMoreOrLessSelectors(false);
+		try {
+			// We use querySelectorAll here for speed as deepGetElements is much
+			// slower
+			amountOfElementsMatching = document.querySelectorAll(selector).length;
+		} catch (error: unknown) {
+			if (error instanceof DOMException) {
+				amountOfElementsMatching = 0;
+			}
+		}
+
+		// If no element match the selector the elements are shadow dom elements
+		if (!amountOfElementsMatching) {
+			amountOfElementsMatching = deepGetElements(
+				document.body,
+				false,
+				selector
+			).length;
+		}
+
+		const specificityValue = getSpecificityValue(selector);
+
+		const alternativeWithSameMatching = alternatives.find(
+			(alternative) => alternative.elementsMatching === amountOfElementsMatching
+		);
+
+		if (!alternativeWithSameMatching) {
+			alternatives.push({
+				selector,
+				specificity: specificityValue,
+				elementsMatching: amountOfElementsMatching,
+			});
+		} else if (specificityValue <= alternativeWithSameMatching.specificity) {
+			// For every selector alternative that matches a certain amount of
+			// elements we want to store the lowest specificity selector. This is so
+			// that if we include selectors in one page they would match similar
+			// selector in different pages/areas of the page. Because of the order of
+			// selectors returned by generatePossibleSelectors this also ensures that
+			// using "<=" we get selectors closes to the target element.
+			alternativeWithSameMatching.selector = selector;
+			alternativeWithSameMatching.specificity = specificityValue;
+		}
+	}
+
+	return alternatives.sort((a, b) => {
+		if (a.elementsMatching > b.elementsMatching) return +1;
+		if (a.elementsMatching < b.elementsMatching) return -1;
+		return 0;
+	});
 }

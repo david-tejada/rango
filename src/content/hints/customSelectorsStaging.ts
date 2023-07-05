@@ -1,14 +1,10 @@
 import browser from "webextension-polyfill";
 import { retrieve } from "../../common/storage";
+import { ElementWrapper } from "../../typings/ElementWrapper";
+import { SelectorAlternative } from "../../typings/SelectorAlternative";
 import { CustomSelectorsForPattern } from "../../typings/StorageSchema";
-import { refresh } from "../wrappers/refresh";
+import { getSelectorAlternatives } from "./computeCustomSelectors";
 import { updateCustomSelectors } from "./selectors";
-
-export interface SelectorAlternative {
-	selector: string;
-	specificity: number;
-	elementsMatching: number;
-}
 
 let includeSelectors: string[] = [];
 let excludeSelectors: string[] = [];
@@ -16,7 +12,7 @@ let selectorAlternatives: SelectorAlternative[] = [];
 let lastSelectorAlternativeUsed = -1;
 let lastModeUsed: "include" | "exclude";
 
-function getHostPattern() {
+export function getHostPattern() {
 	if (window.location.protocol.includes("http")) {
 		return `https?://${window.location.host}/*`;
 	}
@@ -25,7 +21,7 @@ function getHostPattern() {
 }
 
 /**
- * Retrieve the saved selectors for the current host pattern
+ * Retrieve the saved selectors for the current host pattern.
  *
  * @returns An array with the saved "include" and "exclude" selectors for the
  * current host pattern
@@ -42,12 +38,31 @@ async function getCustomSelectorsAll() {
 	return [...include, ...exclude];
 }
 
-export function updateSelectorAlternatives(
-	alternatives: SelectorAlternative[]
+/**
+ * Stages the custom selectors for a given array of ElementWrappers.
+ *
+ * @param wrappers An array of ElementWrappers
+ * @param mode "include" or "exclude"
+ * @returns The selectors that have been affected
+ */
+export async function stageCustomSelectors(
+	wrappers: ElementWrapper[],
+	mode: "include" | "exclude"
 ) {
-	selectorAlternatives = alternatives;
+	const elements = wrappers.map((wrapper) => wrapper.element);
+
+	selectorAlternatives = getSelectorAlternatives(elements);
+	const selectorsToRefresh = pickSelectorAlternative({ mode });
+	return selectorsToRefresh;
 }
 
+/**
+ * Picks a selector alternative from the previously calculated ones. It will
+ * modify the selectors in includeSelectors and excludeSelectors.
+ *
+ * @param options An object with optional properties `mode` and `step`
+ * @returns An array with the staged and unstaged selectors
+ */
 export function pickSelectorAlternative(options: {
 	mode?: "include" | "exclude";
 	step?: 1 | -1;
@@ -83,7 +98,7 @@ export function pickSelectorAlternative(options: {
 
 	if (index < 0) {
 		lastSelectorAlternativeUsed = -1;
-		return;
+		return [...selectorsToUpdate];
 	}
 
 	const selector = selectorAlternatives[index]!.selector;
@@ -106,7 +121,7 @@ export function pickSelectorAlternative(options: {
  *
  * @returns An array with the selectors that were added
  */
-export async function confirmSelectorsCustomization() {
+export async function saveCustomSelectors() {
 	const pattern = getHostPattern();
 	const customSelectorsBefore = await getCustomSelectorsAll();
 
@@ -139,45 +154,17 @@ export async function confirmSelectorsCustomization() {
 	return customSelectorsAdded;
 }
 
-/**
- * Resets the custom selectors for the URL pattern of the current frame. To
- * avoid multiple frames changing the custom selectors at the same time a
- * message is sent to the background script where that is handled safely.
- */
-export async function resetCustomSelectors() {
-	const pattern = getHostPattern();
-	const customSelectorsBefore = await getCustomSelectorsAll();
-
-	await browser.runtime.sendMessage({
-		type: "resetCustomSelectors",
-		pattern,
-	});
-
-	await updateCustomSelectors();
-	await resetStagedSelectors();
-	await refresh({ filterIn: customSelectorsBefore });
-}
-
 export async function resetStagedSelectors() {
-	const unstagedSelectors = [...includeSelectors, ...excludeSelectors];
 	includeSelectors = [];
 	excludeSelectors = [];
 	selectorAlternatives = [];
 	lastSelectorAlternativeUsed = -1;
-
-	return unstagedSelectors;
 }
 
-export function matchesMarkedForInclusion(target: Element) {
-	for (const selector of includeSelectors) {
-		if (target.matches(selector)) return true;
-	}
+export function matchesStagedSelector(target: Element, include: boolean) {
+	const selectors = include ? includeSelectors : excludeSelectors;
 
-	return false;
-}
-
-export function matchesMarkedForExclusion(target: Element) {
-	for (const selector of excludeSelectors) {
+	for (const selector of selectors) {
 		if (target.matches(selector)) return true;
 	}
 

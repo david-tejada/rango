@@ -1,23 +1,19 @@
 import { toast } from "react-toastify";
 import { RangoActionWithoutTarget } from "../../typings/RangoAction";
-import {
-	displayMoreOrLessHints,
-	refreshHints,
-} from "../wrappers/updateWrappers";
-import {
-	confirmSelectorsCustomization,
-	resetCustomSelectors,
-} from "../hints/customSelectorsStaging";
 import { notifyTogglesStatus } from "../notify/notify";
-import { refresh } from "../wrappers/refresh";
-import {
-	customSelectorsLess,
-	customSelectorsMore,
-} from "../hints/computeCustomSelectors";
+
 import { unhoverAll } from "./hoverElement";
 import { scroll } from "./scroll";
 import { navigateToNextPage, navigateToPreviousPage } from "./pagination";
 import { blur, focusFirstInput } from "./focus";
+import {
+	customHintsConfirm,
+	displayMoreOrLessHints,
+	markHintsWithNarrowerSelector,
+	markHintsWithBroaderSelector,
+	customHintsReset,
+} from "./customHints";
+import { refreshHints } from "./refreshHints";
 
 export async function runRangoActionWithoutTarget(
 	request: RangoActionWithoutTarget
@@ -111,63 +107,32 @@ export async function runRangoActionWithoutTarget(
 			await displayMoreOrLessHints({ extra: false, excluded: false });
 			break;
 
-		case "confirmSelectorsCustomization": {
-			const selectorsAdded = await confirmSelectorsCustomization();
-
-			if (selectorsAdded.length > 0) {
-				await refresh({
-					hintsStyle: true,
-					isHintable: true,
-					filterIn: selectorsAdded,
-				});
-			}
-
-			await displayMoreOrLessHints({ extra: false, excluded: false });
+		case "confirmSelectorsCustomization":
+			await customHintsConfirm();
 			break;
-		}
 
 		case "resetCustomSelectors": {
-			await resetCustomSelectors();
+			await customHintsReset();
 			break;
 		}
 
-		case "unhoverAll":
-			blur();
-			unhoverAll();
-			toast.dismiss();
+		case "includeOrExcludeMoreSelectors":
+			await markHintsWithBroaderSelector();
+			break;
+
+		case "includeOrExcludeLessSelectors":
+			await markHintsWithNarrowerSelector();
 			break;
 
 		case "refreshHints":
 			await refreshHints();
 			break;
 
-		case "includeOrExcludeMoreSelectors": {
-			const selectorsToRefresh = await customSelectorsMore();
-
-			if (selectorsToRefresh) {
-				await refresh({
-					hintsColors: true,
-					isHintable: true,
-					filterIn: selectorsToRefresh,
-				});
-			}
-
+		case "unhoverAll":
+			blur();
+			unhoverAll();
+			toast.dismiss();
 			break;
-		}
-
-		case "includeOrExcludeLessSelectors": {
-			const selectorsToRefresh = await customSelectorsLess();
-
-			if (selectorsToRefresh) {
-				await refresh({
-					hintsColors: true,
-					isHintable: true,
-					filterIn: selectorsToRefresh,
-				});
-			}
-
-			break;
-		}
 
 		default:
 			break;

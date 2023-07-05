@@ -3,7 +3,7 @@ import {
 	addWrappersFrom,
 	mutationObserver,
 	disconnectObservers,
-} from "./wrappers/initElementWrappers";
+} from "./wrappers/ElementWrapperClass";
 import { clearWrappersAll } from "./wrappers/wrappers";
 
 let enabled = false;

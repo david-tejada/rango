@@ -3,8 +3,6 @@ import { assertDefined } from "../../typings/TypingUtils";
 import { getWrapper, getWrapperForElement } from "../wrappers/wrappers";
 import { TalonAction } from "../../typings/RequestFromTalon";
 import { tryToFocusOnEditable } from "../utils/tryToFocusOnEditable";
-import { computeCustomSelectors } from "../hints/computeCustomSelectors";
-import { refresh } from "../wrappers/refresh";
 import { clickElement } from "./clickElement";
 import {
 	copyElementTextContentToClipboard,
@@ -19,6 +17,7 @@ import { insertToField } from "./insertToField";
 import { setSelectionAfter, setSelectionBefore } from "./setSelection";
 import { focusAndDeleteContents } from "./focusAndDeleteContents";
 import { focus } from "./focus";
+import { markHintsForExclusion, markHintsForInclusion } from "./customHints";
 
 export async function runRangoActionWithTarget(
 	request: RangoActionWithTarget
@@ -150,31 +149,13 @@ export async function runRangoActionWithTarget(
 			snapScroll("center", wrapper);
 			break;
 
-		case "includeExtraSelectors": {
-			const selectorsToRefresh = await computeCustomSelectors(
-				wrappers,
-				"include"
-			);
-			await refresh({
-				hintsColors: true,
-				isHintable: true,
-				filterIn: selectorsToRefresh,
-			});
+		case "includeExtraSelectors":
+			await markHintsForInclusion(wrappers);
 			break;
-		}
 
-		case "excludeExtraSelectors": {
-			const selectorsToRefresh = await computeCustomSelectors(
-				wrappers,
-				"exclude"
-			);
-			await refresh({
-				hintsColors: true,
-				isHintable: true,
-				filterIn: selectorsToRefresh,
-			});
+		case "excludeExtraSelectors":
+			await markHintsForExclusion(wrappers);
 			break;
-		}
 
 		default:
 			break;
