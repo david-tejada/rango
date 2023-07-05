@@ -1,10 +1,10 @@
 #rango-toast .ToggleStatus {
 	display: flex;
 	justify-content: space-between;
-	font-size: 1rem;
+	font-size: 1em;
 	text-transform: none;
 	line-height: 1.8;
-	min-width: 12rem;
+	min-width: 12em;
 }
 
 #rango-toast .ToggleStatus.set ~ .ToggleStatus.set,
