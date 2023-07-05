@@ -1,21 +1,19 @@
 import { toast } from "react-toastify";
 import { RangoActionWithoutTarget } from "../../typings/RangoAction";
-import {
-	displayMoreOrLessHints,
-	refreshHints,
-	updateHintablesBySelector,
-} from "../wrappers/updateWrappers";
-import { updateCustomSelectors } from "../hints/selectors";
-import {
-	confirmSelectorsCustomization,
-	resetCustomSelectors,
-} from "../hints/customHintsEdit";
 import { notifyTogglesStatus } from "../notify/notify";
-import { includeOrExcludeMoreOrLessSelectors } from "./customHints";
+
 import { unhoverAll } from "./hoverElement";
 import { scroll } from "./scroll";
 import { navigateToNextPage, navigateToPreviousPage } from "./pagination";
 import { blur, focusFirstInput } from "./focus";
+import {
+	customHintsConfirm,
+	displayMoreOrLessHints,
+	markHintsWithNarrowerSelector,
+	markHintsWithBroaderSelector,
+	customHintsReset,
+} from "./customHints";
+import { refreshHints } from "./refreshHints";
 
 export async function runRangoActionWithoutTarget(
 	request: RangoActionWithoutTarget
@@ -98,53 +96,42 @@ export async function runRangoActionWithoutTarget(
 			break;
 
 		case "displayExtraHints":
-			displayMoreOrLessHints({ extra: true });
+			await displayMoreOrLessHints({ extra: true });
 			break;
 
 		case "displayExcludedHints":
-			displayMoreOrLessHints({ excluded: true });
+			await displayMoreOrLessHints({ excluded: true });
 			break;
 
 		case "displayLessHints":
-			displayMoreOrLessHints({ extra: false, excluded: false });
+			await displayMoreOrLessHints({ extra: false, excluded: false });
 			break;
 
-		case "confirmSelectorsCustomization": {
-			const selectorsAdded = await confirmSelectorsCustomization();
-			await updateCustomSelectors();
-			updateHintablesBySelector(selectorsAdded.join(", "));
-			displayMoreOrLessHints({ extra: false, excluded: false });
+		case "confirmSelectorsCustomization":
+			await customHintsConfirm();
 			break;
-		}
 
 		case "resetCustomSelectors": {
-			const customSelectorsRemoved = await resetCustomSelectors();
-
-			if (customSelectorsRemoved) {
-				await updateCustomSelectors();
-				updateHintablesBySelector(customSelectorsRemoved.join(", "));
-				await refreshHints();
-			}
-
+			await customHintsReset();
 			break;
 		}
 
-		case "unhoverAll":
-			blur();
-			unhoverAll();
-			toast.dismiss();
+		case "includeOrExcludeMoreSelectors":
+			await markHintsWithBroaderSelector();
+			break;
+
+		case "includeOrExcludeLessSelectors":
+			await markHintsWithNarrowerSelector();
 			break;
 
 		case "refreshHints":
 			await refreshHints();
 			break;
 
-		case "includeOrExcludeMoreSelectors":
-			includeOrExcludeMoreOrLessSelectors(true);
-			break;
-
-		case "includeOrExcludeLessSelectors":
-			includeOrExcludeMoreOrLessSelectors(false);
+		case "unhoverAll":
+			blur();
+			unhoverAll();
+			toast.dismiss();
 			break;
 
 		default:

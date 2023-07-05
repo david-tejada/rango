@@ -1,34 +1,30 @@
 import { ElementWrapper } from "../../typings/ElementWrapper";
-import { isHintable } from "../utils/isHintable";
-import { isDisabled } from "../utils/isDisabled";
-import { isVisible } from "../utils/isVisible";
-import { cacheHints } from "../hints/hintsCache";
-import { getUserScrollableContainer } from "../utils/getUserScrollableContainer";
-import { BoundedIntersectionObserver } from "../utils/BoundedIntersectionObserver";
-import { Hint } from "../hints/Hint";
-import { deepGetElements } from "../utils/deepGetElements";
-import { getPointerTarget } from "../utils/getPointerTarget";
-import { focusesOnclick } from "../utils/focusesOnclick";
+import { getExtraHintsToggle } from "../actions/customHints";
 import { openInNewTab } from "../actions/openInNewTab";
+import { HintClass } from "../hints/HintClass";
+import { cacheHints } from "../hints/hintsCache";
+import { cacheLayout, clearLayoutCache } from "../hints/layoutCache";
+import { matchesCustomExclude, matchesCustomInclude } from "../hints/selectors";
+import { BoundedIntersectionObserver } from "../utils/BoundedIntersectionObserver";
+import { deepGetElements } from "../utils/deepGetElements";
 import {
 	dispatchClick,
 	dispatchHover,
 	dispatchUnhover,
 } from "../utils/dispatchEvents";
-import { matchesCustomExclude, matchesCustomInclude } from "../hints/selectors";
-import { cacheLayout, clearLayoutCache } from "../hints/layoutCache";
-import {
-	getExtraHintsToggle,
-	updatePositionAll,
-	updateShouldBeHintedAll,
-	updateStyleAll,
-} from "./updateWrappers";
+import { focusesOnclick } from "../utils/focusesOnclick";
+import { getPointerTarget } from "../utils/getPointerTarget";
+import { getUserScrollableContainer } from "../utils/getUserScrollableContainer";
+import { isDisabled } from "../utils/isDisabled";
+import { isHintable } from "../utils/isHintable";
+import { isVisible } from "../utils/isVisible";
+import { refresh } from "./refresh";
 import {
 	addWrapper,
-	deleteWrapper,
-	getWrappersWithin,
-	getWrapperForElement,
 	clearHintedWrapper,
+	deleteWrapper,
+	getWrapperForElement,
+	getWrappersWithin,
 } from "./wrappers";
 
 // =============================================================================
@@ -38,7 +34,7 @@ import {
 function getOrCreateWrapper(element: Element) {
 	let wrapper = getWrapperForElement(element);
 	if (!wrapper) {
-		wrapper = new Wrapper(element);
+		wrapper = new ElementWrapperClass(element);
 		addWrapper(wrapper);
 	}
 
@@ -46,7 +42,7 @@ function getOrCreateWrapper(element: Element) {
 }
 
 function addWrapperOrShadow(element: Element) {
-	addWrapper(new Wrapper(element));
+	addWrapper(new ElementWrapperClass(element));
 	if (element.shadowRoot) {
 		mutationObserver.observe(element.shadowRoot, mutationObserverConfig);
 	} else if (element.tagName.includes("-")) {
@@ -58,7 +54,7 @@ function addWrapperOrShadow(element: Element) {
 				const shadowElements = deepGetElements(element);
 				mutationObserver.observe(element.shadowRoot, mutationObserverConfig);
 				for (const element of shadowElements) {
-					addWrapper(new Wrapper(element));
+					addWrapper(new ElementWrapperClass(element));
 				}
 			}
 		}, 1000);
@@ -82,7 +78,7 @@ export function addWrappersFrom(root: Element) {
 
 	if (elements.length > 25_000) {
 		for (const element of elements) {
-			addWrapperIntersectionObserver.observe(element);
+			addWrappersIntersectionObserver.observe(element);
 		}
 	} else {
 		cacheLayout(
@@ -101,14 +97,17 @@ export function addWrappersFrom(root: Element) {
 // OBSERVERS
 // =============================================================================
 
-// ADD WRAPPER INTERSECTION OBSERVER
+// ADD WRAPPERS INTERSECTION OBSERVER
 
-// This is only used in very large pages. The reason being that creating
-// wrappers for hundreds of thousands of elements all at once can be costly. For
-// example, https://html.spec.whatwg.org/ has circa 288.000 elements. Using this
-// observer we create only wrappers for the elements that are in the viewport +
-// rootMargin.
-const addWrapperIntersectionObserver = new IntersectionObserver(
+/**
+ * Intersection Observer that handles adding wrappers for elements that are
+ * within the viewport + `rootMargin` and remove those that aren't. The reason
+ * for this is that creating and iterating through wrappers for hundreds of
+ * thousands of elements can be very detrimental for performance. For example,
+ * https://html.spec.whatwg.org/ has circa 288.000 elements. This Intersection
+ * Observer is only supposed to be used in those very large pages.
+ */
+const addWrappersIntersectionObserver = new IntersectionObserver(
 	(entries) => {
 		cacheLayout(
 			entries
@@ -117,12 +116,13 @@ const addWrapperIntersectionObserver = new IntersectionObserver(
 				.map((entry) => entry.target),
 			false
 		);
+
 		for (const entry of entries) {
 			const wrapper = getWrapperForElement(entry.target);
 			if (!wrapper && entry.isIntersecting) {
 				addWrapperOrShadow(entry.target);
 			} else if (!entry.isIntersecting) {
-				getWrapperForElement(entry.target)?.remove();
+				getWrapperForElement(entry.target)?.suspend();
 			}
 		}
 	},
@@ -141,9 +141,6 @@ const scrollIntersectionObservers: Map<
 > = new Map();
 
 async function intersectionCallback(entries: IntersectionObserverEntry[]) {
-	// Since this callback can be called multiple times asynchronously we need
-	// to make sure that we only run the code inside after the previous one has
-	// finished executing. If not the hints cache can get messed up.
 	const amountIntersecting = entries.filter(
 		(entry) => entry.isIntersecting
 	).length;
@@ -189,21 +186,37 @@ const mutationObserverConfig = {
 	subtree: true,
 };
 
-const selectorFilter =
-	":not(head, head *, .rango-hint, #rango-copy-paste-area)";
+const elementsToSkip = "head, head *, .rango-hint, #rango-toast";
 
-const mutationCallback: MutationCallback = (mutationList) => {
+function isNonRangoMutation(mutation: MutationRecord) {
+	const isRangoMutation =
+		mutation.attributeName === "data-hint" ||
+		(mutation.addedNodes.length === 1 &&
+			mutation.addedNodes[0]! instanceof Element &&
+			mutation.addedNodes[0]!.className === "rango-hint") ||
+		(mutation.removedNodes.length === 1 &&
+			mutation.removedNodes[0]! instanceof Element &&
+			mutation.removedNodes[0]!.className === "rango-hint");
+
+	return !isRangoMutation;
+}
+
+const mutationCallback: MutationCallback = async (mutationList) => {
+	const nonRangoMutations = mutationList.filter(isNonRangoMutation);
+
+	if (nonRangoMutations.length === 0) return;
+
 	let stylesMightHaveChanged = false;
 
 	for (const mutationRecord of mutationList) {
 		for (const node of mutationRecord.addedNodes) {
-			if (node instanceof Element && node.matches(selectorFilter)) {
+			if (node instanceof Element && !node.matches(elementsToSkip)) {
 				addWrappersFrom(node);
 			}
 		}
 
 		for (const node of mutationRecord.removedNodes) {
-			if (node instanceof Element && node.matches(selectorFilter)) {
+			if (node instanceof Element && !node.matches(elementsToSkip)) {
 				deleteWrapper(node);
 			}
 		}
@@ -211,7 +224,7 @@ const mutationCallback: MutationCallback = (mutationList) => {
 		if (
 			mutationRecord.attributeName &&
 			mutationRecord.target instanceof Element &&
-			mutationRecord.target.matches(selectorFilter)
+			!mutationRecord.target.matches(elementsToSkip)
 		) {
 			stylesMightHaveChanged = true;
 
@@ -234,18 +247,22 @@ const mutationCallback: MutationCallback = (mutationList) => {
 		}
 	}
 
-	updatePositionAll();
-
-	if (stylesMightHaveChanged) {
-		updateStyleAll();
-		updateShouldBeHintedAll();
-	}
+	await refresh({
+		hintsPosition: true,
+		hintsColors: stylesMightHaveChanged,
+		shouldBeHinted: stylesMightHaveChanged,
+	});
 };
 
 export const mutationObserver = new MutationObserver(mutationCallback);
 
 // RESIZE OBSERVER
 
+/**
+ * Recompute if an element should be hinted when there is a resize event. The
+ * change in `shouldBeHinted` state is mostly due to the element going from or to
+ * `display: none`.
+ */
 const hintablesResizeObserver = new ResizeObserver((entries) => {
 	for (const entry of entries) {
 		if (entry.target.isConnected) {
@@ -255,7 +272,7 @@ const hintablesResizeObserver = new ResizeObserver((entries) => {
 });
 
 export function disconnectObservers() {
-	addWrapperIntersectionObserver.disconnect();
+	addWrappersIntersectionObserver.disconnect();
 	mutationObserver.disconnect();
 	viewportIntersectionObserver.disconnect();
 	hintablesResizeObserver.disconnect();
@@ -266,12 +283,16 @@ export function disconnectObservers() {
 }
 
 // =============================================================================
-// ELEMENT WRAPPER
+// WRAPPER CLASS
 // =============================================================================
 
-export interface Wrapper extends ElementWrapper {}
+// This is necessary to not have to define the Wrapper interface properties again
+interface ElementWrapperClass extends ElementWrapper {}
 
-export class Wrapper {
+/**
+ * A wrapper for a DOM Element.
+ */
+class ElementWrapperClass implements ElementWrapper {
 	constructor(element: Element) {
 		this.element = element;
 		this.isActiveFocusable =
@@ -367,7 +388,7 @@ export class Wrapper {
 		this.isIntersecting = isIntersecting;
 
 		if (this.isIntersecting && this.shouldBeHinted) {
-			this.hint ??= new Hint(this.element);
+			this.hint ??= new HintClass(this.element);
 			this.hint.claim();
 		} else if (this.hint?.string) {
 			this.hint.release();
@@ -406,13 +427,14 @@ export class Wrapper {
 					isWithinContentEditable) &&
 				this.element.getAttribute("href")
 			) {
-				// In Firefox if we click a link with target="_blank" we get a popup message
-				// saying "Firefox prevented this site from opening a popup". In order to
-				// avoid that we open a new tab with the url of the href of the link.
-				// Sometimes websites use links with target="_blank" but don't open a new tab.
-				// They probably prevent the default behavior with javascript. For example Slack
-				// has this for opening a thread in the side panel. So here we make sure that
-				// there ContentEditable a href attribute before we open the link in a new tab.
+				// In Firefox if we click a link with target="_blank" we get a popup
+				// message saying "Firefox prevented this site from opening a popup". In
+				// order to avoid that we open a new tab with the url of the href of the
+				// link. Sometimes websites use links with target="_blank" but don't
+				// open a new tab. They probably prevent the default behavior with
+				// javascript. For example Slack has this for opening a thread in the
+				// side panel. So here we make sure that there is an href attribute
+				// before we open the link in a new tab.
 				void openInNewTab([this]);
 				return false;
 			}
@@ -435,14 +457,13 @@ export class Wrapper {
 		dispatchUnhover(pointerTarget);
 	}
 
-	remove() {
+	suspend() {
 		this.unobserveIntersection();
 		viewportIntersectionObserver.unobserve(this.element);
+		hintablesResizeObserver.unobserve(this.element);
 		this.shouldBeHinted = undefined;
 		this.isIntersectingViewport = undefined;
 
-		if (this.hint?.string) {
-			this.hint.release();
-		}
+		this.hint?.release();
 	}
 }

@@ -1,194 +1,125 @@
-import intersect from "intersect";
+import browser from "webextension-polyfill";
 import { ElementWrapper } from "../../typings/ElementWrapper";
-import { updateRecentCustomSelectors } from "../wrappers/updateWrappers";
-import { deepGetElements } from "../utils/deepGetElements";
-import { generatePossibleSelectors } from "../utils/generatePossibleSelectors";
 import {
-	getSpecificityValue,
-	isValidSelector,
-	selectorToArray,
-} from "../utils/selectorUtils";
-import {
+	saveCustomSelectors,
+	stageCustomSelectors,
+	getHostPattern,
+	resetStagedSelectors,
 	pickSelectorAlternative,
-	SelectorAlternative,
-	updateSelectorAlternatives,
-} from "../hints/customHintsEdit";
+} from "../hints/customSelectorsStaging";
+import {
+	extraSelector,
+	getExcludeSelectorAll,
+	updateCustomSelectors,
+} from "../hints/selectors";
+import { refresh } from "../wrappers/refresh";
 
-function getChildNumber(target: Element) {
-	if (!target.parentElement) return undefined;
+let showExtraHints = false;
+let showExcludedHints = false;
 
-	for (const [index, element] of [...target.parentElement.children].entries()) {
-		if (element === target) return index + 1;
-	}
-
-	return undefined;
+export function getExtraHintsToggle() {
+	return showExtraHints;
 }
 
-function getSelector(target: Element) {
-	let result = target.tagName.toLowerCase();
-
-	if (
-		target.id &&
-		// We don't take into account ids with problematic characters
-		!/[.:]/.test(target.id) &&
-		isValidSelector(`#${target.id}`)
-	) {
-		result += `#${target.id}`;
-	}
-
-	if (target.classList.length > 0) {
-		const classSelector = `.${[...target.classList].join(".")}`;
-		if (isValidSelector(classSelector)) result += classSelector;
-	}
-
-	return result;
+export function getShowExcludedToggle() {
+	return showExcludedHints;
 }
 
-function getAncestorWithSignificantSelector(target: Element) {
-	const closest = target.parentElement?.closest(
-		":is([class], [id]):not([class=''], [id='']), ul, ol, nav, header, footer, main, aside, article, section"
-	);
-
-	return closest ?? undefined;
+export function resetExtraHintsToggles() {
+	showExtraHints = false;
+	showExcludedHints = false;
 }
 
-function getSignificantSelectors(target: Element) {
-	const result: string[] = [];
+export async function displayMoreOrLessHints(options: {
+	extra?: boolean;
+	excluded?: boolean;
+}) {
+	if (options.extra !== undefined) showExtraHints = options.extra;
+	if (options.excluded !== undefined) showExcludedHints = options.excluded;
 
-	let next: Element | undefined = target;
-	while (next) {
-		const selector = getSelector(next);
-		if (selector) result.unshift(selector);
-		next = getAncestorWithSignificantSelector(next);
-	}
+	// We need to update the excluded hints as this function serves to also show
+	// previously excluded hints
+	const excludeSelector = getExcludeSelectorAll();
+	let selector = extraSelector;
+	if (excludeSelector) selector = `${selector}, ${excludeSelector}`;
 
-	// We remove duplicates for simplicity even though the same class name could
-	// be used at different levels
-	return [...new Set(result)];
+	await refresh({ hintsColors: true, isHintable: true, filterIn: [selector] });
 }
 
-function getSelectorAlternatives(selectorList: string[]) {
-	const possibleSelectors = generatePossibleSelectors(selectorList);
-
-	const alternatives: SelectorAlternative[] = [];
-
-	for (const selector of possibleSelectors) {
-		let amountOfElementsMatching = 0;
-
-		try {
-			// We use querySelectorAll here for speed as deepGetElements is much
-			// slower
-			amountOfElementsMatching = document.querySelectorAll(selector).length;
-		} catch (error: unknown) {
-			if (error instanceof DOMException) {
-				amountOfElementsMatching = 0;
-			}
-		}
-
-		// If no element match the selector the elements are shadow dom elements
-		if (!amountOfElementsMatching) {
-			amountOfElementsMatching = deepGetElements(
-				document.body,
-				false,
-				selector
-			).length;
-		}
-
-		const specificityValue = getSpecificityValue(selector);
-
-		const alternativeWithSameMatching = alternatives.find(
-			(alternative) => alternative.elementsMatching === amountOfElementsMatching
-		);
-
-		if (!alternativeWithSameMatching) {
-			alternatives.push({
-				selector,
-				specificity: specificityValue,
-				elementsMatching: amountOfElementsMatching,
-			});
-		} else if (specificityValue <= alternativeWithSameMatching.specificity) {
-			// For every selector alternative that matches a certain amount of
-			// elements we want to store the lowest specificity selector. This is so
-			// that if we include selectors in one page they would match similar
-			// selector in different pages/areas of the page. Because of the order of
-			// selectors returned by generatePossibleSelectors this also ensures that
-			// using "<=" we get selectors closes to the target element.
-			alternativeWithSameMatching.selector = selector;
-			alternativeWithSameMatching.specificity = specificityValue;
-		}
-	}
-
-	return alternatives.sort((a, b) => {
-		if (a.elementsMatching > b.elementsMatching) return +1;
-		if (a.elementsMatching < b.elementsMatching) return -1;
-		return 0;
+export async function markHintsForInclusion(wrappers: ElementWrapper[]) {
+	const selectorsToRefresh = await stageCustomSelectors(wrappers, "include");
+	await refresh({
+		hintsColors: true,
+		isHintable: true,
+		filterIn: selectorsToRefresh,
 	});
 }
 
-function getCommonSelectors(targets: Element[]) {
-	const selectorLists = targets.map((element) =>
-		getSignificantSelectors(element)
-	);
-
-	const targetSelectors: Set<string> = new Set();
-
-	for (const list of selectorLists) {
-		const targetSelector = list[list.length - 1];
-		if (targetSelector) targetSelectors.add(targetSelector);
-	}
-
-	let commonTargetSelectors: string[] | undefined;
-
-	for (const selector of targetSelectors) {
-		const parts = selectorToArray(selector);
-		commonTargetSelectors = commonTargetSelectors
-			? intersect(commonTargetSelectors, parts)
-			: parts;
-	}
-
-	// It the target elements don't have any tag, id or class in common we return
-	if (!commonTargetSelectors) return [];
-
-	let targetSelector = commonTargetSelectors.join("");
-
-	// If all the target elements are the same child number we can narrow down the
-	// selector even more
-	const firstTargetChildNumber = targets[0]
-		? getChildNumber(targets[0])
-		: undefined;
-
-	if (
-		firstTargetChildNumber &&
-		[...targets].every(
-			(target) => getChildNumber(target) === firstTargetChildNumber
-		)
-	) {
-		targetSelector += `:nth-child(${firstTargetChildNumber})`;
-	}
-
-	for (const list of selectorLists) {
-		list[list.length - 1] = targetSelector;
-	}
-
-	return intersect(selectorLists);
+export async function markHintsForExclusion(wrappers: ElementWrapper[]) {
+	const selectorsToRefresh = await stageCustomSelectors(wrappers, "exclude");
+	await refresh({
+		hintsColors: true,
+		isHintable: true,
+		filterIn: selectorsToRefresh,
+	});
 }
 
-export function includeOrExcludeExtraSelectors(
-	wrappers: ElementWrapper[],
-	mode: "include" | "exclude"
-) {
-	const elements = wrappers.map((wrapper) => wrapper.element);
+export async function markHintsWithBroaderSelector() {
+	const selectorsToRefresh = pickSelectorAlternative({ step: 1 });
 
-	const commonSelectors = getCommonSelectors(elements);
-	if (commonSelectors.length === 0) return;
-
-	updateSelectorAlternatives(getSelectorAlternatives(commonSelectors));
-	pickSelectorAlternative({ mode });
-	updateRecentCustomSelectors();
+	if (selectorsToRefresh) {
+		await refresh({
+			hintsColors: true,
+			isHintable: true,
+			filterIn: selectorsToRefresh,
+		});
+	}
 }
 
-export function includeOrExcludeMoreOrLessSelectors(more: boolean) {
-	const step = more ? 1 : -1;
-	pickSelectorAlternative({ step });
-	updateRecentCustomSelectors();
+export async function markHintsWithNarrowerSelector() {
+	const selectorsToRefresh = pickSelectorAlternative({ step: -1 });
+
+	if (selectorsToRefresh) {
+		await refresh({
+			hintsColors: true,
+			isHintable: true,
+			filterIn: selectorsToRefresh,
+		});
+	}
+}
+
+export async function customHintsConfirm() {
+	const selectorsAdded = await saveCustomSelectors();
+
+	if (selectorsAdded.length > 0) {
+		await refresh({
+			hintsStyle: true,
+			isHintable: true,
+			filterIn: selectorsAdded,
+		});
+	}
+
+	await displayMoreOrLessHints({ extra: false, excluded: false });
+}
+
+/**
+ * Resets the custom selectors for the URL pattern of the current frame. To
+ * avoid multiple frames changing the custom selectors at the same time a
+ * message is sent to the background script where that is handled safely.
+ */
+export async function customHintsReset() {
+	showExtraHints = false;
+	showExcludedHints = false;
+
+	const pattern = getHostPattern();
+
+	await browser.runtime.sendMessage({
+		type: "resetCustomSelectors",
+		pattern,
+	});
+
+	await updateCustomSelectors();
+	await resetStagedSelectors();
+
+	await refresh();
 }

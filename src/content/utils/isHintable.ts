@@ -1,8 +1,9 @@
-import { matchesMarkedForInclusion } from "../hints/customHintsEdit";
 import {
 	getExtraHintsToggle,
 	getShowExcludedToggle,
-} from "../wrappers/updateWrappers";
+} from "../actions/customHints";
+import { matchesStagedSelector } from "../hints/customSelectorsStaging";
+
 import {
 	matchesCustomExclude,
 	matchesCustomInclude,
@@ -86,6 +87,6 @@ export function isHintable(target: Element): boolean {
 
 	return (
 		(matchesHintableSelector(target) && !isRedundant(target)) ||
-		matchesMarkedForInclusion(target)
+		matchesStagedSelector(target, true)
 	);
 }

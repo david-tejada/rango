@@ -1,7 +1,7 @@
 import { isHtmlElement } from "../../typings/TypingUtils";
 import { getCachedSetting } from "../settings/cacheSettings";
 import { getUserScrollableContainer } from "../utils/getUserScrollableContainer";
-import { Wrapper } from "../wrappers/Wrapper";
+import { ElementWrapper } from "../../typings/ElementWrapper";
 
 const DEFAULT_SCROLL_FACTOR = 0.66;
 
@@ -20,7 +20,7 @@ let lastScrollFactor: number;
 
 interface ScrollOptions {
 	dir: "up" | "down" | "left" | "right";
-	target: Wrapper | "page" | "leftAside" | "rightAside" | "repeatLast";
+	target: ElementWrapper | "page" | "leftAside" | "rightAside" | "repeatLast";
 	factor?: number;
 }
 
@@ -189,7 +189,7 @@ function getRightmostScrollable() {
 
 export function snapScroll(
 	position: "top" | "center" | "bottom",
-	target: Wrapper
+	target: ElementWrapper
 ) {
 	const scrollContainer = target.userScrollableContainer;
 
@@ -280,7 +280,7 @@ export function scroll(options: ScrollOptions) {
 		throw new Error("Unable to repeat the last scroll");
 	}
 
-	if (target instanceof Wrapper) {
+	if (!(typeof target === "string")) {
 		scrollContainer = getUserScrollableContainer(target.element, direction);
 		if (!scrollContainer) {
 			throw new Error("Couldn't find userScrollableContainer for element");

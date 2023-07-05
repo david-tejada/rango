@@ -4,22 +4,19 @@ import { rgbaToRgb } from "../../lib/rgbaToRgb";
 import { getEffectiveBackgroundColor } from "../utils/getEffectiveBackgroundColor";
 import { getFirstTextNodeDescendant } from "../utils/nodeUtils";
 import { createsStackingContext } from "../utils/createsStackingContext";
-import { HintableMark } from "../../typings/ElementWrapper";
+import { Hint } from "../../typings/Hint";
 import {
 	clearHintedWrapper,
 	getWrapper,
 	getWrapperForElement,
 	setHintedWrapper,
 } from "../wrappers/wrappers";
-import { updatePositionAll } from "../wrappers/updateWrappers";
 import {
 	getCachedSetting,
 	getCachedSettingAll,
 } from "../settings/cacheSettings";
-import {
-	matchesMarkedForInclusion,
-	matchesMarkedForExclusion,
-} from "./customHintsEdit";
+import { refresh } from "../wrappers/refresh";
+import { matchesStagedSelector } from "./customSelectorsStaging";
 import { getElementToPositionHint } from "./getElementToPositionHint";
 import { getAptContainer, getContextForHint } from "./getContextForHint";
 import { popHint, pushHint } from "./hintsCache";
@@ -34,9 +31,9 @@ import {
 	removeFromLayoutCache,
 } from "./layoutCache";
 
-const hintQueue: Set<Hint> = new Set();
+const hintQueue: Set<HintClass> = new Set();
 
-function addToHintQueue(hint: Hint) {
+function addToHintQueue(hint: HintClass) {
 	hintQueue.add(hint);
 	processHintQueue();
 }
@@ -93,6 +90,7 @@ const processHintQueue = debounce(() => {
 		hint.position();
 		setHintedWrapper(hint.string!, hint.target);
 		hint.shadowHost.dataset["hint"] = hint.string;
+		hint.isActive = true;
 
 		// This is here for debugging and testing purposes
 		if (
@@ -183,8 +181,30 @@ const containerMutationObserver = new MutationObserver((entries) => {
 	}
 });
 
-const containerResizeObserver = new ResizeObserver(() => {
-	updatePositionAll();
+// Keeps track of entries that have been triggered at least once by the
+// containerResizeObserver
+const entriesSeen = new Set();
+
+/**
+ * Resize Observer to reposition Hints when the element that contains them
+ * changes size
+ */
+const containerResizeObserver = new ResizeObserver(async (entries) => {
+	let shouldRefresh = false;
+
+	for (const entry of entries) {
+		// We need to check that this is not the initial ResizeObserver trigger that
+		// happens when you first observe an element
+		if (entriesSeen.has(entry.target)) {
+			shouldRefresh = true;
+		} else {
+			entriesSeen.add(entry.target);
+		}
+	}
+
+	if (shouldRefresh) {
+		await refresh({ hintsPosition: true });
+	}
 });
 
 /**
@@ -228,11 +248,16 @@ const shadowHostMutationObserver = new MutationObserver((entries) => {
 	}
 });
 
-export interface Hint extends HintableMark {}
+// =============================================================================
+// HINT CLASS
+// =============================================================================
 
-export class Hint {
+export interface HintClass extends Hint {}
+
+export class HintClass implements Hint {
 	constructor(target: Element) {
 		this.target = target;
+		this.isActive = false;
 
 		this.borderWidth = getCachedSetting("hintBorderWidth");
 
@@ -326,11 +351,11 @@ export class Hint {
 		let backgroundColor;
 		let color;
 
-		if (matchesMarkedForExclusion(this.target)) {
+		if (matchesStagedSelector(this.target, false)) {
 			backgroundColor = new Color("red");
 			color = new Color("white");
 			this.borderColor = color;
-		} else if (matchesMarkedForInclusion(this.target)) {
+		} else if (matchesStagedSelector(this.target, true)) {
 			backgroundColor = new Color("green");
 			color = new Color("white");
 			this.borderColor = new Color("white");
@@ -425,6 +450,10 @@ export class Hint {
 	}
 
 	position() {
+		// This guards against Hint.position being called before its context has
+		// been computed. For example, if it's
+		if (!this.container) return;
+
 		// We need to calculate this here the first time the hint is appended
 		if (this.wrapperRelative === undefined) {
 			const { display } = window.getComputedStyle(
@@ -575,8 +604,9 @@ export class Hint {
 		this.freezeColors = false;
 	}
 
-	release(returnToStack = true) {
+	release(returnToStack = true, removeElement = true) {
 		if (hintQueue.has(this)) hintQueue.delete(this);
+		this.isActive = false;
 
 		// Checking this.string is safer than check in this.inner.textContent as the
 		// latter could be removed by a page script
@@ -587,9 +617,11 @@ export class Hint {
 
 		clearHintedWrapper(this.string);
 
-		setStyleProperties(this.inner, {
-			display: "none",
-		});
+		if (removeElement) {
+			setStyleProperties(this.inner, {
+				display: "none",
+			});
+		}
 
 		if (returnToStack) pushHint(this.string);
 		this.inner.textContent = "";
@@ -599,7 +631,9 @@ export class Hint {
 		// minimizes the possibility of something weird happening. Like in the
 		// YouTube search suggestions where the page inserts elements within the
 		// hints if they are not removed.
-		this.shadowHost.remove();
+		if (removeElement) {
+			this.shadowHost.remove();
+		}
 
 		/* eslint-disable @typescript-eslint/no-dynamic-delete */
 		delete this.shadowHost.dataset["hint"];

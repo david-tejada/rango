@@ -50,12 +50,6 @@ export function getWrapperForElement(element: Element) {
 	return wrappersAll.get(element);
 }
 
-export function getWrappersBySelector(selector: string) {
-	const elements = deepGetElements(document.body, false, selector);
-
-	return elements.map((element) => getWrapper(element));
-}
-
 export function getWrappersWithin(element: Element): ElementWrapper[] {
 	const result: ElementWrapper[] = [];
 
@@ -99,7 +93,7 @@ export function deleteWrapper(target: Element) {
 
 		if (wrapper?.hint?.string) wrappersHinted.delete(wrapper.hint.string);
 
-		wrapper?.remove();
+		wrapper?.suspend();
 
 		wrappersAll.delete(element);
 	}
@@ -107,7 +101,7 @@ export function deleteWrapper(target: Element) {
 
 export function clearWrappersAll() {
 	for (const wrapper of wrappersAll.values()) {
-		wrapper?.remove();
+		wrapper?.suspend();
 	}
 
 	wrappersAll.clear();

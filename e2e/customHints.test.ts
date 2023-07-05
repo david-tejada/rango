@@ -98,3 +98,54 @@ describe("iFrame", () => {
 		expect(hintElement).toBeNull();
 	});
 });
+
+describe("Staging", () => {
+	beforeAll(async () => {
+		await page.goto("http://localhost:8080/extraHintables.html");
+	});
+
+	beforeEach(async () => {
+		await rangoCommandWithoutTarget("displayExtraHints");
+		await page.waitForSelector(".rango-hint");
+	});
+
+	afterEach(async () => {
+		await rangoCommandWithoutTarget("resetCustomSelectors");
+	});
+
+	test("Hints marked are removed after refreshing hints", async () => {
+		const hintable = await page.$("#custom-button")!;
+		const hint = await hintable!.evaluate(getHintForElement);
+
+		await rangoCommandWithTarget("includeExtraSelectors", [hint]);
+		await sleep(200);
+		await page.waitForSelector(".rango-hint");
+		const hintElement = await page.$(".rango-hint");
+
+		expect(hintElement).not.toBeNull();
+
+		await rangoCommandWithoutTarget("refreshHints");
+		await sleep(200);
+		const hintElementAfter = await page.$(".rango-hint");
+
+		expect(hintElementAfter).toBeNull();
+	});
+
+	test("Hints marked are removed after custom hints reset", async () => {
+		const hintable = await page.$("#custom-button")!;
+		const hint = await hintable!.evaluate(getHintForElement);
+
+		await rangoCommandWithTarget("includeExtraSelectors", [hint]);
+		await sleep(200);
+		await page.waitForSelector(".rango-hint");
+		const hintElement = await page.$(".rango-hint");
+
+		expect(hintElement).not.toBeNull();
+
+		await rangoCommandWithoutTarget("resetCustomSelectors");
+		await sleep(200);
+		const hintElementAfter = await page.$(".rango-hint");
+
+		expect(hintElementAfter).toBeNull();
+	});
+});

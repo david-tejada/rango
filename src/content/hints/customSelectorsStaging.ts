@@ -1,21 +1,18 @@
 import browser from "webextension-polyfill";
-import { CustomSelectorsForPattern } from "../../typings/StorageSchema";
 import { retrieve } from "../../common/storage";
-
-export interface SelectorAlternative {
-	selector: string;
-	specificity: number;
-	elementsMatching: number;
-}
+import { ElementWrapper } from "../../typings/ElementWrapper";
+import { SelectorAlternative } from "../../typings/SelectorAlternative";
+import { CustomSelectorsForPattern } from "../../typings/StorageSchema";
+import { getSelectorAlternatives } from "./computeCustomSelectors";
+import { updateCustomSelectors } from "./selectors";
 
 let includeSelectors: string[] = [];
 let excludeSelectors: string[] = [];
 let selectorAlternatives: SelectorAlternative[] = [];
 let lastSelectorAlternativeUsed = -1;
 let lastModeUsed: "include" | "exclude";
-let selectorsToUpdate: string[] = [];
 
-function getHostPattern() {
+export function getHostPattern() {
 	if (window.location.protocol.includes("http")) {
 		return `https?://${window.location.host}/*`;
 	}
@@ -23,6 +20,12 @@ function getHostPattern() {
 	return window.location.href;
 }
 
+/**
+ * Retrieve the saved selectors for the current host pattern.
+ *
+ * @returns An array with the saved "include" and "exclude" selectors for the
+ * current host pattern
+ */
 async function getCustomSelectorsAll() {
 	const pattern = getHostPattern();
 	const customSelectors = await retrieve("customSelectors");
@@ -35,16 +38,37 @@ async function getCustomSelectorsAll() {
 	return [...include, ...exclude];
 }
 
-export function updateSelectorAlternatives(
-	alternatives: SelectorAlternative[]
+/**
+ * Stages the custom selectors for a given array of ElementWrappers.
+ *
+ * @param wrappers An array of ElementWrappers
+ * @param mode "include" or "exclude"
+ * @returns The selectors that have been affected
+ */
+export async function stageCustomSelectors(
+	wrappers: ElementWrapper[],
+	mode: "include" | "exclude"
 ) {
-	selectorAlternatives = alternatives;
+	const elements = wrappers.map((wrapper) => wrapper.element);
+
+	selectorAlternatives = getSelectorAlternatives(elements);
+	const selectorsToRefresh = pickSelectorAlternative({ mode });
+	return selectorsToRefresh;
 }
 
+/**
+ * Picks a selector alternative from the previously calculated ones. It will
+ * modify the selectors in includeSelectors and excludeSelectors.
+ *
+ * @param options An object with optional properties `mode` and `step`
+ * @returns An array with the staged and unstaged selectors
+ */
 export function pickSelectorAlternative(options: {
 	mode?: "include" | "exclude";
 	step?: 1 | -1;
 }) {
+	const selectorsToUpdate = new Set<string>();
+
 	// If we are not selecting a different alternative we need to reset the
 	// lastSelectorAlternativeUsed
 	if (!options.step) lastSelectorAlternativeUsed = -1;
@@ -70,11 +94,11 @@ export function pickSelectorAlternative(options: {
 			mode === "include" ? includeSelectors.pop() : excludeSelectors.pop();
 	}
 
-	if (removed) selectorsToUpdate.push(removed);
+	if (removed) selectorsToUpdate.add(removed);
 
 	if (index < 0) {
 		lastSelectorAlternativeUsed = -1;
-		return;
+		return [...selectorsToUpdate];
 	}
 
 	const selector = selectorAlternatives[index]!.selector;
@@ -85,7 +109,9 @@ export function pickSelectorAlternative(options: {
 		excludeSelectors.push(selector);
 	}
 
-	selectorsToUpdate.push(selector);
+	selectorsToUpdate.add(selector);
+
+	return [...selectorsToUpdate];
 }
 
 /**
@@ -95,7 +121,7 @@ export function pickSelectorAlternative(options: {
  *
  * @returns An array with the selectors that were added
  */
-export async function confirmSelectorsCustomization() {
+export async function saveCustomSelectors() {
 	const pattern = getHostPattern();
 	const customSelectorsBefore = await getCustomSelectorsAll();
 
@@ -123,55 +149,22 @@ export async function confirmSelectorsCustomization() {
 		(selector) => !customSelectorsBeforeSet.has(selector)
 	);
 
+	await updateCustomSelectors();
+
 	return customSelectorsAdded;
 }
 
-/**
- * Resets the custom selectors for the URL pattern of the current frame. To
- * avoid multiple frames changing the custom selectors at the same time a
- * message is sent to the background script where that is handled safely.
- *
- * @returns An array with the selectors that were removed
- */
-export async function resetCustomSelectors() {
-	const pattern = getHostPattern();
-	const customSelectorsBefore = await getCustomSelectorsAll();
-
-	await browser.runtime.sendMessage({
-		type: "resetCustomSelectors",
-		pattern,
-	});
-
-	return customSelectorsBefore;
-}
-
-// I had to create this function to avoid dependency cycle if I were to import
-// some function from the updateWrappers module. This function is called from
-// the updateWrappers module instead.
-export function popCustomSelectorsToUpdate() {
-	const result = selectorsToUpdate.join(", ");
-	selectorsToUpdate = [];
-
-	return result;
-}
-
-export function clearMarkedForInclusionOrExclusion() {
+export async function resetStagedSelectors() {
 	includeSelectors = [];
 	excludeSelectors = [];
 	selectorAlternatives = [];
 	lastSelectorAlternativeUsed = -1;
 }
 
-export function matchesMarkedForInclusion(target: Element) {
-	for (const selector of includeSelectors) {
-		if (target.matches(selector)) return true;
-	}
+export function matchesStagedSelector(target: Element, include: boolean) {
+	const selectors = include ? includeSelectors : excludeSelectors;
 
-	return false;
-}
-
-export function matchesMarkedForExclusion(target: Element) {
-	for (const selector of excludeSelectors) {
+	for (const selector of selectors) {
 		if (target.matches(selector)) return true;
 	}
 

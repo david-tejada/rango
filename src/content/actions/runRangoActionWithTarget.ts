@@ -13,11 +13,11 @@ import { scroll, snapScroll } from "./scroll";
 import { hoverElement } from "./hoverElement";
 import { openInBackgroundTab, openInNewTab } from "./openInNewTab";
 import { showTitleAndHref } from "./showTitleAndHref";
-import { includeOrExcludeExtraSelectors } from "./customHints";
 import { insertToField } from "./insertToField";
 import { setSelectionAfter, setSelectionBefore } from "./setSelection";
 import { focusAndDeleteContents } from "./focusAndDeleteContents";
 import { focus } from "./focus";
+import { markHintsForExclusion, markHintsForInclusion } from "./customHints";
 
 export async function runRangoActionWithTarget(
 	request: RangoActionWithTarget
@@ -150,11 +150,11 @@ export async function runRangoActionWithTarget(
 			break;
 
 		case "includeExtraSelectors":
-			includeOrExcludeExtraSelectors(wrappers, "include");
+			await markHintsForInclusion(wrappers);
 			break;
 
 		case "excludeExtraSelectors":
-			includeOrExcludeExtraSelectors(wrappers, "exclude");
+			await markHintsForExclusion(wrappers);
 			break;
 
 		default:
