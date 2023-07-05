@@ -1,10 +1,14 @@
+#rango-toast {
+	font-size: 16px;
+}
+
 #rango-toast .Toastify__toast-container {
 	width: auto;
-	max-width: 30rem;
+	max-width: 30em;
 }
 
 #rango-toast .Toastify__toast {
-	border-radius: 0.5rem !important;
+	border-radius: 0.5em !important;
 }
 
 #rango-toast .Toastify__toast-body {
@@ -15,7 +19,7 @@
 
 #rango-toast .Toastify__toast-body h2,
 #rango-toast .Toastify__toast-body p {
-	font-size: 1rem !important;
+	font-size: 1em !important;
 	text-transform: none !important;
 	letter-spacing: initial !important;
 	line-height: 1.4 !important;
@@ -37,8 +41,8 @@
 }
 
 #rango-toast .Toastify__toast-body footer {
-	margin-top: 0.7rem !important;
-	font-size: 0.75rem !important;
+	margin-top: 0.7em !important;
+	font-size: 0.75em !important;
 	text-align: right;
 }
 

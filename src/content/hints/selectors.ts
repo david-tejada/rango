@@ -11,9 +11,7 @@ const defaultSelector =
 
 const hintableSelector = `:is(${defaultSelector}):not([aria-hidden='true'], .Toastify__close-button)`;
 
-export const extraSelector =
-	defaultSelector +
-	", [aria-hidden='true'], div, span, i, li, td, h1, h2, h3, h4, h5, h6";
+export const extraSelector = `:is(${defaultSelector}, [aria-hidden='true'], div, span, i, li, td, h1, h2, h3, h4, h5, h6):not(#rango-toast *)`;
 
 let includeSelectorAll = "";
 let excludeSelectorAll = "";
