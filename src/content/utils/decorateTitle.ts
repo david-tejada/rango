@@ -1,6 +1,7 @@
 import browser from "webextension-polyfill";
 import { throttle } from "lodash";
 import { getCachedSetting } from "../settings/cacheSettings";
+import { isMainframe } from "../setup/contentScriptContext";
 
 // Settings
 let urlInTitle: boolean;
@@ -55,6 +56,19 @@ function removeDecorations(prefix?: string) {
 }
 
 async function decorateTitle() {
+	// Sometimes the document.title is modified by the page itself starting with
+	// the previous document.title. For example, in basecamp when the play button
+	// is clicked, "▶︎ " is added to the front of the title. After the track is
+	// stopped the first three characters of the title are removed.
+	if (
+		titleAfterDecoration &&
+		document.title !== titleAfterDecoration &&
+		document.title.includes(titleAfterDecoration)
+	) {
+		titleAfterDecoration = document.title;
+		return;
+	}
+
 	const prefix = await getTitlePrefix();
 	const suffix = getTitleSuffix();
 
