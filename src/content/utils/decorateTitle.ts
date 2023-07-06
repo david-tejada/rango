@@ -81,7 +81,7 @@ const throttledMutationCallback = throttle(async () => {
 	// The URL could be changed using something like history.pushState and
 	// sometimes the title doesn't even change (issue #75).
 	if (
-		window.location.href !== lastUrlAdded ||
+		(urlInTitle && window.location.href !== lastUrlAdded) ||
 		document.title !== titleAfterDecoration
 	) {
 		await decorateTitle();
