@@ -16,7 +16,7 @@ In order to use the extension you need two pieces: the extension and the talon f
 
 - The extension can be installed from the respective store: [Firefox](https://addons.mozilla.org/en-US/firefox/addon/rango/), [Chrome](https://chrome.google.com/webstore/detail/rango/lnemjdnjjofijemhdogofbpcedhgcpmb), [Edge](https://microsoftedge.microsoft.com/addons/detail/rango/pcngjebdhphedjkfhipblkgjbjoeaaeb).
 
-- The talon files can be found [here](https://github.com/david-tejada/rango-talon). Clone or download them to your talon user folder.
+- The talon files can be found in the [rango-talon](https://github.com/david-tejada/rango-talon) repository. Clone or download them to your talon user folder. **IMPORTANT**: Make sure to clone or download the **rango-talon** repository and not this one.
 
 ### Troubleshooting
 
