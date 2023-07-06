@@ -91,6 +91,8 @@ const throttledMutationCallback = throttle(async () => {
 let mutationObserver: MutationObserver | undefined;
 
 export async function initTitleDecoration() {
+	if (!isMainframe()) return;
+
 	const previousUrlInTitle = urlInTitle;
 	const previousIncludeTabMarkers = includeTabMarkers;
 
