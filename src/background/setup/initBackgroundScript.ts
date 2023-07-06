@@ -1,15 +1,15 @@
 /* eslint-disable no-await-in-loop */
 import browser from "webextension-polyfill";
+import { Settings, defaultSettings } from "../../common/settings";
 import {
 	retrieve,
 	storageHas,
 	store,
 	storeIfUndefined,
 } from "../../common/storage";
-import { Settings, defaultSettings } from "../../common/settings";
 import { urls } from "../../common/urls";
 import { watchNavigation } from "../hints/watchNavigation";
-import { allHints } from "../utils/allHints";
+import { resetTabMarkers } from "../misc/tabMarkers";
 import { trackRecentTabs } from "./trackRecentTabs";
 
 /**
@@ -48,14 +48,6 @@ async function switchToSyncStorage() {
 
 async function resetHintsStacks() {
 	await store("hintsStacks", new Map());
-}
-
-async function resetTabMarkers() {
-	await store("tabMarkers", {
-		free: [...allHints],
-		tabIdsToMarkers: new Map(),
-		markersToTabIds: new Map(),
-	});
 }
 
 export async function initBackgroundScript() {
@@ -114,8 +106,8 @@ export async function initBackgroundScript() {
 	);
 
 	browser.runtime.onStartup.addListener(async () => {
-		await resetHintsStacks();
 		await resetTabMarkers();
+		await resetHintsStacks();
 
 		const keyboardClicking = await retrieve("keyboardClicking");
 		if (keyboardClicking) {

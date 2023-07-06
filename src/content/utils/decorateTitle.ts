@@ -1,6 +1,7 @@
 import browser from "webextension-polyfill";
 import { throttle } from "lodash";
 import { getCachedSetting } from "../settings/cacheSettings";
+import { isMainframe } from "../setup/contentScriptContext";
 
 // Settings
 let urlInTitle: boolean;
@@ -55,6 +56,19 @@ function removeDecorations(prefix?: string) {
 }
 
 async function decorateTitle() {
+	// Sometimes the document.title is modified by the page itself starting with
+	// the previous document.title. For example, in basecamp when the play button
+	// is clicked, "▶︎ " is added to the front of the title. After the track is
+	// stopped the first three characters of the title are removed.
+	if (
+		titleAfterDecoration &&
+		document.title !== titleAfterDecoration &&
+		document.title.includes(titleAfterDecoration)
+	) {
+		titleAfterDecoration = document.title;
+		return;
+	}
+
 	const prefix = await getTitlePrefix();
 	const suffix = getTitleSuffix();
 
@@ -81,7 +95,7 @@ const throttledMutationCallback = throttle(async () => {
 	// The URL could be changed using something like history.pushState and
 	// sometimes the title doesn't even change (issue #75).
 	if (
-		window.location.href !== lastUrlAdded ||
+		(urlInTitle && window.location.href !== lastUrlAdded) ||
 		document.title !== titleAfterDecoration
 	) {
 		await decorateTitle();
@@ -91,6 +105,8 @@ const throttledMutationCallback = throttle(async () => {
 let mutationObserver: MutationObserver | undefined;
 
 export async function initTitleDecoration() {
+	if (!isMainframe()) return;
+
 	const previousUrlInTitle = urlInTitle;
 	const previousIncludeTabMarkers = includeTabMarkers;
 
