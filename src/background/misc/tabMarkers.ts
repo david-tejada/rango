@@ -82,4 +82,19 @@ export async function resetTabMarkers() {
 
 		return tabMarkers;
 	});
+
+	// We need to reload all "unloaded" tabs in case the user has the setting
+	// "Continue where you left off" enabled. If we don't those tabs will have an
+	// invalid tab marker. We can also not reassign the tab markers to those
+	// "unloaded" tabs since we can't get their title, so we don't know which tab
+	// marker each one has.
+	if (!(await retrieve("includeTabMarkers"))) return;
+
+	const tabs = await browser.tabs.query({});
+
+	await Promise.all(
+		tabs
+			.filter((tab) => tab.status === "unloaded")
+			.map(async (tab) => browser.tabs.reload(tab.id))
+	);
 }
