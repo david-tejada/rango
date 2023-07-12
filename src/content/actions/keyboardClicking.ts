@@ -1,5 +1,4 @@
 import browser from "webextension-polyfill";
-import { retrieve } from "../../common/storage";
 import { isFocusOnClickInput } from "../../typings/TypingUtils";
 import { getHintsInTab } from "../utils/getHintsInTab";
 import { getHintedWrappers } from "../wrappers/wrappers";
@@ -73,15 +72,6 @@ async function keydownHandler(event: KeyboardEvent) {
 		!modifierKeyPressed(event)
 	) {
 		event.preventDefault();
-
-		// We need to check if keyboardClicking is on after event.preventDefault()
-		// because if we do it after, due to the async nature of the call the default
-		// behavior
-		const keyboardClicking = await retrieve("keyboardClicking");
-
-		if (!keyboardClicking) {
-			return;
-		}
 
 		keysPressedBuffer += event.key;
 
