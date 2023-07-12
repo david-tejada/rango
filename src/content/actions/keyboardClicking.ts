@@ -72,6 +72,7 @@ async function keydownHandler(event: KeyboardEvent) {
 		!modifierKeyPressed(event)
 	) {
 		event.preventDefault();
+		event.stopImmediatePropagation();
 
 		keysPressedBuffer += event.key;
 
