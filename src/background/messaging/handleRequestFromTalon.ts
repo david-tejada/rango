@@ -7,6 +7,7 @@ import { notify } from "../utils/notify";
 import { dispatchCommand } from "../commands/dispatchCommand";
 import { shouldTryToFocusDocument } from "../utils/shouldTryToFocusDocument";
 import { constructTalonResponse } from "../utils/constructTalonResponse";
+import { retrieve } from "../../common/storage";
 import { sendRequestToContent } from "./sendRequestToContent";
 
 let talonIsWaitingForResponse = false;
@@ -31,14 +32,21 @@ export async function handleRequestFromTalon() {
 			if (request.action.target.length > 1) {
 				request.action.type = "clickElement";
 			} else {
-				// If no content script is running focusedDocument will be undefined
-				const [focusedDocument] = await promiseWrap(
-					sendRequestToContent({
-						type: "checkIfDocumentHasFocus",
-					})
-				);
+				let shouldTypeCharacters = false;
 
-				if (!focusedDocument) {
+				if (await retrieve("directClickOnlyWithFocusedDocument")) {
+					// If no content script is running focusedDocument will be undefined
+					const [focusedDocument] = await promiseWrap(
+						sendRequestToContent({
+							type: "checkIfDocumentHasFocus",
+						})
+					);
+					shouldTypeCharacters = !focusedDocument;
+				} else {
+					shouldTypeCharacters = false;
+				}
+
+				if (shouldTypeCharacters) {
 					await writeResponseToClipboard({
 						type: "response",
 						action: { type: "noHintFound" },

@@ -34,6 +34,8 @@ export const defaultSettings = {
 	showWhatsNewPageOnUpdate: true,
 	newTabPosition: "relatedAfterCurrent",
 	hasSeenSettingsPage: false,
+	directClickOnlyWithFocusedDocument: true,
+	directClickOnlyWhenNotEditing: false,
 } as const;
 
 export type Settings = {

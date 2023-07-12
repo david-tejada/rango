@@ -64,6 +64,24 @@ export function SettingsComponent() {
 			<SettingsGroup label="General">
 				<SettingRow>
 					<Toggle
+						label="Direct click only with focused document"
+						isPressed={settings.directClickOnlyWithFocusedDocument}
+						onClick={() => {
+							handleChange(
+								"directClickOnlyWithFocusedDocument",
+								!settings.directClickOnlyWithFocusedDocument
+							);
+						}}
+					>
+						<p className="explanation">
+							The spoken letters will be typed instead of direct clicking if
+							there is no focused document. This can happen, for example, when
+							focused in the address bar or the devtools.
+						</p>
+					</Toggle>
+				</SettingRow>
+				<SettingRow>
+					<Toggle
 						label="Keyboard clicking"
 						isPressed={settings.keyboardClicking}
 						onClick={() => {
