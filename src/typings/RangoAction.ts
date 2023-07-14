@@ -151,3 +151,12 @@ export type RangoActionWithoutTarget =
 	| RangoActionOpenPageInNewTab;
 
 export type RangoAction = RangoActionWithTarget | RangoActionWithoutTarget;
+
+// Utilities
+type RangoActionWithArg = RangoAction & { arg?: number | string };
+
+export function hasArg(
+	action: RangoActionWithArg
+): action is RangoActionWithArg {
+	return action.arg !== undefined;
+}
