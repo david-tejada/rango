@@ -36,30 +36,27 @@ async function handleDirectClickElementRequest(request: RequestFromTalon) {
 		);
 	}
 
-	// We only need to differentiate between "directClickElement" and
-	// "clickElement" when there is only one target as the user might have
-	// intended to type those letters
-	if (request.action.target.length > 1) {
-		request.action.type = "clickElement";
-	} else {
-		if (!(await retrieve("directClickWithNoFocusedDocument"))) {
-			const [focusedDocument] = await promiseWrap(
-				sendRequestToContent({ type: "checkIfDocumentHasFocus" })
-			);
+	// We don't consider the user might have intended to type when there are more
+	// than one target since the connector `and` needs to be used.
+	if (request.action.target.length > 1) return false;
 
-			if (!focusedDocument) {
-				await writeTypeCharactersResponse();
-				return true;
-			}
-		}
+	if (!(await retrieve("directClickWithNoFocusedDocument"))) {
+		const [focusedDocument] = await promiseWrap(
+			sendRequestToContent({ type: "checkIfDocumentHasFocus" })
+		);
 
-		if (
-			!(await retrieve("directClickWhenEditing")) &&
-			(await checkActiveElementIsEditable())
-		) {
+		if (!focusedDocument) {
 			await writeTypeCharactersResponse();
 			return true;
 		}
+	}
+
+	if (
+		!(await retrieve("directClickWhenEditing")) &&
+		(await checkActiveElementIsEditable())
+	) {
+		await writeTypeCharactersResponse();
+		return true;
 	}
 
 	return false;

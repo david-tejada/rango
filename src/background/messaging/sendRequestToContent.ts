@@ -31,16 +31,18 @@ export async function sendRequestToContent(
 
 	if ("target" in request) {
 		// We need to take into account that the targets could be in different frames
-		const frameIds = await splitRequestsByFrame(targetTabId, request);
+		const requestsByFrame = await splitRequestsByFrame(targetTabId, request);
 
-		// We don't need to worry about the number of hints said, if it was more
-		// than one the action would have changed to "clickElement"
-		if (request.type === "directClickElement" && frameIds?.size === 0) {
+		if (
+			request.type === "directClickElement" &&
+			request.target.length === 1 &&
+			requestsByFrame?.size === 0
+		) {
 			return [{ name: "typeTargetCharacters" }];
 		}
 
-		if (frameIds) {
-			const sending = Array.from(frameIds).map(
+		if (requestsByFrame) {
+			const sending = Array.from(requestsByFrame).map(
 				async ([frameId, rangoAction]) => {
 					if (/^scroll.*AtElement$/.test(request.type)) {
 						lastScrollFrameId = frameId;
