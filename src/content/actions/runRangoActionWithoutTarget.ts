@@ -2,6 +2,7 @@ import { toast } from "react-toastify";
 import { RangoActionWithoutTarget } from "../../typings/RangoAction";
 import { notifyTogglesStatus } from "../notify/notify";
 
+import { focusesOnclick } from "../utils/focusesOnclick";
 import { unhoverAll } from "./hoverElement";
 import { scroll } from "./scroll";
 import { navigateToNextPage, navigateToPreviousPage } from "./pagination";
@@ -17,7 +18,7 @@ import { refreshHints } from "./refreshHints";
 
 export async function runRangoActionWithoutTarget(
 	request: RangoActionWithoutTarget
-): Promise<string | undefined> {
+): Promise<string | boolean | undefined> {
 	switch (request.type) {
 		case "historyGoBack":
 			window.history.back();
@@ -133,6 +134,13 @@ export async function runRangoActionWithoutTarget(
 			unhoverAll();
 			toast.dismiss();
 			break;
+
+		case "checkActiveElementIsEditable":
+			return Boolean(
+				document.hasFocus() &&
+					document.activeElement &&
+					focusesOnclick(document.activeElement)
+			);
 
 		default:
 			break;

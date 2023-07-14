@@ -116,6 +116,44 @@ export function SettingsComponent() {
 				</SettingRow>
 			</SettingsGroup>
 
+			<SettingsGroup label="Direct clicking">
+				<SettingRow>
+					<Toggle
+						label="Direct clicking available with no focused document"
+						isPressed={settings.directClickWithNoFocusedDocument}
+						onClick={() => {
+							handleChange(
+								"directClickWithNoFocusedDocument",
+								!settings.directClickWithNoFocusedDocument
+							);
+						}}
+					>
+						<p className="explanation">
+							Direct clicking will be available even when the page is not in
+							focus, for example, when focused in the address bar or the
+							devtools.
+						</p>
+					</Toggle>
+				</SettingRow>
+				<SettingRow>
+					<Toggle
+						label="Direct clicking available when editing text"
+						isPressed={settings.directClickWhenEditing}
+						onClick={() => {
+							handleChange(
+								"directClickWhenEditing",
+								!settings.directClickWhenEditing
+							);
+						}}
+					>
+						<p className="explanation">
+							Direct clicking will be available even when the focus is in an
+							input field, textarea or similar.
+						</p>
+					</Toggle>
+				</SettingRow>
+			</SettingsGroup>
+
 			<SettingsGroup label="Title decorators">
 				<SettingRow>
 					<Toggle

@@ -61,6 +61,8 @@ export interface StorageSchema {
 	showWhatsNewPageOnUpdate: boolean;
 	newTabPosition: "relatedAfterCurrent" | "afterCurrent" | "atEnd";
 	hasSeenSettingsPage: boolean;
+	directClickWithNoFocusedDocument: boolean;
+	directClickWhenEditing: boolean;
 
 	// Other data
 	tabsByRecency: Record<number, number[]>;
