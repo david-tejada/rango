@@ -64,24 +64,6 @@ export function SettingsComponent() {
 			<SettingsGroup label="General">
 				<SettingRow>
 					<Toggle
-						label="Direct click only with focused document"
-						isPressed={settings.directClickOnlyWithFocusedDocument}
-						onClick={() => {
-							handleChange(
-								"directClickOnlyWithFocusedDocument",
-								!settings.directClickOnlyWithFocusedDocument
-							);
-						}}
-					>
-						<p className="explanation">
-							The spoken letters will be typed instead of direct clicking if
-							there is no focused document. This can happen, for example, when
-							focused in the address bar or the devtools.
-						</p>
-					</Toggle>
-				</SettingRow>
-				<SettingRow>
-					<Toggle
 						label="Keyboard clicking"
 						isPressed={settings.keyboardClicking}
 						onClick={() => {
@@ -131,6 +113,44 @@ export function SettingsComponent() {
 							<p className="small">Open all tabs at the end of the tabstrip.</p>
 						</Radio>
 					</RadioGroup>
+				</SettingRow>
+			</SettingsGroup>
+
+			<SettingsGroup label="Direct clicking">
+				<SettingRow>
+					<Toggle
+						label="Direct clicking available with no focused document"
+						isPressed={settings.directClickWithNoFocusedDocument}
+						onClick={() => {
+							handleChange(
+								"directClickWithNoFocusedDocument",
+								!settings.directClickWithNoFocusedDocument
+							);
+						}}
+					>
+						<p className="explanation">
+							Direct clicking will be available even when the page is not in
+							focus, for example, when focused in the address bar or the
+							devtools.
+						</p>
+					</Toggle>
+				</SettingRow>
+				<SettingRow>
+					<Toggle
+						label="Direct clicking available when editing text"
+						isPressed={settings.directClickWhenEditing}
+						onClick={() => {
+							handleChange(
+								"directClickWhenEditing",
+								!settings.directClickWhenEditing
+							);
+						}}
+					>
+						<p className="explanation">
+							Direct clicking will be available even when the focus is in an
+							input field, textarea or similar.
+						</p>
+					</Toggle>
 				</SettingRow>
 			</SettingsGroup>
 

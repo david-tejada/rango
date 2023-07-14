@@ -1,16 +1,69 @@
+import { retrieve } from "../../common/storage";
 import { promiseWrap } from "../../lib/promiseWrap";
+import { RequestFromTalon } from "../../typings/RequestFromTalon";
+import { dispatchCommand } from "../commands/dispatchCommand";
 import {
 	getRequestFromClipboard,
 	writeResponseToClipboard,
 } from "../utils/clipboard";
-import { notify } from "../utils/notify";
-import { dispatchCommand } from "../commands/dispatchCommand";
-import { shouldTryToFocusDocument } from "../utils/shouldTryToFocusDocument";
 import { constructTalonResponse } from "../utils/constructTalonResponse";
-import { retrieve } from "../../common/storage";
+import { notify } from "../utils/notify";
+import { shouldTryToFocusDocument } from "../utils/shouldTryToFocusDocument";
+import { checkActiveElementIsEditable } from "../utils/checkActiveElementIsEditable";
 import { sendRequestToContent } from "./sendRequestToContent";
 
 let talonIsWaitingForResponse = false;
+
+async function writeTypeCharactersResponse() {
+	await writeResponseToClipboard({
+		type: "response",
+		action: { type: "noHintFound" },
+		actions: [
+			{
+				name: "typeTargetCharacters",
+			},
+		],
+	});
+}
+
+/**
+ * Resolves with true if the request is handled, otherwise false.
+ */
+async function handleDirectClickElementRequest(request: RequestFromTalon) {
+	if (request.action.type !== "directClickElement") {
+		throw new Error(
+			"This function is only to be called with a directClickElement request"
+		);
+	}
+
+	// We only need to differentiate between "directClickElement" and
+	// "clickElement" when there is only one target as the user might have
+	// intended to type those letters
+	if (request.action.target.length > 1) {
+		request.action.type = "clickElement";
+	} else {
+		if (!(await retrieve("directClickWithNoFocusedDocument"))) {
+			const [focusedDocument] = await promiseWrap(
+				sendRequestToContent({ type: "checkIfDocumentHasFocus" })
+			);
+
+			if (!focusedDocument) {
+				await writeTypeCharactersResponse();
+				return true;
+			}
+		}
+
+		if (
+			!(await retrieve("directClickWhenEditing")) &&
+			(await checkActiveElementIsEditable())
+		) {
+			await writeTypeCharactersResponse();
+			return true;
+		}
+	}
+
+	return false;
+}
 
 export async function handleRequestFromTalon() {
 	try {
@@ -26,40 +79,8 @@ export async function handleRequestFromTalon() {
 		talonIsWaitingForResponse = !(request.action.type === "requestTimedOut");
 
 		if (request.action.type === "directClickElement") {
-			// We only need to differentiate between "directClickElement" and
-			// "clickElement" when there is only one target as the user might have
-			// intended to type those letters
-			if (request.action.target.length > 1) {
-				request.action.type = "clickElement";
-			} else {
-				let shouldTypeCharacters = false;
-
-				if (await retrieve("directClickOnlyWithFocusedDocument")) {
-					// If no content script is running focusedDocument will be undefined
-					const [focusedDocument] = await promiseWrap(
-						sendRequestToContent({
-							type: "checkIfDocumentHasFocus",
-						})
-					);
-					shouldTypeCharacters = !focusedDocument;
-				} else {
-					shouldTypeCharacters = false;
-				}
-
-				if (shouldTypeCharacters) {
-					await writeResponseToClipboard({
-						type: "response",
-						action: { type: "noHintFound" },
-						actions: [
-							{
-								name: "typeTargetCharacters",
-							},
-						],
-					});
-
-					return;
-				}
-			}
+			const isRequestHandled = await handleDirectClickElementRequest(request);
+			if (isRequestHandled) return;
 		}
 
 		// For these three actions we need to make sure that the document is focused

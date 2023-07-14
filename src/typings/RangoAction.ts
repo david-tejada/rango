@@ -36,7 +36,8 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "confirmSelectorsCustomization"
 		| "resetCustomSelectors"
 		| "openSettingsPage"
-		| "requestTimedOut";
+		| "requestTimedOut"
+		| "checkActiveElementIsEditable";
 }
 
 export interface RangoActionUpdateToggles {
