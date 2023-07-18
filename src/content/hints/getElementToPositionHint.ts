@@ -5,6 +5,7 @@
 // most of the time, we want the hint next to the text of the hinted element.
 
 import { deepGetElements } from "../utils/deepGetElements";
+import { getClosestHtmlElement } from "../utils/domUtils";
 import { getWrapperForElement } from "../wrappers/wrappers";
 import {
 	getBoundingClientRect,
@@ -187,5 +188,18 @@ export function getElementToPositionHint(target: Element) {
 		return target;
 	}
 
-	return getFirstIconOrTextElement(target) ?? target;
+	const result = getFirstIconOrTextElement(target) ?? target;
+
+	// This addresses situations like in issue #112 were the hint for a
+	// contenteditable element is positioned relative to another element that is
+	// within a contenteditable="false" element, sometimes resulting in
+	// overlapping hints
+	if (target instanceof HTMLElement && target.isContentEditable) {
+		const closestHtmlElement = getClosestHtmlElement(result);
+		if (closestHtmlElement && !closestHtmlElement.isContentEditable) {
+			return target;
+		}
+	}
+
+	return result;
 }
