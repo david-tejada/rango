@@ -12,7 +12,7 @@ browser.storage.onChanged.addListener(async (changes) => {
 		await setBrowserActionIcon();
 
 		const keyboardClicking = await retrieve("keyboardClicking");
-		await browser.contextMenus.update("keyboardClicking", {
+		await browser.contextMenus.update("keyboard-clicking", {
 			checked: keyboardClicking,
 		});
 	}
