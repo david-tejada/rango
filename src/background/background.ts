@@ -5,6 +5,12 @@ import { toggleKeyboardClicking } from "./actions/toggleKeyboardClicking";
 import { handleRequestFromTalon } from "./messaging/handleRequestFromTalon";
 import { handleRequestFromContent } from "./messaging/handleRequestFromContent";
 import { sendRequestToContent } from "./messaging/sendRequestToContent";
+import { browserAction } from "./utils/browserAction";
+import { contextMenusOnClicked } from "./misc/createContextMenus";
+
+// We need to add the listener right away or else clicking the context menu item
+// while the background script/service worker is inactive might fail.
+browser.contextMenus.onClicked.addListener(contextMenusOnClicked);
 
 (async () => {
 	await initBackgroundScript();
@@ -12,9 +18,7 @@ import { sendRequestToContent } from "./messaging/sendRequestToContent";
 
 browser.runtime.onMessage.addListener(handleRequestFromContent);
 
-// MV2: browser.browserAction
-// MV3: browser.action
-(browser.browserAction ?? browser.action).onClicked.addListener(async () => {
+browserAction.onClicked.addListener(async () => {
 	await toggleHintsGlobal();
 });
 
