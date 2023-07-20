@@ -20,7 +20,8 @@
 		"clipboardRead",
 		"clipboardWrite",
 		"notifications",
-		"webNavigation"
+		"webNavigation",
+		"contextMenus"
 	],
 	"content_scripts": [
 		{

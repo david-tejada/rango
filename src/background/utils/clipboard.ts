@@ -6,11 +6,7 @@ import {
 	ResponseToTalon,
 } from "../../typings/RequestFromTalon";
 import { notify } from "./notify";
-
-function isSafari(): boolean {
-	if (!navigator.vendor) return false;
-	return navigator.vendor.includes("Apple");
-}
+import { isSafari } from "./isSafari";
 
 async function getClipboardManifestV3(): Promise<string | undefined> {
 	const hasDocument = await chrome.offscreen.hasDocument();

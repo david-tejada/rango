@@ -21,7 +21,8 @@
 		"clipboardWrite",
 		"notifications",
 		"nativeMessaging",
-		"webNavigation"
+		"webNavigation",
+		"contextMenus"
 	],
 	"content_scripts": [
 		{
