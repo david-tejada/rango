@@ -30,6 +30,7 @@ import {
 	getOffsetParent,
 	removeFromLayoutCache,
 } from "./layoutCache";
+import { getCustomNudge } from "./getCustomNudge";
 
 const hintQueue: Set<HintClass> = new Set();
 
@@ -555,23 +556,22 @@ export class HintClass implements Hint {
 		const hintOffsetY =
 			getClientDimensions(this.inner).offsetHeight! * (1 - nudgeY);
 
-		let x =
+		const [customNudgeLeft, customNudgeTop] = getCustomNudge(this.target);
+
+		const x =
 			targetX -
 			outerX -
 			(this.availableSpaceLeft === undefined
 				? hintOffsetX
-				: Math.min(hintOffsetX, this.availableSpaceLeft - 1));
-		let y =
+				: Math.min(hintOffsetX, this.availableSpaceLeft - 1)) +
+			customNudgeLeft;
+		const y =
 			targetY -
 			outerY -
 			(this.availableSpaceTop === undefined
 				? hintOffsetY
-				: Math.min(hintOffsetY, this.availableSpaceTop - 1));
-
-		if (this.inner.dataset["placeWithin"] === "true") {
-			x = targetX - outerX + 1;
-			y = targetY - outerY + 1;
-		}
+				: Math.min(hintOffsetY, this.availableSpaceTop - 1)) +
+			customNudgeTop;
 
 		setStyleProperties(this.inner, {
 			left: `${x}px`,
