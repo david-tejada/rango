@@ -10,7 +10,7 @@
 .Input input {
 	padding: 0.3em;
 	border: 1px solid var(--slate-500);
-	border-radius: 5px;
+	border-radius: 0.3em;
 }
 
 .Input input[data-is-valid="false"]:focus {
