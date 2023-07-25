@@ -75,6 +75,10 @@ export async function initBackgroundScript() {
 
 			await Promise.all(storing);
 
+			if (reason === "install") {
+				await browser.tabs.create({ url: urls.onboarding.href });
+			}
+
 			if (
 				reason === "update" &&
 				(await retrieve("showWhatsNewPageOnUpdate")) &&
