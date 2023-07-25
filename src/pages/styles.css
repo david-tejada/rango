@@ -1,13 +1,13 @@
 body {
 	font-family: Nunito, sans-serif;
-	font-size: 16px;
+	font-size: 1rem;
 	color: #2c3e50;
 	margin: 0;
 	padding: 0;
 }
 
 .container {
-	max-width: 800px;
+	max-width: 70ch;
 	margin: 0 auto;
 	padding: 1rem;
 }

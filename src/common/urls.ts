@@ -11,4 +11,5 @@ export const urls = {
 		import.meta.url
 	),
 	whatsNewPage: new URL("../pages/whatsNew/index.html", import.meta.url),
+	onboarding: new URL("../pages/onboarding/index.html", import.meta.url),
 } as const;
