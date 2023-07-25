@@ -1,6 +1,6 @@
 .App {
-	max-width: 700px;
-	min-width: 600px;
+	max-width: 70ch;
+	min-width: 60ch;
 	margin: 0 auto;
 	padding: 1rem;
 }
@@ -11,6 +11,10 @@ h1 {
 	gap: 1rem;
 	font-size: 1.5rem;
 	margin-bottom: 2rem;
+}
+
+.rango-logo {
+	width: 2rem;
 }
 
 .small {

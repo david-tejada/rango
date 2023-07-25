@@ -7,12 +7,8 @@
 	color: var(--neutral-500);
 }
 
-.Toggle:focus {
-	border-radius: 5px;
-}
-
 .Toggle button {
-	--width: 40px;
+	--width: 2.5rem;
 	--height: calc(var(--width) / 2);
 	display: inline-block;
 	position: relative;
@@ -21,7 +17,6 @@
 	background-color: var(--slate-300);
 	border: none;
 	border-radius: var(--height);
-	outline-offset: 2px;
 	transition: background-color 0.4s;
 }
 
@@ -35,7 +30,7 @@
 
 .Toggle:focus-within {
 	outline: 2px solid var(--blue-600);
-	border-radius: 5px;
+	border-radius: 0.3em;
 	padding-left: 0.3em;
 	margin-left: -0.3em;
 	padding-right: 0.3em;

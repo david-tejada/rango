@@ -1,5 +1,6 @@
 import { ChangeEvent, useId } from "react";
 import "./Input.css";
+import { Alert } from "./Alert";
 
 function parseNumber(numberString: string) {
 	if (numberString === "") return Number.NaN;
@@ -57,6 +58,11 @@ export function NumberInput({
 						onBlur();
 					}}
 				/>
+				{!isValid && (
+					<Alert type="error">
+						Select a value between {min} and {max}
+					</Alert>
+				)}
 				{children}
 			</div>
 		</div>
