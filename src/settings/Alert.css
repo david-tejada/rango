@@ -6,6 +6,10 @@
 	align-items: center;
 }
 
+.Alert.error {
+	background-color: #fecaca;
+}
+
 .Alert.warning {
 	background-color: #fef08a;
 }

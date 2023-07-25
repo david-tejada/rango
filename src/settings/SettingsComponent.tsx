@@ -239,7 +239,7 @@ export function SettingsComponent() {
 						label="Font size (px)"
 						defaultValue={settings.hintFontSize}
 						min={6}
-						max={16}
+						max={72}
 						isValid={isValidSetting("hintFontSize", settings.hintFontSize)}
 						onChange={(value) => {
 							handleChange("hintFontSize", value);
@@ -386,7 +386,7 @@ export function SettingsComponent() {
 						label="Border width (px)"
 						defaultValue={settings.hintBorderWidth}
 						min={0}
-						max={3}
+						max={72}
 						isValid={isValidSetting(
 							"hintBorderWidth",
 							settings.hintBorderWidth
@@ -402,7 +402,7 @@ export function SettingsComponent() {
 						label="Border radius (px)"
 						defaultValue={settings.hintBorderRadius}
 						min={0}
-						max={10}
+						max={72}
 						isValid={isValidSetting(
 							"hintBorderRadius",
 							settings.hintBorderRadius
