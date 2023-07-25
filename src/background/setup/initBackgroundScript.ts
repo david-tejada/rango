@@ -75,7 +75,7 @@ export async function initBackgroundScript() {
 
 			await Promise.all(storing);
 
-			if (reason === "install") {
+			if (reason === "install" && process.env["NODE_ENV"] === "production") {
 				await browser.tabs.create({ url: urls.onboarding.href });
 			}
 
