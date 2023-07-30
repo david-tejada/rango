@@ -1,4 +1,4 @@
-import { throttle } from "lodash";
+import { debounce } from "lodash";
 import { cacheHints, clearHintsCache } from "../hints/hintsCache";
 import { getAllWrappers, getHintedWrappers } from "./wrappers";
 
@@ -126,48 +126,44 @@ async function refreshHintsCharacters() {
 	}
 }
 
-const throttledRefresh = throttle(
-	async () => {
-		const {
-			hintsStyle,
-			hintsColors,
-			hintsPosition,
-			hintsCharacters,
-			isHintable,
-			shouldBeHinted,
-		} = combinedOptions;
+const debouncedRefresh = debounce(async () => {
+	const {
+		hintsStyle,
+		hintsColors,
+		hintsPosition,
+		hintsCharacters,
+		isHintable,
+		shouldBeHinted,
+	} = combinedOptions;
 
-		const wrappersToUpdate = getElementWrappersToUpdate(combinedOptions);
+	const wrappersToUpdate = getElementWrappersToUpdate(combinedOptions);
 
-		// We need to update all the hints characters at once
-		if (hintsCharacters) await refreshHintsCharacters();
+	// We need to update all the hints characters at once
+	if (hintsCharacters) await refreshHintsCharacters();
 
-		for (const wrapper of wrappersToUpdate) {
-			if (isHintable) {
-				wrapper.updateIsHintable();
-			} else if (shouldBeHinted) {
-				wrapper.updateShouldBeHinted();
-			}
-
-			if (hintsStyle) wrapper.hint?.applyDefaultStyle();
-			if (hintsColors) wrapper.hint?.updateColors();
-
-			if (!wrapper.hint?.isActive) continue;
-
-			// Whenever we call Hint.claim() the hint gets positioned, so here we
-			// prevent Hint.position() to be called twice.
-			if (hintsPosition && !hintsCharacters) {
-				wrapper.hint?.position();
-			}
+	for (const wrapper of wrappersToUpdate) {
+		if (isHintable) {
+			wrapper.updateIsHintable();
+		} else if (shouldBeHinted) {
+			wrapper.updateShouldBeHinted();
 		}
 
-		combinedOptions = {
-			filterIn: [],
-		};
-	},
-	10,
-	{ leading: false }
-);
+		if (hintsStyle) wrapper.hint?.applyDefaultStyle();
+		if (hintsColors) wrapper.hint?.updateColors();
+
+		if (!wrapper.hint?.isActive) continue;
+
+		// Whenever we call Hint.claim() the hint gets positioned, so here we
+		// prevent Hint.position() to be called twice.
+		if (hintsPosition && !hintsCharacters) {
+			wrapper.hint?.position();
+		}
+	}
+
+	combinedOptions = {
+		filterIn: [],
+	};
+}, 100);
 
 /**
  * Refresh hints and/or hintable status of element wrappers. If no options are
@@ -195,5 +191,5 @@ export async function refresh(options?: Options) {
 
 	combinedOptions = combineOptions(combinedOptions, options);
 
-	await throttledRefresh();
+	await debouncedRefresh();
 }
