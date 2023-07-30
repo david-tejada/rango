@@ -303,6 +303,7 @@ export class HintClass implements Hint {
 			"text-transform": "none",
 			"overflow-wrap": "normal",
 			"letter-spacing": "normal",
+			"text-indent": "0",
 		});
 
 		this.outer.append(this.inner);
