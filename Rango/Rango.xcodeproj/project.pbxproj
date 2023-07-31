@@ -12,7 +12,7 @@
 		E14D40B22A11904700F6246A /* background.ec971b02.js in Resources */ = {isa = PBXBuildFile; fileRef = E14D40A12A11904700F6246A /* background.ec971b02.js */; };
 		E14D40B32A11904700F6246A /* offscreen.7cb32de6.js in Resources */ = {isa = PBXBuildFile; fileRef = E14D40A22A11904700F6246A /* offscreen.7cb32de6.js */; };
 		E14D40B52A11904700F6246A /* whatsNew.0b415932.html in Resources */ = {isa = PBXBuildFile; fileRef = E14D40A42A11904700F6246A /* whatsNew.0b415932.html */; };
-		E14D40B62A11904700F6246A /* whatsNew.306aef15.css in Resources */ = {isa = PBXBuildFile; fileRef = E14D40A52A11904700F6246A /* whatsNew.306aef15.css */; };
+		E14D40B62A11904700F6246A /* whatsNew.e79f552b.css in Resources */ = {isa = PBXBuildFile; fileRef = E14D40A52A11904700F6246A /* whatsNew.e79f552b.css */; };
 		E14D40B72A11904700F6246A /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = E14D40A62A11904700F6246A /* manifest.json */; };
 		E14D40B82A11904700F6246A /* icon-keyboard-clicking48.ac857c64.png in Resources */ = {isa = PBXBuildFile; fileRef = E14D40A72A11904700F6246A /* icon-keyboard-clicking48.ac857c64.png */; };
 		E14D40B92A11904700F6246A /* icon.f5383140.svg in Resources */ = {isa = PBXBuildFile; fileRef = E14D40A82A11904700F6246A /* icon.f5383140.svg */; };
@@ -71,7 +71,7 @@
 		E14D40A12A11904700F6246A /* background.ec971b02.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = background.ec971b02.js; sourceTree = "<group>"; };
 		E14D40A22A11904700F6246A /* offscreen.7cb32de6.js */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.javascript; path = offscreen.7cb32de6.js; sourceTree = "<group>"; };
 		E14D40A42A11904700F6246A /* whatsNew.0b415932.html */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.html; path = whatsNew.0b415932.html; sourceTree = "<group>"; };
-		E14D40A52A11904700F6246A /* whatsNew.306aef15.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = whatsNew.306aef15.css; sourceTree = "<group>"; };
+		E14D40A52A11904700F6246A /* whatsNew.e79f552b.css */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.css; path = whatsNew.e79f552b.css; sourceTree = "<group>"; };
 		E14D40A62A11904700F6246A /* manifest.json */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
 		E14D40A72A11904700F6246A /* icon-keyboard-clicking48.ac857c64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-keyboard-clicking48.ac857c64.png"; sourceTree = "<group>"; };
 		E14D40A82A11904700F6246A /* icon.f5383140.svg */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = icon.f5383140.svg; sourceTree = "<group>"; };
@@ -151,7 +151,7 @@
 				E14D40AA2A11904700F6246A /* settings.c244465d.css */,
 				E14D40A02A11904700F6246A /* tippy.e52cbc8f.css */,
 				E14D40A42A11904700F6246A /* whatsNew.0b415932.html */,
-				E14D40A52A11904700F6246A /* whatsNew.306aef15.css */,
+				E14D40A52A11904700F6246A /* whatsNew.e79f552b.css */,
 			);
 			name = Resources;
 			path = "../../dist-mv2-safari";
@@ -325,7 +325,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				E14D40B62A11904700F6246A /* whatsNew.306aef15.css in Resources */,
+				E14D40B62A11904700F6246A /* whatsNew.e79f552b.css in Resources */,
 				E14D40B92A11904700F6246A /* icon.f5383140.svg in Resources */,
 				E18784B6298EEFB50028A679 /* RangoVersion.xcconfig in Resources */,
 				E18784B4298EEFB50028A679 /* UserSpecific.xcconfig in Resources */,
