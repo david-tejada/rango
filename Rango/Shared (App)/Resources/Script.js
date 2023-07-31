@@ -1,3 +1,7 @@
+function hasPreferences() {
+    document.body.classList.add(`has-preferences`);
+}
+
 function show(platform, enabled) {
 	document.body.classList.add(`platform-${platform}`);
 

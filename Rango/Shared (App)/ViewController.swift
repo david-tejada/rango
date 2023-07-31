@@ -27,6 +27,10 @@ class ViewController: NSViewController, WKNavigationDelegate, WKScriptMessageHan
     }
 
     func webView(_ webView: WKWebView, didFinish navigation: WKNavigation!) {
+        if #unavailable(macOS 13) {
+            webView.evaluateJavaScript("hasPreferences()")
+        }
+
         webView.evaluateJavaScript("show('mac')")
 
         SFSafariExtensionManager.getStateOfSafariExtension(withIdentifier: extensionBundleIdentifier) { (state, error) in
