@@ -37,7 +37,8 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "resetCustomSelectors"
 		| "openSettingsPage"
 		| "requestTimedOut"
-		| "checkActiveElementIsEditable";
+		| "checkActiveElementIsEditable"
+		| "refreshTabMarkers";
 }
 
 export interface RangoActionUpdateToggles {
