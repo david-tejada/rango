@@ -3,6 +3,7 @@ import { Mutex } from "async-mutex";
 import { retrieve, store } from "../../common/storage";
 import { TabMarkers } from "../../typings/StorageSchema";
 import { allHints } from "../utils/allHints";
+import { sendRequestToContent } from "../messaging/sendRequestToContent";
 
 const mutex = new Mutex();
 
@@ -74,7 +75,7 @@ browser.tabs.onReplaced.addListener(async (addedTabId, removedTabId) => {
 	});
 });
 
-export async function resetTabMarkers() {
+async function resetTabMarkers() {
 	await withTabMarkers((tabMarkers) => {
 		tabMarkers.free = [...allHints];
 		tabMarkers.tabIdsToMarkers = new Map();
@@ -82,6 +83,10 @@ export async function resetTabMarkers() {
 
 		return tabMarkers;
 	});
+}
+
+export async function initTabMarkers() {
+	await resetTabMarkers();
 
 	// We need to reload all "unloaded" tabs in case the user has the setting
 	// "Continue where you left off" enabled. If we don't those tabs will have an
@@ -97,4 +102,20 @@ export async function resetTabMarkers() {
 			.filter((tab) => tab.status === "unloaded")
 			.map(async (tab) => browser.tabs.reload(tab.id))
 	);
+}
+
+export async function refreshTabMarkers() {
+	await resetTabMarkers();
+
+	const tabs = await browser.tabs.query({});
+
+	const refreshing = tabs.map(async (tab) => {
+		try {
+			await sendRequestToContent({ type: "refreshTitleDecorations" }, tab.id);
+		} catch {
+			return browser.tabs.reload(tab.id);
+		}
+	});
+
+	await Promise.allSettled(refreshing);
 }

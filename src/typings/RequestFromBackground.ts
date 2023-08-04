@@ -33,7 +33,8 @@ interface SimpleContentRequest {
 		| "checkIfDocumentHasFocus"
 		| "onCompleted"
 		| "tryToFocusPage"
-		| "getTitleBeforeDecoration";
+		| "getTitleBeforeDecoration"
+		| "refreshTitleDecorations";
 }
 
 export type RequestFromBackground = { frameId?: number } & (
