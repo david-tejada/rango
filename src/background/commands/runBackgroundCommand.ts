@@ -11,6 +11,7 @@ import { retrieve, store } from "../../common/storage";
 import { activateTab } from "../actions/activateTab";
 import { copyLocationProperty, copyMarkdownUrl } from "../actions/copyTabInfo";
 import { promiseWrap } from "../../lib/promiseWrap";
+import { refreshTabMarkers } from "../misc/tabMarkers";
 
 export async function runBackgroundCommand(
 	command: RangoAction
@@ -148,6 +149,10 @@ export async function runBackgroundCommand(
 
 		case "openPageInNewTab":
 			await browser.tabs.create({ url: command.arg });
+			break;
+
+		case "refreshTabMarkers":
+			await refreshTabMarkers();
 			break;
 
 		default:

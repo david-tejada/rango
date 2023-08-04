@@ -10,7 +10,7 @@ import {
 import { urls } from "../../common/urls";
 import { watchNavigation } from "../hints/watchNavigation";
 import { createContextMenus } from "../misc/createContextMenus";
-import { resetTabMarkers } from "../misc/tabMarkers";
+import { initTabMarkers } from "../misc/tabMarkers";
 import { setBrowserActionIcon } from "../utils/browserAction";
 import { isSafari } from "../utils/isSafari";
 import { trackRecentTabs } from "./trackRecentTabs";
@@ -109,14 +109,14 @@ export async function initBackgroundScript() {
 			await resetHintsStacks();
 
 			if (reason === "install") {
-				await resetTabMarkers();
+				await initTabMarkers();
 				await trackRecentTabs();
 			}
 		}
 	);
 
 	browser.runtime.onStartup.addListener(async () => {
-		await resetTabMarkers();
+		await initTabMarkers();
 		await resetHintsStacks();
 		await setBrowserActionIcon();
 
