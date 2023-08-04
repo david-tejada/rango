@@ -2,7 +2,7 @@ import { retrieve, store } from "../../common/storage";
 
 const defaultSelector =
 	// Elements
-	"button, a, input, summary, textarea, select, option, label, " +
+	"button, a, input, summary, textarea, select, label, " +
 	// Roles
 	"[role='button'], [role='link'], [role='treeitem'], [role='tab'], [role='option'], " +
 	"[role='radio'], [role='checkbox'], [role='menuitem'], [role='menuitemradio'], [role='menuitemcheckbox'], " +
