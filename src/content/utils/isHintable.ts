@@ -12,19 +12,27 @@ import {
 } from "../hints/selectors";
 import { isVisible } from "./isVisible";
 
+/**
+ * Returns true if the element has any Element siblings (that are not hints) or
+ * any Text sibling with content. For performance reasons if the element has
+ * more than 9 siblings of any kind it will return true.
+ */
 function hasSignificantSiblings(target: Node) {
 	if (!target.parentNode) return false;
 
-	const significantSiblingsIncludingSelf = [
-		...target.parentNode.childNodes,
-	].filter(
-		(node) =>
-			// We need to exclude hint divs for when we display/remove extra hints
-			(node instanceof Element && node.className !== "rango-hint-wrapper") ||
-			(node instanceof Text && node.textContent && /\S/.test(node.textContent))
-	);
+	// This is to improve performance in case the parent has many child nodes. In
+	// that case we can safely assume the element has significant siblings.
+	if (target.parentNode.childNodes.length > 10) return true;
 
-	return significantSiblingsIncludingSelf.length > 1;
+	return [...target.parentNode.childNodes].some(
+		(node) =>
+			node !== target &&
+			// We need to exclude hint divs for when we display/remove extra hints
+			((node instanceof Element && node.className !== "rango-hint") ||
+				(node instanceof Text &&
+					node.textContent &&
+					/\S/.test(node.textContent)))
+	);
 }
 
 function isRedundant(target: Element) {
@@ -38,6 +46,8 @@ function isRedundant(target: Element) {
 		return false;
 	}
 
+	// This catches instances of hintables that are wrapped within another
+	// hintable. For example a <div role="button"> that only contains a <button>.
 	if (
 		target.parentElement &&
 		matchesHintableSelector(target.parentElement) &&
