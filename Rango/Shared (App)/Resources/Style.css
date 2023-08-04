@@ -59,3 +59,15 @@ body.state-off :is(.state-on, .state-unknown) {
 button {
     font-size: 1em;
 }
+
+.safari-extensions-settings::after {
+    content: "Safari Extensions settings";
+}
+
+.has-preferences .safari-extensions-settings::after {
+    content: "Safari Extensions preferences";
+}
+
+.capitalized {
+    text-transform: capitalize;
+}
