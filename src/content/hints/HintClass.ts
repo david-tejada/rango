@@ -147,7 +147,7 @@ function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {
 	let current: Element | null = target;
 
 	while (current) {
-		if (current.contains(hintOuter)) return zIndex;
+		if (current.contains(hintOuter)) break;
 
 		if (createsStackingContext(current)) {
 			const currentIndex = Number.parseInt(
@@ -160,7 +160,9 @@ function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {
 		current = current.parentElement;
 	}
 
-	return zIndex;
+	// We increase by one to avoid relying on document order because this can be
+	// altered with the property `order` (only in Firefox).
+	return zIndex + 1;
 }
 
 // This mutation observer takes care of reattaching the hints when they are
