@@ -91,7 +91,7 @@ export async function reclaimHintsFromOtherFrames(
 	frameId: number,
 	amount: number
 ) {
-	await withStack(tabId, async (stack) => {
+	return withStack(tabId, async (stack) => {
 		const frames = await browser.webNavigation.getAllFrames({ tabId });
 		const otherFramesIds = frames
 			.map((frame) => frame.frameId)
