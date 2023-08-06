@@ -160,9 +160,12 @@ function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {
 		current = current.parentElement;
 	}
 
-	// We increase by one to avoid relying on document order because this can be
-	// altered with the property `order` (only in Firefox).
-	return zIndex + 1;
+	// We increase the z-index to avoid relying on document order because this can
+	// be altered with the property `order` (only in Firefox). We increase it by 5
+	// to avoid some instances were the z-index is increased slightly after we
+	// have already made the calculations. For example in gmail (All mail) when we
+	// hover over a row.
+	return zIndex + 5;
 }
 
 // This mutation observer takes care of reattaching the hints when they are
