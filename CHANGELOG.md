@@ -2,7 +2,46 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
-## [0.4.2](https://github.com/david-tejada/rango/releases/tag/v0.4.2) - 2023-04-28
+## [0.5.0](https://github.com/david-tejada/rango/releases/tag/v0.5.0) - 2023-08-06
+
+### Changed
+
+- Improve the behavior of commands that place the cursor within or manipulate input text.
+- Only show "What's New" page for major or minor version updates, not patch updates.
+- Improvements to toast notifications.
+- Improve performance when refreshing hints.
+- Improve accessibility of hints (changing the hint size limit from 16px to 72px).
+- Improve accessibility of the settings page.
+
+### Added
+
+- Add keyboard shortcut to enable hints.
+- Add command `go input` to focus the first input found on the page.
+- Implement tab markers and the ability to focus tabs using them.
+- Add additional info to the settings page.
+- Add setting for deciding where to open new tabs.
+- Add settings to decide when to perform direct clicking.
+- Add setting for notifications duration.
+- Create keyboard clicking context menu in the browser action button.
+- Create onboarding page that shows up on install.
+
+### Fixed
+
+- Fix hints appearance being affected by `letter-spacing` of a parent element.
+- Fix tooltip not working properly on some pages.
+- Fix hints marked for inclusion or exclusion not being cleared after `hints refresh`.
+- Fix `custom hints reset` not clearing hints marked for inclusion or exclusion.
+- Fix `tab back` sometimes failing.
+- Fix custom selectors not working in iframes.
+- Fix keyboard clicking failing in some situations.
+- Fix wrongly positioned hint for some `contenteditable` elements.
+- Fix some hints being partially hidden in OneNote.
+- Fix hint not displaying properly with inherited `text-indent`.
+- Fix performance issue when calculating if a hintable is redundant.
+- Fix wrong stacking context of hints in some situations.
+- Fix an issue reclaiming hints from other frames that would cause not all hints to be shown when using `hint extra`.
+
+## [0.4.2](https://github.com/david-tejada/rango/releases/tag/v0.4.2) - 2023-04-
 
 ### Fixed
 

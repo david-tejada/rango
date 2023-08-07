@@ -276,6 +276,13 @@ half down <user.rango_target>:
 - `tab close previous [<number>]`: Closes the amount of tabs specified (or one if no number is given) to the left of the current tab.
 - `tab close next [<number>]`: Closes the amount of tabs specified (or one if no number is given) to the right of the current tab.
 
+#### Focus Tabs Using Tab Markers
+
+If you have the setting `Include tab markers in title` enabled (default) you can refer to those markers to quickly focus a specific tab.
+
+- `(go tab | slot) <marker>`: Focus the tab with the specified tab marker.
+- `tab marker refresh`: Refreshes the tab markers for the existing tabs. Note that this command will refresh all unloaded tabs as otherwise we are unable to change the tab markers.
+
 ### Modify Hints Size
 
 - `hint bigger`: Increase the size of the hints.
@@ -306,6 +313,49 @@ half down <user.rango_target>:
 ## Known Issues and Limitations
 
 - There is currently no way to open a pure CSS dropdown menu like the "hover" menu in [this example](https://www.tailwindtoolbox.com/components/megamenu-demo.php#). It is not possible to activate the `:hover` pseudo class in javascript and this will only be possible once I implement cursor moving/clicking.
+
+### No Hints or Other Missing Functionality in Certain Pages
+
+Content scripts (the part of the extension that runs in the context of webpages) aren't unable to run in browser's internal pages. These pages start with `chrome://`, `edge://`, `about:` or similar and provide information and control over browsers internal state, including settings, flags, and debugging information. Allowing content scripts on these pages could enable malicious extensions to change settings or access sensitive data without the user's knowledge. For this reason hints an other functionality won't be available in these pages.
+
+Similarly, there are other domains where content scripts are not allowed to run.
+
+These are restricted Chromium domains:
+
+```
+clients.google.com
+clients[0-9]+.google.com
+sb-ssl.google.com
+chrome.google.com/webstore/*
+```
+
+These are restricted Firefox domains:
+
+```
+accounts-static.cdn.mozilla.net
+accounts.firefox.com
+addons.cdn.mozilla.net
+addons.mozilla.org
+api.accounts.firefox.com
+content.cdn.mozilla.net
+discovery.addons.mozilla.org
+install.mozilla.org
+oauth.accounts.firefox.com
+profile.accounts.firefox.com
+support.mozilla.org
+sync.services.mozilla.com
+```
+
+To allow WebExtensions in Firefox to run on these pages (at your own risk), open `about:config` and modify the following[^3]:
+
+Set extensions.webextensions.restrictedDomains to be an empty string.4
+Set privacy.resistFingerprinting.block_mozAddonManager to true5
+Firefox 60 - Firefox 70: must be manually created by right-clicking and selecting New > Boolean3
+Firefox 71 and later6: paste preference name in search bar > in 2nd column set Boolean from single-choice list > click ➕ button in 3rd column.
+
+Another alternative is to use a Chromium browser to access Firefox restricted domains and Firefox to access Chromium restricted domains.
+
+[^3]: https://www.ghacks.net/2017/10/27/how-to-enable-firefox-webextensions-on-mozilla-websites/
 
 ## Contributing
 
