@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <Scheme
-   LastUpgradeVersion = "1400"
+   LastUpgradeVersion = "1430"
    version = "1.3">
    <BuildAction
       parallelizeBuildables = "YES"
@@ -15,9 +15,9 @@
             <BuildableReference
                BuildableIdentifier = "primary"
                BlueprintIdentifier = "E1AEB973284D1D7800154974"
-               BuildableName = "Rango.app"
-               BlueprintName = "Rango (macOS)"
-               ReferencedContainer = "container:Rango.xcodeproj">
+               BuildableName = "Rango for Safari.app"
+               BlueprintName = "Rango for Safari (macOS)"
+               ReferencedContainer = "container:Rango for Safari.xcodeproj">
             </BuildableReference>
          </BuildActionEntry>
       </BuildActionEntries>
@@ -45,9 +45,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E1AEB973284D1D7800154974"
-            BuildableName = "Rango.app"
-            BlueprintName = "Rango (macOS)"
-            ReferencedContainer = "container:Rango.xcodeproj">
+            BuildableName = "Rango for Safari.app"
+            BlueprintName = "Rango for Safari (macOS)"
+            ReferencedContainer = "container:Rango for Safari.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </LaunchAction>
@@ -62,9 +62,9 @@
          <BuildableReference
             BuildableIdentifier = "primary"
             BlueprintIdentifier = "E1AEB973284D1D7800154974"
-            BuildableName = "Rango.app"
-            BlueprintName = "Rango (macOS)"
-            ReferencedContainer = "container:Rango.xcodeproj">
+            BuildableName = "Rango for Safari.app"
+            BlueprintName = "Rango for Safari (macOS)"
+            ReferencedContainer = "container:Rango for Safari.xcodeproj">
          </BuildableReference>
       </BuildableProductRunnable>
    </ProfileAction>
