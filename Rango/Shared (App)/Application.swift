@@ -11,7 +11,7 @@ import os.log
 class Application: NSApplication {
 
     override func showHelp(_ sender: Any?) {
-        NSWorkspace.shared.open(URL(string: "https://github.com/david-tejada/rango")!)
+        NSWorkspace.shared.open(URL(string: "https://github.com/david-tejada/rango#readme")!)
     }
 
 }
