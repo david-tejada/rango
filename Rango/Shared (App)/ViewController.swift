@@ -10,11 +10,11 @@ import WebKit
 import Cocoa
 import SafariServices
 
-let extensionBundleIdentifier = "net.sabi.Rango.extension"
-
 class ViewController: NSViewController, WKNavigationDelegate, WKScriptMessageHandler {
 
     @IBOutlet var webView: WKWebView!
+
+    let extensionBundleIdentifier = Bundle.main.bundleIdentifier! + ".extension";
 
     override func viewDidLoad() {
         super.viewDidLoad()

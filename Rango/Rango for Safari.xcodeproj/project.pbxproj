@@ -23,15 +23,11 @@
 		E14D40BF2A11904700F6246A /* content.996713f7.css in Resources */ = {isa = PBXBuildFile; fileRef = E14D40AE2A11904700F6246A /* content.996713f7.css */; };
 		E14D40C02A11904700F6246A /* icon48.ace12d5e.png in Resources */ = {isa = PBXBuildFile; fileRef = E14D40AF2A11904700F6246A /* icon48.ace12d5e.png */; };
 		E17BC8F8285E2315007EB9C6 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17BC8F7285E2315007EB9C6 /* Application.swift */; };
-		E18784B3298EEFB50028A679 /* UserSpecific.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E18784B1298EEFB50028A679 /* UserSpecific.xcconfig */; };
-		E18784B4298EEFB50028A679 /* UserSpecific.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E18784B1298EEFB50028A679 /* UserSpecific.xcconfig */; };
-		E18784B5298EEFB50028A679 /* RangoVersion.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E18784B2298EEFB50028A679 /* RangoVersion.xcconfig */; };
-		E18784B6298EEFB50028A679 /* RangoVersion.xcconfig in Resources */ = {isa = PBXBuildFile; fileRef = E18784B2298EEFB50028A679 /* RangoVersion.xcconfig */; };
 		E18A7D54298ED9B7000801AD /* icon128.8b6ee0ac.png in Resources */ = {isa = PBXBuildFile; fileRef = E18A7D4C298ED9B7000801AD /* icon128.8b6ee0ac.png */; };
 		E18A7D55298ED9B7000801AD /* content.d5600b6a.js in Resources */ = {isa = PBXBuildFile; fileRef = E18A7D4D298ED9B7000801AD /* content.d5600b6a.js */; };
 		E1AEB977284D1D7800154974 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AEB976284D1D7800154974 /* AppDelegate.swift */; };
 		E1AEB97A284D1D7800154974 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E1AEB978284D1D7800154974 /* Main.storyboard */; };
-		E1AEB98C284D1D7800154974 /* Rango Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E1AEB98B284D1D7800154974 /* Rango Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
+		E1AEB98C284D1D7800154974 /* Rango for Safari Extension.appex in Embed Foundation Extensions */ = {isa = PBXBuildFile; fileRef = E1AEB98B284D1D7800154974 /* Rango for Safari Extension.appex */; settings = {ATTRIBUTES = (RemoveHeadersOnCopy, ); }; };
 		E1AEB993284D1D7800154974 /* Main.html in Resources */ = {isa = PBXBuildFile; fileRef = E1AEB955284D1D7700154974 /* Main.html */; };
 		E1AEB995284D1D7800154974 /* Icon.png in Resources */ = {isa = PBXBuildFile; fileRef = E1AEB957284D1D7700154974 /* Icon.png */; };
 		E1AEB997284D1D7800154974 /* Style.css in Resources */ = {isa = PBXBuildFile; fileRef = E1AEB958284D1D7700154974 /* Style.css */; };
@@ -58,7 +54,7 @@
 			dstPath = "";
 			dstSubfolderSpec = 13;
 			files = (
-				E1AEB98C284D1D7800154974 /* Rango Extension.appex in Embed Foundation Extensions */,
+				E1AEB98C284D1D7800154974 /* Rango for Safari Extension.appex in Embed Foundation Extensions */,
 			);
 			name = "Embed Foundation Extensions";
 			runOnlyForDeploymentPostprocessing = 0;
@@ -93,12 +89,12 @@
 		E1AEB95A284D1D7700154974 /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		E1AEB95B284D1D7800154974 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		E1AEB95D284D1D7800154974 /* SafariWebExtensionHandler.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SafariWebExtensionHandler.swift; sourceTree = "<group>"; };
-		E1AEB974284D1D7800154974 /* Rango.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Rango.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		E1AEB974284D1D7800154974 /* Rango for Safari.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Rango for Safari.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1AEB976284D1D7800154974 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		E1AEB979284D1D7800154974 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		E1AEB97B284D1D7800154974 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E1AEB97C284D1D7800154974 /* Rango.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Rango.entitlements; sourceTree = "<group>"; };
-		E1AEB98B284D1D7800154974 /* Rango Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Rango Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
+		E1AEB98B284D1D7800154974 /* Rango for Safari Extension.appex */ = {isa = PBXFileReference; explicitFileType = "wrapper.app-extension"; includeInIndex = 0; path = "Rango for Safari Extension.appex"; sourceTree = BUILT_PRODUCTS_DIR; };
 		E1AEB990284D1D7800154974 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		E1AEB991284D1D7800154974 /* Rango.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Rango.entitlements; sourceTree = "<group>"; };
 		E1E0B327287A38DD00A5B751 /* UpdateRangoVersion.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UpdateRangoVersion.swift; sourceTree = "<group>"; };
@@ -203,8 +199,8 @@
 		E1AEB963284D1D7800154974 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				E1AEB974284D1D7800154974 /* Rango.app */,
-				E1AEB98B284D1D7800154974 /* Rango Extension.appex */,
+				E1AEB974284D1D7800154974 /* Rango for Safari.app */,
+				E1AEB98B284D1D7800154974 /* Rango for Safari Extension.appex */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -232,9 +228,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		E1AEB973284D1D7800154974 /* Rango (macOS) */ = {
+		E1AEB973284D1D7800154974 /* Rango for Safari (macOS) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E1AEB9AD284D1D7800154974 /* Build configuration list for PBXNativeTarget "Rango (macOS)" */;
+			buildConfigurationList = E1AEB9AD284D1D7800154974 /* Build configuration list for PBXNativeTarget "Rango for Safari (macOS)" */;
 			buildPhases = (
 				E1AEB970284D1D7800154974 /* Sources */,
 				E1AEB971284D1D7800154974 /* Frameworks */,
@@ -246,14 +242,14 @@
 			dependencies = (
 				E1AEB98E284D1D7800154974 /* PBXTargetDependency */,
 			);
-			name = "Rango (macOS)";
+			name = "Rango for Safari (macOS)";
 			productName = "Rango (macOS)";
-			productReference = E1AEB974284D1D7800154974 /* Rango.app */;
+			productReference = E1AEB974284D1D7800154974 /* Rango for Safari.app */;
 			productType = "com.apple.product-type.application";
 		};
-		E1AEB98A284D1D7800154974 /* Rango Extension (macOS) */ = {
+		E1AEB98A284D1D7800154974 /* Rango for Safari Extension (macOS) */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = E1AEB9A9284D1D7800154974 /* Build configuration list for PBXNativeTarget "Rango Extension (macOS)" */;
+			buildConfigurationList = E1AEB9A9284D1D7800154974 /* Build configuration list for PBXNativeTarget "Rango for Safari Extension (macOS)" */;
 			buildPhases = (
 				E1AEB987284D1D7800154974 /* Sources */,
 				E1AEB988284D1D7800154974 /* Frameworks */,
@@ -263,9 +259,9 @@
 			);
 			dependencies = (
 			);
-			name = "Rango Extension (macOS)";
+			name = "Rango for Safari Extension (macOS)";
 			productName = "Rango Extension (macOS)";
-			productReference = E1AEB98B284D1D7800154974 /* Rango Extension.appex */;
+			productReference = E1AEB98B284D1D7800154974 /* Rango for Safari Extension.appex */;
 			productType = "com.apple.product-type.app-extension";
 		};
 /* End PBXNativeTarget section */
@@ -276,7 +272,7 @@
 			attributes = {
 				BuildIndependentTargetsInParallel = 1;
 				LastSwiftUpdateCheck = 1340;
-				LastUpgradeCheck = 1400;
+				LastUpgradeCheck = 1430;
 				TargetAttributes = {
 					E1AEB973284D1D7800154974 = {
 						CreatedOnToolsVersion = 13.4.1;
@@ -286,7 +282,7 @@
 					};
 				};
 			};
-			buildConfigurationList = E1AEB952284D1D7700154974 /* Build configuration list for PBXProject "Rango" */;
+			buildConfigurationList = E1AEB952284D1D7700154974 /* Build configuration list for PBXProject "Rango for Safari" */;
 			compatibilityVersion = "Xcode 13.0";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -299,8 +295,8 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				E1AEB973284D1D7800154974 /* Rango (macOS) */,
-				E1AEB98A284D1D7800154974 /* Rango Extension (macOS) */,
+				E1AEB973284D1D7800154974 /* Rango for Safari (macOS) */,
+				E1AEB98A284D1D7800154974 /* Rango for Safari Extension (macOS) */,
 			);
 		};
 /* End PBXProject section */
@@ -311,12 +307,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				E1AEB995284D1D7800154974 /* Icon.png in Resources */,
-				E18784B5298EEFB50028A679 /* RangoVersion.xcconfig in Resources */,
 				E1AEB997284D1D7800154974 /* Style.css in Resources */,
 				E1AEB97A284D1D7800154974 /* Main.storyboard in Resources */,
 				E1AEB999284D1D7800154974 /* Script.js in Resources */,
 				E1AEB99D284D1D7800154974 /* Assets.xcassets in Resources */,
-				E18784B3298EEFB50028A679 /* UserSpecific.xcconfig in Resources */,
 				E1AEB993284D1D7800154974 /* Main.html in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -327,8 +321,6 @@
 			files = (
 				E14D40B62A11904700F6246A /* whatsNew.e79f552b.css in Resources */,
 				E14D40B92A11904700F6246A /* icon.f5383140.svg in Resources */,
-				E18784B6298EEFB50028A679 /* RangoVersion.xcconfig in Resources */,
-				E18784B4298EEFB50028A679 /* UserSpecific.xcconfig in Resources */,
 				E14D40BB2A11904700F6246A /* settings.c244465d.css in Resources */,
 				E14D40BF2A11904700F6246A /* content.996713f7.css in Resources */,
 				E14D40BE2A11904700F6246A /* settings.a2733222.html in Resources */,
@@ -373,7 +365,7 @@
 /* Begin PBXTargetDependency section */
 		E1AEB98E284D1D7800154974 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = E1AEB98A284D1D7800154974 /* Rango Extension (macOS) */;
+			target = E1AEB98A284D1D7800154974 /* Rango for Safari Extension (macOS) */;
 			targetProxy = E1AEB98D284D1D7800154974 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -537,7 +529,7 @@
 					SafariServices,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "$(RANGO_BUNDLE_ID_BASE).Rango.extension";
-				PRODUCT_NAME = "Rango Extension";
+				PRODUCT_NAME = "Rango for Safari Extension";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -567,7 +559,7 @@
 					SafariServices,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "$(RANGO_BUNDLE_ID_BASE).Rango.extension";
-				PRODUCT_NAME = "Rango Extension";
+				PRODUCT_NAME = "Rango for Safari Extension";
 				SDKROOT = macosx;
 				SKIP_INSTALL = YES;
 				SWIFT_EMIT_LOC_STRINGS = YES;
@@ -588,10 +580,10 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "macOS (App)/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = Rango;
+				INFOPLIST_KEY_CFBundleDisplayName = "Rango for Safari";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
-				INFOPLIST_KEY_NSPrincipalClass = Rango.Application;
+				INFOPLIST_KEY_NSPrincipalClass = Rango_for_Safari.Application;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -603,7 +595,7 @@
 					WebKit,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "$(RANGO_BUNDLE_ID_BASE).Rango";
-				PRODUCT_NAME = Rango;
+				PRODUCT_NAME = "Rango for Safari";
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -623,10 +615,10 @@
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "macOS (App)/Info.plist";
-				INFOPLIST_KEY_CFBundleDisplayName = Rango;
+				INFOPLIST_KEY_CFBundleDisplayName = "Rango for Safari";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.utilities";
 				INFOPLIST_KEY_NSMainStoryboardFile = Main;
-				INFOPLIST_KEY_NSPrincipalClass = Rango.Application;
+				INFOPLIST_KEY_NSPrincipalClass = Rango_for_Safari.Application;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/../Frameworks",
@@ -638,7 +630,7 @@
 					WebKit,
 				);
 				PRODUCT_BUNDLE_IDENTIFIER = "$(RANGO_BUNDLE_ID_BASE).Rango";
-				PRODUCT_NAME = Rango;
+				PRODUCT_NAME = "Rango for Safari";
 				SDKROOT = macosx;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
@@ -648,7 +640,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		E1AEB952284D1D7700154974 /* Build configuration list for PBXProject "Rango" */ = {
+		E1AEB952284D1D7700154974 /* Build configuration list for PBXProject "Rango for Safari" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E1AEB9A0284D1D7800154974 /* Debug */,
@@ -657,7 +649,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E1AEB9A9284D1D7800154974 /* Build configuration list for PBXNativeTarget "Rango Extension (macOS)" */ = {
+		E1AEB9A9284D1D7800154974 /* Build configuration list for PBXNativeTarget "Rango for Safari Extension (macOS)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E1AEB9AA284D1D7800154974 /* Debug */,
@@ -666,7 +658,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		E1AEB9AD284D1D7800154974 /* Build configuration list for PBXNativeTarget "Rango (macOS)" */ = {
+		E1AEB9AD284D1D7800154974 /* Build configuration list for PBXNativeTarget "Rango for Safari (macOS)" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				E1AEB9AE284D1D7800154974 /* Debug */,
