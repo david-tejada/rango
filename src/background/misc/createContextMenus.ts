@@ -16,6 +16,20 @@ export async function createContextMenus() {
 		contexts,
 		checked: keyboardClicking,
 	});
+
+	browser.contextMenus.create({
+		id: "settings",
+		title: "Settings",
+		type: "normal",
+		contexts,
+	});
+
+	browser.contextMenus.create({
+		id: "help",
+		title: "Help",
+		type: "normal",
+		contexts,
+	});
 }
 
 export async function contextMenusOnClicked({
@@ -23,5 +37,15 @@ export async function contextMenusOnClicked({
 }: browser.Menus.OnClickData) {
 	if (menuItemId === "keyboard-clicking") {
 		await toggleKeyboardClicking();
+	}
+
+	if (menuItemId === "settings") {
+		await browser.runtime.openOptionsPage();
+	}
+
+	if (menuItemId === "help") {
+		await browser.tabs.create({
+			url: "https://github.com/david-tejada/rango#readme",
+		});
 	}
 }
