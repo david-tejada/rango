@@ -1,7 +1,7 @@
 {
 	"private": true,
 	"scripts": {
-		"build:mv2": "rimraf dist-mv2 && parcel build src/mv2/manifest.json --no-content-hash --dist-dir dist-mv2 --no-cache --detailed-report 0",
+		"build:mv2": "rimraf dist-mv2 && parcel build src/mv2/manifest.json --no-content-hash --dist-dir dist-mv2 --no-cache --no-source-maps --detailed-report 0",
 		"build:mv2-safari": "rimraf dist-mv2-safari && parcel build src/mv2-safari/manifest.json --no-content-hash --dist-dir dist-mv2-safari --no-cache --detailed-report 0",
 		"build:mv3": "rimraf dist-mv3 && parcel build src/mv3/manifest.json --no-content-hash --dist-dir dist-mv3 --no-cache --detailed-report 0",
 		"build": "run-p build:*",
