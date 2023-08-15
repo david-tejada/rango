@@ -14,7 +14,9 @@ Rango is a cross browser extension that helps you interact with web pages using 
 
 In order to use the extension you need two pieces: the extension and the talon files.
 
-- The extension can be installed from the respective store: [Firefox](https://addons.mozilla.org/en-US/firefox/addon/rango/), [Chrome](https://chrome.google.com/webstore/detail/rango/lnemjdnjjofijemhdogofbpcedhgcpmb), [Edge](https://microsoftedge.microsoft.com/addons/detail/rango/pcngjebdhphedjkfhipblkgjbjoeaaeb).
+- The extension can be installed from the respective store: [Firefox](https://addons.mozilla.org/en-US/firefox/addon/rango/), [Chrome](https://chrome.google.com/webstore/detail/rango/lnemjdnjjofijemhdogofbpcedhgcpmb), [Edge](https://microsoftedge.microsoft.com/addons/detail/rango/pcngjebdhphedjkfhipblkgjbjoeaaeb), [Safari](https://apps.apple.com/es/app/rango-for-safari/id6461166435?l=en-GB&mt=12).
+
+- (Safari only) In order for Rango to work in Safari you need to first enable it in the Safari preferences. Go to Preferences -> Extensions and check Rango on the left sidebar. Then you need to click the extension icon in Safari and select "Always Allow on Every Website".
 
 - The talon files can be found in the [rango-talon](https://github.com/david-tejada/rango-talon) repository. Clone or download them to your talon user folder. **IMPORTANT**: Make sure to clone or download the **rango-talon** repository and not this one.
 
