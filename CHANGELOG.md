@@ -2,6 +2,12 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.5.1](https://github.com/david-tejada/rango/releases/tag/v0.5.1) - 2023-08-13
+
+### Added
+
+- Add "Settings" and "Help" context menu items to the browser action button.
+
 ## [0.5.0](https://github.com/david-tejada/rango/releases/tag/v0.5.0) - 2023-08-06
 
 ### Changed
