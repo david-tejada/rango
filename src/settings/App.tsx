@@ -14,7 +14,7 @@ export function App({ hasSeenSettingsPage }: AppProps) {
 	return (
 		<div className="App">
 			<h1>
-				<img className="rango-logo" src={iconSvgUrl.href} alt="Rango logo" />{" "}
+				<img className="rango-logo" src={iconSvgUrl.href} alt="" />{" "}
 				Rango Settings
 			</h1>
 			{!hasSeenSettingsPage && (
