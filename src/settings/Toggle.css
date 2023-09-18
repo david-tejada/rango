@@ -9,23 +9,42 @@
 
 .Toggle button {
 	--width: 2.5rem;
-	--height: calc(var(--width) / 2);
+	--height: calc(var(--width) / 2); 
 	display: inline-block;
 	position: relative;
 	width: var(--width);
 	height: var(--height);
 	background-color: var(--slate-300);
 	border: none;
+	outline: 2px solid var(--slate-300);
 	border-radius: var(--height);
 	transition: background-color 0.4s;
+	font-family: sans-serif;
+	font-size: calc(var(--height) * 0.7);
+}
+
+.Toggle button::before {
+	content: "O";
+	position: absolute;
+	top: calc(var(--height) * 0.08);
+	right: calc(var(--height) * 0.3);
+}
+
+.Toggle button[aria-pressed="true"]::before {
+	content: "I";
+	position: absolute;
+	top: calc(var(--height) * 0.08);
+	right: calc(var(--height) * 1.2);
 }
 
 .Toggle button[aria-pressed="true"] {
 	background-color: var(--green-500);
+	outline-color: var(--green-500);
 }
 
 .Toggle.disabled button[aria-pressed="true"] {
 	background-color: var(--slate-300);
+	outline-color: var(--slate-300);
 }
 
 .Toggle:focus-within {
@@ -38,7 +57,6 @@
 }
 
 .Toggle button:focus {
-	outline: none;
 }
 
 .Toggle button::after {
@@ -46,6 +64,7 @@
 	width: calc(var(--height) * 0.9);
 	height: calc(var(--height) * 0.9);
 	border-radius: calc(var(--height) * 0.9);
+	border: 2px solid white;
 	background-color: white;
 	position: absolute;
 	top: calc(var(--height) * 0.05);
