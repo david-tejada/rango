@@ -28,6 +28,24 @@
 	background-color: var(--slate-300);
 }
 
+@media screen and (forced-colors: active) {
+	.Toggle button {
+		background-color: Highlight;
+	}
+
+	.Toggle button[aria-pressed="true"] {
+		background-color: ButtonText;
+	}
+
+	.Toggle button[aria-pressed="true"]::after {
+		content: "✓";
+		display: grid;
+		place-items: center;
+		font-size: 0.85em;
+		color: ButtonText;
+	}
+}
+
 .Toggle:focus-within {
 	outline: 2px solid var(--blue-600);
 	border-radius: 0.3em;
