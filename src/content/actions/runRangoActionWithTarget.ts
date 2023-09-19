@@ -18,6 +18,7 @@ import { setSelectionAfter, setSelectionBefore } from "./setSelection";
 import { focusAndDeleteContents } from "./focusAndDeleteContents";
 import { focus } from "./focus";
 import { markHintsForExclusion, markHintsForInclusion } from "./customHints";
+import { saveUniqueHintAsWord } from "./actOnUniqueIDs";
 
 export async function runRangoActionWithTarget(
 	request: RangoActionWithTarget
@@ -155,6 +156,10 @@ export async function runRangoActionWithTarget(
 
 		case "excludeExtraSelectors":
 			await markHintsForExclusion(wrappers);
+			break;
+
+		case "saveHintID":
+			await saveUniqueHintAsWord(wrappers, request.arg);
 			break;
 
 		default:

@@ -91,6 +91,7 @@ interface RangoActionWithoutTargetWithOptionalNumberArg {
 }
 
 interface RangoActionWithTargets {
+	arg: any;
 	type:
 		| "activateTab"
 		| "openInBackgroundTab"
@@ -111,7 +112,8 @@ interface RangoActionWithTargets {
 		| "scrollElementToCenter"
 		| "setSelectionBefore"
 		| "setSelectionAfter"
-		| "focusAndDeleteContents";
+		| "focusAndDeleteContents"
+		| "saveHintID";
 	target: string[];
 }
 

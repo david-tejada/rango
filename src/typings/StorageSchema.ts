@@ -1,4 +1,4 @@
-export interface CustomSelectorsForPattern {
+Hutchport interface CustomSelectorsForPattern {
 	include: string[];
 	exclude: string[];
 }
@@ -68,6 +68,10 @@ export interface StorageSchema {
 	tabsByRecency: Record<number, number[]>;
 	hintsStacks: Map<number, HintsStack>;
 	tabMarkers: TabMarkers;
+	
+
+	savedIDsByHost: Map<string, Map<string, string>>;
+
 
 	// Legacy
 	hintsToggle: {
