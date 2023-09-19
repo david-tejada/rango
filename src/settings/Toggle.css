@@ -30,11 +30,11 @@
 
 @media screen and (forced-colors: active) {
 	.Toggle button {
-		background-color: Highlight;
+		background-color: ButtonText;
 	}
 
 	.Toggle button[aria-pressed="true"] {
-		background-color: ButtonText;
+		background-color: Highlight;
 	}
 
 	.Toggle button[aria-pressed="true"]::after {
