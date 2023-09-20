@@ -40,7 +40,6 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "requestTimedOut"
 		| "checkActiveElementIsEditable"
 		| "refreshTabMarkers"
-		| "rangoActionOnSavedID"
 		| "showSavedIDs";
 }
 
@@ -81,7 +80,7 @@ interface RangoActionWithoutTargetWithNumberArg {
 }
 
 interface RangoActionWithoutTargetWithStringArg {
-	type: "rangoActionOnSavedID" | "removeHintID";
+	type: "removeHintID";
 	arg: string;
 }
 
@@ -135,6 +134,12 @@ interface RangoActionWithTargetsWithOptionalNumberArg {
 	arg?: number;
 }
 
+interface RangoActionWithoutTargetWith2StringArgs {
+	type: "rangoActionOnSavedID";
+	arg: string;
+	arg2: string;
+}
+
 interface RangoActionInsertToField {
 	type: "insertToField";
 	target: string[];
@@ -160,7 +165,8 @@ export type RangoActionWithoutTarget =
 	| RangoActionSetHintStyle
 	| RangoActionSetHintWeight
 	| RangoActionCopyLocationProperty
-	| RangoActionOpenPageInNewTab;
+	| RangoActionOpenPageInNewTab
+	| RangoActionWithoutTargetWith2StringArgs;
 
 export type RangoAction = RangoActionWithTarget | RangoActionWithoutTarget;
 

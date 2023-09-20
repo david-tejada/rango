@@ -18,9 +18,11 @@ function getElementFromUniqueSelector(selector: string): HTMLElement | null {
 	return document.querySelector(selector);
 }
 
-export async function showMarks(duration: number = 2000) {
+// We don't want to always throw an error the map is empty since it could be expected
+//  if the user removed the last mark intentionally. Hence we have a errorOnEmpty flag
+export async function showMarks(duration: number = 3000, errorOnEmpty = true) {
 	const validTargets = await getMapForCurrentURL();
-	if (validTargets == null) {
+	if (validTargets == null || (errorOnEmpty && validTargets.size == 0)) {
 		await notify(`You do not have any marks saved in this context`, {
 			type: "error",
 		});
@@ -36,16 +38,21 @@ export async function showMarks(duration: number = 2000) {
 }
 export async function removeSavedID(syntacticName: string) {
 	const map = await getMapForCurrentURL();
-	if (map == null) {
+
+	if (map == null || map.size == 0) {
 		await notify(`You do not have any marks saved in this context`, {
 			type: "error",
 		});
 		return;
 	}
+
 	if (!map.has(syntacticName)) {
-		await notify(`${syntacticName} is not saved in the current context`, {
-			type: "error",
-		});
+		await notify(
+			`Mark "${syntacticName}" is not saved in the current context`,
+			{
+				type: "error",
+			}
+		);
 		return;
 	}
 	map.delete(syntacticName);
@@ -57,7 +64,7 @@ export async function removeSavedID(syntacticName: string) {
 	await notify(`Removed "${syntacticName}" from saved IDs`, {
 		type: "success",
 	});
-	await showMarks();
+	await showMarks(2000, false);
 }
 
 export async function saveUniqueHintAsMark(
@@ -104,23 +111,10 @@ async function getMapForCurrentURL() {
 	return hostMap.get(hostUrlToMatch) as Map<string, string>;
 }
 
-export async function rangoActionOnSavedID(actionAndTargetName: string) {
-	// split the string based on the % character
-	//  since in order to preserve the current syntax
-	//  we can only pass in one argument
-	let [action, savedMarkToActOn] = actionAndTargetName.split("%");
-
-	// If the split failed then just return
-	if (savedMarkToActOn == null || action == null) {
-		await notify(
-			`Could not get a valid action from the string ${actionAndTargetName}`,
-			{
-				type: "error",
-			}
-		);
-		return;
-	}
-
+export async function rangoActionOnSavedID(
+	action: string,
+	savedMarkToActOn: string
+) {
 	try {
 		action = action as RangoActionWithTarget["type"];
 	} catch {
@@ -135,14 +129,15 @@ export async function rangoActionOnSavedID(actionAndTargetName: string) {
 	const rangoActionFromActionString = {
 		type: action,
 		// empty target since we pass in the wrapper
-		// which is the element we want to perform the action on
+		// which is the element we want to perform the action on, not this
+		// target object
 		target: [],
 		// any args passed to the rango action
-		arg: savedMarkToActOn,
+		arg: null,
 	} as RangoActionWithTarget;
 
 	const validTargets = await getMapForCurrentURL();
-	if (validTargets == null) {
+	if (validTargets == null || validTargets.size == 0) {
 		await notify(`You do not have any marks saved in this context`, {
 			type: "error",
 		});
@@ -167,7 +162,6 @@ export async function rangoActionOnSavedID(actionAndTargetName: string) {
 			`Performing Action: "${action}" on saved mark name: "${savedMarkToActOn}"`
 		);
 
-		// TODO: wait for hints to be loaded before running this
 		runRangoActionWithTarget(rangoActionFromActionString, [wrapperToScriptOn]);
 	} else {
 		await notify(`Could not find element with selector ${uniqueSelector}`, {

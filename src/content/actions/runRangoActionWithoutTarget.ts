@@ -148,8 +148,7 @@ export async function runRangoActionWithoutTarget(
 			);
 
 		case "rangoActionOnSavedID":
-			const actionAndTargetName = request.arg as string;
-			await rangoActionOnSavedID(actionAndTargetName);
+			await rangoActionOnSavedID(request.arg, request.arg2);
 			break;
 
 		case "showSavedIDs":
