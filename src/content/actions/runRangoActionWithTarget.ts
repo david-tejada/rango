@@ -18,16 +18,22 @@ import { setSelectionAfter, setSelectionBefore } from "./setSelection";
 import { focusAndDeleteContents } from "./focusAndDeleteContents";
 import { focus } from "./focus";
 import { markHintsForExclusion, markHintsForInclusion } from "./customHints";
-import { saveUniqueHintAsWord } from "./actOnUniqueIDs";
+import { rangoActionOnSavedID, saveUniqueHintAsWord } from "./actOnUniqueIDs";
+import { ElementWrapper } from "../../typings/ElementWrapper";
 
 export async function runRangoActionWithTarget(
-	request: RangoActionWithTarget
+	request: RangoActionWithTarget,
+	// providedWrapper is used for scripting
+	providedWrapper?: ElementWrapper[]
 ): Promise<string | TalonAction[] | undefined> {
 	const hints =
 		typeof request.target === "string" ? [request.target] : request.target;
-	const wrappers = getWrapper(hints).filter(
-		(wrapper) => wrapper.isIntersectingViewport
-	);
+	const wrappers =
+		// if the user provided a wrapper, we use that one
+		// otherwise we get the wrappers from the hints
+		providedWrapper === undefined
+			? getWrapper(hints).filter((wrapper) => wrapper.isIntersectingViewport)
+			: providedWrapper;
 
 	// If the user says, for example, "pre cap" and the element with the hint "c"
 	// is actually already focused but the document itself is not focused, once we
@@ -58,10 +64,10 @@ export async function runRangoActionWithTarget(
 	// ignore the rest
 	const wrapper = wrappers[0];
 	assertDefined(wrapper);
-
 	switch (request.type) {
 		case "clickElement":
 		case "directClickElement":
+			console.log("clickEfdddddlement");
 			return clickElement(wrappers);
 
 		case "tryToFocusElementAndCheckIsEditable": {

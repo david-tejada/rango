@@ -31,7 +31,7 @@ import {
 // HELPER FUNCTIONS
 // =============================================================================
 
-function getOrCreateWrapper(element: Element) {
+export function getOrCreateWrapper(element: Element) {
 	let wrapper = getWrapperForElement(element);
 	if (!wrapper) {
 		wrapper = new ElementWrapperClass(element);

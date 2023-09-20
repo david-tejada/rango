@@ -15,10 +15,12 @@ import {
 	customHintsReset,
 } from "./customHints";
 import { refreshHints } from "./refreshHints";
+import { rangoActionOnSavedID, styleSavedHints } from "./actOnUniqueIDs";
 
 export async function runRangoActionWithoutTarget(
 	request: RangoActionWithoutTarget
 ): Promise<string | boolean | undefined> {
+	console.log(request);
 	switch (request.type) {
 		case "historyGoBack":
 			window.history.back();
@@ -142,7 +144,20 @@ export async function runRangoActionWithoutTarget(
 					focusesOnclick(document.activeElement)
 			);
 
+		case "rangoActionOnSavedID":
+			const actionAndTargetName = request.arg as string;
+			console.log(actionAndTargetName);
+			await rangoActionOnSavedID(actionAndTargetName);
+			break;
+
+		case "showSavedIDs":
+			await styleSavedHints();
+			break;
+
 		default:
+			console.log("Unknown action type");
+			console.log(request.type);
+			console.log(request);
 			break;
 	}
 

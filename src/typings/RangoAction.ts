@@ -1,4 +1,5 @@
 interface RangoActionWithoutTargetWithoutArg {
+	arg: RangoActionWithTarget;
 	type:
 		| "historyGoBack"
 		| "historyGoForward"
@@ -38,7 +39,9 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "openSettingsPage"
 		| "requestTimedOut"
 		| "checkActiveElementIsEditable"
-		| "refreshTabMarkers";
+		| "refreshTabMarkers"
+		| "rangoActionOnSavedID"
+		| "showSavedIDs";
 }
 
 export interface RangoActionUpdateToggles {
@@ -75,6 +78,11 @@ interface RangoActionWithoutTargetWithNumberArg {
 		| "closePreviousTabsInWindow"
 		| "closeNextTabsInWindow";
 	arg: number;
+}
+
+interface RangoActionWithoutTargetWithStringArg {
+	type: "rangoActionOnSavedID";
+	arg: string;
 }
 
 interface RangoActionWithoutTargetWithOptionalNumberArg {
@@ -147,6 +155,7 @@ export type RangoActionWithoutTarget =
 	| RangoActionWithoutTargetWithoutArg
 	| RangoActionUpdateToggles
 	| RangoActionWithoutTargetWithNumberArg
+	| RangoActionWithoutTargetWithStringArg
 	| RangoActionWithoutTargetWithOptionalNumberArg
 	| RangoActionSetHintStyle
 	| RangoActionSetHintWeight
