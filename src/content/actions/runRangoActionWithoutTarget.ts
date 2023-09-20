@@ -20,7 +20,6 @@ import { rangoActionOnSavedID, styleSavedHints } from "./actOnUniqueIDs";
 export async function runRangoActionWithoutTarget(
 	request: RangoActionWithoutTarget
 ): Promise<string | boolean | undefined> {
-	console.log(request);
 	switch (request.type) {
 		case "historyGoBack":
 			window.history.back();
@@ -146,7 +145,6 @@ export async function runRangoActionWithoutTarget(
 
 		case "rangoActionOnSavedID":
 			const actionAndTargetName = request.arg as string;
-			console.log(actionAndTargetName);
 			await rangoActionOnSavedID(actionAndTargetName);
 			break;
 
@@ -155,9 +153,8 @@ export async function runRangoActionWithoutTarget(
 			break;
 
 		default:
-			console.log("Unknown action type");
-			console.log(request.type);
-			console.log(request);
+			console.log(`Unknown action type ${request}. 
+			Did you mispell an action when scripting?`);
 			break;
 	}
 

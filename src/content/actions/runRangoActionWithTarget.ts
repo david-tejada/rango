@@ -67,7 +67,6 @@ export async function runRangoActionWithTarget(
 	switch (request.type) {
 		case "clickElement":
 		case "directClickElement":
-			console.log("clickEfdddddlement");
 			return clickElement(wrappers);
 
 		case "tryToFocusElementAndCheckIsEditable": {
