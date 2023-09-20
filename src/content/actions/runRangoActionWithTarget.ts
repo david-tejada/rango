@@ -18,7 +18,7 @@ import { setSelectionAfter, setSelectionBefore } from "./setSelection";
 import { focusAndDeleteContents } from "./focusAndDeleteContents";
 import { focus } from "./focus";
 import { markHintsForExclusion, markHintsForInclusion } from "./customHints";
-import { rangoActionOnSavedID, saveUniqueHintAsWord } from "./actOnUniqueIDs";
+import { saveUniqueHintAsMark } from "./actOnUniqueIDs";
 import { ElementWrapper } from "../../typings/ElementWrapper";
 
 export async function runRangoActionWithTarget(
@@ -164,7 +164,7 @@ export async function runRangoActionWithTarget(
 			break;
 
 		case "saveHintID":
-			await saveUniqueHintAsWord(wrappers, request.arg);
+			await saveUniqueHintAsMark(wrappers, request.arg);
 			break;
 
 		default:

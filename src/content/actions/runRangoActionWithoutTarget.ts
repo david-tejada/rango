@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { RangoActionWithoutTarget } from "../../typings/RangoAction";
-import { notifyTogglesStatus } from "../notify/notify";
+import { notify, notifyTogglesStatus } from "../notify/notify";
 
 import { focusesOnclick } from "../utils/focusesOnclick";
 import { unhoverAll } from "./hoverElement";
@@ -15,7 +15,11 @@ import {
 	customHintsReset,
 } from "./customHints";
 import { refreshHints } from "./refreshHints";
-import { rangoActionOnSavedID, styleSavedHints } from "./actOnUniqueIDs";
+import {
+	rangoActionOnSavedID,
+	removeSavedID,
+	styleSavedHints,
+} from "./actOnUniqueIDs";
 
 export async function runRangoActionWithoutTarget(
 	request: RangoActionWithoutTarget
@@ -152,9 +156,14 @@ export async function runRangoActionWithoutTarget(
 			await styleSavedHints();
 			break;
 
+		case "removeHintID":
+			await removeSavedID(request.arg);
+			break;
+
 		default:
-			console.log(`Unknown action type ${request}. 
-			Did you mispell an action when scripting?`);
+			notify(`Action: ${request.type} is not a valid action`, {
+				type: "error",
+			});
 			break;
 	}
 

@@ -9,12 +9,36 @@ import { store } from "../../common/storage";
 import { RangoActionWithTarget } from "../../typings/RangoAction";
 
 import { runRangoActionWithTarget } from "./runRangoActionWithTarget";
-import { getWrapperForElement } from "../wrappers/wrappers";
 import { getOrCreateWrapper } from "../wrappers/ElementWrapperClass";
+import { notify } from "../notify/notify";
 
 // go from a unique CSS selector back to an HTML element
 function getElementFromUniqueSelector(selector: string): HTMLElement | null {
 	return document.querySelector(selector);
+}
+
+export async function removeSavedID(syntacticName: string) {
+	const map = await getMapForCurrentURL();
+	if (map == null) {
+		await notify(`You do not have any marks saved in this context`, {
+			type: "error",
+		});
+		return;
+	}
+	if (!map.has(syntacticName)) {
+		await notify(`${syntacticName} is not saved in the current context`, {
+			type: "error",
+		});
+		return;
+	}
+	map.delete(syntacticName);
+	const hostMap = await retrieve("savedIDsByHost")!;
+
+	hostMap.set(getHostPattern(), map);
+
+	await store("savedIDsByHost", hostMap);
+	await notify(`Removed ${syntacticName} from saved IDs`, { type: "success" });
+	styleSavedHints();
 }
 
 export async function styleSavedHints(
@@ -31,10 +55,8 @@ export async function styleSavedHints(
 		return;
 	}
 
-	let oldText = "";
-
-	// change the elements in the map to be red, increase their size, and apply a scaling effect
-	hostMap.get(hostUrlToMatch)?.forEach((value, mappedText) => {
+	// change the elements in the map to be outlined, increase their size, and apply a scaling effect
+	hostMap.get(hostUrlToMatch)?.forEach(async (value, mappedText) => {
 		const element = getElementFromUniqueSelector(value);
 		if (element) {
 			// Get the current font size and parse it as a number
@@ -42,7 +64,7 @@ export async function styleSavedHints(
 				window.getComputedStyle(element).fontSize
 			);
 
-			oldText = element.innerText;
+			let oldText = element.innerText;
 			// Get the current transform scale value (for reverting later)
 			const currentTransformScale = window.getComputedStyle(element).transform;
 
@@ -75,29 +97,18 @@ export async function styleSavedHints(
 				element.style.border = ""; // Reset border
 				element.innerText = oldText; // Reset text
 			}, duration);
-		} else {
-			console.log(`Could not find element with selector ${value}`);
 		}
 	});
 
-	// print the entire map
-	function printMap(map: Map<string, string>) {
-		map.forEach((value, key) => {
-			console.log(`Syntactic Hint Name: ${key}, HTML Value: ${value}`);
-		});
-	}
-	printMap(hostMap.get(hostUrlToMatch)!);
+	hostMap.get(hostUrlToMatch)!.forEach((value, key) => {
+		console.log(`Syntactic Hint Name: ${key}, HTML Value: ${value}`);
+	});
 }
 
-export async function saveUniqueHintAsWord(
+export async function saveUniqueHintAsMark(
 	wrappers: ElementWrapper[],
 	syntacticName: string
 ) {
-	// throw an error If the length of the wrappers is less than one
-	if (wrappers.length < 1) {
-		throw new Error("No wrappers found");
-	}
-
 	for (const wrapper of wrappers) {
 		if (wrapper.element instanceof HTMLAnchorElement) {
 			const hostUrlToMatch = getHostPattern();
@@ -117,7 +128,9 @@ export async function saveUniqueHintAsWord(
 			const uniqueSelector = getCssSelector(wrapper.element);
 			//  if we cannot get a unique selector then just  continue the loop
 			if (uniqueSelector == null) {
-				console.log("Could not get a unique selector");
+				await notify("Could not get a unique selector the element", {
+					type: "error",
+				});
 				continue;
 			}
 			// Set the value for the syntactic name equal to the unique element selector
@@ -146,33 +159,67 @@ export async function rangoActionOnSavedID(actionAndTargetName: string) {
 	// split the string based on the % character
 	//  since in order to preserve the current syntax
 	//  we can only pass in one argument
-	const [action, targetName] = actionAndTargetName.split("%");
+	let [action, savedMarkToActOn] = actionAndTargetName.split("%");
+
 	// If the split failed then just return
-	if (targetName == null || action == null) {
-		console.log("Could not split the string");
+	if (savedMarkToActOn == null || action == null) {
+		await notify(
+			`Could not get a valid action from the string ${actionAndTargetName}`,
+			{
+				type: "error",
+			}
+		);
 		return;
 	}
-	console.log(`Performing Action: ${action} on Target: ${targetName}`);
+
+	try {
+		action = action as RangoActionWithTarget["type"];
+	} catch {
+		await notify(`Action: ${action} is not a valid action`, {
+			type: "error",
+		});
+		return;
+	}
 
 	// Since we are getting an action in from the user
 	//  I'm not sure if there's a better way to do type validation here
 	const rangoActionFromActionString = {
 		type: action,
-	} as unknown as RangoActionWithTarget;
+		// empty target since we pass in the wrapper
+		// which is the element we want to perform the action on
+		target: [],
+		// any args passed to the rango action
+		arg: savedMarkToActOn,
+	} as RangoActionWithTarget;
 
 	const validTargets = await getMapForCurrentURL();
 	if (validTargets == null) {
+		await notify(`You do not have any marks saved in this context`, {
+			type: "error",
+		});
 		return;
 	}
-	if (!validTargets.has(targetName)) {
+	if (!validTargets.has(savedMarkToActOn)) {
+		await notify(`${savedMarkToActOn} is not saved in the current context`, {
+			type: "error",
+		});
 		return;
 	}
-	const uniqueSelector = validTargets.get(targetName);
+
+	const uniqueSelector = validTargets.get(savedMarkToActOn);
 	const element = getElementFromUniqueSelector(uniqueSelector!);
 
 	if (element) {
 		const wrapperToScriptOn: ElementWrapper = getOrCreateWrapper(element);
+		console.log(
+			`Performing Action: ${action} on saved mark name: ${savedMarkToActOn}`
+		);
 
+		// TODO: wait for hints to be loaded before running this
 		runRangoActionWithTarget(rangoActionFromActionString, [wrapperToScriptOn]);
+	} else {
+		await notify(`Could not find element with selector ${uniqueSelector}`, {
+			type: "error",
+		});
 	}
 }

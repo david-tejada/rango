@@ -81,7 +81,7 @@ interface RangoActionWithoutTargetWithNumberArg {
 }
 
 interface RangoActionWithoutTargetWithStringArg {
-	type: "rangoActionOnSavedID";
+	type: "rangoActionOnSavedID" | "removeHintID";
 	arg: string;
 }
 
