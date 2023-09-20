@@ -10,40 +10,26 @@
 .Toggle button {
 	--width: 2.5rem;
 	--height: calc(var(--width) / 2);
+	--border-width: 2px;
 	display: inline-block;
 	position: relative;
 	width: var(--width);
 	height: var(--height);
 	background-color: var(--slate-300);
-	border: none;
+	color: var(--slate-300);
+	border: var(--border-width) solid;
 	border-radius: var(--height);
-	transition: background-color 0.4s;
+	transition: all 400ms ease-in-out;
 }
 
 .Toggle button[aria-pressed="true"] {
 	background-color: var(--green-500);
+	color: var(--green-500);
 }
 
 .Toggle.disabled button[aria-pressed="true"] {
 	background-color: var(--slate-300);
-}
-
-@media screen and (forced-colors: active) {
-	.Toggle button {
-		background-color: ButtonText;
-	}
-
-	.Toggle button[aria-pressed="true"] {
-		background-color: Highlight;
-	}
-
-	.Toggle button[aria-pressed="true"]::after {
-		content: "✓";
-		display: grid;
-		place-items: center;
-		font-size: 0.85em;
-		color: ButtonText;
-	}
+	color: var(--slate-300);
 }
 
 .Toggle:focus-within {
@@ -60,17 +46,39 @@
 }
 
 .Toggle button::after {
-	content: "";
-	width: calc(var(--height) * 0.9);
-	height: calc(var(--height) * 0.9);
-	border-radius: calc(var(--height) * 0.9);
+	content: "\2715";
+	display: grid;
+	place-items: center;
+	font-size: 0.75em;
+	color: var(--color-slate-300);
+	width: calc(var(--height) - var(--border-width) * 2);
+	height: calc(var(--height) - var(--border-width) * 2);
+	border-radius: 50%;
 	background-color: white;
 	position: absolute;
-	top: calc(var(--height) * 0.05);
-	left: calc(var(--height) * 0.05);
+	top: 0;
+	left: 0;
 	transition: transform 0.4s;
 }
 
 .Toggle button[aria-pressed="true"]::after {
+	content: "\2713";
+}
+
+.Toggle button[aria-pressed="true"]::after {
 	transform: translateX(var(--height));
+}
+
+@media screen and (forced-colors: active) {
+	.Toggle button[aria-pressed="true"] {
+		background-color: ButtonText;
+	}
+
+	.Toggle button[aria-pressed="false"] {
+		background-color: Canvas;
+	}
+
+	.Toggle.disabled button {
+		--border-width: 1px;
+	}
 }
