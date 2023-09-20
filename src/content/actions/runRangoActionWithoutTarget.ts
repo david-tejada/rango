@@ -18,7 +18,7 @@ import { refreshHints } from "./refreshHints";
 import {
 	rangoActionOnSavedID,
 	removeSavedID,
-	styleSavedHints,
+	showMarks,
 } from "./actOnUniqueIDs";
 
 export async function runRangoActionWithoutTarget(
@@ -153,7 +153,7 @@ export async function runRangoActionWithoutTarget(
 			break;
 
 		case "showSavedIDs":
-			await styleSavedHints();
+			await showMarks();
 			break;
 
 		case "removeHintID":
@@ -161,7 +161,7 @@ export async function runRangoActionWithoutTarget(
 			break;
 
 		default:
-			notify(`Action: ${request.type} is not a valid action`, {
+			notify(`Action: "${request.type}" is not a valid action`, {
 				type: "error",
 			});
 			break;
