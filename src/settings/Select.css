@@ -7,10 +7,21 @@
 	background-color: var(--slate-200);
 	border-radius: 4px;
 	padding: 6px;
-	border: none;
+	outline: none;
+	border: 1px solid var(--slate-500);
 	text-indent: 0.2em;
+}
+
+.Select select:focus {
+	border: 2px solid var(--blue-600);
 }
 
 .Select.disabled {
 	color: var(--neutral-500);
+}
+
+@media screen and (forced-colors: active) {
+	.Select select:focus {
+		border-color: ButtonText;
+	}
 }

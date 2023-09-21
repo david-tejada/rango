@@ -8,21 +8,22 @@
 }
 
 .Input input {
+	outline: none;
 	padding: 0.3em;
 	border: 1px solid var(--slate-500);
 	border-radius: 0.3em;
 }
 
 .Input input[data-is-valid="false"]:focus {
-	outline: 2px solid var(--red-500);
+	border: 2px solid var(--red-500);
 }
 
 .Input input[data-is-valid="true"]:focus {
-	outline: 2px solid var(--green-500);
+	border: 2px solid var(--green-500);
 }
 
 .Input input:focus {
-	border-color: transparent;
+	border: 2px solid var(--blue-600);
 }
 
 :not(:focus-within) .show-on-focus {
@@ -31,4 +32,18 @@
 
 .Input input:focus ~ .show-on-focus {
 	display: block;
+}
+
+@media screen and (forced-colors: active) {
+	.Input input:focus {
+		border: 2px solid ButtonText;
+	}
+
+	.Input input[data-is-valid="true"]:focus {
+		border: 2px solid ButtonText;
+	}
+
+	.Input input[data-is-valid="false"]:focus {
+		border: 2px dotted ButtonText;
+	}
 }
