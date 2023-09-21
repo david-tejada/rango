@@ -70,6 +70,15 @@
 }
 
 @media screen and (forced-colors: active) {
+	.Toggle button,
+	.Toggle button::after {
+		color: ButtonText;
+	}
+
+	.Toggle button {
+		border-color: ButtonText;
+	}
+
 	.Toggle button[aria-pressed="true"] {
 		background-color: ButtonText;
 	}
