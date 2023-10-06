@@ -6,6 +6,7 @@ import {
 	getHostPattern,
 	resetStagedSelectors,
 	pickSelectorAlternative,
+	stageExcludeUniversalSelector,
 } from "../hints/customSelectorsStaging";
 import {
 	extraSelector,
@@ -61,6 +62,13 @@ export async function markHintsForExclusion(wrappers: ElementWrapper[]) {
 		hintsColors: true,
 		isHintable: true,
 		filterIn: selectorsToRefresh,
+	});
+}
+
+export async function markAllHintsForExclusion() {
+	stageExcludeUniversalSelector();
+	await refresh({
+		hintsColors: true,
 	});
 }
 

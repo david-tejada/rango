@@ -91,9 +91,9 @@ export function isHintable(target: Element): boolean {
 		return true;
 	}
 
-	if (matchesCustomExclude(target) && !getShowExcludedToggle()) return false;
-
 	if (matchesCustomInclude(target)) return true;
+
+	if (matchesCustomExclude(target) && !getShowExcludedToggle()) return false;
 
 	return (
 		(matchesHintableSelector(target) && !isRedundant(target)) ||

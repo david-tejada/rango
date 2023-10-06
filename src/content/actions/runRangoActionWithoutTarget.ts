@@ -13,6 +13,7 @@ import {
 	markHintsWithNarrowerSelector,
 	markHintsWithBroaderSelector,
 	customHintsReset,
+	markAllHintsForExclusion,
 } from "./customHints";
 import { refreshHints } from "./refreshHints";
 
@@ -123,6 +124,10 @@ export async function runRangoActionWithoutTarget(
 
 		case "includeOrExcludeLessSelectors":
 			await markHintsWithNarrowerSelector();
+			break;
+
+		case "excludeAllHints":
+			await markAllHintsForExclusion();
 			break;
 
 		case "refreshHints":
