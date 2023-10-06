@@ -22,6 +22,7 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "displayExcludedHints"
 		| "displayLessHints"
 		| "toggleHints"
+		| "toggleTabMarkers"
 		| "displayTogglesStatus"
 		| "toggleKeyboardClicking"
 		| "excludeSingleLetterHints"

@@ -12,6 +12,7 @@ import { activateTab } from "../actions/activateTab";
 import { copyLocationProperty, copyMarkdownUrl } from "../actions/copyTabInfo";
 import { promiseWrap } from "../../lib/promiseWrap";
 import { refreshTabMarkers } from "../misc/tabMarkers";
+import { toggleTabMarkers } from "../actions/toggleTabMarkers";
 
 export async function runBackgroundCommand(
 	command: RangoAction
@@ -58,6 +59,10 @@ export async function runBackgroundCommand(
 
 		case "resetToggleLevel":
 			await updateHintsToggle(command.arg);
+			break;
+
+		case "toggleTabMarkers":
+			await toggleTabMarkers();
 			break;
 
 		case "toggleKeyboardClicking":
