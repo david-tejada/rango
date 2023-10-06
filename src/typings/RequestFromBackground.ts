@@ -31,6 +31,7 @@ interface SimpleContentRequest {
 	type:
 		| "restoreKeyboardReachableHints"
 		| "checkIfDocumentHasFocus"
+		| "checkContentScriptRunning"
 		| "onCompleted"
 		| "tryToFocusPage"
 		| "getTitleBeforeDecoration"

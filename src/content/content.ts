@@ -82,6 +82,9 @@ browser.runtime.onMessage.addListener(
 				case "checkIfDocumentHasFocus":
 					return document.hasFocus();
 
+				case "checkContentScriptRunning":
+					return true;
+
 				case "updateNavigationToggle":
 					setNavigationToggle(request.enable);
 					await updateHintsEnabled();
