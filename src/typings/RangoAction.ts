@@ -33,6 +33,7 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "decreaseHintSize"
 		| "includeOrExcludeMoreSelectors"
 		| "includeOrExcludeLessSelectors"
+		| "excludeAllHints"
 		| "confirmSelectorsCustomization"
 		| "resetCustomSelectors"
 		| "openSettingsPage"
