@@ -36,6 +36,7 @@ const backgroundCommands = new Set([
 	"openPageInNewTab",
 	"activateTab",
 	"refreshTabMarkers",
+	"toggleTabMarkers",
 ]);
 
 export async function dispatchCommand(
