@@ -16,6 +16,7 @@ import {
 	markAllHintsForExclusion,
 } from "./customHints";
 import { refreshHints } from "./refreshHints";
+import { scrollToPosition, storeScrollPosition } from "./customScrollPositions";
 
 export async function runRangoActionWithoutTarget(
 	request: RangoActionWithoutTarget
@@ -95,6 +96,14 @@ export async function runRangoActionWithoutTarget(
 
 		case "scrollLeftAtElement":
 			scroll({ dir: "left", target: "repeatLast" });
+			break;
+
+		case "storeScrollPosition":
+			await storeScrollPosition(request.arg);
+			break;
+
+		case "scrollToPosition":
+			await scrollToPosition(request.arg);
 			break;
 
 		case "displayExtraHints":
