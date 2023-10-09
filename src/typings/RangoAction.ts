@@ -138,6 +138,11 @@ interface RangoActionOpenPageInNewTab {
 	arg: string;
 }
 
+interface RangoActionScrollPosition {
+	type: "storeScrollPosition" | "scrollToPosition";
+	arg: string;
+}
+
 export type RangoActionWithTarget =
 	| RangoActionWithTargets
 	| RangoActionWithTargetsWithOptionalNumberArg
@@ -151,7 +156,8 @@ export type RangoActionWithoutTarget =
 	| RangoActionSetHintStyle
 	| RangoActionSetHintWeight
 	| RangoActionCopyLocationProperty
-	| RangoActionOpenPageInNewTab;
+	| RangoActionOpenPageInNewTab
+	| RangoActionScrollPosition;
 
 export type RangoAction = RangoActionWithTarget | RangoActionWithoutTarget;
 
