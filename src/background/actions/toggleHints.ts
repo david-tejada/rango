@@ -6,7 +6,9 @@ import { RangoActionUpdateToggles } from "../../typings/RangoAction";
 
 export async function toggleHintsGlobal() {
 	const hintsToggleGlobal = await retrieve("hintsToggleGlobal");
-	await store("hintsToggleGlobal", !hintsToggleGlobal);
+	const newStatus = !hintsToggleGlobal;
+	await store("hintsToggleGlobal", newStatus);
+	return newStatus;
 }
 
 export async function updateHintsToggle(
