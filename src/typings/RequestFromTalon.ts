@@ -44,6 +44,11 @@ interface TalonActionResponseValue {
 	value: any;
 }
 
+interface TalonActionOpenInNewTab {
+	name: "openInNewTab";
+	url: string;
+}
+
 export type TalonAction = { main?: true } & (
 	| TalonActionCopyToClipboard
 	| TalonActionTypeTargetCharacters
@@ -53,6 +58,7 @@ export type TalonAction = { main?: true } & (
 	| TalonActionFocusPage
 	| TalonActionFocusPageAndResend
 	| TalonActionResponseValue
+	| TalonActionOpenInNewTab
 );
 
 export interface ResponseToTalon {

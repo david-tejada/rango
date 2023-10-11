@@ -143,6 +143,11 @@ interface RangoActionScrollPosition {
 	arg: string;
 }
 
+interface RangoActionfocusOrCreateTabByUrl {
+	type: "focusOrCreateTabByUrl";
+	arg: string;
+}
+
 export type RangoActionWithTarget =
 	| RangoActionWithTargets
 	| RangoActionWithTargetsWithOptionalNumberArg
@@ -157,7 +162,8 @@ export type RangoActionWithoutTarget =
 	| RangoActionSetHintWeight
 	| RangoActionCopyLocationProperty
 	| RangoActionOpenPageInNewTab
-	| RangoActionScrollPosition;
+	| RangoActionScrollPosition
+	| RangoActionfocusOrCreateTabByUrl;
 
 export type RangoAction = RangoActionWithTarget | RangoActionWithoutTarget;
 
