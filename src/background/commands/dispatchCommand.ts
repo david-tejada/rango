@@ -37,6 +37,7 @@ const backgroundCommands = new Set([
 	"activateTab",
 	"refreshTabMarkers",
 	"toggleTabMarkers",
+	"focusOrCreateTabByUrl",
 ]);
 
 export async function dispatchCommand(

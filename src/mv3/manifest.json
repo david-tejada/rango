@@ -11,6 +11,7 @@
 	},
 	"permissions": [
 		"storage",
+		"tabs",
 		"activeTab",
 		"clipboardRead",
 		"clipboardWrite",
