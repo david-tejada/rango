@@ -2,7 +2,7 @@ import browser from "webextension-polyfill";
 import { getCurrentTab } from "../utils/getCurrentTab";
 
 /**
- * Giving an array of Tabs it returns the first one in the current window or
+ * Given an array of Tabs it returns the first one in the current window or
  * just the first one if none belongs to the current window.
  */
 async function getTabPrioritizeCurrentWindow(tabs: browser.Tabs.Tab[]) {

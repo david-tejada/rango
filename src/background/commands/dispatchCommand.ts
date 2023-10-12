@@ -38,6 +38,8 @@ const backgroundCommands = new Set([
 	"refreshTabMarkers",
 	"toggleTabMarkers",
 	"focusOrCreateTabByUrl",
+	"focusTabByText",
+	"cycleTabsByText",
 ]);
 
 export async function dispatchCommand(

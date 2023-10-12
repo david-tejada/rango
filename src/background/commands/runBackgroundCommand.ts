@@ -15,6 +15,7 @@ import { refreshTabMarkers } from "../misc/tabMarkers";
 import { toggleTabMarkers } from "../actions/toggleTabMarkers";
 import { TalonAction } from "../../typings/RequestFromTalon";
 import { focusOrCreateTabByUrl } from "../actions/focusOrCreateTabByUrl";
+import { cycleTabsByText, focusTabByText } from "../actions/focusTabByText";
 
 export async function runBackgroundCommand(
 	command: RangoAction
@@ -164,6 +165,14 @@ export async function runBackgroundCommand(
 
 		case "focusOrCreateTabByUrl":
 			return focusOrCreateTabByUrl(command.arg);
+
+		case "focusTabByText":
+			await focusTabByText(command.arg);
+			break;
+
+		case "cycleTabsByText":
+			await cycleTabsByText(command.arg);
+			break;
 
 		default:
 			break;
