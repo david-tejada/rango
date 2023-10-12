@@ -75,7 +75,8 @@ interface RangoActionWithoutTargetWithNumberArg {
 		| "closeTabsLeftEndInWindow"
 		| "closeTabsRightEndInWindow"
 		| "closePreviousTabsInWindow"
-		| "closeNextTabsInWindow";
+		| "closeNextTabsInWindow"
+		| "cycleTabsByText";
 	arg: number;
 }
 
@@ -148,6 +149,11 @@ interface RangoActionfocusOrCreateTabByUrl {
 	arg: string;
 }
 
+interface RangoActionFocusTabByText {
+	type: "focusTabByText";
+	arg: string;
+}
+
 export type RangoActionWithTarget =
 	| RangoActionWithTargets
 	| RangoActionWithTargetsWithOptionalNumberArg
@@ -163,7 +169,8 @@ export type RangoActionWithoutTarget =
 	| RangoActionCopyLocationProperty
 	| RangoActionOpenPageInNewTab
 	| RangoActionScrollPosition
-	| RangoActionfocusOrCreateTabByUrl;
+	| RangoActionfocusOrCreateTabByUrl
+	| RangoActionFocusTabByText;
 
 export type RangoAction = RangoActionWithTarget | RangoActionWithoutTarget;
 
