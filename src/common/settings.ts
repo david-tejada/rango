@@ -31,6 +31,7 @@ export const defaultSettings = {
 	uppercaseTabMarkers: true,
 	keyboardClicking: false,
 	customSelectors: new Map<string, CustomSelectorsForPattern>(),
+	customScrollPositions: new Map<string, Map<string, number>>(),
 	showWhatsNewPageOnUpdate: true,
 	newTabPosition: "relatedAfterCurrent",
 	hasSeenSettingsPage: false,

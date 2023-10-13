@@ -12,10 +12,14 @@ import { activateTab } from "../actions/activateTab";
 import { copyLocationProperty, copyMarkdownUrl } from "../actions/copyTabInfo";
 import { promiseWrap } from "../../lib/promiseWrap";
 import { refreshTabMarkers } from "../misc/tabMarkers";
+import { toggleTabMarkers } from "../actions/toggleTabMarkers";
+import { TalonAction } from "../../typings/RequestFromTalon";
+import { focusOrCreateTabByUrl } from "../actions/focusOrCreateTabByUrl";
+import { cycleTabsByText, focusTabByText } from "../actions/focusTabByText";
 
 export async function runBackgroundCommand(
 	command: RangoAction
-): Promise<string | undefined> {
+): Promise<string | TalonAction[] | undefined> {
 	const [currentTab] = await promiseWrap(getCurrentTab());
 	const currentTabId = currentTab?.id;
 
@@ -58,6 +62,10 @@ export async function runBackgroundCommand(
 
 		case "resetToggleLevel":
 			await updateHintsToggle(command.arg);
+			break;
+
+		case "toggleTabMarkers":
+			await toggleTabMarkers();
 			break;
 
 		case "toggleKeyboardClicking":
@@ -153,6 +161,17 @@ export async function runBackgroundCommand(
 
 		case "refreshTabMarkers":
 			await refreshTabMarkers();
+			break;
+
+		case "focusOrCreateTabByUrl":
+			return focusOrCreateTabByUrl(command.arg);
+
+		case "focusTabByText":
+			await focusTabByText(command.arg);
+			break;
+
+		case "cycleTabsByText":
+			await cycleTabsByText(command.arg);
 			break;
 
 		default:

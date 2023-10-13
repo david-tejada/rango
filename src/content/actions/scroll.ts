@@ -24,7 +24,7 @@ interface ScrollOptions {
 	factor?: number;
 }
 
-function getScrollBehavior() {
+export function getScrollBehavior() {
 	// Scroll tests fail if behavior is "smooth"
 	if (process.env["NODE_ENV"] !== "production") return "instant";
 
@@ -187,6 +187,18 @@ function getRightmostScrollable() {
 	return rightScrollable;
 }
 
+export function getMainScrollable(direction: "horizontal" | "vertical") {
+	if (isScrollable(document.documentElement, direction)) {
+		return document.documentElement;
+	}
+
+	if (isScrollable(document.body, direction)) {
+		return document.body;
+	}
+
+	return getScrollableAtCenter(direction);
+}
+
 export function snapScroll(
 	position: "top" | "center" | "bottom",
 	target: ElementWrapper
@@ -294,13 +306,7 @@ export function scroll(options: ScrollOptions) {
 
 	// Page scroll
 	if (target === "page") {
-		if (isScrollable(document.documentElement, direction)) {
-			scrollContainer = document.documentElement;
-		} else if (isScrollable(document.body, direction)) {
-			scrollContainer = document.body;
-		} else {
-			scrollContainer = getScrollableAtCenter(direction);
-		}
+		scrollContainer = getMainScrollable(direction);
 	}
 
 	if (target === "leftAside") {

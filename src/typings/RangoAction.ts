@@ -23,6 +23,7 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "displayExcludedHints"
 		| "displayLessHints"
 		| "toggleHints"
+		| "toggleTabMarkers"
 		| "displayTogglesStatus"
 		| "toggleKeyboardClicking"
 		| "excludeSingleLetterHints"
@@ -34,6 +35,7 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "decreaseHintSize"
 		| "includeOrExcludeMoreSelectors"
 		| "includeOrExcludeLessSelectors"
+		| "excludeAllHints"
 		| "confirmSelectorsCustomization"
 		| "resetCustomSelectors"
 		| "openSettingsPage"
@@ -75,7 +77,8 @@ interface RangoActionWithoutTargetWithNumberArg {
 		| "closeTabsLeftEndInWindow"
 		| "closeTabsRightEndInWindow"
 		| "closePreviousTabsInWindow"
-		| "closeNextTabsInWindow";
+		| "closeNextTabsInWindow"
+		| "cycleTabsByText";
 	arg: number;
 }
 
@@ -151,6 +154,21 @@ interface RangoActionOpenPageInNewTab {
 	arg: string;
 }
 
+interface RangoActionScrollPosition {
+	type: "storeScrollPosition" | "scrollToPosition";
+	arg: string;
+}
+
+interface RangoActionfocusOrCreateTabByUrl {
+	type: "focusOrCreateTabByUrl";
+	arg: string;
+}
+
+interface RangoActionFocusTabByText {
+	type: "focusTabByText";
+	arg: string;
+}
+
 export type RangoActionWithTarget =
 	| RangoActionWithTargets
 	| RangoActionWithTargetsWithOptionalNumberArg
@@ -166,7 +184,10 @@ export type RangoActionWithoutTarget =
 	| RangoActionSetHintWeight
 	| RangoActionCopyLocationProperty
 	| RangoActionOpenPageInNewTab
-	| RangoActionWithoutTargetWith2StringArgs;
+	| RangoActionWithoutTargetWith2StringArgs
+	| RangoActionScrollPosition
+	| RangoActionfocusOrCreateTabByUrl
+	| RangoActionFocusTabByText;
 
 export type RangoAction = RangoActionWithTarget | RangoActionWithoutTarget;
 

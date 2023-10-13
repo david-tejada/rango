@@ -151,6 +151,7 @@
 		"color": "^4.2.3",
 		"combinations": "^1.0.0",
 		"css-selector-generator": "^3.6.4",
+		"fuse.js": "^6.6.2",
 		"intersect": "^1.0.1",
 		"lodash": "^4.17.21",
 		"react": "^18.2.0",

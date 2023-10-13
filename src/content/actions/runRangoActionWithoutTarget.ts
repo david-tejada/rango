@@ -13,6 +13,7 @@ import {
 	markHintsWithNarrowerSelector,
 	markHintsWithBroaderSelector,
 	customHintsReset,
+	markAllHintsForExclusion,
 } from "./customHints";
 import { refreshHints } from "./refreshHints";
 import {
@@ -20,6 +21,7 @@ import {
 	removeSavedID,
 	showMarks,
 } from "./actOnUniqueIDs";
+import { scrollToPosition, storeScrollPosition } from "./customScrollPositions";
 
 export async function runRangoActionWithoutTarget(
 	request: RangoActionWithoutTarget
@@ -101,6 +103,14 @@ export async function runRangoActionWithoutTarget(
 			scroll({ dir: "left", target: "repeatLast" });
 			break;
 
+		case "storeScrollPosition":
+			await storeScrollPosition(request.arg);
+			break;
+
+		case "scrollToPosition":
+			await scrollToPosition(request.arg);
+			break;
+
 		case "displayExtraHints":
 			await displayMoreOrLessHints({ extra: true });
 			break;
@@ -128,6 +138,10 @@ export async function runRangoActionWithoutTarget(
 
 		case "includeOrExcludeLessSelectors":
 			await markHintsWithNarrowerSelector();
+			break;
+
+		case "excludeAllHints":
+			await markAllHintsForExclusion();
 			break;
 
 		case "refreshHints":

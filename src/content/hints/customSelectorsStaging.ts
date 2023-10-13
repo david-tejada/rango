@@ -56,6 +56,10 @@ export async function stageCustomSelectors(
 	return selectorsToRefresh;
 }
 
+export function stageExcludeUniversalSelector() {
+	excludeSelectors = ["*"];
+}
+
 /**
  * Picks a selector alternative from the previously calculated ones. It will
  * modify the selectors in includeSelectors and excludeSelectors.
