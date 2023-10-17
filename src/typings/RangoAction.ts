@@ -1,5 +1,4 @@
 interface RangoActionWithoutTargetWithoutArg {
-	arg: RangoActionWithTarget;
 	type:
 		| "historyGoBack"
 		| "historyGoForward"
@@ -42,7 +41,7 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "requestTimedOut"
 		| "checkActiveElementIsEditable"
 		| "refreshTabMarkers"
-		| "showSavedIDs";
+		| "showReferences";
 }
 
 export interface RangoActionUpdateToggles {
@@ -82,8 +81,8 @@ interface RangoActionWithoutTargetWithNumberArg {
 	arg: number;
 }
 
-interface RangoActionWithoutTargetWithStringArg {
-	type: "removeHintID";
+interface RangoActionRemoveReference {
+	type: "removeReference";
 	arg: string;
 }
 
@@ -100,8 +99,7 @@ interface RangoActionWithoutTargetWithOptionalNumberArg {
 	arg?: number;
 }
 
-interface RangoActionWithTargets {
-	arg: any;
+export interface RangoActionWithTargets {
 	type:
 		| "activateTab"
 		| "openInBackgroundTab"
@@ -122,8 +120,7 @@ interface RangoActionWithTargets {
 		| "scrollElementToCenter"
 		| "setSelectionBefore"
 		| "setSelectionAfter"
-		| "focusAndDeleteContents"
-		| "saveHintID";
+		| "focusAndDeleteContents";
 	target: string[];
 }
 
@@ -137,9 +134,15 @@ interface RangoActionWithTargetsWithOptionalNumberArg {
 	arg?: number;
 }
 
-interface RangoActionWithoutTargetWith2StringArgs {
-	type: "rangoActionOnSavedID";
+interface RangoActionSaveReference {
+	type: "saveReference";
+	target: string[];
 	arg: string;
+}
+
+interface RangoActionRunActionOnReference {
+	type: "runActionOnReference";
+	arg: RangoActionWithTargets["type"];
 	arg2: string;
 }
 
@@ -172,19 +175,20 @@ interface RangoActionFocusTabByText {
 export type RangoActionWithTarget =
 	| RangoActionWithTargets
 	| RangoActionWithTargetsWithOptionalNumberArg
-	| RangoActionInsertToField;
+	| RangoActionInsertToField
+	| RangoActionSaveReference;
 
 export type RangoActionWithoutTarget =
 	| RangoActionWithoutTargetWithoutArg
 	| RangoActionUpdateToggles
 	| RangoActionWithoutTargetWithNumberArg
-	| RangoActionWithoutTargetWithStringArg
 	| RangoActionWithoutTargetWithOptionalNumberArg
 	| RangoActionSetHintStyle
 	| RangoActionSetHintWeight
 	| RangoActionCopyLocationProperty
 	| RangoActionOpenPageInNewTab
-	| RangoActionWithoutTargetWith2StringArgs
+	| RangoActionRunActionOnReference
+	| RangoActionRemoveReference
 	| RangoActionScrollPosition
 	| RangoActionfocusOrCreateTabByUrl
 	| RangoActionFocusTabByText;

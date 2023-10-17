@@ -31,11 +31,23 @@ import {
 // HELPER FUNCTIONS
 // =============================================================================
 
-export function getOrCreateWrapper(element: Element) {
+/**
+ * Retrieve the ElementWrapper for a given element. If the wrapper doesn't exist
+ * it creates one.
+ *
+ * @param element The element to retrieve or create the wrapper
+ * @param active Set to false to avoid displaying a hint for the created
+ * ElementWrapper. Useful for when we only need a temporary wrapper to use with
+ * references while the hints are off.
+ * @returns  The ElementWrapper for the element
+ */
+export function getOrCreateWrapper(element: Element, active = true) {
 	let wrapper = getWrapperForElement(element);
 	if (!wrapper) {
-		wrapper = new ElementWrapperClass(element);
-		addWrapper(wrapper);
+		wrapper = new ElementWrapperClass(element, active);
+		if (active) {
+			addWrapper(wrapper);
+		}
 	}
 
 	return wrapper;
@@ -293,11 +305,14 @@ interface ElementWrapperClass extends ElementWrapper {}
  * A wrapper for a DOM Element.
  */
 class ElementWrapperClass implements ElementWrapper {
-	constructor(element: Element) {
+	constructor(element: Element, active = true) {
 		this.element = element;
 		this.isActiveFocusable =
 			this.element === document.activeElement && focusesOnclick(this.element);
-		this.updateIsHintable();
+
+		if (active) {
+			this.updateIsHintable();
+		}
 	}
 
 	updateIsHintable() {

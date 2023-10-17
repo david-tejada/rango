@@ -103,10 +103,6 @@ export async function initBackgroundScript() {
 
 			await storeIfUndefined("hintsToggleTabs", new Map());
 			await storeIfUndefined("tabsByRecency", {});
-			await storeIfUndefined(
-				"savedIDsByHost",
-				new Map<string, Map<string, string>>()
-			);
 
 			// If this is an update the content scrips either reload (Firefox) or stop
 			// completely (Chrome), either way we need to reset the hints stacks

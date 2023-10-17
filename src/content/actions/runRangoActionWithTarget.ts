@@ -3,6 +3,8 @@ import { assertDefined } from "../../typings/TypingUtils";
 import { getWrapper, getWrapperForElement } from "../wrappers/wrappers";
 import { TalonAction } from "../../typings/RequestFromTalon";
 import { tryToFocusOnEditable } from "../utils/tryToFocusOnEditable";
+import { ElementWrapper } from "../../typings/ElementWrapper";
+import { notify } from "../notify/notify";
 import { clickElement } from "./clickElement";
 import {
 	copyElementTextContentToClipboard,
@@ -18,22 +20,18 @@ import { setSelectionAfter, setSelectionBefore } from "./setSelection";
 import { focusAndDeleteContents } from "./focusAndDeleteContents";
 import { focus } from "./focus";
 import { markHintsForExclusion, markHintsForInclusion } from "./customHints";
-import { saveUniqueHintAsMark } from "./actOnUniqueIDs";
-import { ElementWrapper } from "../../typings/ElementWrapper";
+import { saveReference } from "./references";
 
 export async function runRangoActionWithTarget(
 	request: RangoActionWithTarget,
-	// providedWrapper is used for scripting
-	providedWrapper?: ElementWrapper[]
+	// Used for scripting using references
+	wrappersOverride?: ElementWrapper[]
 ): Promise<string | TalonAction[] | undefined> {
 	const hints =
 		typeof request.target === "string" ? [request.target] : request.target;
 	const wrappers =
-		// if the user provided a wrapper, we use that one
-		// otherwise we get the wrappers from the hints
-		providedWrapper === undefined
-			? getWrapper(hints).filter((wrapper) => wrapper.isIntersectingViewport)
-			: providedWrapper;
+		wrappersOverride ??
+		getWrapper(hints).filter((wrapper) => wrapper.isIntersectingViewport);
 
 	// If the user says, for example, "pre cap" and the element with the hint "c"
 	// is actually already focused but the document itself is not focused, once we
@@ -60,9 +58,9 @@ export async function runRangoActionWithTarget(
 		}
 	}
 
-	// Wrapper for scroll, if there's more than one target we take the first and
-	// ignore the rest
-	const wrapper = wrappers[0];
+	// Wrapper for scroll and saving references, if there's more than one target
+	// we take the first and ignore the rest
+	const wrapper = wrappersOverride ? wrappersOverride[0] : wrappers[0];
 	assertDefined(wrapper);
 	switch (request.type) {
 		case "clickElement":
@@ -163,11 +161,14 @@ export async function runRangoActionWithTarget(
 			await markHintsForExclusion(wrappers);
 			break;
 
-		case "saveHintID":
-			await saveUniqueHintAsMark(wrappers, request.arg);
+		case "saveReference":
+			await saveReference(wrapper, request.arg);
 			break;
 
 		default:
+			await notify(`Invalid action "${request.type}"`, {
+				type: "error",
+			});
 			break;
 	}
 

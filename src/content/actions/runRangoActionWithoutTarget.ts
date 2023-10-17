@@ -16,12 +16,9 @@ import {
 	markAllHintsForExclusion,
 } from "./customHints";
 import { refreshHints } from "./refreshHints";
-import {
-	rangoActionOnSavedID,
-	removeSavedID,
-	showMarks,
-} from "./actOnUniqueIDs";
+import { runActionOnReference } from "./runActionOnReference";
 import { scrollToPosition, storeScrollPosition } from "./customScrollPositions";
+import { removeReference, showReferences } from "./references";
 
 export async function runRangoActionWithoutTarget(
 	request: RangoActionWithoutTarget
@@ -161,20 +158,20 @@ export async function runRangoActionWithoutTarget(
 					focusesOnclick(document.activeElement)
 			);
 
-		case "rangoActionOnSavedID":
-			await rangoActionOnSavedID(request.arg, request.arg2);
+		case "runActionOnReference":
+			await runActionOnReference(request.arg, request.arg2);
 			break;
 
-		case "showSavedIDs":
-			await showMarks();
+		case "showReferences":
+			await showReferences();
 			break;
 
-		case "removeHintID":
-			await removeSavedID(request.arg);
+		case "removeReference":
+			await removeReference(request.arg);
 			break;
 
 		default:
-			notify(`Action: "${request.type}" is not a valid action`, {
+			await notify(`Invalid action "${request.type}"`, {
 				type: "error",
 			});
 			break;

@@ -58,6 +58,7 @@ export interface StorageSchema {
 	keyboardClicking: boolean;
 	customSelectors: Map<string, CustomSelectorsForPattern>;
 	customScrollPositions: Map<string, Map<string, number>>;
+	references: Map<string, Map<string, string>>;
 	switchedToSyncStorage: boolean;
 	showWhatsNewPageOnUpdate: boolean;
 	newTabPosition: "relatedAfterCurrent" | "afterCurrent" | "atEnd";
@@ -69,8 +70,6 @@ export interface StorageSchema {
 	tabsByRecency: Record<number, number[]>;
 	hintsStacks: Map<number, HintsStack>;
 	tabMarkers: TabMarkers;
-
-	savedIDsByHost: Map<string, Map<string, string>>;
 
 	// Legacy
 	hintsToggle: {
