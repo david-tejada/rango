@@ -6,13 +6,6 @@ import { showTooltip } from "../hints/showTooltip";
 import { getOrCreateWrapper } from "../wrappers/ElementWrapperClass";
 import { notify } from "../notify/notify";
 
-export async function getReferencesForCurrentUrl() {
-	const hostPattern = getHostPattern();
-	const references = await retrieve("references");
-
-	return references.get(hostPattern) ?? new Map<string, string>();
-}
-
 export function getWrapperFromUniqueSelector(selector: string) {
 	const element = document.querySelector(selector);
 	if (!element) return;
@@ -20,61 +13,61 @@ export function getWrapperFromUniqueSelector(selector: string) {
 	return getOrCreateWrapper(element, false);
 }
 
-export async function saveReference(wrapper: ElementWrapper, name: string) {
+/** Executes the given callback with the references for the current URL and
+ * updates references after. */
+export async function withHostReferences(
+	callback: (hostReferences: Map<string, string>) => void | Promise<void>
+) {
 	const hostPattern = getHostPattern();
 	const references = await retrieve("references");
-	const referencesForPattern =
+	const hostReferences =
 		references.get(hostPattern) ?? new Map<string, string>();
 
+	await Promise.resolve(callback(hostReferences));
+
+	references.set(hostPattern, hostReferences);
+	await store("references", references);
+}
+
+export async function saveReference(wrapper: ElementWrapper, name: string) {
 	const uniqueSelector = getCssSelector(wrapper.element, {
 		blacklist: [/data-hint/],
 	});
 
-	referencesForPattern.set(name, uniqueSelector);
-	references.set(hostPattern, referencesForPattern);
-	await store("references", references);
+	await withHostReferences((hostReferences) => {
+		hostReferences.set(name, uniqueSelector);
+	});
 
 	showTooltip(wrapper, name, 5000);
 }
 
 export async function showReferences(duration = 3000) {
-	const referencesForUrl = await getReferencesForCurrentUrl();
-
-	const showing = [...referencesForUrl.entries()].map(
-		async ([name, selector]) => {
-			const wrapper = getWrapperFromUniqueSelector(selector);
-			if (wrapper) {
-				showTooltip(wrapper, name, duration);
+	await withHostReferences(async (hostReferences) => {
+		const showing = [...hostReferences.entries()].map(
+			async ([name, selector]) => {
+				const wrapper = getWrapperFromUniqueSelector(selector);
+				if (wrapper) {
+					showTooltip(wrapper, name, duration);
+				}
 			}
-		}
-	);
+		);
 
-	await Promise.all(showing);
+		await Promise.all(showing);
+	});
 }
 
 export async function removeReference(name: string) {
-	const referencesForUrl = await getReferencesForCurrentUrl();
+	await withHostReferences(async (hostReferences) => {
+		const selector = hostReferences.get(name);
 
-	if (!referencesForUrl?.has(name)) {
-		await notify(`Reference "${name}" is not saved in the current context`, {
-			type: "error",
-		});
-		return;
-	}
+		if (!selector) {
+			await notify(`Unable to find reference "${name}"`);
+			return;
+		}
 
-	const selector = referencesForUrl.get(name);
+		hostReferences.delete(name);
 
-	if (!selector) {
-		await notify(`Unable to find reference "${name}"`);
-		return;
-	}
-
-	referencesForUrl.delete(name);
-	const references = await retrieve("references")!;
-	references.set(getHostPattern(), referencesForUrl);
-
-	await store("references", references);
-
-	const wrapper = getWrapperFromUniqueSelector(selector);
-	if (wrapper) showTooltip(wrapper, `❌ ${name}`, 2000);
+		const wrapper = getWrapperFromUniqueSelector(selector);
+		if (wrapper) showTooltip(wrapper, `❌ ${name}`, 2000);
+	});
 }

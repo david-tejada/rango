@@ -1,35 +1,31 @@
 import { RangoActionWithTargets } from "../../typings/RangoAction";
 import { notify } from "../notify/notify";
 import { runRangoActionWithTarget } from "./runRangoActionWithTarget";
-import {
-	getReferencesForCurrentUrl,
-	getWrapperFromUniqueSelector,
-} from "./references";
+import { getWrapperFromUniqueSelector, withHostReferences } from "./references";
 
 export async function runActionOnReference(
 	type: RangoActionWithTargets["type"],
 	name: string
 ) {
-	const referencesForUrl = await getReferencesForCurrentUrl();
-	console.log(referencesForUrl);
+	await withHostReferences(async (hostReferences) => {
+		if (!hostReferences?.has(name)) {
+			await notify(`Reference "${name}" is not saved in the current context`, {
+				type: "error",
+			});
+			return;
+		}
 
-	if (!referencesForUrl?.has(name)) {
-		await notify(`Reference "${name}" is not saved in the current context`, {
-			type: "error",
-		});
-		return;
-	}
+		const selector = hostReferences.get(name)!;
+		const wrapper = getWrapperFromUniqueSelector(selector);
 
-	const uniqueSelector = referencesForUrl.get(name)!;
-	const wrapper = getWrapperFromUniqueSelector(uniqueSelector);
+		if (!wrapper) {
+			await notify(`Unable to find element for reference "${name}"`, {
+				type: "error",
+			});
 
-	if (!wrapper) {
-		await notify(`Unable to find element for reference "${name}"`, {
-			type: "error",
-		});
+			return;
+		}
 
-		return;
-	}
-
-	await runRangoActionWithTarget({ type, target: [] }, [wrapper]);
+		await runRangoActionWithTarget({ type, target: [] }, [wrapper]);
+	});
 }
