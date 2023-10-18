@@ -18,7 +18,7 @@ export function allowToastNotification() {
 
 	setTimeout(() => {
 		notificationAllowed = false;
-	}, 1000);
+	}, 3000);
 }
 
 function renderToast() {

@@ -6,7 +6,7 @@ import { showTooltip } from "../hints/showTooltip";
 import { getOrCreateWrapper } from "../wrappers/ElementWrapperClass";
 import { notify } from "../notify/notify";
 
-export function getWrapperFromUniqueSelector(selector: string) {
+function getWrapperFromUniqueSelector(selector: string) {
 	const element = document.querySelector(selector);
 	if (!element) return;
 
@@ -61,8 +61,7 @@ export async function removeReference(name: string) {
 		const selector = hostReferences.get(name);
 
 		if (!selector) {
-			await notify(`Unable to find reference "${name}"`);
-			return;
+			return notify(`Unable to find reference "${name}"`, { type: "error" });
 		}
 
 		hostReferences.delete(name);
