@@ -18,7 +18,7 @@ export function allowToastNotification() {
 
 	setTimeout(() => {
 		notificationAllowed = false;
-	}, 3000);
+	}, 1500);
 }
 
 function renderToast() {
@@ -62,6 +62,10 @@ export async function notify(text: string, options?: ToastOptions) {
 
 	if (options?.icon === "disabled") {
 		options.icon = <ToastIcon iconType="disabled" />;
+	}
+
+	if (options?.icon === "trash") {
+		options.icon = <ToastIcon iconType="trash" />;
 	}
 
 	if (options?.toastId && toast.isActive(options.toastId)) {

@@ -159,16 +159,14 @@ export async function runRangoActionWithoutTarget(
 			);
 
 		case "runActionOnReference":
-			await runActionOnReference(request.arg, request.arg2);
-			break;
+			return runActionOnReference(request.arg, request.arg2);
 
 		case "showReferences":
 			await showReferences();
 			break;
 
 		case "removeReference":
-			await removeReference(request.arg);
-			break;
+			return removeReference(request.arg);
 
 		default:
 			await notify(`Invalid action "${request.type}"`, {

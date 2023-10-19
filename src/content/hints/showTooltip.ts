@@ -5,7 +5,7 @@ import { setStyleProperties } from "./setStyleProperties";
 export function showTooltip(
 	wrapper: ElementWrapper,
 	text: string,
-	duration: number
+	duration = 3000
 ) {
 	if (!wrapper.hint) return;
 

@@ -81,7 +81,7 @@ interface RangoActionWithoutTargetWithNumberArg {
 	arg: number;
 }
 
-interface RangoActionRemoveReference {
+export interface RangoActionRemoveReference {
 	type: "removeReference";
 	arg: string;
 }
@@ -140,7 +140,7 @@ interface RangoActionSaveReference {
 	arg: string;
 }
 
-interface RangoActionRunActionOnReference {
+export interface RangoActionRunActionOnReference {
 	type: "runActionOnReference";
 	arg: RangoActionWithTargets["type"];
 	arg2: string;

@@ -4,6 +4,11 @@ import { TalonAction } from "../../typings/RequestFromTalon";
 import { isPromiseFulfilledResult } from "../../typings/TypingUtils";
 import { getCurrentTabId } from "../utils/getCurrentTab";
 import { splitRequestsByFrame } from "../utils/splitRequestsByFrame";
+import {
+	RangoActionRemoveReference,
+	RangoActionRunActionOnReference,
+} from "../../typings/RangoAction";
+import { notify } from "../utils/notify";
 
 let lastScrollFrameId = 0;
 
@@ -17,7 +22,43 @@ const toAllFrames = new Set([
 	"includeOrExcludeMoreSelectors",
 	"includeOrExcludeLessSelectors",
 	"resetCustomSelectors",
+	"showReferences",
+	"removeReference",
+	"runActionOnReference",
 ]);
+
+async function handleActionOnReference(
+	request: RangoActionRemoveReference | RangoActionRunActionOnReference,
+	tabId: number
+) {
+	const allFrames = await browser.webNavigation.getAllFrames({
+		tabId,
+	});
+
+	const sending = allFrames.map(async (frame) =>
+		browser.tabs.sendMessage(tabId, request, {
+			frameId: frame.frameId,
+		})
+	);
+
+	const results = await Promise.allSettled(sending);
+	const found = results
+		.filter(isPromiseFulfilledResult)
+		.some((result) => result.value);
+
+	const reference =
+		request.type === "removeReference" ? request.arg : request.arg2;
+
+	if (!found) {
+		await notify(`Unable to find reference "${reference}".`, {
+			type: "warning",
+		});
+	}
+
+	if (found && request.type === "removeReference") {
+		await notify(`Reference "${reference}" removed.`, { icon: "trash" });
+	}
+}
 
 // Sends a request to the content script. If tabId is not specified it will
 // send it to the current tab. If frameId is not specified it will send it to
@@ -87,6 +128,11 @@ export async function sendRequestToContent(
 		return browser.tabs.sendMessage(targetTabId, request, {
 			frameId: lastScrollFrameId,
 		});
+	} else if (
+		request.type === "removeReference" ||
+		request.type === "runActionOnReference"
+	) {
+		return handleActionOnReference(request, targetTabId);
 	}
 
 	frameId = frameId ?? toAllFrames.has(request.type) ? undefined : 0;

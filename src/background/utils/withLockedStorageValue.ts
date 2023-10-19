@@ -24,13 +24,13 @@ function getMutexForStorageValue(name: keyof StorageSchema) {
  */
 export async function withLockedStorageAccess<T extends keyof StorageSchema, U>(
 	name: T,
-	callback: (value: StorageSchema[T]) => Promise<U>
+	callback: (value: StorageSchema[T]) => U | Promise<U>
 ): Promise<U> {
 	const mutex = getMutexForStorageValue(name);
 
 	return mutex.runExclusive(async () => {
 		const value = await retrieve(name);
-		const result = await callback(value);
+		const result = await Promise.resolve(callback(value));
 		await store(name, value);
 		return result;
 	});
