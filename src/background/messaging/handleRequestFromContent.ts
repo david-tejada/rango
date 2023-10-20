@@ -16,6 +16,7 @@ import {
 	resetCustomSelectors,
 	storeCustomSelectors,
 } from "../utils/storeCustomSelectors";
+import { removeReference } from "../utils/removeReference";
 import { sendRequestToContent } from "./sendRequestToContent";
 
 export async function handleRequestFromContent(
@@ -112,6 +113,9 @@ export async function handleRequestFromContent(
 
 		case "resetCustomSelectors":
 			return resetCustomSelectors(request.pattern);
+
+		case "removeReference":
+			return removeReference(request.hostPattern, request.name);
 
 		default:
 			console.error(request);

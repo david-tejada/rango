@@ -6,6 +6,7 @@ import {
 	faToggleOff,
 	faToggleOn,
 	faTriangleExclamation,
+	faTrash,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
@@ -17,6 +18,7 @@ const icons = {
 	unset: { icon: faMinus, color: "#9ca3af" },
 	enabled: { icon: faToggleOn, color: "#22c55e" },
 	disabled: { icon: faToggleOff, color: "#404040" },
+	trash: { icon: faTrash, color: "#ef4444" },
 };
 
 type ToastIconProps = {

@@ -3,6 +3,8 @@ import { assertDefined } from "../../typings/TypingUtils";
 import { getWrapper, getWrapperForElement } from "../wrappers/wrappers";
 import { TalonAction } from "../../typings/RequestFromTalon";
 import { tryToFocusOnEditable } from "../utils/tryToFocusOnEditable";
+import { ElementWrapper } from "../../typings/ElementWrapper";
+import { notify } from "../notify/notify";
 import { clickElement } from "./clickElement";
 import {
 	copyElementTextContentToClipboard,
@@ -18,15 +20,18 @@ import { setSelectionAfter, setSelectionBefore } from "./setSelection";
 import { focusAndDeleteContents } from "./focusAndDeleteContents";
 import { focus } from "./focus";
 import { markHintsForExclusion, markHintsForInclusion } from "./customHints";
+import { saveReference } from "./references";
 
 export async function runRangoActionWithTarget(
-	request: RangoActionWithTarget
+	request: RangoActionWithTarget,
+	// Used for scripting using references
+	wrappersOverride?: ElementWrapper[]
 ): Promise<string | TalonAction[] | undefined> {
 	const hints =
 		typeof request.target === "string" ? [request.target] : request.target;
-	const wrappers = getWrapper(hints).filter(
-		(wrapper) => wrapper.isIntersectingViewport
-	);
+	const wrappers =
+		wrappersOverride ??
+		getWrapper(hints).filter((wrapper) => wrapper.isIntersectingViewport);
 
 	// If the user says, for example, "pre cap" and the element with the hint "c"
 	// is actually already focused but the document itself is not focused, once we
@@ -53,11 +58,10 @@ export async function runRangoActionWithTarget(
 		}
 	}
 
-	// Wrapper for scroll, if there's more than one target we take the first and
-	// ignore the rest
-	const wrapper = wrappers[0];
+	// Wrapper for scroll and saving references, if there's more than one target
+	// we take the first and ignore the rest
+	const wrapper = wrappersOverride ? wrappersOverride[0] : wrappers[0];
 	assertDefined(wrapper);
-
 	switch (request.type) {
 		case "clickElement":
 		case "directClickElement":
@@ -157,7 +161,14 @@ export async function runRangoActionWithTarget(
 			await markHintsForExclusion(wrappers);
 			break;
 
+		case "saveReference":
+			await saveReference(wrapper, request.arg);
+			break;
+
 		default:
+			await notify(`Invalid action "${request.type}"`, {
+				type: "error",
+			});
 			break;
 	}
 

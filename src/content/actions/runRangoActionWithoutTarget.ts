@@ -1,6 +1,6 @@
 import { toast } from "react-toastify";
 import { RangoActionWithoutTarget } from "../../typings/RangoAction";
-import { notifyTogglesStatus } from "../notify/notify";
+import { notify, notifyTogglesStatus } from "../notify/notify";
 
 import { focusesOnclick } from "../utils/focusesOnclick";
 import { unhoverAll } from "./hoverElement";
@@ -16,7 +16,9 @@ import {
 	markAllHintsForExclusion,
 } from "./customHints";
 import { refreshHints } from "./refreshHints";
+import { runActionOnReference } from "./runActionOnReference";
 import { scrollToPosition, storeScrollPosition } from "./customScrollPositions";
+import { removeReference, showReferences } from "./references";
 
 export async function runRangoActionWithoutTarget(
 	request: RangoActionWithoutTarget
@@ -156,7 +158,20 @@ export async function runRangoActionWithoutTarget(
 					focusesOnclick(document.activeElement)
 			);
 
+		case "runActionOnReference":
+			return runActionOnReference(request.arg, request.arg2);
+
+		case "showReferences":
+			await showReferences();
+			break;
+
+		case "removeReference":
+			return removeReference(request.arg);
+
 		default:
+			await notify(`Invalid action "${request.type}"`, {
+				type: "error",
+			});
 			break;
 	}
 

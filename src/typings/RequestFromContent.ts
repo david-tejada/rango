@@ -50,6 +50,12 @@ interface ResetCustomSelectors {
 	pattern: string;
 }
 
+interface RemoveReference {
+	type: "removeReference";
+	hostPattern: string;
+	name: string;
+}
+
 interface SimpleRequestFromContent {
 	type:
 		| "initStack"
@@ -71,4 +77,5 @@ export type RequestFromContent =
 	| ReclaimHintsFromOtherFrames
 	| StoreHintsInFrame
 	| StoreCustomSelectors
-	| ResetCustomSelectors;
+	| ResetCustomSelectors
+	| RemoveReference;

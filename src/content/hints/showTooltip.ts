@@ -1,16 +1,16 @@
 import tippy from "tippy.js";
 import { ElementWrapper } from "../../typings/ElementWrapper";
-import { assertDefined } from "../../typings/TypingUtils";
 import { setStyleProperties } from "./setStyleProperties";
 
 export function showTooltip(
 	wrapper: ElementWrapper,
 	text: string,
-	duration: number
+	duration = 3000
 ) {
+	if (!wrapper.hint) return;
+
 	const tooltipAnchor = document.createElement("div");
 	tooltipAnchor.className = "rango-tooltip";
-	assertDefined(wrapper.hint);
 
 	const { x, y, width, height } = wrapper.hint.inner.getBoundingClientRect();
 

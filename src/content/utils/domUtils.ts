@@ -23,3 +23,33 @@ export function getClosestHtmlElement(node: Node) {
 
 	return current;
 }
+
+export async function querySelectorWithWait(
+	selector: string,
+	duration: number
+) {
+	return new Promise((resolve: (element: Element) => void, reject) => {
+		const element = document.querySelector(selector);
+		if (element) {
+			resolve(element);
+		}
+
+		const timeout = setTimeout(() => {
+			reject();
+		}, duration);
+
+		const observer = new MutationObserver(() => {
+			const element = document.querySelector(selector);
+			if (element) {
+				observer.disconnect();
+				clearTimeout(timeout);
+				resolve(element);
+			}
+		});
+
+		observer.observe(document.body, {
+			childList: true,
+			subtree: true,
+		});
+	});
+}

@@ -40,7 +40,8 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "openSettingsPage"
 		| "requestTimedOut"
 		| "checkActiveElementIsEditable"
-		| "refreshTabMarkers";
+		| "refreshTabMarkers"
+		| "showReferences";
 }
 
 export interface RangoActionUpdateToggles {
@@ -80,6 +81,11 @@ interface RangoActionWithoutTargetWithNumberArg {
 	arg: number;
 }
 
+export interface RangoActionRemoveReference {
+	type: "removeReference";
+	arg: string;
+}
+
 interface RangoActionWithoutTargetWithOptionalNumberArg {
 	type:
 		| "scrollUpPage"
@@ -93,7 +99,7 @@ interface RangoActionWithoutTargetWithOptionalNumberArg {
 	arg?: number;
 }
 
-interface RangoActionWithTargets {
+export interface RangoActionWithTargets {
 	type:
 		| "activateTab"
 		| "openInBackgroundTab"
@@ -128,6 +134,18 @@ interface RangoActionWithTargetsWithOptionalNumberArg {
 	arg?: number;
 }
 
+interface RangoActionSaveReference {
+	type: "saveReference";
+	target: string[];
+	arg: string;
+}
+
+export interface RangoActionRunActionOnReference {
+	type: "runActionOnReference";
+	arg: RangoActionWithTargets["type"];
+	arg2: string;
+}
+
 interface RangoActionInsertToField {
 	type: "insertToField";
 	target: string[];
@@ -157,7 +175,8 @@ interface RangoActionFocusTabByText {
 export type RangoActionWithTarget =
 	| RangoActionWithTargets
 	| RangoActionWithTargetsWithOptionalNumberArg
-	| RangoActionInsertToField;
+	| RangoActionInsertToField
+	| RangoActionSaveReference;
 
 export type RangoActionWithoutTarget =
 	| RangoActionWithoutTargetWithoutArg
@@ -168,6 +187,8 @@ export type RangoActionWithoutTarget =
 	| RangoActionSetHintWeight
 	| RangoActionCopyLocationProperty
 	| RangoActionOpenPageInNewTab
+	| RangoActionRunActionOnReference
+	| RangoActionRemoveReference
 	| RangoActionScrollPosition
 	| RangoActionfocusOrCreateTabByUrl
 	| RangoActionFocusTabByText;

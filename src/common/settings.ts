@@ -32,6 +32,7 @@ export const defaultSettings = {
 	keyboardClicking: false,
 	customSelectors: new Map<string, CustomSelectorsForPattern>(),
 	customScrollPositions: new Map<string, Map<string, number>>(),
+	references: new Map<string, Map<string, string>>(),
 	showWhatsNewPageOnUpdate: true,
 	newTabPosition: "relatedAfterCurrent",
 	hasSeenSettingsPage: false,

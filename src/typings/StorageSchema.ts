@@ -58,6 +58,7 @@ export interface StorageSchema {
 	keyboardClicking: boolean;
 	customSelectors: Map<string, CustomSelectorsForPattern>;
 	customScrollPositions: Map<string, Map<string, number>>;
+	references: Map<string, Map<string, string>>;
 	switchedToSyncStorage: boolean;
 	showWhatsNewPageOnUpdate: boolean;
 	newTabPosition: "relatedAfterCurrent" | "afterCurrent" | "atEnd";
