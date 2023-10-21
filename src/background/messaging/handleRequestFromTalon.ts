@@ -75,6 +75,8 @@ export async function handleRequestFromTalon() {
 
 		talonIsWaitingForResponse = !(request.action.type === "requestTimedOut");
 
+		if (request.action.type === "requestTimedOut") return;
+
 		if (request.action.type === "directClickElement") {
 			const isRequestHandled = await handleDirectClickElementRequest(request);
 			if (isRequestHandled) return;
