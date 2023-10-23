@@ -5,6 +5,7 @@ import { TalonAction } from "../../typings/RequestFromTalon";
 import { tryToFocusOnEditable } from "../utils/tryToFocusOnEditable";
 import { ElementWrapper } from "../../typings/ElementWrapper";
 import { notify } from "../notify/notify";
+import { setLastWrapper } from "../wrappers/lastWrapper";
 import { clickElement } from "./clickElement";
 import {
 	copyElementTextContentToClipboard,
@@ -62,6 +63,7 @@ export async function runRangoActionWithTarget(
 	// we take the first and ignore the rest
 	const wrapper = wrappersOverride ? wrappersOverride[0] : wrappers[0];
 	assertDefined(wrapper);
+	setLastWrapper(wrapper);
 	switch (request.type) {
 		case "clickElement":
 		case "directClickElement":
