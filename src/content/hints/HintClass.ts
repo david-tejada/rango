@@ -50,6 +50,10 @@ const processHintQueue = debounce(() => {
 
 	for (const hint of queue) {
 		if (!hint.container) toComputeContext.push(hint.target);
+		if (hint.toBeReattached) hint.reattach();
+		// After trying to reattach, the hint might be released if there is not an
+		// apt container to place it.
+		if (!hint.string) queue.delete(hint);
 	}
 
 	cacheLayout(toComputeContext);
@@ -113,8 +117,10 @@ const processHintQueue = debounce(() => {
 		for (const hint of queue) {
 			// Here we need to delete from the actual hintQueue and not from queue so
 			// that the hints aren't processed in the next call to processHintQueue
-			// again
-			hintQueue.delete(hint);
+			// again. We check toBeReattached because after the hint is appended it
+			// could be removed by the page. In that case we don't want to remove it
+			// from the queue as it needs to be reattached.
+			if (!hint.toBeReattached) hintQueue.delete(hint);
 			if (hint.string) {
 				setStyleProperties(hint.inner, {
 					display: "block",
@@ -180,7 +186,10 @@ const containerMutationObserver = new MutationObserver((entries) => {
 					const wrapper = getWrapper(inner.textContent);
 
 					// eslint-disable-next-line max-depth
-					if (wrapper?.hint?.string) wrapper.hint.reattach();
+					if (wrapper?.hint?.string) {
+						wrapper.hint.toBeReattached = true;
+						addToHintQueue(wrapper.hint);
+					}
 				}
 			}
 		}
@@ -315,6 +324,7 @@ export class HintClass implements Hint {
 		shadow.append(this.outer);
 
 		this.positioned = false;
+		this.toBeReattached = false;
 		this.wasReattached = false;
 
 		// Initial styles for inner
@@ -652,13 +662,24 @@ export class HintClass implements Hint {
 	}
 	/* eslint-enable @typescript-eslint/no-dynamic-delete */
 
+	/**
+	 * Reattach a hint that has being removed by the page. First we try
+	 * reattaching it to the same container. If it is deleted again we move it up
+	 * the tree where it is less likely to be deleted.
+	 */
 	reattach() {
-		// If a hint is deleted by the page we try reattaching it to same container.
-		// If it is deleted again we move it up the tree where it is less likely to
-		// be deleted.
+		this.toBeReattached = false;
+
 		if (!this.wasReattached) {
 			this.container.append(this.shadowHost);
 			this.wasReattached = true;
+			return;
+		}
+
+		// It is unlikely that the hint is removed from the body but if that happens
+		// we can't keep reattaching it.
+		if (this.container === document.body) {
+			this.release();
 			return;
 		}
 
@@ -671,8 +692,13 @@ export class HintClass implements Hint {
 				containerMutationObserver.observe(this.container, {
 					childList: true,
 				});
+
+				return;
 			}
 		}
+
+		// The hint couldn't be reattached so we release it.
+		this.release();
 	}
 
 	applyDefaultStyle() {
