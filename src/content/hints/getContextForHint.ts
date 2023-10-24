@@ -191,7 +191,6 @@ export function getAptContainer(origin: Element) {
 		current = current.parentElement;
 	}
 
-	// It shouldn't get here
 	return document.body;
 }
 

@@ -17,6 +17,7 @@ export interface Hint {
 	elementToPositionHint: Element | SVGElement | Text;
 	zIndex?: number;
 	positioned: boolean;
+	toBeReattached: boolean;
 	wasReattached: boolean;
 	color: Color;
 	backgroundColor: Color;
