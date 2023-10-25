@@ -42,7 +42,9 @@ async function handleDirectClickElementRequest(request: RequestFromTalon) {
 
 	if (!(await retrieve("directClickWithNoFocusedDocument"))) {
 		const [focusedDocument] = await promiseWrap(
-			sendRequestToContent({ type: "checkIfDocumentHasFocus" })
+			sendRequestToContent({
+				type: "checkIfDocumentHasFocus",
+			}) as Promise<boolean>
 		);
 
 		if (!focusedDocument) {

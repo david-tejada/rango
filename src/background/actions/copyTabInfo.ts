@@ -20,9 +20,11 @@ export async function copyLocationProperty(
 }
 
 export async function copyMarkdownUrl(tab: Tabs.Tab) {
-	let [title] = (await promiseWrap(
-		sendRequestToContent({ type: "getTitleBeforeDecoration" })
-	)) as [string | undefined, any];
+	let [title] = await promiseWrap(
+		sendRequestToContent({
+			type: "getTitleBeforeDecoration",
+		}) as Promise<string>
+	);
 
 	title ??= tab.title;
 
