@@ -9,19 +9,25 @@ import { notify } from "./notify";
 import { isSafari } from "./isSafari";
 
 async function getClipboardManifestV3(): Promise<string | undefined> {
-	const hasDocument = await chrome.offscreen.hasDocument();
-	if (hasDocument) await chrome.offscreen.closeDocument();
+	try {
+		const hasDocument = await chrome.offscreen.hasDocument();
+		if (!hasDocument) {
+			await chrome.offscreen.createDocument({
+				url: urls.offscreenDocument.href,
+				reasons: [chrome.offscreen.Reason.CLIPBOARD],
+				justification: "Read the request from Talon from the clipboard",
+			});
+		}
 
-	await chrome.offscreen.createDocument({
-		url: urls.offscreenDocument.href,
-		reasons: [chrome.offscreen.Reason.CLIPBOARD],
-		justification: "Read the request from Talon from the clipboard",
-	});
+		return await chrome.runtime.sendMessage({
+			type: "read-clipboard",
+			target: "offscreen-doc",
+		});
+	} catch (error: unknown) {
+		console.error(error);
+	}
 
-	return chrome.runtime.sendMessage({
-		type: "read-clipboard",
-		target: "offscreen-doc",
-	});
+	return undefined;
 }
 
 async function copyToClipboardManifestV3(text: string) {
