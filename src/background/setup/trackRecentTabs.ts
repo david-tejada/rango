@@ -21,7 +21,7 @@ async function updateRecentTab(
 	await mutex.runExclusive(async () => {
 		const tabsByRecency = await retrieve("tabsByRecency");
 
-		const tabsIds = tabsByRecency[windowId] ?? [];
+		const tabsIds = tabsByRecency.get(windowId) ?? [];
 		const index = tabsIds.indexOf(tabId);
 
 		if (index !== -1) {
@@ -32,7 +32,7 @@ async function updateRecentTab(
 			tabsIds.push(tabId);
 		}
 
-		tabsByRecency[windowId] = tabsIds;
+		tabsByRecency.set(windowId, tabsIds);
 
 		await store("tabsByRecency", tabsByRecency);
 	});
