@@ -64,18 +64,6 @@ export async function initBackgroundScript() {
 			const switchedToSyncStorage = await retrieve("switchedToSyncStorage");
 			if (!switchedToSyncStorage) await switchToSyncStorage();
 
-			// This setting was converted from a simple object to a Map. If it's still
-			// an object we need to delete it so it is initialized in the call to
-			// storeIfUndefined.
-			const tabsByRecency = await retrieve("tabsByRecency");
-			if (!(tabsByRecency instanceof Map)) {
-				await browser.storage.local.remove("tabsByRecency");
-			}
-
-			// This is not a setting so it won't be initialized in the next for loop
-			// since it's not included in defaultSettings.
-			await storeIfUndefined("tabsByRecency", new Map());
-
 			let key: keyof typeof defaultSettings;
 			const storing: Array<Promise<void>> = [];
 
@@ -86,6 +74,9 @@ export async function initBackgroundScript() {
 			}
 
 			await Promise.all(storing);
+
+			// Initializing storage items that are not settings.
+			await storeIfUndefined("tabsByRecency", new Map());
 
 			if (reason === "install" && process.env["NODE_ENV"] === "production") {
 				await browser.tabs.create({ url: urls.onboarding.href });

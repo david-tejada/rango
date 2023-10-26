@@ -24,7 +24,7 @@ export const zTabMarkers = z.object({
 
 export type TabMarkers = z.infer<typeof zTabMarkers>;
 
-const zStorageSchema = z.object({
+export const zStorageSchema = z.object({
 	// Hint style
 	hintUppercaseLetters: z.boolean(),
 	hintFontFamily: z.string(),
