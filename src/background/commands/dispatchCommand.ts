@@ -2,6 +2,7 @@ import { ResponseToTalon, TalonAction } from "../../typings/RequestFromTalon";
 import { RangoAction } from "../../typings/RangoAction";
 import { sendRequestToContent } from "../messaging/sendRequestToContent";
 import { constructTalonResponse } from "../utils/constructTalonResponse";
+import { promiseWrap } from "../../lib/promiseWrap";
 import { runBackgroundCommand } from "./runBackgroundCommand";
 
 const backgroundCommands = new Set([
@@ -68,9 +69,11 @@ export async function dispatchCommand(
 		);
 
 		if (focusActionIndex !== -1) {
-			const documentHasFocus = await sendRequestToContent({
-				type: "checkIfDocumentHasFocus",
-			});
+			const [documentHasFocus] = await promiseWrap(
+				sendRequestToContent({
+					type: "checkIfDocumentHasFocus",
+				}) as Promise<boolean>
+			);
 
 			if (documentHasFocus) {
 				result.splice(focusActionIndex, 1);

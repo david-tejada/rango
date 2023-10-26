@@ -67,7 +67,7 @@ export interface StorageSchema {
 	directClickWhenEditing: boolean;
 
 	// Other data
-	tabsByRecency: Record<number, number[]>;
+	tabsByRecency: Map<number, number[]>;
 	hintsStacks: Map<number, HintsStack>;
 	tabMarkers: TabMarkers;
 

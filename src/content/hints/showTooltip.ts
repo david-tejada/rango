@@ -42,25 +42,39 @@ export function showTooltip(
 		allowHTML: true,
 	});
 
-	instance.show();
-	window.addEventListener(
-		"scroll",
-		(event) => {
-			if (
-				(event.target instanceof Element || event.target instanceof Document) &&
-				event.target.contains(wrapper.element)
-			) {
-				instance.hide();
-				wrapper.hint?.clearFlash();
-			}
-		},
-		true
-	);
+	function handleScroll(event: Event) {
+		if (
+			(event.target instanceof Element || event.target instanceof Document) &&
+			event.target.contains(wrapper.element)
+		) {
+			clearTooltip();
+		}
+	}
 
-	wrapper.hint.flash(duration);
+	function clearTooltip() {
+		// We make sure that the tooltip is only cleared once.
+		window.removeEventListener("scroll", handleScroll);
+		clearTimeout(timeout);
 
-	setTimeout(() => {
 		instance.hide();
 		wrapper.hint?.clearFlash();
+
+		// We remove the element after leaving sometime for the fade out to finish.
+		setTimeout(() => {
+			tooltipAnchor.remove();
+		}, 500);
+	}
+
+	instance.show();
+	wrapper.hint.flash(duration);
+
+	// Because we need to position the tooltip absolutely to avoid it being
+	// clipped, we need to remove it once the user starts scrolling.
+	window.addEventListener("scroll", handleScroll, {
+		once: true,
+	});
+
+	const timeout = setTimeout(() => {
+		clearTooltip();
 	}, duration);
 }

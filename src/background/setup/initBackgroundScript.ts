@@ -64,6 +64,18 @@ export async function initBackgroundScript() {
 			const switchedToSyncStorage = await retrieve("switchedToSyncStorage");
 			if (!switchedToSyncStorage) await switchToSyncStorage();
 
+			// This setting was converted from a simple object to a Map. If it's still
+			// an object we need to delete it so it is initialized in the call to
+			// storeIfUndefined.
+			const tabsByRecency = await retrieve("tabsByRecency");
+			if (!(tabsByRecency instanceof Map)) {
+				await browser.storage.local.remove("tabsByRecency");
+			}
+
+			// This is not a setting so it won't be initialized in the next for loop
+			// since it's not included in defaultSettings.
+			await storeIfUndefined("tabsByRecency", new Map());
+
 			let key: keyof typeof defaultSettings;
 			const storing: Array<Promise<void>> = [];
 
@@ -101,9 +113,6 @@ export async function initBackgroundScript() {
 				}
 			}
 
-			await storeIfUndefined("hintsToggleTabs", new Map());
-			await storeIfUndefined("tabsByRecency", {});
-
 			// If this is an update the content scrips either reload (Firefox) or stop
 			// completely (Chrome), either way we need to reset the hints stacks
 			await resetHintsStacks();
@@ -126,7 +135,7 @@ export async function initBackgroundScript() {
 		}
 
 		await store("hintsToggleTabs", new Map());
-		await store("tabsByRecency", {});
+		await store("tabsByRecency", new Map());
 		await trackRecentTabs();
 	});
 
@@ -134,7 +143,7 @@ export async function initBackgroundScript() {
 	// restarted. First we need to make sure tabsByRecency has already been
 	// initialized either onInstalled or onStartup.
 	const tabsByRecency = await retrieve("tabsByRecency");
-	if (tabsByRecency) {
+	if (tabsByRecency instanceof Map) {
 		await trackRecentTabs();
 	}
 

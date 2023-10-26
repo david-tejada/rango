@@ -10,7 +10,7 @@ export async function shouldTryToFocusDocument(): Promise<boolean> {
 	const [focusedDocument] = await promiseWrap(
 		sendRequestToContent({
 			type: "checkIfDocumentHasFocus",
-		})
+		}) as Promise<boolean>
 	);
 
 	if (!focusedDocument && !triedToFocusDocument) {
