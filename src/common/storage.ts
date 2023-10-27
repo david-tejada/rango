@@ -70,65 +70,84 @@ export async function storageHas<T extends keyof StorageSchema>(
 	sync?: boolean
 ) {
 	try {
-		const retrieved = await retrieve(key, sync);
-		return zStorageSchema.shape[key].safeParse(retrieved).success;
-	} catch {
-		return false;
+		await retrieve(key, sync);
+		return true;
+	} catch (error: unknown) {
+		if (error instanceof ReferenceError) return false;
+		throw error;
 	}
 }
 
 /**
- * Store an item if it hasn't been stored yet or if it was stored with the wrong
- * format.
+ * Store an item if it hasn't been stored yet.
  */
 export async function storeIfUndefined<T extends keyof StorageSchema>(
 	key: T,
 	value: StorageSchema[T],
 	sync?: boolean
 ) {
-	const stored = await storageHas(key, sync);
-	if (!stored) await store(key, value, sync);
+	try {
+		await retrieve(key, sync);
+	} catch (error: unknown) {
+		if (error instanceof ReferenceError) return store(key, value, sync);
+		throw error;
+	}
 }
 
 /**
- * Retrieve an item from local or sync storage. It will throw an error if the
- * item is not stored.
+ * Transform a storage item if the type has changed.
+ */
+function transformStorageItem<T extends keyof StorageSchema>(
+	key: T,
+	value: unknown
+): StorageSchema[T] {
+	switch (key) {
+		case "tabsByRecency":
+			return new Map() as StorageSchema[T];
+		case "customSelectors":
+			return new Map<string, CustomSelectorsForPattern>(
+				Object.entries(value as Record<string, CustomSelectorsForPattern>)
+			) as StorageSchema[T];
+		default:
+			return value as StorageSchema[T];
+	}
+}
+
+/**
+ * Retrieve an item from local or sync storage. It will throw a ReferenceError
+ * if the item is not stored. It will also take care of transforming any value
+ * that was stored with a different format as the current one.
  */
 export async function retrieve<T extends keyof StorageSchema>(
 	key: T,
 	sync?: boolean
 ): Promise<StorageSchema[T]> {
-	const retrieved =
+	const record =
 		sync === false || (sync === undefined && useLocalStorage.has(key))
 			? await browser.storage.local.get(key)
 			: await browser.storage.sync.get(key);
 
 	// The value jsonString should be either a string (we store all the values as
 	// strings) or undefined if the value hasn't been stored yet.
-	const [jsonString] = Object.values(retrieved) as [unknown];
-	const parsedString = z.string().safeParse(jsonString);
+	const [jsonString] = Object.values(record) as [unknown];
+	const jsonParseResult = z.string().safeParse(jsonString);
 
-	if (!parsedString.success) {
-		throw new Error("Trying to retrieve an undefined storage item");
+	if (!jsonParseResult.success) {
+		throw new ReferenceError("Trying to retrieve an undefined storage item.");
 	}
 
-	const parsedValue = JSON.parse(
-		parsedString.data,
-		reviver
-	) as StorageSchema[T];
+	const retrievedObject = JSON.parse(jsonParseResult.data, reviver) as unknown;
+	const objectParseResult =
+		zStorageSchema.shape[key].safeParse(retrievedObject);
 
-	// Handle customSelectors type conversion from an object to a Map. This is
-	// only necessary temporarily in order not to lose user's customizations.
-	// Introduced in v0.5.0.
-	if (key === "customSelectors" && !(parsedValue instanceof Map)) {
-		const customSelectorsMap = new Map<string, CustomSelectorsForPattern>(
-			Object.entries(parsedValue)
-		);
+	const parsedValue = objectParseResult.success
+		? (objectParseResult.data as StorageSchema[T])
+		: (zStorageSchema.shape[key].parse(
+				transformStorageItem(key, retrievedObject)
+		  ) as StorageSchema[T]);
 
-		await store<"customSelectors">(key, customSelectorsMap, sync);
-
-		return customSelectorsMap as StorageSchema[T];
-	}
+	// We store the item if it was transformed.
+	if (!objectParseResult.success) await store(key, parsedValue, sync);
 
 	return parsedValue;
 }
