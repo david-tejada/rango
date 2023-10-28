@@ -18,7 +18,7 @@ export type HintsStack = z.infer<typeof zHintsStack>;
 
 const zTabMarkers = z.object({
 	free: z.array(z.string()),
-	tabIdsToMarkers: z.(z.number(), z.string()),
+	tabIdsToMarkers: z.map(z.number(), z.string()),
 	markersToTabIds: z.map(z.string(), z.number()),
 });
 
