@@ -133,10 +133,7 @@ export async function initBackgroundScript() {
 	// This is to track recent tabs when the background script/service worker is
 	// restarted. First we need to make sure tabsByRecency has already been
 	// initialized either onInstalled or onStartup.
-	const tabsByRecency = await retrieve("tabsByRecency");
-	if (tabsByRecency instanceof Map) {
-		await trackRecentTabs();
-	}
+	if (await storageHas("tabsByRecency")) await trackRecentTabs();
 
 	watchNavigation();
 }
