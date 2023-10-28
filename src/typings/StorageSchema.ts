@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-export const zCustomSelectorsForPattern = z.object({
+const zCustomSelectorsForPattern = z.object({
 	include: z.array(z.string()),
 	exclude: z.array(z.string()),
 });
@@ -9,16 +9,16 @@ export type CustomSelectorsForPattern = z.infer<
 	typeof zCustomSelectorsForPattern
 >;
 
-export const zHintsStack = z.object({
+const zHintsStack = z.object({
 	free: z.array(z.string()),
 	assigned: z.map(z.string(), z.number()),
 });
 
 export type HintsStack = z.infer<typeof zHintsStack>;
 
-export const zTabMarkers = z.object({
+const zTabMarkers = z.object({
 	free: z.array(z.string()),
-	tabIdsToMarkers: z.map(z.number(), z.string()),
+	tabIdsToMarkers: z.(z.number(), z.string()),
 	markersToTabIds: z.map(z.string(), z.number()),
 });
 
