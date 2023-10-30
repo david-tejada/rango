@@ -82,7 +82,7 @@ async function parseStorageItem(key: keyof StorageSchema) {
 		// Handle the storage item being wrongly altered externally. For example,
 		// the user storing the item from the devtools directly.
 		console.warn(
-			`Malformed JSON in storage item "${key}". Resetting to default.`
+			`Invalid JSON in storage item "${key}". Resetting to default.`
 		);
 		return store(key, defaultStorage[key]);
 	}
