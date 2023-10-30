@@ -1,14 +1,17 @@
 /* eslint-disable no-await-in-loop */
+import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
 import {
 	CustomSelectorsForPattern,
 	StorageSchema,
+	zStorageSchema,
 } from "../typings/StorageSchema";
+import { defaultStorage } from "./defaultStorage";
 import {
+	Settings,
 	defaultSettings,
 	isSetting,
 	isValidSetting,
-	Settings,
 } from "./settings";
 
 const useLocalStorage = new Set<keyof StorageSchema>([
@@ -43,77 +46,102 @@ function reviver(_key: string, value: any) {
 	return value as unknown;
 }
 
+/**
+ * Store the value in local storage. If it is a setting it checks its validity.
+ * Returns the value stored or the previous value if it was an invalid setting.
+ */
 export async function store<T extends keyof StorageSchema>(
 	key: T,
-	value: StorageSchema[T],
-	sync?: boolean
-): Promise<void> {
-	if (isSetting(key) && !isValidSetting(key, value)) return;
+	value: StorageSchema[T]
+): Promise<StorageSchema[T]> {
+	if (isSetting(key) && !isValidSetting(key, value)) return retrieve(key);
 
 	const stringified = JSON.stringify(value, replacer);
 
-	await (sync === false || (sync === undefined && useLocalStorage.has(key))
+	await (useLocalStorage.has(key)
 		? browser.storage.local.set({ [key]: stringified })
 		: browser.storage.sync.set({ [key]: stringified }));
+
+	return value;
 }
 
-export async function storageHas<T extends keyof StorageSchema>(
-	key: T,
-	sync?: boolean
-) {
-	const retrieved =
-		sync === false || (sync === undefined && useLocalStorage.has(key))
-			? await browser.storage.local.get(key)
-			: await browser.storage.sync.get(key);
-
-	const value = retrieved[key] as string | undefined;
-
-	return value !== undefined;
-}
-
-export async function storeIfUndefined<T extends keyof StorageSchema>(
-	key: T,
-	value: StorageSchema[T],
-	sync?: boolean
-): Promise<void> {
-	const stored = await storageHas(key, sync);
-
-	if (!stored) {
-		await store(key, value, sync);
-	}
-}
-
-export async function retrieve<T extends keyof StorageSchema>(
-	key: T,
-	sync?: boolean
-): Promise<StorageSchema[T]> {
-	const retrieved =
-		sync === false || (sync === undefined && useLocalStorage.has(key))
-			? await browser.storage.local.get(key)
-			: await browser.storage.sync.get(key);
-
-	const [jsonString] = Object.values(retrieved) as [string];
+async function parseStorageItem(key: keyof StorageSchema) {
+	const record = useLocalStorage.has(key)
+		? await browser.storage.local.get(key)
+		: await browser.storage.sync.get(key);
 
 	try {
-		const parsedValue = JSON.parse(jsonString, reviver) as StorageSchema[T];
+		// The value jsonString should be either a string (we store all the values as
+		// strings) or undefined if the value hasn't yet been stored.
+		const [jsonString] = Object.values(record) as [string | undefined];
 
-		// Handle customSelectors type conversion from an object to a Map. This is
-		// only necessary temporarily in order not to lose user's customizations.
-		// Introduced in v0.5.0.
-		if (key === "customSelectors" && !(parsedValue instanceof Map)) {
-			const customSelectorsMap = new Map<string, CustomSelectorsForPattern>(
-				Object.entries(parsedValue)
-			);
+		if (jsonString === undefined) return undefined;
 
-			await store<"customSelectors">(key, customSelectorsMap, sync);
-
-			return customSelectorsMap as StorageSchema[T];
-		}
-
-		return parsedValue;
+		return JSON.parse(jsonString, reviver) as unknown;
 	} catch {
-		return jsonString as StorageSchema[T];
+		// Handle the storage item being wrongly altered externally. For example,
+		// the user storing the item from the devtools directly.
+		console.warn(
+			`Invalid JSON in storage item "${key}". Resetting to default.`
+		);
+		return store(key, defaultStorage[key]);
 	}
+}
+
+/**
+ * Handle initialization, conversion or resetting to default of storage item.
+ * Returns the stored item.
+ */
+async function initStorageItem<T extends keyof StorageSchema>(key: T) {
+	const item = await parseStorageItem(key);
+
+	// Handle customSelectors type conversion from an object to a Map. This is
+	// only necessary temporarily in order not to lose user's customizations.
+	// Introduced in v0.5.0.
+	if (item && key === "customSelectors") {
+		try {
+			const normalized = new Map<string, CustomSelectorsForPattern>(
+				Object.entries(item as Record<string, CustomSelectorsForPattern>)
+			) as StorageSchema[T];
+
+			const parsed = zStorageSchema.shape[key].parse(
+				normalized
+			) as StorageSchema[T];
+			return await store(key, parsed);
+		} catch {
+			return store(key, defaultStorage[key]);
+		}
+	}
+
+	return store(key, defaultStorage[key]);
+}
+
+const mutex = new Mutex();
+
+/**
+ * Retrieve an item from storage. It will take care of initializing, resetting
+ * or converting the value if the type changed.
+ */
+export async function retrieve<T extends keyof StorageSchema>(
+	key: T
+): Promise<StorageSchema[T]> {
+	const item = await parseStorageItem(key);
+
+	const parseResult = zStorageSchema.shape[key].safeParse(item);
+
+	if (!parseResult.success) {
+		return mutex.runExclusive(async () => {
+			// We parse again because another call to retrieve could have changed it.
+			const itemNow = await parseStorageItem(key);
+			try {
+				return zStorageSchema.shape[key].parse(itemNow) as StorageSchema[T];
+			} catch {
+				return initStorageItem(key);
+			}
+		});
+	}
+
+	return parseResult.data as StorageSchema[T];
 }
 
 export async function retrieveSettings() {

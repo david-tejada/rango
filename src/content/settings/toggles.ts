@@ -1,14 +1,7 @@
-import { storeIfUndefined } from "../../common/storage";
 import { getTabId } from "../setup/contentScriptContext";
 import { getCachedSettingAll } from "./cacheSettings";
 
 let navigationToggle: boolean | undefined;
-
-(async () => {
-	// This is initialized when the extension first runs. But it is undefined when
-	// running tests. This way we also make extra sure.
-	await storeIfUndefined("hintsToggleGlobal", true);
-})();
 
 export function setNavigationToggle(enable: boolean | undefined) {
 	navigationToggle = enable;

@@ -123,7 +123,9 @@
 			"no-use-extend-native/no-use-extend-native": "off",
 			"unicorn/no-array-callback-reference": "off",
 			"unicorn/prefer-node-protocol": "off",
-			"@typescript-eslint/ban-types": "off"
+			"@typescript-eslint/ban-types": "off",
+			"no-redeclare": "off",
+			"@typescript-eslint/no-redeclare": "off"
 		}
 	},
 	"prettier": {
@@ -160,7 +162,8 @@
 		"requestidlecallback-polyfill": "^1.0.2",
 		"specificity": "^0.4.1",
 		"tippy.js": "^6.3.7",
-		"webextension-polyfill": "^0.8.0"
+		"webextension-polyfill": "^0.8.0",
+		"zod": "^3.22.4"
 	},
 	"devDependencies": {
 		"@nut-tree/nut-js": "^3.0.0",
