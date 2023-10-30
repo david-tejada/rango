@@ -70,7 +70,6 @@ export const zStorageSchema = z.object({
 	customSelectors: z.map(z.string(), zCustomSelectorsForPattern),
 	customScrollPositions: z.map(z.string(), z.map(z.string(), z.number())),
 	references: z.map(z.string(), z.map(z.string(), z.string())),
-	switchedToSyncStorage: z.boolean(),
 	showWhatsNewPageOnUpdate: z.boolean(),
 	newTabPosition: z.enum(["relatedAfterCurrent", "afterCurrent", "atEnd"]),
 	hasSeenSettingsPage: z.boolean(),
@@ -81,14 +80,6 @@ export const zStorageSchema = z.object({
 	tabsByRecency: z.map(z.number(), z.array(z.number())),
 	hintsStacks: z.map(z.number(), zHintsStack),
 	tabMarkers: zTabMarkers,
-
-	// Legacy
-	hintsToggle: z.object({
-		global: z.boolean(),
-		tabs: z.array(z.tuple([z.number(), z.boolean()])),
-		hosts: z.array(z.tuple([z.string(), z.boolean()])),
-		paths: z.array(z.tuple([z.string(), z.boolean()])),
-	}),
 });
 
 export type StorageSchema = z.infer<typeof zStorageSchema>;

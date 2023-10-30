@@ -5,7 +5,8 @@
 		"esModuleInterop": true,
 		"lib": ["es2021", "ES2021.String", "DOM", "DOM.Iterable"],
 		"strictPropertyInitialization": false,
-		"jsx": "react-jsx"
+		"jsx": "react-jsx",
+		"noErrorTruncation": true
 	},
 	"include": ["src/**/*", "tests/**/*"]
 }

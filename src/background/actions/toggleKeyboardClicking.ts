@@ -12,8 +12,14 @@ browser.storage.onChanged.addListener(async (changes) => {
 		await setBrowserActionIcon();
 
 		const keyboardClicking = await retrieve("keyboardClicking");
-		await browser.contextMenus.update("keyboard-clicking", {
-			checked: keyboardClicking,
-		});
+
+		try {
+			await browser.contextMenus.update("keyboard-clicking", {
+				checked: keyboardClicking,
+			});
+		} catch {
+			// We ignore the error that could occur when initializing keyboardClicking
+			// if the menu hasn't yet been created.
+		}
 	}
 });
