@@ -154,9 +154,17 @@ const scrollIntersectionObservers: Map<
 > = new Map();
 
 async function intersectionCallback(entries: IntersectionObserverEntry[]) {
-	const amountIntersecting = entries.filter(
-		(entry) => entry.isIntersecting
-	).length;
+	const entriesIntersecting = entries.filter((entry) => entry.isIntersecting);
+	const amountIntersecting = entriesIntersecting.length;
+
+	const entriesNotIntersecting = entries.filter(
+		(entry) => !entry.isIntersecting
+	);
+
+	// We process first the entries not intersecting so the hints can be released.
+	for (const entry of entriesNotIntersecting) {
+		getOrCreateWrapper(entry.target).intersect(entry.isIntersecting);
+	}
 
 	const amountNotIntersectingViewport = entries.filter(
 		(entry) =>
@@ -171,7 +179,7 @@ async function intersectionCallback(entries: IntersectionObserverEntry[]) {
 		);
 	}
 
-	for (const entry of entries) {
+	for (const entry of entriesIntersecting) {
 		getOrCreateWrapper(entry.target).intersect(entry.isIntersecting);
 	}
 }
