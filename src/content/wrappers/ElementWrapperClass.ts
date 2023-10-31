@@ -5,6 +5,7 @@ import { HintClass } from "../hints/HintClass";
 import { cacheHints } from "../hints/hintsCache";
 import { cacheLayout, clearLayoutCache } from "../hints/layoutCache";
 import { matchesCustomExclude, matchesCustomInclude } from "../hints/selectors";
+import { getCachedSetting } from "../settings/cacheSettings";
 import { BoundedIntersectionObserver } from "../utils/BoundedIntersectionObserver";
 import { deepGetElements } from "../utils/deepGetElements";
 import {
@@ -153,9 +154,17 @@ const scrollIntersectionObservers: Map<
 > = new Map();
 
 async function intersectionCallback(entries: IntersectionObserverEntry[]) {
-	const amountIntersecting = entries.filter(
-		(entry) => entry.isIntersecting
-	).length;
+	const entriesIntersecting = entries.filter((entry) => entry.isIntersecting);
+	const amountIntersecting = entriesIntersecting.length;
+
+	const entriesNotIntersecting = entries.filter(
+		(entry) => !entry.isIntersecting
+	);
+
+	// We process first the entries not intersecting so the hints can be released.
+	for (const entry of entriesNotIntersecting) {
+		getOrCreateWrapper(entry.target).intersect(entry.isIntersecting);
+	}
 
 	const amountNotIntersectingViewport = entries.filter(
 		(entry) =>
@@ -170,7 +179,7 @@ async function intersectionCallback(entries: IntersectionObserverEntry[]) {
 		);
 	}
 
-	for (const entry of entries) {
+	for (const entry of entriesIntersecting) {
 		getOrCreateWrapper(entry.target).intersect(entry.isIntersecting);
 	}
 }
@@ -378,7 +387,7 @@ class ElementWrapperClass implements ElementWrapper {
 
 		const options: IntersectionObserverInit = {
 			root,
-			rootMargin: "1000px",
+			rootMargin: `${getCachedSetting("viewportMargin")}px`,
 			threshold: 0,
 		};
 

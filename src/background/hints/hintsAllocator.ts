@@ -2,7 +2,7 @@ import browser from "webextension-polyfill";
 import { Mutex } from "async-mutex";
 import { HintsStack } from "../../typings/StorageSchema";
 import { retrieve, store } from "../../common/storage";
-import { allHints } from "../utils/allHints";
+import { letterHints, numberHints } from "../utils/allHints";
 import { navigationOccurred } from "./preloadTabs";
 
 async function getEmptyStack(): Promise<HintsStack> {
@@ -10,10 +10,13 @@ async function getEmptyStack(): Promise<HintsStack> {
 	// To make all hints reachable via keyboard clicking, we exclude single-letter
 	// hints when keyboard clicking is active.
 	const keyboardClicking = await retrieve("keyboardClicking");
+	const useNumberHints = await retrieve("useNumberHints");
 	const possibleHints =
-		includeSingleLetterHints && !keyboardClicking
-			? [...allHints]
-			: allHints.slice(0, -26);
+		useNumberHints && !keyboardClicking
+			? [...numberHints]
+			: includeSingleLetterHints && !keyboardClicking
+			? [...letterHints]
+			: letterHints.slice(0, -26);
 
 	return {
 		free: possibleHints,

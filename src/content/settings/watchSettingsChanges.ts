@@ -57,7 +57,7 @@ async function handleSettingsChanges(
 		return;
 	}
 
-	if ("includeSingleLetterHints" in changes) {
+	if ("includeSingleLetterHints" in changes || "useNumberHints" in changes) {
 		await refresh({ hintsCharacters: true });
 		return;
 	}

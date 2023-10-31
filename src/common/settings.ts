@@ -26,6 +26,8 @@ export const defaultSettings = {
 	toastTransition: "bounce",
 	toastDuration: 5000,
 	includeSingleLetterHints: true,
+	useNumberHints: false,
+	viewportMargin: 1000,
 	urlInTitle: true,
 	includeTabMarkers: true,
 	uppercaseTabMarkers: true,
@@ -77,6 +79,7 @@ const validators: SettingsValidators = {
 	hintBackgroundOpacity: (value: number | "") =>
 		value !== "" && isWithinRange(value, 0, 1),
 	hintMinimumContrastRatio: (value: number) => isWithinRange(value, 2.5, 21),
+	viewportMargin: (value: number) => isWithinRange(value, 0, 2000),
 };
 
 export function isSetting<T extends keyof StorageSchema>(key: T) {

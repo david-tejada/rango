@@ -2,7 +2,7 @@ import browser from "webextension-polyfill";
 import { Mutex } from "async-mutex";
 import { retrieve, store } from "../../common/storage";
 import { TabMarkers } from "../../typings/StorageSchema";
-import { allHints } from "../utils/allHints";
+import { letterHints } from "../utils/allHints";
 import { sendRequestToContent } from "../messaging/sendRequestToContent";
 
 const mutex = new Mutex();
@@ -11,11 +11,7 @@ async function withTabMarkers<T>(
 	callback: (tabMarkers: TabMarkers) => T
 ): Promise<T> {
 	return mutex.runExclusive(async () => {
-		const tabMarkers = (await retrieve("tabMarkers")) ?? {
-			free: [...allHints],
-			tabIdsToMarkers: new Map(),
-			markersToTabIds: new Map(),
-		};
+		const tabMarkers = await retrieve("tabMarkers");
 
 		const result = callback(tabMarkers);
 		await store("tabMarkers", tabMarkers);
@@ -77,7 +73,7 @@ browser.tabs.onReplaced.addListener(async (addedTabId, removedTabId) => {
 
 async function resetTabMarkers() {
 	await withTabMarkers((tabMarkers) => {
-		tabMarkers.free = [...allHints];
+		tabMarkers.free = [...letterHints];
 		tabMarkers.tabIdsToMarkers = new Map();
 		tabMarkers.markersToTabIds = new Map();
 

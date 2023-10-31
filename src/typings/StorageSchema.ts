@@ -39,6 +39,10 @@ export const zStorageSchema = z.object({
 
 	// Hint characters
 	includeSingleLetterHints: z.boolean(),
+	useNumberHints: z.boolean(),
+
+	// Hintable area
+	viewportMargin: z.number(),
 
 	// Scroll
 	scrollBehavior: z.enum(["auto", "smooth", "instant"]),

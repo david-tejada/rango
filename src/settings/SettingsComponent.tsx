@@ -193,9 +193,25 @@ export function SettingsComponent() {
 			<SettingsGroup label="Hints appearance">
 				<SettingRow>
 					<Toggle
+						label="Use numbers for hints"
+						isPressed={settings.useNumberHints}
+						isDisabled={settings.keyboardClicking}
+						onClick={() => {
+							handleChange("useNumberHints", !settings.useNumberHints);
+						}}
+					>
+						{settings.keyboardClicking && (
+							<p className="explanation">
+								This setting is disabled while keyboard clicking is enabled.
+							</p>
+						)}
+					</Toggle>
+				</SettingRow>
+				<SettingRow>
+					<Toggle
 						label="Include single letter hints"
 						isPressed={settings.includeSingleLetterHints}
-						isDisabled={settings.keyboardClicking}
+						isDisabled={settings.keyboardClicking || settings.useNumberHints}
 						onClick={() => {
 							handleChange(
 								"includeSingleLetterHints",
@@ -209,12 +225,18 @@ export function SettingsComponent() {
 								Hints must consist of two letters so all are keyboard reachable.
 							</p>
 						)}
+						{settings.useNumberHints && (
+							<p className="explanation">
+								This setting is disabled when using numbered hints.
+							</p>
+						)}
 					</Toggle>
 				</SettingRow>
 				<SettingRow>
 					<Toggle
 						label="Use uppercase letters"
 						isPressed={settings.hintUppercaseLetters}
+						isDisabled={settings.useNumberHints}
 						onClick={() => {
 							handleChange(
 								"hintUppercaseLetters",
@@ -222,6 +244,30 @@ export function SettingsComponent() {
 							);
 						}}
 					/>
+					{settings.useNumberHints && (
+						<p className="explanation">
+							This setting is disabled when using numbered hints.
+						</p>
+					)}
+				</SettingRow>
+				<SettingRow>
+					<NumberInput
+						label="Viewport margin (px)"
+						defaultValue={settings.viewportMargin}
+						min={0}
+						max={2000}
+						isValid={isValidSetting("viewportMargin", settings.viewportMargin)}
+						onChange={(value) => {
+							handleChange("viewportMargin", value);
+						}}
+						onBlur={handleBlur}
+					/>
+					<p className="explanation">
+						Determines the area outside of the viewport where hints will be
+						drawn. A large number provides a better experience when scrolling
+						while a small number will make it more likely to show high priority
+						hints (single letters or low numbers).
+					</p>
 				</SettingRow>
 				<SettingRow>
 					<TextInput
