@@ -5,6 +5,7 @@ import { HintClass } from "../hints/HintClass";
 import { cacheHints } from "../hints/hintsCache";
 import { cacheLayout, clearLayoutCache } from "../hints/layoutCache";
 import { matchesCustomExclude, matchesCustomInclude } from "../hints/selectors";
+import { getCachedSetting } from "../settings/cacheSettings";
 import { BoundedIntersectionObserver } from "../utils/BoundedIntersectionObserver";
 import { deepGetElements } from "../utils/deepGetElements";
 import {
@@ -378,7 +379,7 @@ class ElementWrapperClass implements ElementWrapper {
 
 		const options: IntersectionObserverInit = {
 			root,
-			rootMargin: "1000px",
+			rootMargin: `${getCachedSetting("viewportMargin")}px`,
 			threshold: 0,
 		};
 

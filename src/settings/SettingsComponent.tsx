@@ -251,6 +251,25 @@ export function SettingsComponent() {
 					)}
 				</SettingRow>
 				<SettingRow>
+					<NumberInput
+						label="Viewport margin (px)"
+						defaultValue={settings.viewportMargin}
+						min={0}
+						max={2000}
+						isValid={isValidSetting("viewportMargin", settings.viewportMargin)}
+						onChange={(value) => {
+							handleChange("viewportMargin", value);
+						}}
+						onBlur={handleBlur}
+					/>
+					<p className="explanation">
+						Determines the area outside of the viewport where hints will be
+						drawn. A large number provides a better experience when scrolling
+						while a small number will make it more likely to show high priority
+						hints (single letters or low numbers).
+					</p>
+				</SettingRow>
+				<SettingRow>
 					<TextInput
 						label="Font family"
 						defaultValue={settings.hintFontFamily}
