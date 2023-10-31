@@ -193,9 +193,25 @@ export function SettingsComponent() {
 			<SettingsGroup label="Hints appearance">
 				<SettingRow>
 					<Toggle
+						label="Use numbers for hints"
+						isPressed={settings.useNumberHints}
+						isDisabled={settings.keyboardClicking}
+						onClick={() => {
+							handleChange("useNumberHints", !settings.useNumberHints);
+						}}
+					>
+						{settings.keyboardClicking && (
+							<p className="explanation">
+								This setting is disabled while keyboard clicking is enabled.
+							</p>
+						)}
+					</Toggle>
+				</SettingRow>
+				<SettingRow>
+					<Toggle
 						label="Include single letter hints"
 						isPressed={settings.includeSingleLetterHints}
-						isDisabled={settings.keyboardClicking}
+						isDisabled={settings.keyboardClicking || settings.useNumberHints}
 						onClick={() => {
 							handleChange(
 								"includeSingleLetterHints",
@@ -209,12 +225,18 @@ export function SettingsComponent() {
 								Hints must consist of two letters so all are keyboard reachable.
 							</p>
 						)}
+						{settings.useNumberHints && (
+							<p className="explanation">
+								This setting is disabled when using numbered hints.
+							</p>
+						)}
 					</Toggle>
 				</SettingRow>
 				<SettingRow>
 					<Toggle
 						label="Use uppercase letters"
 						isPressed={settings.hintUppercaseLetters}
+						isDisabled={settings.useNumberHints}
 						onClick={() => {
 							handleChange(
 								"hintUppercaseLetters",
@@ -222,6 +244,11 @@ export function SettingsComponent() {
 							);
 						}}
 					/>
+					{settings.useNumberHints && (
+						<p className="explanation">
+							This setting is disabled when using numbered hints.
+						</p>
+					)}
 				</SettingRow>
 				<SettingRow>
 					<TextInput

@@ -26,6 +26,7 @@ export const defaultSettings = {
 	toastTransition: "bounce",
 	toastDuration: 5000,
 	includeSingleLetterHints: true,
+	useNumberHints: false,
 	urlInTitle: true,
 	includeTabMarkers: true,
 	uppercaseTabMarkers: true,
