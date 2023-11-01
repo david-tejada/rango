@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { retrieve, store } from "../../common/storage";
+import { initStorage, retrieve, store } from "../../common/storage";
 import { urls } from "../../common/urls";
 import { watchNavigation } from "../hints/watchNavigation";
 import { createContextMenus } from "../misc/createContextMenus";
@@ -21,6 +21,11 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 
 	if (reason === "install" && process.env["NODE_ENV"] === "production") {
 		await browser.tabs.create({ url: urls.onboarding.href });
+	}
+
+	// This is not necessary in production. It's only here to prevent flaky tests.
+	if (reason === "install" && process.env["NODE_ENV"] !== "production") {
+		await initStorage();
 	}
 
 	if (

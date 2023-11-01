@@ -156,3 +156,17 @@ export async function retrieveSettings() {
 
 	return settings as Settings;
 }
+
+/**
+ * Function to initialize storage items. It retrieves every item what forces to
+ * initialize them if they weren't already set.
+ */
+export async function initStorage() {
+	let key: keyof typeof defaultStorage;
+
+	for (key in defaultStorage) {
+		if (Object.prototype.hasOwnProperty.call(defaultStorage, key)) {
+			await retrieve(key);
+		}
+	}
+}
