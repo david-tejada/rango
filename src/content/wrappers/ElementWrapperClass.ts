@@ -449,7 +449,12 @@ class ElementWrapperClass implements ElementWrapper {
 			if (
 				(this.element.getAttribute("target") === "_blank" ||
 					isWithinContentEditable) &&
-				this.element.getAttribute("href")
+				this.element.getAttribute("href") &&
+				// Issue #213
+				!(
+					window.location.host === "discord.com" &&
+					this.element.matches(".link__95dc0")
+				)
 			) {
 				// In Firefox if we click a link with target="_blank" we get a popup
 				// message saying "Firefox prevented this site from opening a popup". In
