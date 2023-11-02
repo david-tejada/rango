@@ -18,7 +18,8 @@
 		"notifications",
 		"webNavigation",
 		"offscreen",
-		"contextMenus"
+		"contextMenus",
+		"bookmarks"
 	],
 	"content_scripts": [
 		{

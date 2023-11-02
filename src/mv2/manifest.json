@@ -22,7 +22,8 @@
 		"clipboardWrite",
 		"notifications",
 		"webNavigation",
-		"contextMenus"
+		"contextMenus",
+		"bookmarks"
 	],
 	"content_scripts": [
 		{
