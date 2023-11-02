@@ -285,6 +285,11 @@ export class HintClass implements Hint {
 		shadowHostMutationObserver.observe(this.shadowHost, { attributes: true });
 		const shadow = this.shadowHost.attachShadow({ mode: "open" });
 
+		// Don't display the hints when printing.
+		const style = document.createElement("style");
+		style.textContent = "@media print { .outer { visibility: hidden; } }";
+		shadow.append(style);
+
 		this.outer = document.createElement("div");
 		this.outer.className = "outer";
 		// We set the style properties inline because using stylesheets brought some
