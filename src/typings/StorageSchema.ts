@@ -40,6 +40,7 @@ export const zStorageSchema = z.object({
 	// Hint characters
 	includeSingleLetterHints: z.boolean(),
 	useNumberHints: z.boolean(),
+	hintsToExclude: z.string(),
 
 	// Hintable area
 	viewportMargin: z.number(),

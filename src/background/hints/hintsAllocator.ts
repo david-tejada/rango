@@ -18,8 +18,18 @@ async function getEmptyStack(): Promise<HintsStack> {
 			? [...letterHints]
 			: letterHints.slice(0, -26);
 
+	const hintsToExclude = await retrieve("hintsToExclude");
+	const filteredHints = possibleHints.filter(
+		(hint) =>
+			!hintsToExclude
+				.split(/[, ]/)
+				.filter((string) => string)
+				.map((string) => string.trim())
+				.includes(hint)
+	);
+
 	return {
-		free: possibleHints,
+		free: filteredHints,
 		assigned: new Map(),
 	};
 }

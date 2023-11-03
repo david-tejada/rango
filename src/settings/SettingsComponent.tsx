@@ -192,6 +192,16 @@ export function SettingsComponent() {
 
 			<SettingsGroup label="Hints appearance">
 				<SettingRow>
+					<TextInput
+						label="Hints to exclude"
+						defaultValue={settings.hintsToExclude}
+						onChange={(value) => {
+							handleChange("hintsToExclude", value);
+						}}
+						onBlur={handleBlur}
+					/>
+				</SettingRow>
+				<SettingRow>
 					<Toggle
 						label="Use numbers for hints"
 						isPressed={settings.useNumberHints}
