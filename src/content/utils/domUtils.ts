@@ -1,5 +1,5 @@
 export const editableElementSelector =
-	"input:not(:is([type='button'], [type='checkbox'], [type='color'], [type='file'], [type='hidden'], [type='image'], [type='radio'], [type='reset'], [type='submit'])), textarea, [contenteditable=''], [contenteditable='true']";
+	"input:not(:is([type='button'], [type='checkbox'], [type='color'], [type='file'], [type='hidden'], [type='image'], [type='radio'], [type='range'], [type='reset'], [type='submit'])), textarea, [contenteditable=''], [contenteditable='true']";
 
 export function elementIsEditable(element: Element | null) {
 	if (!element) return false;
@@ -22,4 +22,19 @@ export function getClosestHtmlElement(node: Node) {
 	}
 
 	return current;
+}
+
+/**
+ * Returns the active element for the document. If the active element is a
+ * shadow host it goes into the shadow root, recursively if necessary, to
+ * retrieve the actual active element.
+ */
+export function getActiveElement() {
+	let activeElement = document.activeElement;
+
+	while (activeElement?.shadowRoot) {
+		activeElement = activeElement.shadowRoot.activeElement;
+	}
+
+	return activeElement;
 }
