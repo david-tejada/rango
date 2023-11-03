@@ -27,6 +27,7 @@ export const defaultSettings = {
 	toastDuration: 5000,
 	includeSingleLetterHints: true,
 	useNumberHints: false,
+	hintsToExclude: "",
 	viewportMargin: 1000,
 	urlInTitle: true,
 	includeTabMarkers: true,

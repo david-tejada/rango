@@ -192,6 +192,16 @@ export function SettingsComponent() {
 
 			<SettingsGroup label="Hints appearance">
 				<SettingRow>
+					<TextInput
+						label="Hints to exclude"
+						defaultValue={settings.hintsToExclude}
+						onChange={(value) => {
+							handleChange("hintsToExclude", value);
+						}}
+						onBlur={handleBlur}
+					/>
+				</SettingRow>
+				<SettingRow>
 					<Toggle
 						label="Use numbers for hints"
 						isPressed={settings.useNumberHints}
@@ -225,7 +235,7 @@ export function SettingsComponent() {
 								Hints must consist of two letters so all are keyboard reachable.
 							</p>
 						)}
-						{settings.useNumberHints && (
+						{settings.useNumberHints && !settings.keyboardClicking && (
 							<p className="explanation">
 								This setting is disabled when using numbered hints.
 							</p>
@@ -236,7 +246,7 @@ export function SettingsComponent() {
 					<Toggle
 						label="Use uppercase letters"
 						isPressed={settings.hintUppercaseLetters}
-						isDisabled={settings.useNumberHints}
+						isDisabled={settings.useNumberHints && !settings.keyboardClicking}
 						onClick={() => {
 							handleChange(
 								"hintUppercaseLetters",
@@ -244,7 +254,7 @@ export function SettingsComponent() {
 							);
 						}}
 					/>
-					{settings.useNumberHints && (
+					{settings.useNumberHints && !settings.keyboardClicking && (
 						<p className="explanation">
 							This setting is disabled when using numbered hints.
 						</p>
