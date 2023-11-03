@@ -2,7 +2,7 @@ import { RangoActionWithTarget } from "../../typings/RangoAction";
 import { assertDefined } from "../../typings/TypingUtils";
 import { getWrapper, getWrapperForElement } from "../wrappers/wrappers";
 import { TalonAction } from "../../typings/RequestFromTalon";
-import { tryToFocusOnEditable } from "../utils/tryToFocusOnEditable";
+import { activateEditable } from "../utils/activateEditable";
 import { ElementWrapper } from "../../typings/ElementWrapper";
 import { notify } from "../notify/notify";
 import { setLastWrapper } from "../wrappers/lastWrapper";
@@ -72,8 +72,8 @@ export async function runRangoActionWithTarget(
 		case "tryToFocusElementAndCheckIsEditable": {
 			// This might result in a Talon time out exception if tryToFocusOnEditable
 			// causes a navigation, as the current content script is stopped.
-			const isEditable = await tryToFocusOnEditable(wrapper);
-			return [{ name: "responseValue", value: isEditable }];
+			const activeEditable = await activateEditable(wrapper);
+			return [{ name: "responseValue", value: Boolean(activeEditable) }];
 		}
 
 		case "focusElement":

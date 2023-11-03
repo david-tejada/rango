@@ -1,10 +1,7 @@
-import { sleep } from "../../lib/utils";
 import { ElementWrapper } from "../../typings/ElementWrapper";
 import { assertDefined } from "../../typings/TypingUtils";
-import { elementIsEditable } from "../utils/domUtils";
 import { findFirstTextNode, findLastTextNode } from "../utils/nodeUtils";
-import { tryToFocusOnEditable } from "../utils/tryToFocusOnEditable";
-import { getWrapperForElement } from "../wrappers/wrappers";
+import { activateEditable } from "../utils/activateEditable";
 
 export function setSelectionAtEdge(target: Element, atStart: boolean) {
 	if (
@@ -31,28 +28,12 @@ export function setSelectionAtEdge(target: Element, atStart: boolean) {
 	}
 }
 
-async function getWrapperForSelection(wrapper: ElementWrapper) {
-	const activeElementIsEditable = await tryToFocusOnEditable(wrapper);
-	await sleep(20);
-
-	if (elementIsEditable(wrapper.element)) {
-		return wrapper;
-	}
-
-	if (activeElementIsEditable) {
-		const targetWrapper = getWrapperForElement(document.activeElement!);
-		if (targetWrapper) return targetWrapper;
-	}
-
-	return undefined;
-}
-
 export async function setSelectionBefore(wrapper: ElementWrapper) {
-	const editableWrapper = await getWrapperForSelection(wrapper);
+	const editableWrapper = await activateEditable(wrapper);
 	if (editableWrapper) setSelectionAtEdge(editableWrapper.element, true);
 }
 
 export async function setSelectionAfter(wrapper: ElementWrapper) {
-	const editableWrapper = await getWrapperForSelection(wrapper);
+	const editableWrapper = await activateEditable(wrapper);
 	if (editableWrapper) setSelectionAtEdge(editableWrapper.element, false);
 }

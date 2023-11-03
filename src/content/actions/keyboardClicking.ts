@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
-import { isFocusOnClickInput } from "../../typings/TypingUtils";
 import { getHintsInTab } from "../utils/getHintsInTab";
 import { getHintedWrappers } from "../wrappers/wrappers";
+import { elementIsEditable, getActiveElement } from "../utils/domUtils";
 
 let keysPressedBuffer = "";
 let timeoutId: ReturnType<typeof setTimeout>;
@@ -21,18 +21,6 @@ export function restoreKeyboardReachableHints() {
 	for (const wrapper of wrappers) {
 		wrapper.hint?.clearKeyHighlight();
 	}
-}
-
-function isTextField(element: EventTarget | null): boolean {
-	if (element && element instanceof HTMLElement) {
-		return (
-			isFocusOnClickInput(element) ||
-			element.tagName === "TEXTAREA" ||
-			element.isContentEditable
-		);
-	}
-
-	return false;
 }
 
 function modifierKeyPressed(event: KeyboardEvent): boolean {
@@ -67,7 +55,7 @@ async function keydownHandler(event: KeyboardEvent) {
 
 	if (
 		hintIsReachable &&
-		!isTextField(event.target) &&
+		!elementIsEditable(getActiveElement()) &&
 		/[a-z]/i.test(event.key) &&
 		!modifierKeyPressed(event)
 	) {
