@@ -56,7 +56,10 @@ export async function store<T extends keyof StorageSchema>(
 ): Promise<StorageSchema[T]> {
 	if (isSetting(key) && !isValidSetting(key, value)) return retrieve(key);
 
-	const stringified = JSON.stringify(value, replacer);
+	const stringified = JSON.stringify(
+		zStorageSchema.shape[key].parse(value),
+		replacer
+	);
 
 	await (useLocalStorage.has(key)
 		? browser.storage.local.set({ [key]: stringified })

@@ -1,16 +1,18 @@
-import browser from "webextension-polyfill";
 import { Mutex } from "async-mutex";
-import { HintsStack } from "../../typings/StorageSchema";
+import browser from "webextension-polyfill";
+import { getKeysToExclude } from "../../common/getKeysToExclude";
 import { retrieve, store } from "../../common/storage";
+import { HintsStack } from "../../typings/StorageSchema";
 import { letterHints, numberHints } from "../utils/allHints";
 import { navigationOccurred } from "./preloadTabs";
 
-async function getEmptyStack(): Promise<HintsStack> {
+async function getEmptyStack(tabId: number): Promise<HintsStack> {
 	const includeSingleLetterHints = await retrieve("includeSingleLetterHints");
-	// To make all hints reachable via keyboard clicking, we exclude single-letter
-	// hints when keyboard clicking is active.
 	const keyboardClicking = await retrieve("keyboardClicking");
 	const useNumberHints = await retrieve("useNumberHints");
+
+	// To make all hints reachable via keyboard clicking, we exclude single-letter
+	// hints when keyboard clicking is active.
 	const possibleHints =
 		useNumberHints && !keyboardClicking
 			? [...numberHints]
@@ -18,9 +20,17 @@ async function getEmptyStack(): Promise<HintsStack> {
 			? [...letterHints]
 			: letterHints.slice(0, -26);
 
+	// We filter out any hint the user has excluded or any hint that starts with
+	// an excluded key for the current url.
+	const tab = await browser.tabs.get(tabId);
+	const keysToExclude = tab.url
+		? await getKeysToExclude(tab.url)
+		: new Set<string>();
 	const hintsToExclude = await retrieve("hintsToExclude");
+
 	const filteredHints = possibleHints.filter(
 		(hint) =>
+			!keysToExclude.has(hint[0]!) &&
 			!hintsToExclude
 				.split(/[, ]/)
 				.filter((string) => string)
@@ -34,8 +44,8 @@ async function getEmptyStack(): Promise<HintsStack> {
 	};
 }
 
-async function resetStack(stack: HintsStack) {
-	const emptyStack = await getEmptyStack();
+async function resetStack(stack: HintsStack, tabId: number) {
+	const emptyStack = await getEmptyStack(tabId);
 	stack.free = emptyStack.free;
 	stack.assigned = emptyStack.assigned;
 }
@@ -59,7 +69,7 @@ export async function withStack<T>(
 	callback: (stack: HintsStack) => Promise<T>
 ): Promise<T> {
 	return mutex.runExclusive(async () => {
-		const stack = (await _getStack(tabId)) ?? (await getEmptyStack());
+		const stack = (await _getStack(tabId)) ?? (await getEmptyStack(tabId));
 		const result = await callback(stack);
 		await _saveStack(tabId, stack);
 		return result;
@@ -68,7 +78,7 @@ export async function withStack<T>(
 
 export async function initStack(tabId: number) {
 	await withStack(tabId, async (stack) => {
-		await resetStack(stack);
+		await resetStack(stack, tabId);
 	});
 }
 
@@ -79,7 +89,7 @@ export async function claimHints(
 ): Promise<string[]> {
 	return withStack(tabId, async (stack) => {
 		if (await navigationOccurred(tabId)) {
-			await resetStack(stack);
+			await resetStack(stack, tabId);
 		}
 
 		const hintsClaimed = stack.free.splice(-amount, amount);

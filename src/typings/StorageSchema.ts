@@ -72,6 +72,10 @@ export const zStorageSchema = z.object({
 	includeTabMarkers: z.boolean(),
 	uppercaseTabMarkers: z.boolean(),
 	keyboardClicking: z.boolean(),
+	keysToExclude: z
+		.array(z.tuple([z.string(), z.string()]))
+		// We filter out any record that doesn't have a url pattern.
+		.transform((value) => value.filter((record) => record[0])),
 	customSelectors: z.map(z.string(), zCustomSelectorsForPattern),
 	customScrollPositions: z.map(z.string(), z.map(z.string(), z.number())),
 	references: z.map(z.string(), z.map(z.string(), z.string())),
