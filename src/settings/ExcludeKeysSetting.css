@@ -1,0 +1,54 @@
+.ExcludeKeysSetting .row.header {
+	margin-block: 0.25rem;
+	color: var(--slate-600);
+	font-style: italic;
+}
+
+.ExcludeKeysSetting .row {
+	display: grid;
+	grid-template-columns: 2fr 1fr 2rem;
+	gap: 0.25rem;
+}
+
+.ExcludeKeysSetting .row + .row {
+	margin-top: 0.25rem;
+}
+
+.ExcludeKeysSetting p {
+	margin: 0;
+}
+
+.ExcludeKeysSetting input,
+.ExcludeKeysSetting button {
+	padding: 0.3em;
+	border: 1px solid var(--slate-500);
+	border-radius: 0.3em;
+	outline: none;
+}
+
+.ExcludeKeysSetting input {
+	width: 100%;
+}
+
+.ExcludeKeysSetting input:focus,
+.ExcludeKeysSetting button:focus {
+	border: 2px solid var(--blue-600);
+	margin: -1px;
+}
+
+.ExcludeKeysSetting button {
+	background-color: white;
+}
+
+.ExcludeKeysSetting .button-add {
+	margin-top: 0.5rem;
+	padding-inline: 1rem;
+}
+
+.ExcludeKeysSetting .button-add:focus {
+	margin-top: calc(0.5rem - 1px);
+}
+
+.ExcludeKeysSetting .explanation {
+	margin-top: 1rem;
+}

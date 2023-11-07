@@ -36,3 +36,16 @@ label {
 	color: var(--slate-700);
 	font-size: 1rem;
 }
+
+button {
+	font-size: 0.875rem;
+	display: inline-flex;
+	align-items: center;
+	cursor: pointer;
+}
+
+code {
+	background-color: var(--slate-200);
+	padding: 0.1em 0.25em;
+	border-radius: 0.1em;
+}

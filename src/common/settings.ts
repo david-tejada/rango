@@ -33,6 +33,7 @@ export const defaultSettings = {
 	includeTabMarkers: true,
 	uppercaseTabMarkers: true,
 	keyboardClicking: false,
+	keysToExclude: new Array<[string, string]>(),
 	customSelectors: new Map<string, CustomSelectorsForPattern>(),
 	customScrollPositions: new Map<string, Map<string, number>>(),
 	references: new Map<string, Map<string, string>>(),

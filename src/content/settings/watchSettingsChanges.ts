@@ -60,7 +60,8 @@ async function handleSettingsChanges(
 	if (
 		"includeSingleLetterHints" in changes ||
 		"useNumberHints" in changes ||
-		"hintsToExclude" in changes
+		"hintsToExclude" in changes ||
+		"keysToExclude" in changes
 	) {
 		await refresh({ hintsCharacters: true });
 		return;

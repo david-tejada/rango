@@ -3,7 +3,6 @@ import { ElementWrapper } from "../../typings/ElementWrapper";
 import {
 	saveCustomSelectors,
 	stageCustomSelectors,
-	getHostPattern,
 	resetStagedSelectors,
 	pickSelectorAlternative,
 	stageExcludeUniversalSelector,
@@ -14,6 +13,7 @@ import {
 	updateCustomSelectors,
 } from "../hints/selectors";
 import { refresh } from "../wrappers/refresh";
+import { getHostPattern } from "../../common/utils";
 
 let showExtraHints = false;
 let showExcludedHints = false;
@@ -119,7 +119,7 @@ export async function customHintsReset() {
 	showExtraHints = false;
 	showExcludedHints = false;
 
-	const pattern = getHostPattern();
+	const pattern = getHostPattern(window.location.href);
 
 	await browser.runtime.sendMessage({
 		type: "resetCustomSelectors",

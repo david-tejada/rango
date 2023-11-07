@@ -13,6 +13,9 @@ import { SettingRow } from "./SettingRow";
 import { TextInput } from "./TextInput";
 import { Option, Select } from "./Select";
 import { Alert } from "./Alert";
+import { ExcludeKeysSetting } from "./ExcludeKeysSetting";
+
+let justSaved = false;
 
 export function SettingsComponent() {
 	const [storedSettings, setStoredSettings] = useState(defaultSettingsMutable);
@@ -28,7 +31,7 @@ export function SettingsComponent() {
 		});
 
 		browser.storage.onChanged.addListener((changes) => {
-			if (hasMatchingKeys(defaultSettingsMutable, changes)) {
+			if (hasMatchingKeys(defaultSettingsMutable, changes) && !justSaved) {
 				void retrieveSettings().then((settings) => {
 					setStoredSettings(settings);
 					setSettings(settings);
@@ -49,12 +52,16 @@ export function SettingsComponent() {
 				[key]: value,
 			}));
 
+			justSaved = true;
+			setTimeout(() => {
+				justSaved = false;
+			}, 1000);
 			void store(key, value);
 		}
 	};
 
 	const handleBlur = () => {
-		setSettings({ ...storedSettings });
+		setSettings(storedSettings);
 	};
 
 	if (loading) return <div />;
@@ -62,19 +69,6 @@ export function SettingsComponent() {
 	return (
 		<div className="Settings">
 			<SettingsGroup label="General">
-				<SettingRow>
-					<Toggle
-						label="Keyboard clicking"
-						isPressed={settings.keyboardClicking}
-						onClick={() => {
-							handleChange("keyboardClicking", !settings.keyboardClicking);
-						}}
-					>
-						<p className="explanation">
-							Be able to click elements by typing the hint letters.
-						</p>
-					</Toggle>
-				</SettingRow>
 				<SettingRow>
 					<Toggle
 						label="Show What's New page after updating"
@@ -151,6 +145,31 @@ export function SettingsComponent() {
 							input field, textarea or similar.
 						</p>
 					</Toggle>
+				</SettingRow>
+			</SettingsGroup>
+
+			<SettingsGroup label="Keyboard clicking">
+				<SettingRow>
+					<Toggle
+						label="Keyboard clicking"
+						isPressed={settings.keyboardClicking}
+						onClick={() => {
+							handleChange("keyboardClicking", !settings.keyboardClicking);
+						}}
+					>
+						<p className="explanation">
+							Be able to click elements by typing the hint letters.
+						</p>
+					</Toggle>
+				</SettingRow>
+				<SettingRow>
+					<ExcludeKeysSetting
+						value={settings.keysToExclude}
+						onChange={(value) => {
+							console.log("onChange()");
+							handleChange("keysToExclude", value);
+						}}
+					/>
 				</SettingRow>
 			</SettingsGroup>
 
