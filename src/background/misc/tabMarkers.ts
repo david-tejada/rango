@@ -23,9 +23,7 @@ export async function getTabMarker(tabId: number) {
 	return withTabMarkers(({ free, tabIdsToMarkers, markersToTabIds }) => {
 		const marker = tabIdsToMarkers.get(tabId) ?? free.pop();
 
-		if (!marker) {
-			throw new Error("No more tab markers available");
-		}
+		if (!marker) return "";
 
 		tabIdsToMarkers.set(tabId, marker);
 		markersToTabIds.set(marker, tabId);
@@ -47,6 +45,8 @@ export async function getTabIdForMarker(marker: string) {
 
 async function releaseMarker(tabId: number) {
 	const marker = await getTabMarker(tabId);
+	if (!marker) return;
+
 	await withTabMarkers(({ free, tabIdsToMarkers, markersToTabIds }) => {
 		tabIdsToMarkers.delete(tabId);
 		markersToTabIds.delete(marker);

@@ -19,6 +19,8 @@ async function getTitlePrefix() {
 		type: "getTabMarker",
 	})) as string;
 
+	if (!tabMarker) return "";
+
 	const marker = uppercaseTabMarkers ? tabMarker.toUpperCase() : tabMarker;
 
 	return `${marker} | `;
