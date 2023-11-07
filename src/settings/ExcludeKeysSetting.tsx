@@ -99,10 +99,9 @@ export function ExcludeKeysSetting({
 
 			<p className="explanation">
 				Exclude keys for certain patterns. Patterns are regular expression that
-				will be used to match against the URL of the page. You can create
-				patterns using wildcards. <code>?</code> matches any one character and{" "}
-				<code>*</code> matches zero or more characters. E.g.{" "}
-				<code>https?://www.youtube.com/*</code>.
+				will be used to match against the URL of the page. You can easily add a
+				pattern for the current URL by right clicking on the extension icon and
+				selecting <code>Add Keys to Exclude</code>
 			</p>
 		</div>
 	);

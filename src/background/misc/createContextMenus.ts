@@ -1,6 +1,8 @@
 import browser from "webextension-polyfill";
-import { retrieve } from "../../common/storage";
+import { retrieve, store } from "../../common/storage";
 import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
+import { getCurrentTab } from "../utils/getCurrentTab";
+import { getHostPattern } from "../../common/utils";
 
 export async function createContextMenus() {
 	const keyboardClicking = await retrieve("keyboardClicking");
@@ -30,6 +32,13 @@ export async function createContextMenus() {
 		type: "normal",
 		contexts,
 	});
+
+	browser.contextMenus.create({
+		id: "add-keys-to-exclude",
+		title: "Add Keys to Exclude",
+		type: "normal",
+		contexts,
+	});
 }
 
 export async function contextMenusOnClicked({
@@ -47,5 +56,22 @@ export async function contextMenusOnClicked({
 		await browser.tabs.create({
 			url: "https://github.com/david-tejada/rango#readme",
 		});
+	}
+
+	if (menuItemId === "add-keys-to-exclude") {
+		const keysToExclude = await retrieve("keysToExclude");
+		const tab = await getCurrentTab();
+		const hostPattern = tab.url && getHostPattern(tab.url);
+		const keysToExcludeForHost =
+			(hostPattern &&
+				keysToExclude.find(([pattern]) => pattern === hostPattern)) ||
+			undefined;
+
+		if (!keysToExcludeForHost && hostPattern) {
+			keysToExclude.push([hostPattern, ""]);
+			await store("keysToExclude", keysToExclude);
+		}
+
+		await browser.runtime.openOptionsPage();
 	}
 }

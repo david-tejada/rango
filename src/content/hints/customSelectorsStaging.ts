@@ -1,5 +1,6 @@
 import browser from "webextension-polyfill";
 import { retrieve } from "../../common/storage";
+import { getHostPattern } from "../../common/utils";
 import { ElementWrapper } from "../../typings/ElementWrapper";
 import { SelectorAlternative } from "../../typings/SelectorAlternative";
 import { CustomSelectorsForPattern } from "../../typings/StorageSchema";
@@ -12,14 +13,6 @@ let selectorAlternatives: SelectorAlternative[] = [];
 let lastSelectorAlternativeUsed = -1;
 let lastModeUsed: "include" | "exclude";
 
-export function getHostPattern() {
-	if (window.location.protocol.includes("http")) {
-		return `https?://${window.location.host}/*`;
-	}
-
-	return window.location.href;
-}
-
 /**
  * Retrieve the saved selectors for the current host pattern.
  *
@@ -27,7 +20,7 @@ export function getHostPattern() {
  * current host pattern
  */
 async function getCustomSelectorsAll() {
-	const pattern = getHostPattern();
+	const pattern = getHostPattern(window.location.href);
 	const customSelectors = await retrieve("customSelectors");
 	const customForPattern = customSelectors.get(pattern);
 
@@ -126,7 +119,7 @@ export function pickSelectorAlternative(options: {
  * @returns An array with the selectors that were added
  */
 export async function saveCustomSelectors() {
-	const pattern = getHostPattern();
+	const pattern = getHostPattern(window.location.href);
 	const customSelectorsBefore = await getCustomSelectorsAll();
 
 	const newCustomSelectors: CustomSelectorsForPattern = {
