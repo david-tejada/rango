@@ -38,6 +38,9 @@ label {
 }
 
 button {
+	font-size: 0.875rem;
+	display: inline-flex;
+	align-items: center;
 	cursor: pointer;
 }
 
