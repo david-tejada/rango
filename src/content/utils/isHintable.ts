@@ -72,6 +72,7 @@ export function isHintableExtra(target: Element): boolean {
 
 	if (
 		(cursor === "pointer" ||
+			cursor === "text" ||
 			target.matches(
 				"[class*='button' i], [class*='btn' i], [class*='select' i], [class*='control' i], [jsaction]"
 			)) &&
