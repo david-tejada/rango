@@ -1,3 +1,4 @@
+import Fuse from "fuse.js";
 import { retrieve, store } from "../../common/storage";
 import { notify } from "../notify/notify";
 import { getMainScrollable, getScrollBehavior } from "./scroll";
@@ -36,10 +37,19 @@ export async function scrollToPosition(name: string) {
 		scrollPositions.get(window.location.origin + window.location.pathname) ??
 		new Map<string, number>();
 
-	const position = scrollPositionsForCurrentPage.get(name);
+	const scrollPositionsArray = [...scrollPositionsForCurrentPage].map(
+		([name, number]) => ({ name, number })
+	);
+
+	const fuse = new Fuse(scrollPositionsArray, {
+		keys: ["name"],
+	});
+
+	const results = fuse.search(name);
+	const position = results[0]?.item.number;
 
 	if (!position) {
-		await notify(`No scroll position saved for "${name}"`, { type: "error" });
+		await notify(`No scroll position matching "${name}"`, { type: "error" });
 		return;
 	}
 
