@@ -2,6 +2,44 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.6.0](https://github.com/david-tejada/rango/releases/tag/v0.6.0) - 2023-11-13
+
+### Changed
+
+- Clicking the action button also toggles the tab markers keeping them in sync with global hints toggle.
+- Change the way preferences are declared in rango-talon. Now tags are used instead of settings.
+
+### Added
+
+- Add commands for saving references to hints/elements for scripting.
+- Add command `exclude all` to exclude all hints for the current host.
+- Add command to toggle tab markers.
+- Add commands to store custom scroll positions and scroll to them.
+- Add command `visit {user.website}` to focus a given tab by URL or create a new one.
+- Add command `tab hunt <user.text>`, to focus a tab matching a text in the title or URL using fuzzy search. Add commands `tab ahead` and `tab behind` to cycle through the results.
+- Add setting to use numbers instead of letters for hints.
+- Add setting to change the viewport margin that determines where hints are drawn.
+- Add setting to exclude certain strings from being used for hints.
+- Add setting for excluding keys for certain URL patterns when using keyboard clicking.
+- Add browser action context menu `Add Keys to Exclude`. This adds the host pattern of the current URL to the `keys to exclude` setting and opens the settings page.
+- Add `cursor: text` to the elements to show when using hint extra.
+
+### Fixed
+
+- Fix toggle buttons in settings being invisible in high contrast mode.
+- Fix invalid tab markers when restoring previous tabs on startup in Firefox.
+- Fix some issues where hints for button elements failed to hide when those did.
+- Fix an issue where reattaching hints would cause the tab to crash.
+- Check if there is an offscreen document before creating one. This tries to fix a rare and difficult to reproduce issue where reading from the clipboard would fail.
+- Remove the decorations added by Rango when saving bookmarks (except in Safari as it doesn't support the bookmarks API).
+- Avoid the hints being included when printing.
+- Fix some discord links opening in a new tab when they shouldn't.
+- Fix some instances where direct clicking would be triggered when editing text and keyboard clicking on.
+
+### Removed
+
+- Remove commands `rango direct` and `rango explicit`. You can still specify which mode you prefer with the tag `user.rango_direct_clicking`.
+
 ## [0.5.1](https://github.com/david-tejada/rango/releases/tag/v0.5.1) - 2023-08-13
 
 ### Added

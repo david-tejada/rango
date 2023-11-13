@@ -20,6 +20,8 @@ In order to use the extension you need two pieces: the extension and the talon f
 
 - The talon files can be found in the [rango-talon](https://github.com/david-tejada/rango-talon) repository. Clone or download them to your talon user folder. **IMPORTANT**: Make sure to clone or download the **rango-talon** repository and not this one.
 
+It is also assumed that you have installed [talonhub/community](https://github.com/talonhub/community) to your talon user folder. If not you need at least to have the following captures defined: `<user.letter>`, `<user.word>`, `<user.number_small>`, `<user.number_string>` (only if you want to use number hints) and the list `{user.website}`.
+
 ### Troubleshooting
 
 If the hints are displayed but the commands don't work, most of the time it has to do with the configuration of the hotkey. In order to communicate with Rango, Talon presses a key combination to prompt Rango to read the command present on the clipboard. By default the key combination is `ctrl-shift-insert` in all the browsers except for Safari, where it is `ctrl-shift-3`. If Rango commands aren't working for you, make sure that the hotkey is properly set up. The shortcut that needs to be changed is `Get the talon request`.
@@ -38,103 +40,25 @@ There are several settings you can adjust to change the appearance of the hints 
 
 ## Usage
 
-**Note**: The notation `<target>` in this readme can refer to a single or multiple hints chained with the word `and`. For example, the command `click any and bat` would click on the elements marked with the hints `a` and `b`. Most Rango commands accept multiple hints as target.
+**Note**: The notation `<target>` in this readme can refer to a single or multiple hints chained with the word `and` (or the word `plus` if you use number hints). For example, the command `click any and bat` would click on the elements marked with the hints `a` and `b`. Most Rango commands accept multiple hints as target.
 
 ### Hints
 
-Hints are marks with letters that appear next to elements and that we can use to refer to the element to click, hover, copy its text content, etc.
+Hints are marks with letters (or numbers if you toggle the setting `Use number for hints`) that appear next to elements and that we can use to refer to the element to click, hover, copy its text content, etc.
 
 <p align="left">
   <img src="images/screenshot-hint.png" height=60px">
 </p>
 
-#### Which Elements Receive Hints
-
-By default, only certain elements receive hints. If the element is clickable it should receive a hint. Most of the time it does, but in some rare cases, it might not. In order for an element to receive a hint it must be minimally accessible. This means that it must use the right semantic element or indicate what its role is. For example, the following buttons would display a hint.
-
-`<button>Click me!</button>`
-
-`<div role="button">Click me!</div>`
-
-But there won't be a hint for the following element:
-
-`<div class="btn">Click me!</div>`
-
-In earlier versions of the extension I would try to display more hints by default by looking at things like the element's class name, the onclick property or the css property `cursor: pointer`. The issue with this approach is we would get many duplicate hints and some unnecessary ones. Reducing those duplicates and unnecessary hints wasn't always possible and resulted in complicated and poorly performant code.
-
-#### Displaying Extra Hints
-
-Moving away from that complicated logic resulted in better performance and cleaner ui. But now we need a way to display hints for those elements that are not accessible. For that we use the command `hint extra`. At this point we don't care so much about duplicates and we can use all those extra checks to see if an element might be clickable. The command `hint less` lets us go back to only displaying the default hints.
-
-#### Custom Hints
-
-With the command `hint extra` now we have a way to show hints for those elements that don't receive them by default. But you might frequently use some page where some elements that you want to click don't receive hints. Having to use the command `hint extra` every time you want to click one of those elements can become tedious. Custom hints are a way to indicate that you want some extra hints to always display by default.
-
-After having used the command `hint extra` you can use the command `include <target>` to indicate that you want some hints to always display. The hints selected for inclusion will be marked in green. The best approach is to use at least a couple of hints representing the same ui element. With those hints Rango calculates the css selector that includes both. It tries not to be greedy and use the selector that includes the least amount of hints possible. This is usually enough to include the desired ui element. In case it falls short and doesn't include all the elements you want, you can use the command `some more`. This will pick a different selector that matches more elements (not necessarily the same elements matched before). The command `some less` does the opposite. You can use the `include` command again if you need to add more hints representing different ui elements. Once you are happy with the result you can use the command `custom hints save` so that those hints appear by default the next time.
-
-Here is one example to illustrate this process:
-
-In [this page](https://forvo.com/word/define/#en) we have this section which unfortunately doesn't show any hints.
-
-<p align="left">
-  <img src="images/screenshot-custom-hints-1.png" height=70px">
-</p>
-
-Now we use the command `hint extra` to greedily display hints.
-
-<p align="left">
-  <img src="images/screenshot-custom-hints-2.png" height=70px">
-</p>
-
-If we wanted to show hints for the gray links we can issue the command `include cap each and cap drum`, which marks in green the hints that will be included.
-
-<p align="left">
-  <img src="images/screenshot-custom-hints-3.png" height=70px">
-</p>
-
-Since the result is not exactly what we want and there are still hints missing we use the command `some more`.
-
-<p align="left">
-  <img src="images/screenshot-custom-hints-4.png" height=70px">
-</p>
-
-Now there are more hints showing but they're not the ones we want. We issue the command `some more` again to see if that helps.
-
-<p align="left">
-  <img src="images/screenshot-custom-hints-5.png" height=70px">
-</p>
-
-The hints marked for inclusion now are exactly the ones we want. We could continue including more custom hints using the `include` command again but for the moment we leave it like that and save with `custom hints save`.
-
-<p align="left">
-  <img src="images/screenshot-custom-hints-6.png" height=330px">
-</p>
-
-Now the extra hints disappear and we are left with the custom hints that we just defined. We can see that similar elements also display hints. Next time we visit the page those hints will be displayed by default.
-
-This same process can be used to exclude hints using the command `exclude <target>`. With the command `hint more` we can display any previously excluded hints.
-
-If after using the `include` or `exclude` command you are not happy with the hints marked for inclusion/exclusion you can use the command `some less` (you might have to use it a few times if you've already used the command `some more`) to remove the recently marked hints and start over. This will keep any hints marked with a previous `include` or `exclude` command.
-
-Here is a summary of all the commands for customizing hints:
-
-- `hint extra`: Display hints for more elements.
-- `hint more`: Display hints for previously excluded elements.
-- `hint less`: Only display the default hints.
-- `include <target>`: Mark the selected hints for inclusion.
-- `exclude <target>`: Mark the selected hints for exclusion.
-- `some more`: Mark more hints for inclusion/exclusion.
-- `some less`: Mark less hints for inclusion/exclusion.
-- `custom hints save`: Save the currently selected hints marked for inclusion/exclusion so that they render by default.
-- `custom hints reset`: Remove any previously included/excluded custom hints.
+If you want to know how to use number for hints, which elements receive hints and what to do if an element you want to click doesn't have a hint, take a look at the section [More on hints](#more-on-hints).
 
 ### Click
 
-There are two modes: direct and explicit clicking. To switch between them you have to use the command `rango direct` or `rango explicit`. You can also set the default mode by changing the talon setting `user.rango_start_with_direct_clicking` in rango.talon of your rango-talon.
+There are two modes: direct and explicit clicking. By default direct mode is enabled. To use explicit clicking you need to delete the tag `user.rango_direct_clicking` in _rango.talon_.
 
 #### Direct Clicking
 
-This is the default mode. With it enabled you just have to say the characters displayed on the hint to click an element. To avoid misclicks it only listens to a pause, one or two letters, followed by another pause. If there is no hint with those letters it will type them. If you actually want to enter one or two characters the are part of a hint you have to use the knausj command `press`.
+This is the default mode. With it enabled you just have to say the characters displayed on the hint to click an element. To avoid misclicks it only listens to a pause, one or two letters, followed by another pause. If there is no hint with those letters it will type them. If you actually want to enter one or two characters the are part of a hint you have to use the _talonhub/community_ command `press`.
 
 ##### Examples
 
@@ -152,6 +76,10 @@ With explicit clicking you have to precede every hint with the word `click`. Thi
 Apart from using your voice for clicking you can also use your keyboard for that.
 
 To toggle it you have to use the command `keyboard toggle` or press `ctrl-shift-5` in Firefox. In Chrome and Edge you have to set the shortcut manually since there is a limit of four shortcuts we can set by default. You'll see the toolbar icon shows a little orange dot when keyboard clicking is on. To allow typing text in pages, keyboard clicking will be off whenever the element in focus accepts text input.
+
+##### Excluding Keys
+
+When using keyboard clicking you might want to have the ability to use certain keys as shortcuts for specific websites. For example, you might want to be able to use the key `c` in YouTube to toggle captions. The easy way to do this is to right click on the extension icon and select the menu `Add Keys to Exclude`. This will add an entry to the keys to exclude setting with the URL pattern for the current URL and will open the settings so you can easily add the keys you want to exclude.
 
 #### Focus
 
@@ -262,11 +190,22 @@ half down <user.rango_target>:
   user.rango_command_with_target("scrollDownAtElement", rango_target, 0.5)
 ```
 
+#### Save Scroll Positions
+
+You can save scroll positions within a webpage to later be able to scroll to that saved position.
+
+- `scroll save <word>`: Store the current scroll position and assign it to the specified word.
+- `scroll to <word>`: Scroll to the saved position. This uses fuzzy search, so a command like `scroll to object` will also match the saved scroll position `objects` if no scroll position `object` was stored.
+
 ### Tabs
 
 - `tab clone`: Duplicates the current tab.
 - `tab back`: Switches to the previously focused tab.
 - `tab split`: Move the current tab to a new window.
+- `tab hunt <text>`: Focuses the tab that matches the text in its URL or title. It uses fuzzy search and focuses the tab that better matches the text.
+- `tab ahead`: If there are multiple results after using `tab hunt`, it focuses the next tab (by match score).
+- `tab behind`: If there are multiple results after using `tab hunt`, it focuses the previous tab (by match score).
+- `visit {user.website}`: This uses the websites defined in _websites.csv_ within _talonhub/community_. It will focus the first tab matching the website or open it in a new tab if there's no match.
 
 #### Close Tabs
 
@@ -284,6 +223,38 @@ If you have the setting `Include tab markers in title` enabled (default) you can
 
 - `(go tab | slot) <marker>`: Focus the tab with the specified tab marker.
 - `tab marker refresh`: Refreshes the tab markers for the existing tabs. Note that this command will refresh all unloaded tabs as otherwise we are unable to change the tab markers.
+
+### Custom References
+
+Custom references are a way to store references to hints and their underlying element for later use either directly or in scripting. Once created references will work even when the hints are off.
+
+#### Save References
+
+- `mark <target> as <word>`: Saves a reference to the element with the specified hint and assign it to the specified word.
+- `mark show`: Shows the visible saved references current in the page.
+- `mark clear <word>`: Remove the reference corresponding to the specified word.
+
+#### Use References Directly
+
+- `click mark <word>`: Clicks the element with the assigned reference word.
+- `focus mark <word>`: Focuses the element with the assigned reference word.
+- `hover mark <word>`: Hovers the element with the assigned reference word.
+
+#### Use References in Scripting
+
+In order to use the saved references in scripting you need to use the talon action `user.rango_run_action_on_reference`. This action accept two arguments: the name of the action and the name of the reference.
+
+Following is a simple example of command that clicks the element with the reference `edit`:
+
+```talon
+edit this: user.rango_run_action_on_reference("clickElement", "edit")
+```
+
+There are also a few talon helpers that will make easier to create commands that use references. These will be active when editing `.talon` files.
+
+- `click rango mark <word>`
+- `focus rango mark <word>`
+- `hover rango mark <word>`
 
 ### Modify Hints Size
 
@@ -312,13 +283,107 @@ If you have the setting `Include tab markers in title` enabled (default) you can
 
 - The command `rango open {page}` opens a Rango related page in a new tab. The pages are: sponsor, readme, issues, new issue and changelog.
 
+### More on Hints
+
+#### Using Number for Hints
+
+If you prefer to use number instead of letters for hints there are two steps you need to take:
+
+- Enable the setting `Use number for hints` in the extension.
+- Add the tag `user.rango_number_hints` in _rango.talon_ within _rango-talon_ in your Talon user folder.
+
+One thing to consider is that Rango draws hints outside of the viewport for a better scrolling experience. When using number hints this might often result in three digit numbers being used. These high numbers might be longer to pronounce. If you want to minimize this you can modify the margin around the viewport where Rango draws hints. For that you can use the setting `Viewport margin`. A value of 0 will make that only the elements within the viewport receive hints.
+
+#### Which Elements Receive Hints
+
+By default, only certain elements receive hints. If the element is clickable it should receive a hint. Most of the time it does, but in some rare cases, it might not. In order for an element to receive a hint it must be minimally accessible. This means that it must use the right semantic element or indicate what its role is. For example, the following buttons would display a hint.
+
+`<button>Click me!</button>`
+
+`<div role="button">Click me!</div>`
+
+But there won't be a hint for the following element:
+
+`<div class="btn">Click me!</div>`
+
+In earlier versions of the extension I would try to display more hints by default by looking at things like the element's class name, the onclick property or the css property `cursor: pointer`. The issue with this approach is we would get many duplicate hints and some unnecessary ones. Reducing those duplicates and unnecessary hints wasn't always possible and resulted in complicated and poorly performant code.
+
+#### Displaying Extra Hints
+
+Moving away from that complicated logic resulted in better performance and cleaner ui. But now we need a way to display hints for those elements that are not accessible. For that we use the command `hint extra`. At this point we don't care so much about duplicates and we can use all those extra checks to see if an element might be clickable. The command `hint less` lets us go back to only displaying the default hints.
+
+#### Custom Hints
+
+With the command `hint extra` now we have a way to show hints for those elements that don't receive them by default. But you might frequently use some page where some elements that you want to click don't receive hints. Having to use the command `hint extra` every time you want to click one of those elements can become tedious. Custom hints are a way to indicate that you want some extra hints to always display by default.
+
+After having used the command `hint extra` you can use the command `include <target>` to indicate that you want some hints to always display. The hints selected for inclusion will be marked in green. The best approach is to use at least a couple of hints representing the same ui element. With those hints Rango calculates the css selector that includes both. It tries not to be greedy and use the selector that includes the least amount of hints possible. This is usually enough to include the desired ui element. In case it falls short and doesn't include all the elements you want, you can use the command `some more`. This will pick a different selector that matches more elements (not necessarily the same elements matched before). The command `some less` does the opposite. You can use the `include` command again if you need to add more hints representing different ui elements. Once you are happy with the result you can use the command `custom hints save` so that those hints appear by default the next time.
+
+If you want to exclude all the hints to later add only the ones you're interested in you can use the command `exclude all`. You will need to save after using this command and before including only those hints you want.
+
+Here is one example to illustrate this process:
+
+In [this page](https://forvo.com/word/define/#en) we have this section which unfortunately doesn't show any hints.
+
+<p align="left">
+  <img src="images/screenshot-custom-hints-1.png" height=70px">
+</p>
+
+Now we use the command `hint extra` to greedily display hints.
+
+<p align="left">
+  <img src="images/screenshot-custom-hints-2.png" height=70px">
+</p>
+
+If we wanted to show hints for the gray links we can issue the command `include cap each and cap drum`, which marks in green the hints that will be included.
+
+<p align="left">
+  <img src="images/screenshot-custom-hints-3.png" height=70px">
+</p>
+
+Since the result is not exactly what we want and there are still hints missing we use the command `some more`.
+
+<p align="left">
+  <img src="images/screenshot-custom-hints-4.png" height=70px">
+</p>
+
+Now there are more hints showing but they're not the ones we want. We issue the command `some more` again to see if that helps.
+
+<p align="left">
+  <img src="images/screenshot-custom-hints-5.png" height=70px">
+</p>
+
+The hints marked for inclusion now are exactly the ones we want. We could continue including more custom hints using the `include` command again but for the moment we leave it like that and save with `custom hints save`.
+
+<p align="left">
+  <img src="images/screenshot-custom-hints-6.png" height=330px">
+</p>
+
+Now the extra hints disappear and we are left with the custom hints that we just defined. We can see that similar elements also display hints. Next time we visit the page those hints will be displayed by default.
+
+This same process can be used to exclude hints using the command `exclude <target>`. With the command `hint more` we can display any previously excluded hints.
+
+If after using the `include` or `exclude` command you are not happy with the hints marked for inclusion/exclusion you can use the command `some less` (you might have to use it a few times if you've already used the command `some more`) to remove the recently marked hints and start over. This will keep any hints marked with a previous `include` or `exclude` command.
+
+Here is a summary of all the commands for customizing hints:
+
+- `hint extra`: Display hints for more elements.
+- `hint more`: Display hints for previously excluded elements.
+- `hint less`: Only display the default hints.
+- `include <target>`: Mark the selected hints for inclusion.
+- `exclude <target>`: Mark the selected hints for exclusion.
+- `exclude all`: Mark all the hints for exclusion. Uses the css universal selector `*`.
+- `some more`: Mark more hints for inclusion/exclusion.
+- `some less`: Mark less hints for inclusion/exclusion.
+- `custom hints save`: Save the currently selected hints marked for inclusion/exclusion so that they render by default.
+- `custom hints reset`: Remove any previously included/excluded custom hints.
+
 ## Known Issues and Limitations
 
 - There is currently no way to open a pure CSS dropdown menu like the "hover" menu in [this example](https://www.tailwindtoolbox.com/components/megamenu-demo.php#). It is not possible to activate the `:hover` pseudo class in javascript and this will only be possible once I implement cursor moving/clicking.
 
 ### No Hints or Other Missing Functionality in Certain Pages
 
-Content scripts (the part of the extension that runs in the context of webpages) aren't unable to run in browser's internal pages. These pages start with `chrome://`, `edge://`, `about:` or similar and provide information and control over browsers internal state, including settings, flags, and debugging information. Allowing content scripts on these pages could enable malicious extensions to change settings or access sensitive data without the user's knowledge. For this reason hints an other functionality won't be available in these pages.
+Content scripts (the part of the extension that runs in the context of webpages) aren't able to run in browser's internal pages. These pages start with `chrome://`, `edge://`, `about:` or similar and provide information and control over browsers internal state, including settings, flags, and debugging information. Allowing content scripts on these pages could enable malicious extensions to change settings or access sensitive data without the user's knowledge. For this reason hints an other functionality won't be available in these pages.
 
 Similarly, there are other domains where content scripts are not allowed to run.
 
@@ -350,10 +415,8 @@ sync.services.mozilla.com
 
 To allow WebExtensions in Firefox to run on these pages (at your own risk), open `about:config` and modify the following[^3]:
 
-Set extensions.webextensions.restrictedDomains to be an empty string.4
-Set privacy.resistFingerprinting.block_mozAddonManager to true5
-Firefox 60 - Firefox 70: must be manually created by right-clicking and selecting New > Boolean3
-Firefox 71 and later6: paste preference name in search bar > in 2nd column set Boolean from single-choice list > click ➕ button in 3rd column.
+- Set `extensions.webextensions.restrictedDomains` to be an empty string.
+- Set `privacy.resistFingerprinting.block_mozAddonManager` to true.
 
 Another alternative is to use a Chromium browser to access Firefox restricted domains and Firefox to access Chromium restricted domains.
 
