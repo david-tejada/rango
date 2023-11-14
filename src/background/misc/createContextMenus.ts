@@ -54,7 +54,7 @@ export async function contextMenusOnClicked({
 
 	if (menuItemId === "help") {
 		await browser.tabs.create({
-			url: "https://github.com/david-tejada/rango#readme",
+			url: "https://rango.click",
 		});
 	}
 
