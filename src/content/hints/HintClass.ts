@@ -93,7 +93,6 @@ const processHintQueue = debounce(() => {
 
 	for (const hint of queue) {
 		hint.position();
-		setHintedWrapper(hint.string!, hint.target);
 		hint.shadowHost.dataset["hint"] = hint.string;
 		hint.isActive = true;
 
@@ -111,9 +110,6 @@ const processHintQueue = debounce(() => {
 			setStyleProperties(hint.inner, { display: "none" });
 		}
 
-		// This is to make sure that we don't make visible a hint that was
-		// released and causing layouts to break. Since release could be called
-		// before this callback is called
 		for (const hint of queue) {
 			// Here we need to delete from the actual hintQueue and not from queue so
 			// that the hints aren't processed in the next call to processHintQueue
@@ -121,6 +117,10 @@ const processHintQueue = debounce(() => {
 			// could be removed by the page. In that case we don't want to remove it
 			// from the queue as it needs to be reattached.
 			if (!hint.toBeReattached) hintQueue.delete(hint);
+
+			// This is to make sure that we don't make visible a hint that was
+			// released and causing layouts to break. Since release could be called
+			// before this callback is called
 			if (hint.string) {
 				setStyleProperties(hint.inner, {
 					display: "block",
@@ -465,6 +465,12 @@ export class HintClass implements Hint {
 
 		this.inner.textContent = string;
 		this.string = string;
+
+		// We need to set the hinted wrapper here and not when the hint is shown in
+		// processHintQueue. This way if the hint characters are updated this Hint
+		// will be taken into account and its string refreshed even if the hint is
+		// still not visible.
+		setHintedWrapper(this.string, this.target);
 
 		addToHintQueue(this);
 
