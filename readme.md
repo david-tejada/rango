@@ -23,7 +23,7 @@ multiple tabs and more.
 
 ## Sponsorship
 
-Rango is the work of just one developer. I have spent hundreds of hours making
+Rango is mostly the work of one developer. I have spent hundreds of hours making
 sure Rango works and feels great. I would like to be able to continue working on
 Rango to make it even better. To be able to do that I need your support. If
 Rango makes your life easier when navigating the web or it has become an
