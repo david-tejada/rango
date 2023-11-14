@@ -131,7 +131,8 @@
 	"prettier": {
 		"trailingComma": "es5",
 		"singleQuote": false,
-		"bracketSpacing": true
+		"bracketSpacing": true,
+		"proseWrap": "always"
 	},
 	"stylelint": {
 		"extends": "stylelint-config-prettier",
