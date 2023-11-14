@@ -1,11 +1,11 @@
-<p style="text-align: center">
+<p align="center">
   <img width="100" height="100" src="images/icon.svg">
 </p>
 
-<p style="text-align: center;font-size:;font-weight: bold;">Rango</p>
+<p align="center"><strong>Rango</strong></p>
 
-<p style="text-align: center">
-<a href="http://rango.click">🪄 rango.click 🪄</a><br>
+<p align="center">
+<a href="http://rango.click">✨ rango.click ✨</a><br>
 The cross browser extension
 that helps you control your browser by voice.<br>🦎 It blends in! </p>
 
@@ -17,13 +17,13 @@ with letters next to elements that you can use to click, hover, copy or show
 link adresses. It also helps you scroll, open multiple links in new tabs, close
 multiple tabs and more.
 
-<p style="text-align: center">
+<p align="center">
   <img src="images/screenshot.png">
 </p>
 
 ## Sponsorship
 
-Rango is the work of just one developer. I have spent hundreds of hours making
+Rango is mostly the work of one developer. I have spent hundreds of hours making
 sure Rango works and feels great. I would like to be able to continue working on
 Rango to make it even better. To be able to do that I need your support. If
 Rango makes your life easier when navigating the web or it has become an
