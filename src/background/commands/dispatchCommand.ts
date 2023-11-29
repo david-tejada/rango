@@ -5,7 +5,7 @@ import { constructTalonResponse } from "../utils/constructTalonResponse";
 import { promiseWrap } from "../../lib/promiseWrap";
 import { runBackgroundCommand } from "./runBackgroundCommand";
 
-const backgroundCommands = new Set([
+const backgroundCommands = new Set<RangoAction["type"]>([
 	"toggleHints",
 	"enableHints",
 	"disableHints",
@@ -16,6 +16,7 @@ const backgroundCommands = new Set([
 	"setHintWeight",
 	"copyLocationProperty",
 	"copyCurrentTabMarkdownUrl",
+	"getBareTitle",
 	"enableUrlInTitle",
 	"disableUrlInTitle",
 	"excludeSingleLetterHints",

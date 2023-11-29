@@ -5,6 +5,16 @@ import { sendRequestToContent } from "../messaging/sendRequestToContent";
 import { notify } from "../utils/notify";
 import { RangoActionCopyLocationProperty } from "../../typings/RangoAction";
 
+export async function getBareTitle(tab: Tabs.Tab) {
+	const [title] = await promiseWrap(
+		sendRequestToContent({
+			type: "getTitleBeforeDecoration",
+		}) as Promise<string>
+	);
+
+	return title ?? tab.title;
+}
+
 export async function copyLocationProperty(
 	tab: Tabs.Tab,
 	property: RangoActionCopyLocationProperty["arg"]
@@ -20,14 +30,7 @@ export async function copyLocationProperty(
 }
 
 export async function copyMarkdownUrl(tab: Tabs.Tab) {
-	let [title] = await promiseWrap(
-		sendRequestToContent({
-			type: "getTitleBeforeDecoration",
-		}) as Promise<string>
-	);
-
-	title ??= tab.title;
-
+	const title = await getBareTitle(tab);
 	assertDefined(tab.url);
 	assertDefined(title);
 

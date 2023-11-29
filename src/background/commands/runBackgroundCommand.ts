@@ -1,21 +1,25 @@
 import browser from "webextension-polyfill";
+import { retrieve, store } from "../../common/storage";
+import { promiseWrap } from "../../lib/promiseWrap";
 import { RangoAction } from "../../typings/RangoAction";
+import { TalonAction } from "../../typings/RequestFromTalon";
+import { activateTab } from "../actions/activateTab";
+import { closeTabsInWindow } from "../actions/closeTabsInWindow";
+import {
+	copyLocationProperty,
+	copyMarkdownUrl,
+	getBareTitle,
+} from "../actions/copyTabInfo";
+import { focusOrCreateTabByUrl } from "../actions/focusOrCreateTabByUrl";
+import { focusPreviousTab } from "../actions/focusPreviousTab";
+import { cycleTabsByText, focusTabByText } from "../actions/focusTabByText";
+import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
+import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
+import { toggleTabMarkers } from "../actions/toggleTabMarkers";
+import { sendRequestToContent } from "../messaging/sendRequestToContent";
+import { refreshTabMarkers } from "../misc/tabMarkers";
 import { getCurrentTab } from "../utils/getCurrentTab";
 import { notifySettingRemoved } from "../utils/notify";
-import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
-import { closeTabsInWindow } from "../actions/closeTabsInWindow";
-import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
-import { focusPreviousTab } from "../actions/focusPreviousTab";
-import { sendRequestToContent } from "../messaging/sendRequestToContent";
-import { retrieve, store } from "../../common/storage";
-import { activateTab } from "../actions/activateTab";
-import { copyLocationProperty, copyMarkdownUrl } from "../actions/copyTabInfo";
-import { promiseWrap } from "../../lib/promiseWrap";
-import { refreshTabMarkers } from "../misc/tabMarkers";
-import { toggleTabMarkers } from "../actions/toggleTabMarkers";
-import { TalonAction } from "../../typings/RequestFromTalon";
-import { focusOrCreateTabByUrl } from "../actions/focusOrCreateTabByUrl";
-import { cycleTabsByText, focusTabByText } from "../actions/focusTabByText";
 
 export async function runBackgroundCommand(
 	command: RangoAction
@@ -140,6 +144,14 @@ export async function runBackgroundCommand(
 		case "copyLocationProperty":
 			if (currentTab) {
 				return copyLocationProperty(currentTab, command.arg);
+			}
+
+			break;
+
+		case "getBareTitle":
+			if (currentTab) {
+				const title = await getBareTitle(currentTab);
+				return [{ name: "responseValue", value: title }];
 			}
 
 			break;

@@ -14,6 +14,7 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "focusFirstInput"
 		| "unhoverAll"
 		| "copyCurrentTabMarkdownUrl"
+		| "getBareTitle"
 		| "scrollUpAtElement"
 		| "scrollDownAtElement"
 		| "scrollLeftAtElement"
