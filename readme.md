@@ -31,6 +31,11 @@ essential tool for you, please consider becoming a sponsor.
 [Click here](https://github.com/sponsors/david-tejada) or just say <code>rango
 open sponsor</code>.
 
+## Support
+
+If you have any question or need help, you can reach out in the channel
+**#ext-rango** of the [Talon Slack](https://talonvoice.com/chat).
+
 ## Installation
 
 In order to use the extension you need two pieces: the extension and the talon
