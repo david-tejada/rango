@@ -31,20 +31,24 @@ async function getClipboardManifestV3(): Promise<string | undefined> {
 }
 
 async function copyToClipboardManifestV3(text: string) {
-	const hasDocument = await chrome.offscreen.hasDocument();
-	if (hasDocument) await chrome.offscreen.closeDocument();
+	try {
+		const hasDocument = await chrome.offscreen.hasDocument();
+		if (!hasDocument) {
+			await chrome.offscreen.createDocument({
+				url: urls.offscreenDocument.href,
+				reasons: [chrome.offscreen.Reason.CLIPBOARD],
+				justification: "Write the response to Talon to the clipboard",
+			});
+		}
 
-	await chrome.offscreen.createDocument({
-		url: urls.offscreenDocument.href,
-		reasons: [chrome.offscreen.Reason.CLIPBOARD],
-		justification: "Write the response to Talon to the clipboard",
-	});
-
-	await chrome.runtime.sendMessage({
-		type: "copy-to-clipboard",
-		target: "offscreen-doc",
-		text,
-	});
+		await chrome.runtime.sendMessage({
+			type: "copy-to-clipboard",
+			target: "offscreen-doc",
+			text,
+		});
+	} catch (error: unknown) {
+		console.error(error);
+	}
 }
 
 async function getTextFromClipboard(): Promise<string | undefined> {
