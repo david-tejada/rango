@@ -42,9 +42,12 @@ export function dispatchClick(element: Element): boolean {
 	element.dispatchEvent(pointerEvent("pointerdown", clientX, clientY));
 	element.dispatchEvent(mouseEvent("mousedown", clientX, clientY));
 
+	if (element instanceof HTMLElement) {
+		element.focus();
+	}
+
 	if (element instanceof HTMLElement && focusesOnclick(element)) {
 		window.focus();
-		element.focus();
 		const selection = window.getSelection();
 
 		// This handles an issue where the element doesn't focus (Notion)
