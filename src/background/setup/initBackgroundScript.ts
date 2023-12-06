@@ -6,6 +6,7 @@ import { sendRequestToContent } from "../messaging/sendRequestToContent";
 import { createContextMenus } from "../misc/createContextMenus";
 import { initTabMarkers } from "../misc/tabMarkers";
 import { setBrowserActionIcon } from "../utils/browserAction";
+import { getCurrentTab } from "../utils/getCurrentTab";
 import { isSafari } from "../utils/isSafari";
 import { trackRecentTabs } from "./trackRecentTabs";
 
@@ -68,9 +69,23 @@ browser.runtime.onStartup.addListener(async () => {
 /**
  * Strip the tab marker and url added by Rango from the title of the bookmark.
  */
-async function resetBookmarkTitle(id: string) {
+async function resetBookmarkTitle(
+	id: string,
+	changeInfo: browser.Bookmarks.OnChangedChangeInfoType
+) {
 	const includeTabMarkers = await retrieve("includeTabMarkers");
 	const urlInTitle = await retrieve("urlInTitle");
+
+	const currentTab = await getCurrentTab();
+	const { title: bookmarkTitle, url: bookmarkUrl } = changeInfo;
+
+	if (
+		!bookmarkUrl ||
+		currentTab.url !== bookmarkUrl ||
+		currentTab.title !== bookmarkTitle
+	) {
+		return;
+	}
 
 	if (includeTabMarkers || urlInTitle) {
 		try {
@@ -86,8 +101,9 @@ async function resetBookmarkTitle(id: string) {
 				browser.bookmarks?.onChanged.addListener(resetBookmarkTitle);
 			}
 		} catch {
-			// Do nothing. The user might be modifying the bookmark manually. In that
-			// case sendRequestToContent would fail.
+			// Do nothing. The user might be adding a bookmark to a page where the
+			// content script can't run. In that case the title wouldn't have been
+			// changed.
 		}
 	}
 }
@@ -95,6 +111,9 @@ async function resetBookmarkTitle(id: string) {
 // We use optional chaining because this isn't supported in Safari.
 browser.bookmarks?.onCreated.addListener(resetBookmarkTitle);
 
-// In Chrome the bookmark is created when we open the dialog and updated when we
-// submit.
+// We need to add a listener to onChanged here because of the way bookmarks are
+// saved in Chrome. When the bookmark popup appears the bookmark is saved. We
+// change the title after onCreated is triggered, but when the user hits "done"
+// the title of the bookmark will be changed again to the value of the input
+// field of the popup window.
 browser.bookmarks?.onChanged.addListener(resetBookmarkTitle);
