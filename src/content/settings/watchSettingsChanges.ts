@@ -34,7 +34,6 @@ async function handleSettingsChanges(
 	if (isToggleChange) {
 		await updateHintsEnabled();
 		await notifyTogglesStatus();
-		return;
 	}
 
 	if ("keyboardClicking" in changes) {
@@ -70,13 +69,18 @@ async function handleSettingsChanges(
 	if (
 		"urlInTitle" in changes ||
 		"includeTabMarkers" in changes ||
-		"uppercaseTabMarkers" in changes
+		"uppercaseTabMarkers" in changes ||
+		"hideTabMarkersWithGlobalHintsOff" in changes ||
+		(Object.keys(changes).includes("hintsToggleGlobal") &&
+			getCachedSetting("hideTabMarkersWithGlobalHintsOff"))
 	) {
 		await initTitleDecoration();
 		return;
 	}
 
-	await refresh({ hintsStyle: true, hintsPosition: true });
+	if (!isToggleChange) {
+		await refresh({ hintsStyle: true, hintsPosition: true });
+	}
 }
 
 export function watchSettingsChanges() {

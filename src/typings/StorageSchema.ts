@@ -70,6 +70,7 @@ export const zStorageSchema = z.object({
 	// Other settings
 	urlInTitle: z.boolean(),
 	includeTabMarkers: z.boolean(),
+	hideTabMarkersWithGlobalHintsOff: z.boolean(),
 	uppercaseTabMarkers: z.boolean(),
 	keyboardClicking: z.boolean(),
 	keysToExclude: z

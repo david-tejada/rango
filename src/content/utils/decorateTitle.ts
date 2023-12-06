@@ -2,6 +2,7 @@ import browser from "webextension-polyfill";
 import { throttle } from "lodash";
 import { getCachedSetting } from "../settings/cacheSettings";
 import { isMainframe } from "../setup/contentScriptContext";
+import { getToggles } from "../settings/toggles";
 
 // Settings
 let urlInTitle: boolean;
@@ -112,8 +113,12 @@ export async function initTitleDecoration() {
 	const previousUrlInTitle = urlInTitle;
 	const previousIncludeTabMarkers = includeTabMarkers;
 
+	const globalHintsOff = getToggles().global;
+
 	urlInTitle = getCachedSetting("urlInTitle");
-	includeTabMarkers = getCachedSetting("includeTabMarkers");
+	includeTabMarkers =
+		getCachedSetting("includeTabMarkers") &&
+		!(!globalHintsOff && getCachedSetting("hideTabMarkersWithGlobalHintsOff"));
 	uppercaseTabMarkers = getCachedSetting("uppercaseTabMarkers");
 
 	if (
