@@ -1,5 +1,5 @@
 import { ElementWrapper } from "../../typings/ElementWrapper";
-import { isFieldWithValue } from "../../typings/TypingUtils";
+import { hasPropertyValue } from "../../typings/TypingUtils";
 import { showTooltip } from "../hints/showTooltip";
 
 export function copyElementTextContentToClipboard(
@@ -8,7 +8,7 @@ export function copyElementTextContentToClipboard(
 	const textContents: string[] = [];
 
 	for (const wrapper of wrappers) {
-		const textContent = isFieldWithValue(wrapper.element)
+		const textContent = hasPropertyValue(wrapper.element)
 			? wrapper.element.value
 			: wrapper.element.textContent;
 

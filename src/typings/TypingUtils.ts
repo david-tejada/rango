@@ -1,5 +1,3 @@
-import { FocusOnClickInput } from "./FocusOnClickInput";
-
 export function assertDefined<T>(
 	value: T | null | undefined
 ): asserts value is T {
@@ -14,46 +12,16 @@ export function isPromiseFulfilledResult<T>(
 	return result.status === "fulfilled";
 }
 
-export function isFocusOnClickInput(
+export function hasPropertyValue(
 	element: Element
-): element is FocusOnClickInput {
-	return (
-		element instanceof HTMLInputElement &&
-		![
-			"button",
-			"checkbox",
-			"color",
-			"file",
-			"hidden",
-			"image",
-			"radio",
-			"reset",
-			"submit",
-		].includes(element.type)
-	);
+): element is Element & { value: string } {
+	return "value" in element;
 }
 
-export function isFieldWithValue(
+export function hasPropertyDisabled(
 	element: Element
-): element is FocusOnClickInput | HTMLTextAreaElement {
-	return isFocusOnClickInput(element) || element instanceof HTMLTextAreaElement;
-}
-
-export function hasDisabled(
-	element: Element
-): element is
-	| HTMLInputElement
-	| HTMLTextAreaElement
-	| HTMLOptionElement
-	| HTMLButtonElement
-	| HTMLSelectElement {
-	return (
-		element instanceof HTMLInputElement ||
-		element instanceof HTMLTextAreaElement ||
-		element instanceof HTMLOptionElement ||
-		element instanceof HTMLButtonElement ||
-		element instanceof HTMLSelectElement
-	);
+): element is Element & { disabled: boolean } {
+	return "disabled" in element;
 }
 
 export function isHtmlElement(element: Element): element is HTMLElement {

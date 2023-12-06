@@ -1,4 +1,4 @@
-import { hasDisabled } from "../../typings/TypingUtils";
+import { hasPropertyDisabled } from "../../typings/TypingUtils";
 
 export function isDisabled(element: Element) {
 	if (element.getAttribute("aria-disabled") === "true") return true;
@@ -6,12 +6,12 @@ export function isDisabled(element: Element) {
 	if (
 		element instanceof HTMLLabelElement &&
 		element.control &&
-		hasDisabled(element.control)
+		hasPropertyDisabled(element.control)
 	) {
 		return element.control.disabled;
 	}
 
-	if (hasDisabled(element)) {
+	if (hasPropertyDisabled(element)) {
 		return element.disabled;
 	}
 
