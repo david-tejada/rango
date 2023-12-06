@@ -1,6 +1,6 @@
 import { setSelectionAtEdge } from "../actions/setSelection";
 import { getElementCenter } from "./cssomUtils";
-import { focusesOnclick } from "./focusesOnclick";
+import { isEditable } from "./domUtils";
 
 let lastClicked: Element | undefined;
 
@@ -46,7 +46,7 @@ export function dispatchClick(element: Element): boolean {
 		element.focus();
 	}
 
-	if (element instanceof HTMLElement && focusesOnclick(element)) {
+	if (element instanceof HTMLElement && isEditable(element)) {
 		window.focus();
 		const selection = window.getSelection();
 

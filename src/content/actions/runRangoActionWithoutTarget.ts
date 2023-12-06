@@ -1,24 +1,23 @@
 import { toast } from "react-toastify";
 import { RangoActionWithoutTarget } from "../../typings/RangoAction";
 import { notify, notifyTogglesStatus } from "../notify/notify";
-
-import { focusesOnclick } from "../utils/focusesOnclick";
-import { unhoverAll } from "./hoverElement";
-import { scroll } from "./scroll";
-import { navigateToNextPage, navigateToPreviousPage } from "./pagination";
-import { blur, focusFirstInput } from "./focus";
+import { isEditable } from "../utils/domUtils";
 import {
 	customHintsConfirm,
-	displayMoreOrLessHints,
-	markHintsWithNarrowerSelector,
-	markHintsWithBroaderSelector,
 	customHintsReset,
+	displayMoreOrLessHints,
 	markAllHintsForExclusion,
+	markHintsWithBroaderSelector,
+	markHintsWithNarrowerSelector,
 } from "./customHints";
+import { scrollToPosition, storeScrollPosition } from "./customScrollPositions";
+import { blur, focusFirstInput } from "./focus";
+import { unhoverAll } from "./hoverElement";
+import { navigateToNextPage, navigateToPreviousPage } from "./pagination";
+import { removeReference, showReferences } from "./references";
 import { refreshHints } from "./refreshHints";
 import { runActionOnReference } from "./runActionOnReference";
-import { scrollToPosition, storeScrollPosition } from "./customScrollPositions";
-import { removeReference, showReferences } from "./references";
+import { scroll } from "./scroll";
 
 export async function runRangoActionWithoutTarget(
 	request: RangoActionWithoutTarget
@@ -155,7 +154,7 @@ export async function runRangoActionWithoutTarget(
 			return Boolean(
 				document.hasFocus() &&
 					document.activeElement &&
-					focusesOnclick(document.activeElement)
+					isEditable(document.activeElement)
 			);
 
 		case "runActionOnReference":
