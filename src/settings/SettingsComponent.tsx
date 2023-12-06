@@ -196,6 +196,19 @@ export function SettingsComponent() {
 
 				<SettingRow>
 					<Toggle
+						label="Hide tab markers with global hints toggle off"
+						isPressed={settings.hideTabMarkersWithGlobalHintsOff}
+						onClick={() => {
+							handleChange(
+								"hideTabMarkersWithGlobalHintsOff",
+								!settings.hideTabMarkersWithGlobalHintsOff
+							);
+						}}
+					/>
+				</SettingRow>
+
+				<SettingRow>
+					<Toggle
 						label="Use uppercase tab markers"
 						isPressed={settings.uppercaseTabMarkers}
 						isDisabled={!settings.includeTabMarkers}

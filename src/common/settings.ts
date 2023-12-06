@@ -31,6 +31,7 @@ export const defaultSettings = {
 	viewportMargin: 1000,
 	urlInTitle: true,
 	includeTabMarkers: true,
+	hideTabMarkersWithGlobalHintsOff: false,
 	uppercaseTabMarkers: true,
 	keyboardClicking: false,
 	keysToExclude: new Array<[string, string]>(),

@@ -1,5 +1,4 @@
 import browser from "webextension-polyfill";
-import { store } from "../common/storage";
 import { initBackgroundScript } from "./setup/initBackgroundScript";
 import { toggleHintsGlobal, updateHintsToggle } from "./actions/toggleHints";
 import { toggleKeyboardClicking } from "./actions/toggleKeyboardClicking";
@@ -20,8 +19,7 @@ browser.contextMenus.onClicked.addListener(contextMenusOnClicked);
 browser.runtime.onMessage.addListener(handleRequestFromContent);
 
 browserAction.onClicked.addListener(async () => {
-	const newStatus = await toggleHintsGlobal();
-	await store("includeTabMarkers", newStatus);
+	await toggleHintsGlobal();
 });
 
 browser.commands.onCommand.addListener(async (internalCommand: string) => {
