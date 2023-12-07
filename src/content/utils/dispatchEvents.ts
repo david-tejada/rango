@@ -2,6 +2,15 @@ import { setSelectionAtEdge } from "../actions/setSelection";
 import { getElementCenter } from "./cssomUtils";
 import { isEditable } from "./domUtils";
 
+// At the moment this only works in Firefox but it seems it's going to be
+// implemented in the other browsers.
+// https://github.com/whatwg/html/pull/8087
+declare global {
+	interface FocusOptions {
+		focusVisible?: boolean;
+	}
+}
+
 let lastClicked: Element | undefined;
 
 function mouseEvent(type: string, clientX: number, clientY: number) {
@@ -43,7 +52,7 @@ export function dispatchClick(element: Element): boolean {
 	element.dispatchEvent(mouseEvent("mousedown", clientX, clientY));
 
 	if (element instanceof HTMLElement) {
-		element.focus();
+		element.focus({ focusVisible: false });
 	}
 
 	if (element instanceof HTMLElement && isEditable(element)) {
