@@ -44,7 +44,11 @@ export function getEffectiveBackgroundColor(element: Element) {
 	let current: Element | null = element;
 
 	while (current) {
-		const { backgroundColor } = window.getComputedStyle(current);
+		let { backgroundColor } = window.getComputedStyle(current);
+
+		if (!backgroundColor.startsWith("rgb")) {
+			backgroundColor = "rgb(255, 255, 255)";
+		}
 
 		if (backgroundColor && backgroundColor !== "rgba(0, 0, 0, 0)") {
 			if (isRgb(backgroundColor)) {

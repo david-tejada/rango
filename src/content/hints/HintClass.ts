@@ -404,9 +404,12 @@ export class HintClass implements Hint {
 			} else {
 				const elementToGetColorFrom =
 					this.firstTextNodeDescendant?.parentElement;
-				const colorString = window.getComputedStyle(
+				let colorString = window.getComputedStyle(
 					elementToGetColorFrom ?? this.target
 				).color;
+				colorString = colorString.startsWith("rgb")
+					? colorString
+					: "rgb(0, 0, 0)";
 				color = rgbaToRgb(new Color(colorString || "black"), backgroundColor);
 
 				if (!elementToGetColorFrom) {
