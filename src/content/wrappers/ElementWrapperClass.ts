@@ -1,3 +1,4 @@
+import { debounce } from "lodash";
 import { ElementWrapper } from "../../typings/ElementWrapper";
 import { getExtraHintsToggle } from "../actions/customHints";
 import { openInNewTab } from "../actions/openInNewTab";
@@ -302,6 +303,19 @@ export function disconnectObservers() {
 		observer.disconnect();
 	}
 }
+
+// FOCUS CHANGE
+// Some elements could become visible after some other element is focused. For
+// example, using `:focus-within ul { opacity: 1 }` the `ul` could become
+// visible after focusing a sibling label.
+// Example: https://v3.daisyui.com/components/dropdown/#method-2-using-label-and-css-focus
+const debouncedHandleFocusChange = debounce(async () => {
+	await refresh({ shouldBeHinted: true });
+}, 100);
+
+// Using `focusin` and `focusout` here since `focus` and `blur` don't bubble.
+document.addEventListener("focusin", debouncedHandleFocusChange);
+document.addEventListener("focusout", debouncedHandleFocusChange);
 
 // =============================================================================
 // WRAPPER CLASS
