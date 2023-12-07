@@ -1,6 +1,15 @@
 import { setSelectionAtEdge } from "../actions/setSelection";
 import { getElementCenter } from "./cssomUtils";
-import { focusesOnclick } from "./focusesOnclick";
+import { isEditable } from "./domUtils";
+
+// At the moment this only works in Firefox but it seems it's going to be
+// implemented in the other browsers.
+// https://github.com/whatwg/html/pull/8087
+declare global {
+	interface FocusOptions {
+		focusVisible?: boolean;
+	}
+}
 
 let lastClicked: Element | undefined;
 
@@ -42,9 +51,12 @@ export function dispatchClick(element: Element): boolean {
 	element.dispatchEvent(pointerEvent("pointerdown", clientX, clientY));
 	element.dispatchEvent(mouseEvent("mousedown", clientX, clientY));
 
-	if (element instanceof HTMLElement && focusesOnclick(element)) {
+	if (element instanceof HTMLElement) {
+		element.focus({ focusVisible: false });
+	}
+
+	if (element instanceof HTMLElement && isEditable(element)) {
 		window.focus();
-		element.focus();
 		const selection = window.getSelection();
 
 		// This handles an issue where the element doesn't focus (Notion)

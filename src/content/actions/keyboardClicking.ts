@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
 import { getHintsInTab } from "../utils/getHintsInTab";
 import { getHintedWrappers } from "../wrappers/wrappers";
-import { elementIsEditable, getActiveElement } from "../utils/domUtils";
+import { isEditable, getActiveElement } from "../utils/domUtils";
 
 let keysPressedBuffer = "";
 let timeoutId: ReturnType<typeof setTimeout>;
@@ -55,7 +55,7 @@ async function keydownHandler(event: KeyboardEvent) {
 
 	if (
 		hintIsReachable &&
-		!elementIsEditable(getActiveElement()) &&
+		!isEditable(getActiveElement()) &&
 		/[a-z]/i.test(event.key) &&
 		!modifierKeyPressed(event)
 	) {

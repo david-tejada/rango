@@ -2,7 +2,7 @@ import { sleep } from "../../lib/utils";
 import { ElementWrapper } from "../../typings/ElementWrapper";
 import { notify } from "../notify/notify";
 import { getWrapperForElement } from "../wrappers/wrappers";
-import { elementIsEditable, getActiveElement } from "./domUtils";
+import { isEditable, getActiveElement } from "./domUtils";
 
 async function waitActiveEditable(): Promise<Element | undefined | null> {
 	return new Promise((resolve) => {
@@ -15,7 +15,7 @@ async function waitActiveEditable(): Promise<Element | undefined | null> {
 
 		const poll = () => {
 			const activeElement = getActiveElement();
-			if (!elementIsEditable(activeElement) && !timedOut) {
+			if (!isEditable(activeElement) && !timedOut) {
 				setTimeout(() => {
 					poll();
 				}, 20);

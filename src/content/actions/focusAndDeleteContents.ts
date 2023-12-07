@@ -1,6 +1,6 @@
 import { ElementWrapper } from "../../typings/ElementWrapper";
 import { TalonAction } from "../../typings/RequestFromTalon";
-import { focusesOnclick } from "../utils/focusesOnclick";
+import { isEditable } from "../utils/domUtils";
 
 export function focusAndDeleteContents(
 	wrapper: ElementWrapper
@@ -15,10 +15,7 @@ export function focusAndDeleteContents(
 		return [{ name: "editDelete" }];
 	}
 
-	if (
-		wrapper.element instanceof HTMLElement &&
-		focusesOnclick(wrapper.element)
-	) {
+	if (wrapper.element instanceof HTMLElement && isEditable(wrapper.element)) {
 		wrapper.click();
 
 		if (wrapper.element.textContent) {

@@ -14,7 +14,7 @@ export interface ElementWrapper {
 	isIntersecting?: boolean;
 	observingIntersection?: boolean;
 	isIntersectingViewport?: boolean;
-	isActiveFocusable: boolean;
+	isActiveEditable: boolean;
 	isHintable: boolean;
 	shouldBeHinted?: boolean;
 

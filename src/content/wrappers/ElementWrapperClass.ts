@@ -13,7 +13,7 @@ import {
 	dispatchHover,
 	dispatchUnhover,
 } from "../utils/dispatchEvents";
-import { focusesOnclick } from "../utils/focusesOnclick";
+import { isEditable } from "../utils/domUtils";
 import { getPointerTarget } from "../utils/getPointerTarget";
 import { getUserScrollableContainer } from "../utils/getUserScrollableContainer";
 import { isDisabled } from "../utils/isDisabled";
@@ -316,8 +316,8 @@ interface ElementWrapperClass extends ElementWrapper {}
 class ElementWrapperClass implements ElementWrapper {
 	constructor(element: Element, active = true) {
 		this.element = element;
-		this.isActiveFocusable =
-			this.element === document.activeElement && focusesOnclick(this.element);
+		this.isActiveEditable =
+			this.element === document.activeElement && isEditable(this.element);
 
 		if (active) {
 			this.updateIsHintable();
@@ -328,13 +328,13 @@ class ElementWrapperClass implements ElementWrapper {
 		this.isHintable = isHintable(this.element);
 
 		if (this.isHintable) {
-			if (focusesOnclick(this.element)) {
+			if (isEditable(this.element)) {
 				this.element.addEventListener("focus", () => {
-					this.isActiveFocusable = true;
+					this.isActiveEditable = true;
 					this.updateShouldBeHinted();
 				});
 				this.element.addEventListener("blur", () => {
-					this.isActiveFocusable = false;
+					this.isActiveEditable = false;
 					this.updateShouldBeHinted();
 				});
 			}
@@ -348,7 +348,7 @@ class ElementWrapperClass implements ElementWrapper {
 	updateShouldBeHinted() {
 		const newShouldBeHinted =
 			this.isHintable &&
-			!this.isActiveFocusable &&
+			!this.isActiveEditable &&
 			(isVisible(this.element) ||
 				(matchesCustomInclude(this.element) &&
 					!matchesCustomExclude(this.element)) ||
