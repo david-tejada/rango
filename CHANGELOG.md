@@ -7,6 +7,8 @@ All notable changes to the Rango extension will be documented in this file.
 ### Added
 
 - Add setting to hide tab markers when the hints global toggle is off (#253)
+- Add command to get the title of the currently focused tab without including
+  the decorations
 
 ### Fixed
 
