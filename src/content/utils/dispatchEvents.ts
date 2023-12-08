@@ -1,6 +1,6 @@
 import { setSelectionAtEdge } from "../actions/setSelection";
 import { getElementCenter } from "./cssomUtils";
-import { isEditable } from "./domUtils";
+import { getFocusable, isEditable } from "./domUtils";
 
 // At the moment this only works in Firefox but it seems it's going to be
 // implemented in the other browsers.
@@ -51,8 +51,9 @@ export function dispatchClick(element: Element): boolean {
 	element.dispatchEvent(pointerEvent("pointerdown", clientX, clientY));
 	element.dispatchEvent(mouseEvent("mousedown", clientX, clientY));
 
-	if (element instanceof HTMLElement) {
-		element.focus({ focusVisible: false });
+	const focusable = getFocusable(element);
+	if (focusable instanceof HTMLElement) {
+		focusable.focus({ focusVisible: isEditable(focusable) });
 	}
 
 	if (element instanceof HTMLElement && isEditable(element)) {

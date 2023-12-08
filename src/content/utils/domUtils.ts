@@ -38,3 +38,20 @@ export function getActiveElement() {
 
 	return activeElement;
 }
+
+const focusableSelector =
+	":is(a[href], area[href], input, select, textarea, button, iframe, object, summary, [tabindex]):not(:is([disabled], [tabindex='-1'], [contenteditable='false']))";
+
+/**
+ * Returns the element itself if it's focusable. If not, the closest focusable
+ * descendant or ascendant, in that order.
+ * The reason to check descendants is for instances where we mark as hintable
+ * the parent and not the child. For example, if the parent is a wrapper
+ * div[role="button"] and the child is a button.
+ */
+export function getFocusable(element: Element) {
+	return element.matches(focusableSelector)
+		? element
+		: element.querySelector(focusableSelector) ??
+				element.closest(focusableSelector);
+}
