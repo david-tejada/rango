@@ -5,5 +5,5 @@ import { resetExtraHintsToggles } from "./customHints";
 export async function refreshHints() {
 	await resetStagedSelectors();
 	resetExtraHintsToggles();
-	await refresh({ hintsColors: true, hintsCharacters: true, isHintable: true });
+	await refresh({ hintsStyle: true, hintsCharacters: true, isHintable: true });
 }

@@ -375,10 +375,18 @@ export class HintClass implements Hint {
 
 		if (matchesStagedSelector(this.target, false)) {
 			backgroundColor = new Color("red");
+			setStyleProperties(this.inner, {
+				outline: "2px dashed red",
+				"outline-offset": "1px",
+			});
 			color = new Color("white");
 			this.borderColor = color;
 		} else if (matchesStagedSelector(this.target, true)) {
 			backgroundColor = new Color("green");
+			setStyleProperties(this.inner, {
+				outline: "2px solid green",
+				"outline-offset": "1px",
+			});
 			color = new Color("white");
 			this.borderColor = new Color("white");
 		} else {
@@ -743,6 +751,7 @@ export class HintClass implements Hint {
 			"font-weight": fontWeight,
 			"border-radius": `${hintBorderRadius}px`,
 			"text-transform": hintUppercaseLetters ? "uppercase" : "none",
+			outline: "none",
 		});
 	}
 
