@@ -1,12 +1,9 @@
 import { TalonAction } from "../../typings/RequestFromTalon";
 import { notify } from "../notify/notify";
 import { dispatchKeyDown, dispatchKeyUp } from "../utils/dispatchEvents";
-import { editableElementSelector } from "../utils/domUtils";
+import { editableElementSelector, getFocusable } from "../utils/domUtils";
 import { ElementWrapper } from "../../typings/ElementWrapper";
 import { getWrapperForElement } from "../wrappers/wrappers";
-
-const focusableSelector =
-	"a, area[href], button, frame, iframe, input, object, select, textarea, summary, [tabindex]";
 
 export function focus(wrappers: ElementWrapper[]): TalonAction[] | undefined {
 	window.focus();
@@ -16,13 +13,10 @@ export function focus(wrappers: ElementWrapper[]): TalonAction[] | undefined {
 			dispatchKeyDown(document.activeElement, "Tab");
 		}
 
-		const focusable = wrapper.element.matches(focusableSelector)
-			? wrapper.element
-			: wrapper.element.querySelector(focusableSelector) ??
-			  wrapper.element.closest(focusableSelector);
+		const focusable = getFocusable(wrapper.element);
 
 		if (focusable instanceof HTMLElement) {
-			focusable.focus();
+			focusable.focus({ focusVisible: true });
 			dispatchKeyUp(focusable, "Tab");
 		}
 	}
