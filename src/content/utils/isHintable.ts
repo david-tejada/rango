@@ -85,6 +85,11 @@ export function isHintableExtra(target: Element): boolean {
 }
 
 export function isHintable(target: Element): boolean {
+	// Issue 264
+	if (document.location.href === "https://pad.cogneon.io/static/empty.html") {
+		return false;
+	}
+
 	if (
 		getExtraHintsToggle() &&
 		(matchesHintableSelector(target) || isHintableExtra(target))
