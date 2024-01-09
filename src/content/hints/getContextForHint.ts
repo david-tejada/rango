@@ -179,9 +179,13 @@ export function getAptContainer(origin: Element) {
 		if (
 			current.matches("thead, tbody, tfoot, caption, colgroup, col, tr, th, td")
 		) {
-			const table = current.closest("table");
+			current = current.closest("table") ?? current.parentElement;
+			continue;
+		}
 
-			if (table) return table;
+		if (current.tagName === "TABLE" || display.startsWith("table")) {
+			current = current.parentElement;
+			continue;
 		}
 
 		if (current.tagName !== "DETAILS" && display !== "contents") {
