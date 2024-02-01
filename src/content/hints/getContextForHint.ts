@@ -171,24 +171,23 @@ export function getAptContainer(origin: Element) {
 
 		if (!(current instanceof HTMLElement) || current.shadowRoot) {
 			current = current.parentNode;
-			continue;
+		} else {
+			const { display } = getCachedStyle(current);
+
+			if (
+				current.matches(
+					"thead, tbody, tfoot, caption, colgroup, col, tr, th, td"
+				)
+			) {
+				current = current.closest("table") ?? current.parentElement;
+			} else if (current.tagName === "TABLE" || display.startsWith("table")) {
+				current = current.parentElement;
+			} else if (current.tagName !== "DETAILS" && display !== "contents") {
+				return current;
+			} else {
+				current = current.parentElement;
+			}
 		}
-
-		const { display } = getCachedStyle(current);
-
-		if (
-			current.matches("thead, tbody, tfoot, caption, colgroup, col, tr, th, td")
-		) {
-			const table = current.closest("table");
-
-			if (table) return table;
-		}
-
-		if (current.tagName !== "DETAILS" && display !== "contents") {
-			return current;
-		}
-
-		current = current.parentElement;
 	}
 
 	return document.body;
