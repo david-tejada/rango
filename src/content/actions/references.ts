@@ -26,7 +26,7 @@ export async function saveReference(wrapper: ElementWrapper, name: string) {
 	const uniqueSelector = getCssSelector(wrapper.element, {
 		// Ignore id selectors as I have found some instances where they are
 		// generated dynamically and can change after a refresh
-		blacklist: [/data-hint/, "#*"],
+		blacklist: [/data-hint/, /href/, "#*"],
 		maxCombinations: 100,
 		includeTag: true,
 	});
