@@ -65,6 +65,8 @@ folder. If not you need at least to have the following captures defined:
 
 ## Troubleshooting
 
+### Commands Don't Work
+
 If the hints are displayed but the commands don't work, most of the time it has
 to do with the configuration of the hotkey. In order to communicate with Rango,
 Talon presses a key combination to prompt Rango to read the command present on
@@ -73,7 +75,7 @@ browsers except for Safari, where it is `ctrl-shift-3`. If Rango commands aren't
 working for you, make sure that the hotkey is properly set up. The shortcut that
 needs to be changed is `Get the talon request`.
 
-### Where to Find the Extension Keyboard Shortcuts
+#### Where to Find the Extension Keyboard Shortcuts
 
 In Firefox, navigate to [about:addons](about:addons), click on the cog at the
 top right and then "Manage Extension Shortcuts".
@@ -82,6 +84,18 @@ In Chrome, navigate to
 [chrome://extensions/shortcuts](chrome://extensions/shortcuts).
 
 In Edge, navigate to [edge://extensions/shortcuts](edge://extensions/shortcuts).
+
+### No Hints Viewing Local Files
+
+In order for Rango to work within local files like
+`file:///Users/david/Code/my-page/index.html` when using a Chromium browser you
+will have to enable it. Navigate to the extension details and enable the setting
+`Allow access to file URLs`.
+
+In Firefox access to file URLs is always enabled.
+
+Unfortunately, Safari doesn't allow extensions to access file URLs at all, so
+this feature won't be available in this browser.
 
 ## Settings
 
