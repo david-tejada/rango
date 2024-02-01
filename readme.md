@@ -54,8 +54,8 @@ files.
 
 - The talon files can be found in the
   [rango-talon](https://github.com/david-tejada/rango-talon) repository. Clone
-  or download them to your talon user folder. IMPORTANT**: Make sure to clone or
-  download the **rango-talon\*\* repository and not this one.
+  or download them to your talon user folder. **IMPORTANT**: Make sure to clone
+  or download the rango-talon repository and not this one.
 
 It is also assumed that you have installed
 [talonhub/community](https://github.com/talonhub/community) to your talon user
