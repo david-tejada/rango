@@ -42,9 +42,12 @@ export async function saveReference(wrapper: ElementWrapper, name: string) {
 export async function showReferences() {
 	const { hostReferences } = await getReferences();
 
+	console.log("Rango references for the current host:");
+
 	for (const [name, selector] of hostReferences.entries()) {
 		const wrapper = getWrapperFromUniqueSelector(selector);
 		if (wrapper) showTooltip(wrapper, name);
+		console.log(`%c  ${name}:%c "${selector}"`, "font-weight: bold");
 	}
 }
 
