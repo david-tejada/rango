@@ -648,10 +648,7 @@ export class HintClass implements Hint {
 
 		// Checking this.string is safer than check in this.inner.textContent as the
 		// latter could be removed by a page script
-		if (!this.string) {
-			console.warn("Releasing an empty hint");
-			return;
-		}
+		if (!this.string) return;
 
 		clearHintedWrapper(this.string);
 
