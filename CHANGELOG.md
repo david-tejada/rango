@@ -2,6 +2,19 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.6.3](https://github.com/david-tejada/rango/releases/tag/v0.6.3) - 2024-2-2
+
+### Added
+
+- Log to the console the selectors used when showing references.
+
+### Fixed
+
+- Fix some reference not working when the unique selector uses `href`.
+- Fix some instances of hints within tables breaking layout.
+- Fix weird behavior displaying hints in contenteditable in
+  https://pad.cogneon.io/.
+
 ## [0.6.2](https://github.com/david-tejada/rango/releases/tag/v0.6.2) - 2023-12-8
 
 ### Added
