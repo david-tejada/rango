@@ -20,7 +20,7 @@ export interface ElementWrapper {
 
 	// These properties are only needed for hintables
 	intersectionObserver?: BoundedIntersectionObserver;
-	userScrollableContainer?: HTMLElement;
+	userScrollableContainer?: Element;
 	effectiveBackgroundColor?: string;
 	hint?: Hint;
 

@@ -15,7 +15,7 @@ declare global {
 	}
 }
 
-let lastScrollContainer: HTMLElement | undefined;
+let lastScrollContainer: Element | undefined;
 let lastScrollFactor: number;
 
 interface ScrollOptions {
@@ -284,7 +284,7 @@ export function snapScroll(
 export function scroll(options: ScrollOptions) {
 	const { dir, target } = options;
 	let factor = options.factor;
-	let scrollContainer: HTMLElement | undefined;
+	let scrollContainer: Element | undefined;
 	const direction =
 		dir === "left" || dir === "right" ? "horizontal" : "vertical";
 
