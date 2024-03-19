@@ -1,9 +1,14 @@
 const containersCache: Map<Element, HTMLElement> = new Map();
 
+/**
+ * Given an Element return the Element that contains it and might scroll it. It
+ * doesn't necessarily mean that the container scrolls, but if it does, the
+ * given element would scroll with it.
+ */
 export function getUserScrollableContainer(
 	element: Element,
 	direction?: "vertical" | "horizontal"
-): HTMLElement {
+) {
 	const elementPosition = window.getComputedStyle(element).position;
 
 	const checked = [];
@@ -15,6 +20,10 @@ export function getUserScrollableContainer(
 
 		const { position, overflowX, overflowY } = window.getComputedStyle(current);
 		const { scrollWidth, clientWidth, scrollHeight, clientHeight } = current;
+
+		if (position === "fixed") {
+			return current;
+		}
 
 		// If the element is position: absolute we need to ignore any element with
 		// position: static as our element won't scroll with that container
