@@ -292,6 +292,7 @@ export class HintClass implements Hint {
 
 		this.outer = document.createElement("div");
 		this.outer.className = "outer";
+		this.outer.setAttribute("aria-hidden", "true");
 		// We set the style properties inline because using stylesheets brought some
 		// issues related to CSP in Safari.
 		setStyleProperties(this.outer, {
