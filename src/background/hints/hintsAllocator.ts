@@ -32,6 +32,7 @@ async function getEmptyStack(tabId: number): Promise<HintsStack> {
 		(hint) =>
 			!keysToExclude.has(hint[0]!) &&
 			!hintsToExclude
+				.toLowerCase()
 				.split(/[, ]/)
 				.filter((string) => string)
 				.map((string) => string.trim())
