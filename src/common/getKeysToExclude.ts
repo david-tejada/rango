@@ -18,7 +18,8 @@ export async function getKeysToExclude(url: string) {
 
 	const allKeysToExclude = keysToExclude
 		.filter(([pattern]) => new RegExp(pattern).test(url))
-		.reduce((a, b) => `${a}, ${b[1]}`, "");
+		.reduce((a, b) => `${a}, ${b[1]}`, "")
+		.toLowerCase();
 
 	return stringToSet(allKeysToExclude);
 }

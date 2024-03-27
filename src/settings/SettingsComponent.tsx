@@ -166,7 +166,6 @@ export function SettingsComponent() {
 					<ExcludeKeysSetting
 						value={settings.keysToExclude}
 						onChange={(value) => {
-							console.log("onChange()");
 							handleChange("keysToExclude", value);
 						}}
 					/>
