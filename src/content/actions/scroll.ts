@@ -235,50 +235,83 @@ export function snapScroll(
 		scrollAmount = isPageScroll ? -(cHeight - bottom) : -(cBottom - bottom);
 	}
 
+	let stickyHeight = 0;
+
+	if (position === "top") {
+		// Retrieve possible sticky/fixed header height. This handles the cases where
+		// the sticky/fixed header was in its final position before scrolling.
+		const { x, y } = target.element.getBoundingClientRect();
+		const elementsAtCoordinates = document.elementsFromPoint(
+			x + 5,
+			y - scrollAmount + 5
+		);
+
+		for (const element of elementsAtCoordinates) {
+			if (element === target.element || element.contains(target.element)) {
+				break;
+			}
+
+			const { position, display, visibility, opacity } =
+				window.getComputedStyle(element);
+
+			if (
+				display !== "none" &&
+				visibility !== "hidden" &&
+				opacity !== "0" &&
+				(position === "sticky" || position === "fixed")
+			) {
+				stickyHeight = element.getBoundingClientRect().height;
+				break;
+			}
+		}
+
+		// Handle the cases where the sticky header wasn't in its final position
+		// before scrolling.
+		(scrollContainer === document.documentElement
+			? window
+			: scrollContainer
+		).addEventListener(
+			"scrollend",
+			() => {
+				// If we find a sticky element we scroll so that the top of our target
+				// element coincides with the bottom of the sticky element. We keep doing
+				// this in case there are stacked sticky elements
+				const { x, y, top } = target.element.getBoundingClientRect();
+				const elementsAtCoordinates = document.elementsFromPoint(x + 5, y + 5);
+
+				for (const element of elementsAtCoordinates) {
+					if (element === target.element || element.contains(target.element)) {
+						break;
+					}
+
+					const { position, display, visibility, opacity } =
+						window.getComputedStyle(element);
+
+					if (
+						display !== "none" &&
+						visibility !== "hidden" &&
+						opacity !== "0" &&
+						(position === "sticky" || position === "fixed")
+					) {
+						const stickyBottom = element.getBoundingClientRect().bottom;
+						scrollContainer.scrollBy({
+							left: 0,
+							top: top - stickyBottom,
+							behavior: getScrollBehavior(),
+						});
+						break;
+					}
+				}
+			},
+			{ once: true }
+		);
+	}
+
 	scrollContainer.scrollBy({
 		left: 0,
-		top: scrollAmount,
+		top: scrollAmount - stickyHeight,
 		behavior: getScrollBehavior(),
 	});
-
-	// Handle sticky headers
-	if (position === "top") {
-		let stickyFound: boolean;
-
-		// If we find a sticky element we scroll so that the top of our target
-		// element coincides with the bottom of the sticky element. We keep doing
-		// this in case there are stacked sticky elements
-		do {
-			stickyFound = false;
-			const { x, y, top } = target.element.getBoundingClientRect();
-			const elementsAtCoordinates = document.elementsFromPoint(x + 5, y + 5);
-
-			for (const element of elementsAtCoordinates) {
-				if (element === target.element || element.contains(target.element)) {
-					break;
-				}
-
-				const { position, display, visibility, opacity } =
-					window.getComputedStyle(element);
-
-				if (
-					display !== "none" &&
-					visibility !== "hidden" &&
-					opacity !== "0" &&
-					(position === "sticky" || position === "fixed")
-				) {
-					const stickyBottom = element.getBoundingClientRect().bottom;
-					scrollContainer.scrollBy({
-						left: 0,
-						top: top - stickyBottom,
-						behavior: getScrollBehavior(),
-					});
-					stickyFound = true;
-					break;
-				}
-			}
-		} while (stickyFound);
-	}
 }
 
 export function scroll(options: ScrollOptions) {
