@@ -1,4 +1,5 @@
 import { ElementWrapper } from "../../typings/ElementWrapper";
+import { getToggles } from "../settings/toggles";
 import { deepGetElements } from "../utils/deepGetElements";
 
 const wrappersAll: Map<Element, ElementWrapper> = new Map();
@@ -34,6 +35,11 @@ export function getWrapper(
 	}
 
 	if (Array.isArray(key)) {
+		// The hints might be off and all hintedWrappers only exist because of
+		// alwaysComputeHintables being on. In that case we make as if there weren't
+		// any hinted wrappers for any given hint string.
+		if (!getToggles().computed) return [];
+
 		result = [];
 		for (const string of key) {
 			if (wrappersHinted.has(string)) {
@@ -106,4 +112,16 @@ export function clearWrappersAll() {
 
 	wrappersAll.clear();
 	wrappersHinted.clear();
+}
+
+export function hideHintsAll() {
+	for (const wrapper of wrappersHinted.values()) {
+		wrapper?.hint?.hide();
+	}
+}
+
+export function showHintsAll() {
+	for (const wrapper of wrappersHinted.values()) {
+		wrapper?.hint?.show();
+	}
 }

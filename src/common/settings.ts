@@ -21,6 +21,7 @@ export const defaultSettings = {
 	hintsToggleHosts: new Map<string, boolean>(),
 	hintsTogglePaths: new Map<string, boolean>(),
 	hintsToggleTabs: new Map<number, boolean>(),
+	alwaysComputeHintables: true,
 	enableNotifications: true,
 	toastPosition: "top-center",
 	toastTransition: "bounce",

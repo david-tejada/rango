@@ -16,6 +16,7 @@ import {
 	getCachedSettingAll,
 } from "../settings/cacheSettings";
 import { refresh } from "../wrappers/refresh";
+import { getToggles } from "../settings/toggles";
 import { matchesStagedSelector } from "./customSelectorsStaging";
 import { getElementToPositionHint } from "./getElementToPositionHint";
 import { getAptContainer, getContextForHint } from "./getContextForHint";
@@ -71,6 +72,11 @@ const processHintQueue = debounce(() => {
 	}
 
 	const toCache = [];
+
+	// The hints might be off but being computed because of alwaysComputeHintables
+	// being enabled. In that case we do all the calculations up to this point but
+	// we don't attach hints.
+	if (!getToggles().computed) return;
 
 	for (const hint of queue) {
 		// We need to render the hint but hide it so we can calculate its size for
@@ -679,6 +685,17 @@ export class HintClass implements Hint {
 			this.target instanceof HTMLElement
 		)
 			delete this.target.dataset["hint"];
+	}
+
+	hide() {
+		setStyleProperties(this.inner, {
+			display: "none",
+			opacity: "0%",
+		});
+	}
+
+	show() {
+		addToHintQueue(this);
 	}
 	/* eslint-enable @typescript-eslint/no-dynamic-delete */
 

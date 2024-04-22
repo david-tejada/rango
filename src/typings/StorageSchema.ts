@@ -54,6 +54,9 @@ export const zStorageSchema = z.object({
 	hintsTogglePaths: z.map(z.string(), z.boolean()),
 	hintsToggleTabs: z.map(z.number(), z.boolean()),
 
+	// Always compute hintables
+	alwaysComputeHintables: z.boolean(),
+
 	// Notifications
 	enableNotifications: z.boolean(),
 	toastPosition: z.enum([
