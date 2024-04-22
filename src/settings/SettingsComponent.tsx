@@ -71,6 +71,23 @@ export function SettingsComponent() {
 			<SettingsGroup label="General">
 				<SettingRow>
 					<Toggle
+						label="Always compute hintable elements"
+						isPressed={settings.alwaysComputeHintables}
+						onClick={() => {
+							handleChange(
+								"alwaysComputeHintables",
+								!settings.alwaysComputeHintables
+							);
+						}}
+					>
+						<p className="explanation">
+							Always compute what elements should be hinted even if the hints
+							are toggled off. This makes switching hints on quicker.
+						</p>
+					</Toggle>
+				</SettingRow>
+				<SettingRow>
+					<Toggle
 						label="Show What's New page after updating"
 						isPressed={settings.showWhatsNewPageOnUpdate}
 						onClick={() => {

@@ -47,6 +47,8 @@ export interface Hint {
 	 * @returns
 	 */
 	release(keepInCache?: boolean, removeElement?: boolean): void;
+	hide(): void;
+	show(): void;
 	reattach(): void;
 	applyDefaultStyle(): void;
 	keyHighlight(): void;

@@ -36,6 +36,10 @@ async function handleSettingsChanges(
 		await notifyTogglesStatus();
 	}
 
+	if ("alwaysComputeHintables" in changes) {
+		await updateHintsEnabled();
+	}
+
 	if ("keyboardClicking" in changes) {
 		const keyboardClicking = getCachedSetting("keyboardClicking");
 
