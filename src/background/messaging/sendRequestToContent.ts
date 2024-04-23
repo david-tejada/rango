@@ -60,6 +60,46 @@ async function handleActionOnReference(
 	}
 }
 
+async function clickElementByText(text: string) {
+	const tabId = await getCurrentTabId();
+	const allFrames = await browser.webNavigation.getAllFrames({
+		tabId,
+	});
+
+	const bestScoreByFramePromise = allFrames.map(async (frame) => ({
+		frameId: frame.frameId,
+		score: (await browser.tabs.sendMessage(
+			tabId,
+			{ type: "matchElementByText", arg: text },
+			{
+				frameId: frame.frameId,
+			}
+		)) as number | undefined,
+	}));
+
+	const results = await Promise.allSettled(bestScoreByFramePromise);
+	const matches = results
+		.filter(isPromiseFulfilledResult)
+		.map((result) => result.value)
+		.filter((value) => typeof value.score === "number");
+
+	const sorted = matches.sort((a, b) => (a.score ?? 0) - (b.score ?? 0));
+
+	if (sorted[0]) {
+		await browser.tabs.sendMessage(
+			tabId,
+			{ type: "clickTextMatchedElement" },
+			{
+				frameId: sorted[0].frameId,
+			}
+		);
+	} else {
+		await notify("Unable to find element with matching text", {
+			type: "warning",
+		});
+	}
+}
+
 // Sends a request to the content script. If tabId is not specified it will
 // send it to the current tab. If frameId is not specified it will send it to
 // the main frame (frameId 0).
@@ -133,6 +173,8 @@ export async function sendRequestToContent(
 		request.type === "runActionOnReference"
 	) {
 		return handleActionOnReference(request, targetTabId);
+	} else if (request.type === "clickElementByText") {
+		return clickElementByText(request.arg);
 	}
 
 	frameId = frameId ?? toAllFrames.has(request.type) ? undefined : 0;

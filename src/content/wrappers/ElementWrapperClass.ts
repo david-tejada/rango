@@ -20,6 +20,7 @@ import { getUserScrollableContainer } from "../utils/getUserScrollableContainer"
 import { isDisabled } from "../utils/isDisabled";
 import { isHintable } from "../utils/isHintable";
 import { isVisible } from "../utils/isVisible";
+import { setStyleProperties } from "../hints/setStyleProperties";
 import { refresh } from "./refresh";
 import {
 	addWrapper,
@@ -452,7 +453,11 @@ class ElementWrapperClass implements ElementWrapper {
 
 	click(): boolean {
 		const pointerTarget = getPointerTarget(this.element);
-		this.hint?.flash();
+		if (this.hint?.inner.isConnected) {
+			this.hint.flash();
+		} else {
+			this.flashElement();
+		}
 
 		if (this.element instanceof HTMLAnchorElement) {
 			const closestContentEditable = this.element.closest("[contenteditable]");
@@ -487,6 +492,25 @@ class ElementWrapperClass implements ElementWrapper {
 		// isn't one we can't click at all. For example, Slack search suggestions.
 		dispatchHover(pointerTarget);
 		return dispatchClick(pointerTarget);
+	}
+
+	flashElement() {
+		const element = this.element;
+
+		if (!(element instanceof HTMLElement)) {
+			return;
+		}
+
+		const previousOutline = element.style.outline;
+
+		setStyleProperties(element, {
+			outline: "3px solid #0891b2",
+		});
+		setTimeout(() => {
+			setStyleProperties(element, {
+				outline: previousOutline,
+			});
+		}, 300);
 	}
 
 	hover() {
