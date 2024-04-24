@@ -26,7 +26,7 @@ export async function matchElementByText(
 		.filter((w) => w.isHintable && isVisible(w.element))
 		.map((wrapper) => ({
 			wrapper,
-			textContent: wrapper.element.textContent?.trim(),
+			textContent: wrapper.element.textContent?.replace(/\d/g, "").trim(),
 		}));
 
 	const fuse = new Fuse(hintablesWithTextContent, {
