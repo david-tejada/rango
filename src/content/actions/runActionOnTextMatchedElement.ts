@@ -5,6 +5,7 @@ import { getCachedSetting } from "../settings/cacheSettings";
 import { getToggles } from "../settings/toggles";
 import { getAllWrappers } from "../wrappers/wrappers";
 import { RangoActionWithTargets } from "../../typings/RangoAction";
+import { isVisible } from "../utils/isVisible";
 import { runRangoActionWithTarget } from "./runRangoActionWithTarget";
 
 let textMatchedWrapper: ElementWrapper | undefined;
@@ -22,7 +23,7 @@ export async function matchElementByText(
 	}
 
 	const hintablesWithTextContent = getAllWrappers()
-		.filter((w) => w.isHintable)
+		.filter((w) => w.isHintable && isVisible(w.element))
 		.map((wrapper) => ({
 			wrapper,
 			textContent: wrapper.element.textContent?.trim(),
