@@ -18,7 +18,10 @@ import { removeReference, showReferences } from "./references";
 import { refreshHints } from "./refreshHints";
 import { runActionOnReference } from "./runActionOnReference";
 import { scroll } from "./scroll";
-import { clickTextMatchedElement, matchElementByText } from "./clickElement";
+import {
+	executeActionOnTextMatchedElement,
+	matchElementByText,
+} from "./runActionOnTextMatchedElement";
 
 export async function runRangoActionWithoutTarget(
 	request: RangoActionWithoutTarget
@@ -169,10 +172,10 @@ export async function runRangoActionWithoutTarget(
 			return removeReference(request.arg);
 
 		case "matchElementByText":
-			return matchElementByText(request.arg);
+			return matchElementByText(request.text, request.prioritizeViewport);
 
-		case "clickTextMatchedElement":
-			clickTextMatchedElement();
+		case "executeActionOnTextMatchedElement":
+			await executeActionOnTextMatchedElement(request.actionType);
 			break;
 
 		default:

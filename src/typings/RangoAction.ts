@@ -173,12 +173,22 @@ interface RangoActionFocusTabByText {
 	arg: string;
 }
 
-type RangoActionClickElementByText =
+type RangoActionRunActionOnTextMatchedElement =
 	| {
-			type: "clickElementByText" | "matchElementByText";
-			arg: string;
+			type: "runActionOnTextMatchedElement";
+			arg: RangoActionWithTargets["type"];
+			arg2: string;
+			arg3: boolean;
 	  }
-	| { type: "clickTextMatchedElement" };
+	| {
+			type: "matchElementByText";
+			text: string;
+			prioritizeViewport: boolean;
+	  }
+	| {
+			type: "executeActionOnTextMatchedElement";
+			actionType: RangoActionWithTargets["type"];
+	  };
 
 export type RangoActionWithTarget =
 	| RangoActionWithTargets
@@ -200,7 +210,7 @@ export type RangoActionWithoutTarget =
 	| RangoActionScrollPosition
 	| RangoActionfocusOrCreateTabByUrl
 	| RangoActionFocusTabByText
-	| RangoActionClickElementByText;
+	| RangoActionRunActionOnTextMatchedElement;
 
 export type RangoAction = RangoActionWithTarget | RangoActionWithoutTarget;
 

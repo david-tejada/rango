@@ -7,6 +7,7 @@ import { splitRequestsByFrame } from "../utils/splitRequestsByFrame";
 import {
 	RangoActionRemoveReference,
 	RangoActionRunActionOnReference,
+	RangoActionWithTargets,
 } from "../../typings/RangoAction";
 import { notify } from "../utils/notify";
 
@@ -60,7 +61,11 @@ async function handleActionOnReference(
 	}
 }
 
-async function clickElementByText(text: string) {
+async function runActionOnTextMatchedElement(
+	actionType: RangoActionWithTargets["type"],
+	text: string,
+	prioritizeViewport: boolean
+) {
 	const tabId = await getCurrentTabId();
 	const allFrames = await browser.webNavigation.getAllFrames({
 		tabId,
@@ -70,7 +75,7 @@ async function clickElementByText(text: string) {
 		frameId: frame.frameId,
 		score: (await browser.tabs.sendMessage(
 			tabId,
-			{ type: "matchElementByText", arg: text },
+			{ type: "matchElementByText", text, prioritizeViewport },
 			{
 				frameId: frame.frameId,
 			}
@@ -88,7 +93,10 @@ async function clickElementByText(text: string) {
 	if (sorted[0]) {
 		await browser.tabs.sendMessage(
 			tabId,
-			{ type: "clickTextMatchedElement" },
+			{
+				type: "executeActionOnTextMatchedElement",
+				actionType,
+			},
 			{
 				frameId: sorted[0].frameId,
 			}
@@ -173,8 +181,12 @@ export async function sendRequestToContent(
 		request.type === "runActionOnReference"
 	) {
 		return handleActionOnReference(request, targetTabId);
-	} else if (request.type === "clickElementByText") {
-		return clickElementByText(request.arg);
+	} else if (request.type === "runActionOnTextMatchedElement") {
+		return runActionOnTextMatchedElement(
+			request.arg,
+			request.arg2,
+			request.arg3
+		);
 	}
 
 	frameId = frameId ?? toAllFrames.has(request.type) ? undefined : 0;
