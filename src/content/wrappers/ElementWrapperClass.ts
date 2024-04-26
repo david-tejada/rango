@@ -504,13 +504,11 @@ class ElementWrapperClass implements ElementWrapper {
 		const previousOutline = element.style.outline;
 
 		setStyleProperties(element, {
-			outline: "3px solid #0891b2",
+			outline: "2px solid #0891b2",
 		});
 		setTimeout(() => {
-			setStyleProperties(element, {
-				outline: previousOutline,
-			});
-		}, 300);
+			element.style.outline = previousOutline;
+		}, 150);
 	}
 
 	hover() {
