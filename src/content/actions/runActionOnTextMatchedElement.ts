@@ -75,7 +75,7 @@ export async function matchElementByText(
 		keys: ["trimmedTextContent"],
 		ignoreLocation: true,
 		includeScore: true,
-		threshold: 0.3,
+		threshold: 0.4,
 	});
 
 	const matches = fuse.search(text);
