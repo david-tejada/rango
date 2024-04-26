@@ -18,10 +18,14 @@ import { removeReference, showReferences } from "./references";
 import { refreshHints } from "./refreshHints";
 import { runActionOnReference } from "./runActionOnReference";
 import { scroll } from "./scroll";
+import {
+	executeActionOnTextMatchedElement,
+	matchElementByText,
+} from "./runActionOnTextMatchedElement";
 
 export async function runRangoActionWithoutTarget(
 	request: RangoActionWithoutTarget
-): Promise<string | boolean | undefined> {
+): Promise<string | number | boolean | undefined> {
 	switch (request.type) {
 		case "historyGoBack":
 			window.history.back();
@@ -166,6 +170,13 @@ export async function runRangoActionWithoutTarget(
 
 		case "removeReference":
 			return removeReference(request.arg);
+
+		case "matchElementByText":
+			return matchElementByText(request.text, request.prioritizeViewport);
+
+		case "executeActionOnTextMatchedElement":
+			await executeActionOnTextMatchedElement(request.actionType);
+			break;
 
 		default:
 			await notify(`Invalid action "${request.type}"`, {

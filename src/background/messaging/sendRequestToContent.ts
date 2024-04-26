@@ -7,6 +7,7 @@ import { splitRequestsByFrame } from "../utils/splitRequestsByFrame";
 import {
 	RangoActionRemoveReference,
 	RangoActionRunActionOnReference,
+	RangoActionWithTargets,
 } from "../../typings/RangoAction";
 import { notify } from "../utils/notify";
 
@@ -57,6 +58,53 @@ async function handleActionOnReference(
 
 	if (found && request.type === "removeReference") {
 		await notify(`Reference "${reference}" removed.`, { icon: "trash" });
+	}
+}
+
+async function runActionOnTextMatchedElement(
+	actionType: RangoActionWithTargets["type"],
+	text: string,
+	prioritizeViewport: boolean
+) {
+	const tabId = await getCurrentTabId();
+	const allFrames = await browser.webNavigation.getAllFrames({
+		tabId,
+	});
+
+	const bestScoreByFramePromise = allFrames.map(async (frame) => ({
+		frameId: frame.frameId,
+		score: (await browser.tabs.sendMessage(
+			tabId,
+			{ type: "matchElementByText", text, prioritizeViewport },
+			{
+				frameId: frame.frameId,
+			}
+		)) as number | undefined,
+	}));
+
+	const results = await Promise.allSettled(bestScoreByFramePromise);
+	const matches = results
+		.filter(isPromiseFulfilledResult)
+		.map((result) => result.value)
+		.filter((value) => typeof value.score === "number");
+
+	const sorted = matches.sort((a, b) => (a.score ?? 0) - (b.score ?? 0));
+
+	if (sorted[0]) {
+		await browser.tabs.sendMessage(
+			tabId,
+			{
+				type: "executeActionOnTextMatchedElement",
+				actionType,
+			},
+			{
+				frameId: sorted[0].frameId,
+			}
+		);
+	} else {
+		await notify("Unable to find element with matching text", {
+			type: "warning",
+		});
 	}
 }
 
@@ -133,6 +181,12 @@ export async function sendRequestToContent(
 		request.type === "runActionOnReference"
 	) {
 		return handleActionOnReference(request, targetTabId);
+	} else if (request.type === "runActionOnTextMatchedElement") {
+		return runActionOnTextMatchedElement(
+			request.arg,
+			request.arg2,
+			request.arg3
+		);
 	}
 
 	frameId = frameId ?? toAllFrames.has(request.type) ? undefined : 0;
