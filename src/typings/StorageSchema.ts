@@ -1,4 +1,21 @@
 import { z } from "zod";
+import { isValidSelector } from "../content/utils/selectorUtils";
+import { isValidRegExp } from "../content/utils/textUtils";
+
+function removeInvalidCustomHints(
+	customHints: Map<string, CustomSelectorsForPattern>
+) {
+	const result: typeof customHints = new Map();
+	for (const [pattern, { include, exclude }] of customHints) {
+		if (!pattern || !isValidRegExp(pattern)) continue;
+		const filteredInclude = include.filter(isValidSelector);
+		const filteredExclude = exclude.filter(isValidSelector);
+
+		result.set(pattern, { include: filteredInclude, exclude: filteredExclude });
+	}
+
+	return result;
+}
 
 const zCustomSelectorsForPattern = z.object({
 	include: z.array(z.string()),
@@ -80,7 +97,9 @@ export const zStorageSchema = z.object({
 		.array(z.tuple([z.string(), z.string()]))
 		// We filter out any record that doesn't have a url pattern.
 		.transform((value) => value.filter((record) => record[0])),
-	customSelectors: z.map(z.string(), zCustomSelectorsForPattern),
+	customSelectors: z
+		.map(z.string(), zCustomSelectorsForPattern)
+		.transform(removeInvalidCustomHints),
 	customScrollPositions: z.map(z.string(), z.map(z.string(), z.number())),
 	references: z.map(z.string(), z.map(z.string(), z.string())),
 	showWhatsNewPageOnUpdate: z.boolean(),

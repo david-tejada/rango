@@ -9,6 +9,7 @@ import {
 import { notify, notifyTogglesStatus } from "../notify/notify";
 import { initTitleDecoration } from "../utils/decorateTitle";
 import { refresh } from "../wrappers/refresh";
+import { updateCustomSelectors } from "../hints/selectors";
 import { cacheSettings, getCachedSetting } from "./cacheSettings";
 
 async function handleSettingsChanges(
@@ -68,6 +69,11 @@ async function handleSettingsChanges(
 	) {
 		await refresh({ hintsCharacters: true });
 		return;
+	}
+
+	if ("customSelectors" in changes) {
+		await updateCustomSelectors();
+		return refresh({ isHintable: true });
 	}
 
 	if (
