@@ -108,11 +108,11 @@ export async function handleRequestFromContent(
 			return getTabMarker(tabId);
 
 		case "storeCustomSelectors":
-			await storeCustomSelectors(request.pattern, request.selectors);
+			await storeCustomSelectors(request.url, request.selectors);
 			break;
 
 		case "resetCustomSelectors":
-			return resetCustomSelectors(request.pattern);
+			return resetCustomSelectors(request.url);
 
 		case "removeReference":
 			return removeReference(request.hostPattern, request.name);

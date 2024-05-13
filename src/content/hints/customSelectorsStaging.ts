@@ -1,9 +1,8 @@
 import browser from "webextension-polyfill";
-import { retrieve } from "../../common/storage";
 import { getHostPattern } from "../../common/utils";
 import { ElementWrapper } from "../../typings/ElementWrapper";
 import { SelectorAlternative } from "../../typings/SelectorAlternative";
-import { CustomSelectorsForPattern } from "../../typings/StorageSchema";
+import { CustomSelector } from "../../typings/StorageSchema";
 import { getSelectorAlternatives } from "./computeCustomSelectors";
 import { updateCustomSelectors } from "./selectors";
 
@@ -12,24 +11,6 @@ let excludeSelectors: string[] = [];
 let selectorAlternatives: SelectorAlternative[] = [];
 let lastSelectorAlternativeUsed = -1;
 let lastModeUsed: "include" | "exclude";
-
-/**
- * Retrieve the saved selectors for the current host pattern.
- *
- * @returns An array with the saved "include" and "exclude" selectors for the
- * current host pattern
- */
-async function getCustomSelectorsAll() {
-	const pattern = getHostPattern(window.location.href);
-	const customSelectors = await retrieve("customSelectors");
-	const customForPattern = customSelectors.get(pattern);
-
-	if (!customForPattern) return [];
-
-	const { include, exclude } = customForPattern;
-
-	return [...include, ...exclude];
-}
 
 /**
  * Stages the custom selectors for a given array of ElementWrappers.
@@ -120,35 +101,30 @@ export function pickSelectorAlternative(options: {
  */
 export async function saveCustomSelectors() {
 	const pattern = getHostPattern(window.location.href);
-	const customSelectorsBefore = await getCustomSelectorsAll();
+	const newCustomSelectors: CustomSelector[] = [];
 
-	const newCustomSelectors: CustomSelectorsForPattern = {
-		include: includeSelectors,
-		exclude: excludeSelectors,
-	};
+	for (const selector of includeSelectors) {
+		newCustomSelectors.push({ pattern, type: "include", selector });
+	}
+
+	for (const selector of excludeSelectors) {
+		newCustomSelectors.push({ pattern, type: "exclude", selector });
+	}
 
 	// Even if both include and exclude are empty arrays we need to send the
 	// message to the background script to handle notifications
 	await browser.runtime.sendMessage({
 		type: "storeCustomSelectors",
-		pattern,
+		url: window.location.href,
 		selectors: newCustomSelectors,
 	});
-
-	const customSelectorsAfter = await getCustomSelectorsAll();
 
 	includeSelectors = [];
 	excludeSelectors = [];
 
-	const customSelectorsBeforeSet = new Set(customSelectorsBefore);
-
-	const customSelectorsAdded = customSelectorsAfter.filter(
-		(selector) => !customSelectorsBeforeSet.has(selector)
-	);
-
 	await updateCustomSelectors();
 
-	return customSelectorsAdded;
+	return newCustomSelectors;
 }
 
 export async function resetStagedSelectors() {

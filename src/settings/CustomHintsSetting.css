@@ -1,0 +1,92 @@
+.CustomHintsSetting .row.header {
+	color: var(--slate-600);
+	font-style: italic;
+}
+
+.CustomHintsSetting .row {
+	display: grid;
+	grid-template-columns: 2rem 1fr 1fr 2rem;
+	gap: 0.25rem;
+}
+
+.CustomHintsSetting .row.header :first-child {
+	grid-column: 2;
+}
+
+.CustomHintsSetting .row svg {
+	justify-self: center;
+	align-self: center;
+}
+
+.CustomHintsSetting .row .button-add:first-child {
+	grid-column: 2;
+}
+
+.CustomHintsSetting .row + .row {
+	margin-top: 0.25rem;
+}
+
+.CustomHintsSetting p {
+	margin: 0;
+}
+
+.CustomHintsSetting input,
+.CustomHintsSetting button {
+	padding: 0.3em;
+	border: 1px solid var(--slate-500);
+	border-radius: 0.3em;
+	outline: none;
+}
+
+.CustomHintsSetting input {
+	width: 100%;
+}
+
+.CustomHintsSetting input:focus,
+.CustomHintsSetting button:focus {
+	border: 2px solid var(--blue-600);
+	margin: -1px;
+}
+
+.CustomHintsSetting button {
+	background-color: white;
+}
+
+.CustomHintsSetting .button-add {
+	margin-top: 0.5rem;
+	padding-inline: 1rem;
+}
+
+.CustomHintsSetting .button-add:focus {
+	margin-top: calc(0.5rem - 1px);
+}
+
+.CustomHintsSetting .explanation {
+	margin-top: 1rem;
+}
+
+.CustomHintsSetting input[data-is-valid="false"] {
+	border: 1px solid var(--red-500);
+}
+
+.CustomHintsSetting input[data-is-valid="false"]:focus {
+	border-width: 2px;
+}
+
+.CustomHintsSetting input[data-is-valid="true"]:focus {
+	border: 2px solid var(--green-500);
+}
+
+@media screen and (forced-colors: active) {
+	.Input input:focus {
+		border: 2px solid ButtonText;
+	}
+
+	.Input input[data-is-valid="true"]:focus {
+		border: 2px solid ButtonText;
+	}
+
+	.Input input[data-is-valid="false"]:focus {
+		border: 2px dotted ButtonText;
+	}
+}

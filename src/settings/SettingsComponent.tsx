@@ -14,6 +14,7 @@ import { TextInput } from "./TextInput";
 import { Option, Select } from "./Select";
 import { Alert } from "./Alert";
 import { ExcludeKeysSetting } from "./ExcludeKeysSetting";
+import { CustomHintsSetting } from "./CustomHintsSetting";
 
 let justSaved = false;
 
@@ -518,6 +519,23 @@ export function SettingsComponent() {
 					/>
 				</SettingRow>
 			</SettingsGroup>
+
+			<SettingsGroup label="Custom Hints">
+				<p className="explanation">
+					Include or exclude CSS selectors for the corresponding pattern.
+					Patterns are regular expression that will be used to match against the
+					URL of the page.
+				</p>
+				<SettingRow>
+					<CustomHintsSetting
+						value={settings.customSelectors}
+						onChange={(value) => {
+							handleChange("customSelectors", value);
+						}}
+					/>
+				</SettingRow>
+			</SettingsGroup>
+
 			<SettingsGroup label="Scroll">
 				<SettingRow>
 					<RadioGroup

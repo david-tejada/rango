@@ -1,13 +1,12 @@
 import { z } from "zod";
 
-const zCustomSelectorsForPattern = z.object({
-	include: z.array(z.string()),
-	exclude: z.array(z.string()),
+const zCustomSelector = z.object({
+	pattern: z.string(),
+	type: z.enum(["include", "exclude"]),
+	selector: z.string(),
 });
 
-export type CustomSelectorsForPattern = z.infer<
-	typeof zCustomSelectorsForPattern
->;
+export type CustomSelector = z.infer<typeof zCustomSelector>;
 
 const zHintsStack = z.object({
 	free: z.array(z.string()),
@@ -76,11 +75,8 @@ export const zStorageSchema = z.object({
 	hideTabMarkersWithGlobalHintsOff: z.boolean(),
 	uppercaseTabMarkers: z.boolean(),
 	keyboardClicking: z.boolean(),
-	keysToExclude: z
-		.array(z.tuple([z.string(), z.string()]))
-		// We filter out any record that doesn't have a url pattern.
-		.transform((value) => value.filter((record) => record[0])),
-	customSelectors: z.map(z.string(), zCustomSelectorsForPattern),
+	keysToExclude: z.array(z.tuple([z.string(), z.string()])),
+	customSelectors: z.array(zCustomSelector),
 	customScrollPositions: z.map(z.string(), z.map(z.string(), z.number())),
 	references: z.map(z.string(), z.map(z.string(), z.string())),
 	showWhatsNewPageOnUpdate: z.boolean(),

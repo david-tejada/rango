@@ -13,7 +13,6 @@ import {
 	updateCustomSelectors,
 } from "../hints/selectors";
 import { refresh } from "../wrappers/refresh";
-import { getHostPattern } from "../../common/utils";
 
 let showExtraHints = false;
 let showExcludedHints = false;
@@ -103,7 +102,7 @@ export async function customHintsConfirm() {
 		await refresh({
 			hintsStyle: true,
 			isHintable: true,
-			filterIn: selectorsAdded,
+			filterIn: selectorsAdded.map(({ selector }) => selector),
 		});
 	}
 
@@ -119,11 +118,9 @@ export async function customHintsReset() {
 	showExtraHints = false;
 	showExcludedHints = false;
 
-	const pattern = getHostPattern(window.location.href);
-
 	await browser.runtime.sendMessage({
 		type: "resetCustomSelectors",
-		pattern,
+		url: window.location.href,
 	});
 
 	await updateCustomSelectors();

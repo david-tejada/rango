@@ -26,20 +26,21 @@ export async function updateCustomSelectors() {
 	// This is stored when the extension first runs, so it shouldn't be undefined.
 	// But it is undefined when running tests. This way we also make extra sure.
 	if (!customSelectors) {
-		await store("customSelectors", new Map());
+		await store("customSelectors", []);
 	}
 
-	let include: string[] = [];
-	let exclude: string[] = [];
+	const include: string[] = [];
+	const exclude: string[] = [];
 
-	for (const [
-		pattern,
-		customSelectorsForPattern,
-	] of customSelectors.entries()) {
+	for (const { pattern, type, selector } of customSelectors.values()) {
 		const patternRe = new RegExp(pattern);
 
 		if (patternRe.test(window.location.href)) {
-			({ include, exclude } = customSelectorsForPattern);
+			if (type === "include") {
+				include.push(selector);
+			} else {
+				exclude.push(selector);
+			}
 		}
 	}
 
