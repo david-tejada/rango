@@ -1,11 +1,13 @@
 /* eslint-disable no-await-in-loop */
-import { keyboard, Key, clipboard, sleep } from "@nut-tree/nut-js";
+import { keyTap } from "@hurdlegroup/robotjs";
+import clipboard from "clipboardy";
+import { sleep } from "./testHelpers";
 
 async function waitForCompletion() {
 	let message: any;
 
 	while (!message || message.type !== "response") {
-		const clip = await clipboard.getContent();
+		const clip = clipboard.readSync();
 
 		try {
 			message = JSON.parse(clip) as unknown;
@@ -32,8 +34,8 @@ export async function rangoCommandWithTarget(
 
 	const commandString = JSON.stringify(command);
 
-	await clipboard.setContent(commandString);
-	await keyboard.type(Key.LeftControl, Key.LeftShift, Key.Num3);
+	clipboard.writeSync(commandString);
+	keyTap("3", ["control", "shift"]);
 	await waitForCompletion();
 }
 
@@ -52,7 +54,7 @@ export async function rangoCommandWithoutTarget(
 
 	const commandString = JSON.stringify(command);
 
-	await clipboard.setContent(commandString);
-	await keyboard.type(Key.LeftControl, Key.LeftShift, Key.Num3);
+	clipboard.writeSync(commandString);
+	keyTap("3", ["control", "shift"]);
 	await waitForCompletion();
 }
