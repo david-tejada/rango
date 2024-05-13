@@ -167,7 +167,7 @@
 		"zod": "^3.22.4"
 	},
 	"devDependencies": {
-		"@nut-tree/nut-js": "^3.0.0",
+		"@hurdlegroup/robotjs": "^0.11.7",
 		"@parcel/config-webextension": "^2.5.0",
 		"@parcel/transformer-image": "^2.5.0",
 		"@parcel/transformer-inline-string": "^2.8.3",
@@ -184,6 +184,7 @@
 		"@types/webextension-polyfill": "^0.8.2",
 		"@typescript-eslint/eslint-plugin": "^5.16.0",
 		"@typescript-eslint/parser": "^5.16.0",
+		"clipboardy": "^2.3.0",
 		"eslint-config-xo": "^0.40.0",
 		"eslint-config-xo-react": "^0.27.0",
 		"eslint-config-xo-typescript": "^0.50.0",
@@ -229,6 +230,9 @@
 				"preset": "./jest-e2e-preset.js",
 				"testMatch": [
 					"<rootDir>/e2e/**/*.test.ts"
+				],
+				"transformIgnorePatterns": [
+					"node_modules/(?!clipboardy/.*)"
 				]
 			}
 		],

@@ -1,4 +1,4 @@
-import { Key, keyboard } from "@nut-tree/nut-js";
+import { keyTap } from "@hurdlegroup/robotjs";
 import { Frame, Page } from "puppeteer";
 import { rangoCommandWithoutTarget } from "./utils/rangoCommands";
 import { sleep } from "./utils/testHelpers";
@@ -11,7 +11,7 @@ async function testKeyboardClickingHighlighting(page: Page | Frame) {
 		return Number.parseInt(window.getComputedStyle(inner).borderWidth, 10);
 	});
 
-	await keyboard.type(Key.A);
+	keyTap("a");
 	await sleep(100);
 
 	const [borderWidthAfter, borderColorAfter] = await page.$eval(
@@ -26,7 +26,7 @@ async function testKeyboardClickingHighlighting(page: Page | Frame) {
 	expect(borderWidthAfter).toBe(borderWidthBefore + 1);
 	expect(borderColorAfter).toMatch(/^rgba\(.+0\.7\)$/);
 
-	await keyboard.type(Key.A);
+	keyTap("a");
 	await sleep(100);
 
 	const [borderWidthAfterCompletion, borderColorAfterCompletion] =
@@ -82,8 +82,8 @@ describe("With hints in main frame", () => {
 	});
 
 	test("Typing the hint characters clicks the link", async () => {
-		await keyboard.type(Key.A);
-		await keyboard.type(Key.A);
+		keyTap("a");
+		keyTap("a");
 
 		await page.waitForNavigation();
 
@@ -121,8 +121,8 @@ describe("With hints in other frames", () => {
 		const contentFrame = (await frame!.contentFrame())!;
 		await contentFrame.waitForSelector(".rango-hint");
 
-		await keyboard.type(Key.A);
-		await keyboard.type(Key.A);
+		keyTap("a");
+		keyTap("a");
 
 		await contentFrame.waitForNavigation();
 
