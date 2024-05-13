@@ -1,11 +1,11 @@
 import assertNever from "assert-never";
 import { debounce } from "lodash";
-import { CustomSelectorsForPattern } from "../../typings/StorageSchema";
+import { CustomSelector } from "../../typings/StorageSchema";
 import { notify } from "./notify";
 import { withLockedStorageAccess } from "./withLockedStorageValue";
+import { filterInPlace } from "./arrayUtils";
 
 let notifySuccess = false;
-const modifiedSelectors = new Set<string>();
 let batchUpdatePromise: Promise<void> | undefined;
 let batchUpdatePromiseResolve: (() => void) | undefined;
 
@@ -37,9 +37,8 @@ const debouncedNotifyAndReset = debounce(async (action: ActionType) => {
 
 	await notify(message, { type });
 
-	// Reset the success flag and clear the set after the debounce period.
+	// Reset the success flag after the debounce period.
 	notifySuccess = false;
-	modifiedSelectors.clear();
 
 	if (batchUpdatePromiseResolve) {
 		batchUpdatePromiseResolve();
@@ -50,35 +49,34 @@ const debouncedNotifyAndReset = debounce(async (action: ActionType) => {
 
 async function updateCustomSelectors(
 	action: ActionType,
-	pattern: string,
-	selectors?: CustomSelectorsForPattern
+	url: string,
+	selectors?: CustomSelector[]
 ) {
 	const selectorsAffected = await withLockedStorageAccess(
 		"customSelectors",
 		async (customSelectors) => {
-			const selectorsForPattern = customSelectors.get(pattern) ?? {
-				include: [],
-				exclude: [],
-			};
-
 			if (action === "store") {
 				if (!selectors) throw new Error("No selectors provided to store");
+				customSelectors.push(...selectors);
 
-				selectorsForPattern.include = Array.from(
-					new Set([...selectorsForPattern.include, ...selectors.include])
-				);
-				selectorsForPattern.exclude = Array.from(
-					new Set([...selectorsForPattern.exclude, ...selectors.exclude])
-				);
-				customSelectors.set(pattern, selectorsForPattern);
-				return [...selectors.include, ...selectors.exclude];
+				return selectors;
 			}
 
 			if (action === "reset") {
-				customSelectors.delete(pattern);
-				return selectorsForPattern
-					? [...selectorsForPattern.include, ...selectorsForPattern.exclude]
-					: [];
+				const selectorsForPattern =
+					customSelectors.filter(({ pattern }) => {
+						const patternRe = new RegExp(pattern);
+						return patternRe.test(url);
+					}) ?? [];
+
+				// We need to filter the array in place because assigning would just
+				// modify the argument.
+				filterInPlace(customSelectors, ({ pattern }) => {
+					const patternRe = new RegExp(pattern);
+					return !patternRe.test(url);
+				});
+
+				return selectorsForPattern ?? [];
 			}
 
 			return assertNever(action);
@@ -87,10 +85,6 @@ async function updateCustomSelectors(
 
 	// Update notifySuccess to true if any of the calls within the debounce period is successful.
 	if (selectorsAffected.length > 0) notifySuccess = true;
-
-	for (const selector of selectorsAffected) {
-		modifiedSelectors.add(selector);
-	}
 
 	await debouncedNotifyAndReset(action);
 
@@ -105,21 +99,21 @@ async function updateCustomSelectors(
 }
 
 /**
- * Stores the custom selectors for the given URL pattern. It handles being
+ * Stores the custom selectors for the given URL. It handles being
  * called multiple times to handle multiple frames wanting to change the custom
  * selectors. It waits for a sequence of calls to finish before returning. Once
  * calls have stopped it notifies if storing the custom selectors was
  * successful, that is if any of the calls in the sequence resulted in custom
  * selectors being added.
  *
- * @param pattern The URL pattern where selectors apply
- * @param selectors An object with `include` and `exclude` CSS selectors for the given pattern
+ * @param url The URL where selectors apply
+ * @param selectors The selectors to store for the URL
  */
 export async function storeCustomSelectors(
-	pattern: string,
-	selectors: CustomSelectorsForPattern
+	url: string,
+	selectors: CustomSelector[]
 ) {
-	await updateCustomSelectors("store", pattern, selectors);
+	await updateCustomSelectors("store", url, selectors);
 }
 
 /**
@@ -130,8 +124,8 @@ export async function storeCustomSelectors(
  * successful, that is if any of the calls in the sequence resulted in custom
  * selectors being removed.
  *
- * @param pattern The URL pattern where selectors apply
+ * @param url The URL pattern where selectors apply
  */
-export async function resetCustomSelectors(pattern: string) {
-	await updateCustomSelectors("reset", pattern);
+export async function resetCustomSelectors(url: string) {
+	await updateCustomSelectors("reset", url);
 }

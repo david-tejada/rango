@@ -1,11 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
-import {
-	CustomSelectorsForPattern,
-	StorageSchema,
-	zStorageSchema,
-} from "../typings/StorageSchema";
+import { StorageSchema, zStorageSchema } from "../typings/StorageSchema";
 import { defaultStorage } from "./defaultStorage";
 import {
 	Settings,
@@ -13,6 +9,10 @@ import {
 	isSetting,
 	isValidSetting,
 } from "./settings";
+import {
+	prepareSettingForStoring,
+	upgradeCustomSelectors,
+} from "./transformSettings";
 
 const useLocalStorage = new Set<keyof StorageSchema>([
 	"hintsToggleTabs",
@@ -56,8 +56,9 @@ export async function store<T extends keyof StorageSchema>(
 ): Promise<StorageSchema[T]> {
 	if (isSetting(key) && !isValidSetting(key, value)) return retrieve(key);
 
+	const prepared = prepareSettingForStoring(key, value);
 	const stringified = JSON.stringify(
-		zStorageSchema.shape[key].parse(value),
+		zStorageSchema.shape[key].parse(prepared),
 		replacer
 	);
 
@@ -65,7 +66,7 @@ export async function store<T extends keyof StorageSchema>(
 		? browser.storage.local.set({ [key]: stringified })
 		: browser.storage.sync.set({ [key]: stringified }));
 
-	return value;
+	return prepared;
 }
 
 async function parseStorageItem(key: keyof StorageSchema) {
@@ -98,17 +99,12 @@ async function parseStorageItem(key: keyof StorageSchema) {
 async function initStorageItem<T extends keyof StorageSchema>(key: T) {
 	const item = await parseStorageItem(key);
 
-	// Handle customSelectors type conversion from an object to a Map. This is
-	// only necessary temporarily in order not to lose user's customizations.
-	// Introduced in v0.5.0.
-	if (item && key === "customSelectors") {
+	if (key === "customSelectors") {
 		try {
-			const normalized = new Map<string, CustomSelectorsForPattern>(
-				Object.entries(item as Record<string, CustomSelectorsForPattern>)
-			) as StorageSchema[T];
+			const upgraded = upgradeCustomSelectors(item);
 
 			const parsed = zStorageSchema.shape[key].parse(
-				normalized
+				upgraded
 			) as StorageSchema[T];
 			return await store(key, parsed);
 		} catch {

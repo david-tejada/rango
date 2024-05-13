@@ -1,8 +1,5 @@
 import Color from "color";
-import {
-	CustomSelectorsForPattern,
-	StorageSchema,
-} from "../typings/StorageSchema";
+import { CustomSelector, StorageSchema } from "../typings/StorageSchema";
 
 export const defaultSettings = {
 	hintUppercaseLetters: false,
@@ -36,7 +33,7 @@ export const defaultSettings = {
 	uppercaseTabMarkers: true,
 	keyboardClicking: false,
 	keysToExclude: new Array<[string, string]>(),
-	customSelectors: new Map<string, CustomSelectorsForPattern>(),
+	customSelectors: new Array<CustomSelector>(),
 	customScrollPositions: new Map<string, Map<string, number>>(),
 	references: new Map<string, Map<string, string>>(),
 	showWhatsNewPageOnUpdate: true,

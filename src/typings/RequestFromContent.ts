@@ -1,4 +1,4 @@
-import { CustomSelectorsForPattern } from "./StorageSchema";
+import { CustomSelector } from "./StorageSchema";
 
 interface OpenInNewTab {
 	type: "openInNewTab";
@@ -41,13 +41,13 @@ interface StoreHintsInFrame {
 
 interface StoreCustomSelectors {
 	type: "storeCustomSelectors";
-	pattern: string;
-	selectors: CustomSelectorsForPattern;
+	url: string;
+	selectors: CustomSelector[];
 }
 
 interface ResetCustomSelectors {
 	type: "resetCustomSelectors";
-	pattern: string;
+	url: string;
 }
 
 interface RemoveReference {

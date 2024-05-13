@@ -521,6 +521,11 @@ export function SettingsComponent() {
 			</SettingsGroup>
 
 			<SettingsGroup label="Custom Hints">
+				<p className="explanation">
+					Include or exclude CSS selectors for the corresponding pattern.
+					Patterns are regular expression that will be used to match against the
+					URL of the page.
+				</p>
 				<SettingRow>
 					<CustomHintsSetting
 						value={settings.customSelectors}

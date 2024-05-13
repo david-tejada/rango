@@ -1,69 +1,25 @@
 import { faBan, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { CustomSelectorsForPattern } from "../typings/StorageSchema";
+import { CustomSelector } from "../typings/StorageSchema";
 import "./CustomHintsSetting.css";
 import { isValidSelector } from "../content/utils/selectorUtils";
 import { isValidRegExp } from "../content/utils/textUtils";
 
-type CustomHintsMap = Map<string, CustomSelectorsForPattern>;
-type CustomHintsArray = Array<{
-	type: "include" | "exclude";
-	pattern: string;
-	selector: string;
-}>;
-
 type CustomHintsSettingProp = {
-	value: CustomHintsMap;
-	onChange(value: CustomHintsMap): void;
+	value: CustomSelector[];
+	onChange(value: CustomSelector[]): void;
 };
-
-function flattenCustomHints(customHints: CustomHintsMap) {
-	const result: CustomHintsArray = [];
-	for (const [pattern, { include, exclude }] of customHints.entries()) {
-		for (const selector of include) {
-			result.push({ type: "include", pattern, selector });
-		}
-
-		for (const selector of exclude) {
-			result.push({ type: "exclude", pattern, selector });
-		}
-	}
-
-	return result;
-}
-
-function flatCustomHintsToMap(flatCustomHints: CustomHintsArray) {
-	const result: CustomHintsMap = new Map();
-
-	for (const { type, pattern, selector } of flatCustomHints) {
-		const customForPattern = result.get(pattern) ?? {
-			include: [],
-			exclude: [],
-		};
-		if (type === "include") {
-			customForPattern.include.push(selector);
-		} else {
-			customForPattern.exclude.push(selector);
-		}
-
-		result.set(pattern, customForPattern);
-	}
-
-	return result;
-}
 
 export function CustomHintsSetting({
 	value,
 	onChange,
 }: CustomHintsSettingProp) {
-	const flatCustomHints = flattenCustomHints(value);
-
 	function handleChange(
 		event: React.ChangeEvent<HTMLInputElement>,
 		key: "pattern" | "selector",
 		index: number
 	) {
-		const result = flatCustomHints.map((entry, i) => {
+		const result = value.map((entry, i) => {
 			if (i === index) {
 				return { ...entry, [key]: event.target.value };
 			}
@@ -71,29 +27,29 @@ export function CustomHintsSetting({
 			return entry;
 		});
 
-		onChange(flatCustomHintsToMap(result));
+		onChange(result);
 	}
 
 	function handleNewItem(type: "include" | "exclude") {
 		const newItem = { type, pattern: "", selector: "" };
-		onChange(flatCustomHintsToMap([...flatCustomHints, newItem]));
+		onChange([...value, newItem]);
 	}
 
 	function handleDeletion(index: number) {
-		const filtered = flatCustomHints.filter((_, i) => i !== index);
-		onChange(flatCustomHintsToMap(filtered));
+		const filtered = value.filter((_, i) => i !== index);
+		onChange(filtered);
 	}
 
 	return (
 		<div className="CustomHintsSetting">
-			{flatCustomHints.length > 0 && (
+			{value.length > 0 && (
 				<div className="row header">
 					<p>Pattern</p>
 					<p>Selector</p>
 				</div>
 			)}
 
-			{flatCustomHints.map(({ type, pattern, selector }, index) => (
+			{value.map(({ type, pattern, selector }, index) => (
 				// eslint-disable-next-line react/no-array-index-key
 				<div key={index} className="row">
 					{type === "include" ? (
@@ -107,9 +63,7 @@ export function CustomHintsSetting({
 					)}
 					<input
 						autoFocus={
-							index === flatCustomHints.length - 1 &&
-							pattern === "" &&
-							selector === ""
+							index === value.length - 1 && pattern === "" && selector === ""
 						}
 						type="text"
 						name="pattern"
