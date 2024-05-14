@@ -20,6 +20,7 @@ export const defaultSettings = {
 	hintsToggleTabs: new Map<number, boolean>(),
 	alwaysComputeHintables: false,
 	enableNotifications: true,
+	notifyWhenTogglingHints: false,
 	toastPosition: "top-center",
 	toastTransition: "bounce",
 	toastDuration: 5000,
