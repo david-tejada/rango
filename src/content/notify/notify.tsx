@@ -87,8 +87,13 @@ export async function notify(text: string, options?: ToastOptions) {
 	}
 }
 
-export async function notifyTogglesStatus() {
-	if (!(await shouldNotify())) return;
+export async function notifyTogglesStatus(force = false) {
+	if (
+		!(await shouldNotify()) ||
+		(!force && !getCachedSetting("notifyWhenTogglingHints"))
+	) {
+		return;
+	}
 
 	renderToast();
 

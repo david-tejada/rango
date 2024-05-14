@@ -58,6 +58,7 @@ export const zStorageSchema = z.object({
 
 	// Notifications
 	enableNotifications: z.boolean(),
+	notifyWhenTogglingHints: z.boolean(),
 	toastPosition: z.enum([
 		"top-right",
 		"top-center",

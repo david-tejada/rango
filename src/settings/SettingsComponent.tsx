@@ -578,6 +578,19 @@ export function SettingsComponent() {
 					/>
 				</SettingRow>
 				<SettingRow>
+					<Toggle
+						label="Show notification when toggling hints"
+						isPressed={settings.notifyWhenTogglingHints}
+						isDisabled={!settings.enableNotifications}
+						onClick={() => {
+							handleChange(
+								"notifyWhenTogglingHints",
+								!settings.notifyWhenTogglingHints
+							);
+						}}
+					/>
+				</SettingRow>
+				<SettingRow>
 					<Select
 						label="Position"
 						defaultValue={settings.toastPosition}

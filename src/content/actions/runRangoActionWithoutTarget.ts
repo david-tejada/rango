@@ -48,7 +48,7 @@ export async function runRangoActionWithoutTarget(
 			break;
 
 		case "displayTogglesStatus":
-			await notifyTogglesStatus();
+			await notifyTogglesStatus(true);
 			break;
 
 		case "focusFirstInput":
