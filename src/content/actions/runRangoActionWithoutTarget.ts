@@ -14,7 +14,11 @@ import { scrollToPosition, storeScrollPosition } from "./customScrollPositions";
 import { blur, focusFirstInput } from "./focus";
 import { unhoverAll } from "./hoverElement";
 import { navigateToNextPage, navigateToPreviousPage } from "./pagination";
-import { removeReference, showReferences } from "./references";
+import {
+	removeReference,
+	saveReferenceForActiveElement,
+	showReferences,
+} from "./references";
 import { refreshHints } from "./refreshHints";
 import { runActionOnReference } from "./runActionOnReference";
 import { scroll } from "./scroll";
@@ -160,6 +164,10 @@ export async function runRangoActionWithoutTarget(
 					document.activeElement &&
 					isEditable(document.activeElement)
 			);
+
+		case "saveReferenceForActiveElement":
+			await saveReferenceForActiveElement(request.arg);
+			break;
 
 		case "runActionOnReference":
 			return runActionOnReference(request.arg, request.arg2);

@@ -5,6 +5,8 @@ import { ElementWrapper } from "../../typings/ElementWrapper";
 import { showTooltip } from "../hints/showTooltip";
 import { getOrCreateWrapper } from "../wrappers/ElementWrapperClass";
 import { getHostPattern } from "../../common/utils";
+import { getActiveElement } from "../utils/domUtils";
+import { getWrapperForElement } from "../wrappers/wrappers";
 
 function getWrapperFromUniqueSelector(selector: string) {
 	const element = document.querySelector(selector);
@@ -37,6 +39,14 @@ export async function saveReference(wrapper: ElementWrapper, name: string) {
 	await store("references", references);
 
 	showTooltip(wrapper, name);
+}
+
+export async function saveReferenceForActiveElement(name: string) {
+	const activeElement = getActiveElement();
+	if (activeElement) {
+		const wrapper = getWrapperForElement(activeElement);
+		if (wrapper) await saveReference(wrapper, name);
+	}
 }
 
 export async function showReferences() {

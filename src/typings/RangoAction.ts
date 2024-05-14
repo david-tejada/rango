@@ -142,6 +142,11 @@ interface RangoActionSaveReference {
 	arg: string;
 }
 
+interface RangoActionSaveReferenceForActiveElement {
+	type: "saveReferenceForActiveElement";
+	arg: string;
+}
+
 export interface RangoActionRunActionOnReference {
 	type: "runActionOnReference";
 	arg: RangoActionWithTargets["type"];
@@ -206,6 +211,7 @@ export type RangoActionWithoutTarget =
 	| RangoActionSetHintWeight
 	| RangoActionCopyLocationProperty
 	| RangoActionOpenPageInNewTab
+	| RangoActionSaveReferenceForActiveElement
 	| RangoActionRunActionOnReference
 	| RangoActionRemoveReference
 	| RangoActionScrollPosition
