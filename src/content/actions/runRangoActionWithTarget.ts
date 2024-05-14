@@ -167,6 +167,13 @@ export async function runRangoActionWithTarget(
 			await saveReference(wrapper, request.arg);
 			break;
 
+		case "hideHint":
+			for (const wrapper of wrappers) {
+				wrapper.hint?.hide();
+			}
+
+			break;
+
 		default:
 			await notify(`Invalid action "${request.type}"`, {
 				type: "error",
