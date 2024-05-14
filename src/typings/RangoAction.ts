@@ -121,7 +121,8 @@ export interface RangoActionWithTargets {
 		| "scrollElementToCenter"
 		| "setSelectionBefore"
 		| "setSelectionAfter"
-		| "focusAndDeleteContents";
+		| "focusAndDeleteContents"
+		| "hideHint";
 	target: string[];
 }
 
