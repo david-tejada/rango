@@ -343,7 +343,7 @@ export function SettingsComponent() {
 					<NumberInput
 						label="Font size (px)"
 						defaultValue={settings.hintFontSize}
-						min={6}
+						min={1}
 						max={72}
 						isValid={isValidSetting("hintFontSize", settings.hintFontSize)}
 						onChange={(value) => {

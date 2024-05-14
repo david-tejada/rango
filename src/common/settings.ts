@@ -75,7 +75,7 @@ type SettingsValidators = {
 const validators: SettingsValidators = {
 	hintBackgroundColor: isValidColor,
 	hintFontColor: isValidColor,
-	hintFontSize: (value: number) => isWithinRange(value, 6, 72),
+	hintFontSize: (value: number) => isWithinRange(value, 1, 72),
 	hintBorderRadius: (value: number) => isWithinRange(value, 0, 72),
 	hintBorderWidth: (value: number) => isWithinRange(value, 0, 72),
 	hintBackgroundOpacity: (value: number | "") =>
