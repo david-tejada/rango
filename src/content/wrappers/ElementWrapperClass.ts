@@ -469,10 +469,10 @@ class ElementWrapperClass implements ElementWrapper {
 				(this.element.getAttribute("target") === "_blank" ||
 					isWithinContentEditable) &&
 				this.element.getAttribute("href") &&
-				// Issue #213
+				// Issue #213: Open Discord's internal links in the same tab.
 				!(
 					window.location.host === "discord.com" &&
-					this.element.matches(".link__95dc0")
+					window.location.host === new URL(this.element.href).host
 				)
 			) {
 				// In Firefox if we click a link with target="_blank" we get a popup
