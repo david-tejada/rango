@@ -3,7 +3,7 @@ import { notify } from "../notify/notify";
 import { dispatchKeyDown, dispatchKeyUp } from "../utils/dispatchEvents";
 import { editableElementSelector, getFocusable } from "../utils/domUtils";
 import { ElementWrapper } from "../../typings/ElementWrapper";
-import { getWrapperForElement } from "../wrappers/wrappers";
+import { getOrCreateWrapper } from "../wrappers/ElementWrapperClass";
 
 export function focus(wrappers: ElementWrapper[]): TalonAction[] | undefined {
 	window.focus();
@@ -36,10 +36,7 @@ export async function focusFirstInput() {
 		return;
 	}
 
-	const wrapper = getWrapperForElement(firstInput);
-	if (wrapper) {
-		focus([wrapper]);
-	}
+	focus([getOrCreateWrapper(firstInput)]);
 }
 
 export function blur() {
