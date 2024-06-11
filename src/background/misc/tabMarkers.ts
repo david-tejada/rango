@@ -32,6 +32,22 @@ export async function getTabMarker(tabId: number) {
 	});
 }
 
+async function assignTabMarker(tabId: number, marker: string) {
+	return withTabMarkers(({ free, tabIdsToMarkers, markersToTabIds }) => {
+		if (!free.includes(marker)) {
+			throw new Error(
+				`Unable to assign marker ${marker} as it's already in use`
+			);
+		}
+
+		const markerIndex = free.indexOf(marker);
+		free.splice(markerIndex, 1);
+
+		tabIdsToMarkers.set(tabId, marker);
+		markersToTabIds.set(marker, tabId);
+	});
+}
+
 export async function getTabIdForMarker(marker: string) {
 	return withTabMarkers(({ markersToTabIds }) => {
 		const tabId = markersToTabIds.get(marker);
@@ -84,25 +100,32 @@ async function resetTabMarkers() {
 export async function initTabMarkers() {
 	await resetTabMarkers();
 
-	// We need to reload all tabs where the content script is not running in case
+	// We need to assign the tab markers to their corresponding tab id in case
 	// the user has the setting "Continue where you left off" enabled. If we don't
-	// those tabs will have an invalid tab marker. We also can't reassign the tab
-	// markers to those tabs since we can't get their title, so we don't know
-	// which tab marker each one has.
+	// those tabs will have an invalid tab marker.
 
 	if (!(await retrieve("includeTabMarkers"))) return;
 
 	const tabs = await browser.tabs.query({});
 
+	const getMarkerFromTitle = (title: string) => {
+		return /^([a-z]{1,2}) \| /i.exec(title)?.[1]?.toLowerCase();
+	};
+
 	await Promise.allSettled(
-		tabs.map(async (tab) => {
+		tabs.map(async ({ title, id }) => {
+			if (!title || !id) return;
+
+			const marker = getMarkerFromTitle(title);
+			if (!marker) return;
+
 			try {
-				await sendRequestToContent(
-					{ type: "checkContentScriptRunning" },
-					tab.id
-				);
+				await assignTabMarker(id, marker);
 			} catch {
-				return browser.tabs.reload(tab.id);
+				// If the tab marker is already in use we reload the tab so it gets a
+				// new one. I'm not entirely sure if this is necessary but I leave it
+				// here just to be safe.
+				return browser.tabs.reload(id);
 			}
 		})
 	);
