@@ -19,59 +19,26 @@
 	</head>
 	<body>
 		<div class="container">
-			<h1>Rango has been updated to version 0.6.3</h1>
+			<h1>Rango has been updated to version 0.7.0</h1>
 			<section>
 				<h2>What's new?</h2>
 				<p>
-					Hello, my dear friends! Here I am again with some more good stuff to
-					make your web browsing life a bit easier. I hope you appreciate it.
-					This release brings us <strong>references</strong>. References allow
-					us to mark hints/elements to be able to use them in talon scripts. It
-					also brings us the ability to save and scroll to custom position.
-					Besides that this release brings more improvements and bug fixes.
+					Hello! I hope you are doing well. Here I bring you a new Rango update
+					to make your web browsing life a bit easier. I hope you appreciate it.
+					This release brings us the ability to target elements by their text
+					content using fuzzy search. This functionality can also be used for
+					scripting. We now also have the ability to edit custom selectors from
+					the settings page. Besides that this release brings more improvements
+					and bug fixes.
 				</p>
-
-				<p>Here is a video highlighting what's new in this update:</p>
-
-				<iframe
-					width="560"
-					height="315"
-					src="https://www.youtube.com/embed/oKNgwKdIA3k?si=0jAv4-ES-BcS4G1u"
-					title="YouTube video player"
-					frameborder="0"
-					allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
-					allowfullscreen
-				></iframe>
 			</section>
 			<section>
 				<h2>Update rango-talon</h2>
 				<p>
 					You need to update rango-talon to be able to use the new commands.
 				</p>
-				<p>
-					<strong>Important</strong>: I have made significant changes to
-					rango-talon. If you have made modifications outside of
-					<em>rango.talon</em> you might encounter merge conflicts. If you have
-					any issue reach out to me in the Talon Slack channel. Be aware that now tags
-					are used instead of settings to customize certain aspects. Here are
-					the tags you need to be aware of:
-				</p>
-				<ul>
-					<li>
-						<code>user.rango_direct_clicking</code>: Enabled by default. Remove
-						it if you want to use explicit clicking.
-					</li>
-					<li>
-						<code>user.rango_exclude_singles</code>: Disabled by default. Add it
-						if you have disabled <code>Include single letter hints</code> in the
-						extension.
-					</li>
-					<li>
-						<code>user.rango_number_hints</code>: Disabled by default. Add it if
-						you have enabled <code>Use number for hints</code> in the extension.
-					</li>
-				</ul>
 			</section>
+
 			<section>
 				<h2>Become a sponsor</h2>
 				<p>
@@ -91,86 +58,51 @@
 				>
 			</section>
 
-		<section>
-				<h2>Changelog for v0.6.3</h2>
-		
+			<section>
+				<h2>Changelog for v0.7.0</h2>
+
 				<h3>Added</h3>
 				<ul>
-						<li>Log to the console the selectors used when showing references.</li>
+					<li>Add setting to always compute hintables.</li>
+					<li>
+						Add command for performing action on an element fuzzy searching its
+						text.
+					</li>
+					<li>
+						Add ability to customize custom selectors from the settings page.
+					</li>
+					<li>Add setting for notifying or not when toggling hints.</li>
+					<li>Add command for hiding a specific hint.</li>
+					<li>Add command to save a reference to the active element.</li>
 				</ul>
-		
+
 				<h3>Fixed</h3>
 				<ul>
-						<li>Fix some reference not working when the unique selector uses `href`.</li>
-						<li>Fix some instances of hints within tables breaking layout.</li>
-						<li>Fix weird behavior displaying hints in contenteditable in https://pad.cogneon.io/.</li>
+					<li>
+						Fix issue with elements not triggering intersection when within
+						<code>positioned: fixed</code> element.
+					</li>
+					<li>
+						Fix hints being read out when using Microsoft Edge Read Aloud
+						function.
+					</li>
+					<li>Make hints and keys to exclude settings case insensitive.</li>
+					<li>
+						Fix crown not taking account sticky headers with smooth scrolling.
+					</li>
+					<li>Fix Discord's internal links opening in a new tab.</li>
+					<li>Fix <code>go input</code> not working when the hints are off.</li>
+					<li>
+						Fix slowness on startup caused by having to reload discarded tabs
+						for refreshing tab markers.
+					</li>
 				</ul>
-		</section>
 
-			<section>
-				<h2>Changelog for v0.6.2</h2>
-		
-				<h3>Added</h3>
-				<ul>
-						<li>Add setting to hide tab markers when the hints global toggle is off (#253)</li>
-				</ul>
-		
-				<h3>Fixed</h3>
-				<ul>
-						<li>Fix includeTabMarkers being altered by clicking the browser action button</li>
-						<li>Fix buggy behavior when changing the title of a bookmark manually (#254)</li>
-						<li>Handle focus change and update shouldBeHinted for all hintables. Fixes some instances of hints not displaying on menus that open when certain element is focused. (#256)</li>
-						<li>Fix hints not being shown with new color spaces in CSS Colors v4 (#257)</li>
-						<li>Improve include or exclude custom hints highlighting for better accessibility (#258)</li>
-						<li>Fix focus not being called for all HTMLElements (#255)</li>
-				</ul>
-		</section>
-		
-
-			<section>
-				<h2>Changelog for v0.6.0</h2>
-		
 				<h3>Changed</h3>
 				<ul>
-						<li>Clicking the action button also toggles the tab markers keeping them in sync with global hints toggle.</li>
-						<li>Change the way preferences are declared in rango-talon. Now tags are used instead of settings.</li>
+					<li>Allow smaller hint font size.</li>
 				</ul>
-		
-				<h3>Added</h3>
-				<ul>
-						<li>Add commands for saving references to hints/elements for scripting.</li>
-						<li>Add command <code>exclude all</code> to exclude all hints for the current host.</li>
-						<li>Add command to toggle tab markers.</li>
-						<li>Add commands to store custom scroll positions and scroll to them.</li>
-						<li>Add command <code>visit {user.website}</code> to focus a given tab by URL or create a new one.</li>
-						<li>Add command <code>tab hunt &lt;user.text&gt;<user.text></code>, to focus a tab matching a text in the title or URL using fuzzy search. Add commands <code>tab ahead</code> and <code>tab behind</code> to cycle through the results.</li>
-						<li>Add setting to use numbers instead of letters for hints.</li>
-						<li>Add setting to change the viewport margin that determines where hints are drawn.</li>
-						<li>Add setting to exclude certain strings from being used for hints.</li>
-						<li>Add setting for excluding keys for certain URL patterns when using keyboard clicking.</li>
-						<li>Add browser action context menu <code>Add Keys to Exclude</code>. This adds the host pattern of the current URL to the <code>keys to exclude</code> setting and opens the settings page.</li>
-						<li>Add <code>cursor: text</code> to the elements to show when using hint extra.</li>
-				</ul>
-		
-				<h3>Fixed</h3>
-				<ul>
-						<li>Fix toggle buttons in settings being invisible in high contrast mode.</li>
-						<li>Fix invalid tab markers when restoring previous tabs on startup in Firefox.</li>
-						<li>Fix some issues where hints for button elements failed to hide when those did.</li>
-						<li>Fix an issue where reattaching hints would cause the tab to crash.</li>
-						<li>Check if there is an offscreen document before creating one. This tries to fix a rare and difficult to reproduce issue where reading from the clipboard would fail.</li>
-						<li>Remove the decorations added by Rango when saving bookmarks (except in Safari as it doesn't support the bookmarks API).</li>
-						<li>Avoid the hints being included when printing.</li>
-						<li>Fix some discord links opening in a new tab when they shouldn't.</li>
-						<li>Fix some instances where direct clicking would be triggered when editing text and keyboard clicking on.</li>
-				</ul>
-		
-				<h3>Removed</h3>
-				<ul>
-						<li>Remove commands <code>rango direct</code> and <code>rango explicit</code>. You can still specify which mode you prefer with the tag <code>user.rango_direct_clicking</code>.</li>
-				</ul>
-		</section>
-		
+			</section>
 		</div>
 	</body>
 </html>

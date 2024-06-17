@@ -2,6 +2,33 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.7.0](https://github.com/david-tejada/rango/releases/tag/v0.7.0) - 2024-06-17
+
+### Added
+
+- Add setting to always compute hintables.
+- Add command for performing action on an element fuzzy searching its text.
+- Add ability to customize custom selectors from the settings page.
+- Add setting for notifying or not when toggling hints.
+- Add command for hiding a specific hint.
+- Add command to save a reference to the active element.
+
+### Fixed
+
+- Fix issue with elements not triggering intersection when within
+  `positioned: fixed` element.
+- Fix hints being read out when using Microsoft Edge Read Aloud function.
+- Make hints and keys to exclude settings case insensitive.
+- Fix crown not taking account sticky headers with smooth scrolling.
+- Fix Discord's internal links opening in a new tab.
+- Fix "go input" not working when the hints are off.
+- Fix slowness on startup caused by having to reload discarded tabs for
+  refreshing tab marker.
+
+### Changed
+
+- Allow smaller hint font size.
+
 ## [0.6.3](https://github.com/david-tejada/rango/releases/tag/v0.6.3) - 2024-2-2
 
 ### Added
@@ -488,21 +515,3 @@ All notable changes to the Rango extension will be documented in this file.
 
 If you update to this version remember to update
 [rango-talon](https://github.com/david-tejada/rango-talon)
-
-### Added
-
-- Rango now supports iframes!
-- Added commands for changing hints size: `hint bigger` and `hint smaller`
-- More ways to toggle hints on and off:
-  - With the shortcut `ctrl-shift-space`
-  - Clicking the extension button in the browser toolbar
-
-### Changed
-
-- Reduced displayHints timeout for added snappiness
-
-### Fixed
-
-- Fix hints position not being calculated properly on some pages
-  [#8](https://github.com/david-tejada/rango/issues/8)
-- Fix hints not returning to its original size after clicking

@@ -384,7 +384,9 @@ will work even when the hints are off.
 #### Save References
 
 - `mark <target> as <word>`: Saves a reference to the element with the specified
-  hint and assign it to the specified word.
+  hint and assigns it to the specified word.
+- `mark this as <word>`: Saves a reference to the focused element and assigns it
+  to the specified word.
 - `mark show`: Shows the visible saved references current in the page.
 - `mark clear <word>`: Remove the reference corresponding to the specified word.
 
@@ -400,7 +402,7 @@ In order to use the saved references in scripting you need to use the talon
 action `user.rango_run_action_on_reference`. This action accept two arguments:
 the name of the action and the name of the reference.
 
-Following is a simple example of command that clicks the element with the
+Following is a simple example of a command that clicks the element with the
 reference `edit`:
 
 ```talon
@@ -413,6 +415,47 @@ use references. These will be active when editing `.talon` files.
 - `click rango mark <word>`
 - `focus rango mark <word>`
 - `hover rango mark <word>`
+
+### Fuzzy Search Elements
+
+Similar to custom references you can also target elements by their text content
+using fuzzy search. This can also be used for scripting purposes with the
+advantage that there is no need to previously save a reference to the element.
+
+#### Using Fuzzy Search Directly to Run Actions on Elements
+
+- `follow <text>`: Click the element that better matches the provided text. It
+  prioritizes elements within the viewport. Any element within the viewport will
+  have priority over other elements outside of the viewport with better
+  fuzziness score.
+- `button <text>`: Click the element that better matches the provided text. It
+  doesn't take into account if the element is within or outside the viewport. It
+  will simply click the element in the document with the best fuzziness score.
+- `focus text <text>`: Focus the element that better matches the provided text.
+  It prioritizes elements within the viewport.
+- `hover text <text>`: Hover the element that better matches the provided text.
+  It prioritizes elements within the viewport.
+
+#### Scripting Using Fuzzy Search
+
+In order to use fuzzy search in scripting you need to use the talon action
+`user.rango_run_action_on_text_matched_element`. This action accepts three
+arguments: the name of the action, the text searched and whether to prioritize
+elements within the viewport or not (optional, defaults to false).
+
+Following is a simple example of a command that clicks the element that better
+matches the text "edit" anywhere in the document.
+
+```talon
+edit this: user.rango_run_action_on_text_matched_element("clickElement", "edit", false)
+```
+
+There are also a few talon helpers that will make easier to create commands
+using fuzzy search. These will be active when editing `.talon` files.
+
+- `click rango text <text>`
+- `focus rango text <text>`
+- `hover rango text <text>`
 
 ### Modify Hints Size
 
@@ -532,13 +575,13 @@ In [this page](https://forvo.com/word/define/#en) we have this section which
 unfortunately doesn't show any hints.
 
 <p align="left">
-  <img src="images/screenshot-custom-hints-1.png" height=70px">
+  <img src="images/screenshot-custom-hints-1.png" alt="">
 </p>
 
 Now we use the command `hint extra` to greedily display hints.
 
 <p align="left">
-  <img src="images/screenshot-custom-hints-2.png" height=70px">
+  <img src="images/screenshot-custom-hints-2.png" alt="">
 </p>
 
 If we wanted to show hints for the gray links we can issue the command
@@ -546,21 +589,21 @@ If we wanted to show hints for the gray links we can issue the command
 included.
 
 <p align="left">
-  <img src="images/screenshot-custom-hints-3.png" height=70px">
+  <img src="images/screenshot-custom-hints-3.png" alt="">
 </p>
 
 Since the result is not exactly what we want and there are still hints missing
 we use the command `some more`.
 
 <p align="left">
-  <img src="images/screenshot-custom-hints-4.png" height=70px">
+  <img src="mimages/screenshot-custom-hints-4.png" alt="">
 </p>
 
 Now there are more hints showing but they're not the ones we want. We issue the
 command `some more` again to see if that helps.
 
 <p align="left">
-  <img src="images/screenshot-custom-hints-5.png" height=70px">
+  <img src="images/screenshot-custom-hints-5.png" alt="">
 </p>
 
 The hints marked for inclusion now are exactly the ones we want. We could
@@ -568,7 +611,7 @@ continue including more custom hints using the `include` command again but for
 the moment we leave it like that and save with `custom hints save`.
 
 <p align="left">
-  <img src="images/screenshot-custom-hints-6.png" height=330px">
+  <img src="images/screenshot-custom-hints-6.png" alt="">
 </p>
 
 Now the extra hints disappear and we are left with the custom hints that we just
@@ -599,6 +642,14 @@ Here is a summary of all the commands for customizing hints:
 - `custom hints save`: Save the currently selected hints marked for
   inclusion/exclusion so that they render by default.
 - `custom hints reset`: Remove any previously included/excluded custom hints.
+
+Custom hints can also be edited, added or removed from the settings page.
+
+#### Hiding a Particular Hint
+
+On occasions a hint might be obscured by another hint that is stacked on top of
+the first one. For those occasions you can use the command `hide <target>` to
+hide the hint on top.
 
 ## Known Issues and Limitations
 
