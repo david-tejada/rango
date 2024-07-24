@@ -37,6 +37,7 @@ const backgroundCommands = new Set<RangoAction["type"]>([
 	"openSettingsPage",
 	"openPageInNewTab",
 	"activateTab",
+	"closeTab",
 	"refreshTabMarkers",
 	"toggleTabMarkers",
 	"focusOrCreateTabByUrl",
