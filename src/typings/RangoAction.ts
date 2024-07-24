@@ -103,6 +103,7 @@ interface RangoActionWithoutTargetWithOptionalNumberArg {
 export interface RangoActionWithTargets {
 	type:
 		| "activateTab"
+		| "closeTab"
 		| "openInBackgroundTab"
 		| "clickElement"
 		| "tryToFocusElementAndCheckIsEditable"
