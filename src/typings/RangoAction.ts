@@ -12,6 +12,7 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "moveCurrentTabToNewWindow"
 		| "focusPreviousTab"
 		| "focusFirstInput"
+		| "focusTabLastSounded"
 		| "unhoverAll"
 		| "copyCurrentTabMarkdownUrl"
 		| "getBareTitle"
