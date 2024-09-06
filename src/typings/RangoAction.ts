@@ -13,6 +13,7 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "focusPreviousTab"
 		| "focusFirstInput"
 		| "focusNextTabWithSound"
+		| "focusNextMutedTab"
 		| "focusTabLastSounded"
 		| "unhoverAll"
 		| "copyCurrentTabMarkdownUrl"

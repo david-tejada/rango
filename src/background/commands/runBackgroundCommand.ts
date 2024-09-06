@@ -22,6 +22,7 @@ import { getCurrentTab } from "../utils/getCurrentTab";
 import { notifySettingRemoved } from "../utils/notify";
 import { closeTab } from "../actions/closeTab";
 import {
+	focusNextMutedTab,
 	focusNextTabWithSound,
 	focusTabLastSounded,
 } from "../actions/focusTabBySound";
@@ -153,6 +154,10 @@ export async function runBackgroundCommand(
 
 		case "focusNextTabWithSound":
 			await focusNextTabWithSound();
+			break;
+
+		case "focusNextMutedTab":
+			await focusNextMutedTab();
 			break;
 
 		case "focusTabLastSounded":
