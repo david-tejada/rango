@@ -21,7 +21,10 @@ import { refreshTabMarkers } from "../misc/tabMarkers";
 import { getCurrentTab } from "../utils/getCurrentTab";
 import { notifySettingRemoved } from "../utils/notify";
 import { closeTab } from "../actions/closeTab";
-import { focusTabLastSounded } from "../actions/focusTabBySound";
+import {
+	focusNextTabWithSound,
+	focusTabLastSounded,
+} from "../actions/focusTabBySound";
 
 export async function runBackgroundCommand(
 	command: RangoAction
@@ -146,6 +149,10 @@ export async function runBackgroundCommand(
 
 		case "focusPreviousTab":
 			await focusPreviousTab();
+			break;
+
+		case "focusNextTabWithSound":
+			await focusNextTabWithSound();
 			break;
 
 		case "focusTabLastSounded":
