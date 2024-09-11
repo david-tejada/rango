@@ -41,6 +41,15 @@ export async function focusNextMutedTab() {
 	await browser.tabs.update(nextMutedTab.id, { active: true });
 }
 
+export async function focusNextAudibleTab() {
+	const audibleTabs = await browser.tabs.query({ audible: true });
+	const nextAudibleTab = await getNextTabByIndex(audibleTabs);
+	if (!nextAudibleTab) return;
+
+	await browser.windows.update(nextAudibleTab.windowId!, { focused: true });
+	await browser.tabs.update(nextAudibleTab.id, { active: true });
+}
+
 async function getNextTabByIndex(tabs: browser.Tabs.Tab[]) {
 	const currentTab = await getCurrentTab();
 

@@ -45,6 +45,7 @@ const backgroundCommands = new Set<RangoAction["type"]>([
 	"cycleTabsByText",
 	"focusNextTabWithSound",
 	"focusNextMutedTab",
+	"focusNextAudibleTab",
 	"focusTabLastSounded",
 ]);
 
