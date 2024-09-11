@@ -1,6 +1,7 @@
 import browser from "webextension-polyfill";
 import { retrieve, store } from "../../common/storage";
 import { urls } from "../../common/urls";
+import { setTabLastSounded } from "../actions/focusTabBySound";
 import { watchNavigation } from "../hints/watchNavigation";
 import { sendRequestToContent } from "../messaging/sendRequestToContent";
 import { createContextMenus } from "../misc/createContextMenus";
@@ -117,3 +118,10 @@ browser.bookmarks?.onCreated.addListener(resetBookmarkTitle);
 // the title of the bookmark will be changed again to the value of the input
 // field of the popup window.
 browser.bookmarks?.onChanged.addListener(resetBookmarkTitle);
+
+browser.tabs.onUpdated.addListener(async (tabId, { audible }) => {
+	if (audible === true) {
+		const tab = await browser.tabs.get(tabId);
+		if (!tab.mutedInfo?.muted) setTabLastSounded(tabId);
+	}
+});

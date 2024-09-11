@@ -43,6 +43,18 @@ const backgroundCommands = new Set<RangoAction["type"]>([
 	"focusOrCreateTabByUrl",
 	"focusTabByText",
 	"cycleTabsByText",
+	"focusNextTabWithSound",
+	"focusNextMutedTab",
+	"focusNextAudibleTab",
+	"focusTabLastSounded",
+	"muteCurrentTab",
+	"unmuteCurrentTab",
+	"muteTab",
+	"unmuteTab",
+	"muteNextTabWithSound",
+	"unmuteNextMutedTab",
+	"muteAllTabsWithSound",
+	"unmuteAllMutedTabs",
 ]);
 
 export async function dispatchCommand(
