@@ -27,6 +27,13 @@ import {
 	focusNextTabWithSound,
 	focusTabLastSounded,
 } from "../actions/focusTabBySound";
+import {
+	muteAllTabsWithSound,
+	muteNextTabWithSound,
+	muteTab,
+	unmuteAllMutedTabs,
+	unmuteNextMutedTab,
+} from "../actions/muteTabs";
 
 export async function runBackgroundCommand(
 	command: RangoAction
@@ -167,6 +174,38 @@ export async function runBackgroundCommand(
 
 		case "focusTabLastSounded":
 			await focusTabLastSounded();
+			break;
+
+		case "muteCurrentTab":
+			await muteTab();
+			break;
+
+		case "unmuteCurrentTab":
+			await muteTab(undefined, false);
+			break;
+
+		case "muteTab":
+			await muteTab(command.target);
+			break;
+
+		case "unmuteTab":
+			await muteTab(command.target, false);
+			break;
+
+		case "muteNextTabWithSound":
+			await muteNextTabWithSound();
+			break;
+
+		case "unmuteNextMutedTab":
+			await unmuteNextMutedTab();
+			break;
+
+		case "muteAllTabsWithSound":
+			await muteAllTabsWithSound();
+			break;
+
+		case "unmuteAllMutedTabs":
+			await unmuteAllMutedTabs();
 			break;
 
 		case "copyLocationProperty":

@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { notify } from "../utils/notify";
-import { getCurrentTab } from "../utils/getCurrentTab";
+import { getNextTabByIndex } from "../utils/tabUtils";
 
 let tabLastSounded: number | undefined;
 
@@ -48,17 +48,4 @@ export async function focusNextAudibleTab() {
 
 	await browser.windows.update(nextAudibleTab.windowId!, { focused: true });
 	await browser.tabs.update(nextAudibleTab.id, { active: true });
-}
-
-async function getNextTabByIndex(tabs: browser.Tabs.Tab[]) {
-	const currentTab = await getCurrentTab();
-
-	return (
-		tabs.find(
-			(tab) =>
-				(tab.windowId === currentTab.windowId &&
-					tab.index > currentTab.index) ||
-				tab.windowId !== currentTab.windowId
-		) ?? tabs[0]
-	);
 }

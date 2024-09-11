@@ -16,6 +16,12 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "focusNextMutedTab"
 		| "focusNextAudibleTab"
 		| "focusTabLastSounded"
+		| "muteCurrentTab"
+		| "unmuteCurrentTab"
+		| "muteNextTabWithSound"
+		| "unmuteNextMutedTab"
+		| "muteAllTabsWithSound"
+		| "unmuteAllMutedTabs"
 		| "unhoverAll"
 		| "copyCurrentTabMarkdownUrl"
 		| "getBareTitle"
@@ -107,6 +113,8 @@ interface RangoActionWithoutTargetWithOptionalNumberArg {
 export interface RangoActionWithTargets {
 	type:
 		| "activateTab"
+		| "muteTab"
+		| "unmuteTab"
 		| "closeTab"
 		| "openInBackgroundTab"
 		| "clickElement"
