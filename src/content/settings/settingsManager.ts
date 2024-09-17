@@ -12,10 +12,10 @@ export const entries = Object.entries as <T>(
 
 const emitter = new Emittery<Settings>();
 
-let settings: Settings | undefined;
+let settingsCache: Settings | undefined;
 
 export async function initSettingsManager() {
-	settings = await retrieveSettings();
+	settingsCache = await retrieveSettings();
 	browser.storage.onChanged.addListener(async (changes) => {
 		// Most of the time this event fires because we are storing or retrieving
 		// hints stacks, so we can directly ignore it here to gain a bit of
@@ -34,9 +34,12 @@ export async function initSettingsManager() {
 	});
 }
 
-function setSetting<T extends keyof Settings>(key: T, value: Settings[T]) {
-	assertDefined(settings, "Attempting to set setting before initialization.");
-	settings[key] = value;
+function cacheSetting<T extends keyof Settings>(key: T, value: Settings[T]) {
+	assertDefined(
+		settingsCache,
+		"Attempting to set setting before initialization."
+	);
+	settingsCache[key] = value;
 }
 
 /**
@@ -46,10 +49,10 @@ function setSetting<T extends keyof Settings>(key: T, value: Settings[T]) {
  */
 export function getSetting<T extends keyof Settings>(key: T): Settings[T] {
 	assertDefined(
-		settings,
+		settingsCache,
 		"Attempting to retrieve setting before initialization."
 	);
-	return settings[key];
+	return settingsCache[key];
 }
 
 /**
@@ -59,10 +62,10 @@ export function getSetting<T extends keyof Settings>(key: T): Settings[T] {
  */
 export function getAllSettings() {
 	assertDefined(
-		settings,
+		settingsCache,
 		"Attempting to retrieve settings before initialization."
 	);
-	return settings;
+	return settingsCache;
 }
 
 async function handleSettingChange(
@@ -73,7 +76,7 @@ async function handleSettingChange(
 			if (change && change.oldValue !== change.newValue) {
 				// We need to use retrieve here to get the deserialized value.
 				const newValue = await retrieve(key);
-				setSetting(key, newValue);
+				cacheSetting(key, newValue);
 				await emitter.emit(key, newValue);
 			}
 		})
