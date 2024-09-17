@@ -2,6 +2,9 @@ import browser from "webextension-polyfill";
 import { getHintsInTab } from "../utils/getHintsInTab";
 import { getHintedWrappers } from "../wrappers/wrappers";
 import { isEditable, getActiveElement } from "../utils/domUtils";
+import { onSettingChange } from "../settings/settingsManager";
+import { notify } from "../notify/notify";
+import { refresh } from "../wrappers/refresh";
 
 let keysPressedBuffer = "";
 let timeoutId: ReturnType<typeof setTimeout>;
@@ -102,3 +105,20 @@ export function initKeyboardClicking() {
 export function stopKeyboardClicking() {
 	window.removeEventListener("keydown", keydownHandler, true);
 }
+
+onSettingChange("keyboardClicking", async (keyboardClicking) => {
+	if (keyboardClicking) {
+		initKeyboardClicking();
+	} else {
+		stopKeyboardClicking();
+	}
+
+	const status = keyboardClicking ? "enabled" : "disabled";
+
+	await notify(`Keyboard clicking ${status}`, {
+		icon: status,
+		toastId: "keyboardToggle",
+	});
+
+	await refresh({ hintsCharacters: true });
+});

@@ -1,4 +1,6 @@
 import { retrieve, store } from "../../common/storage";
+import { onSettingChange } from "../settings/settingsManager";
+import { refresh } from "../wrappers/refresh";
 
 const defaultSelector =
 	// Elements
@@ -67,3 +69,8 @@ export function matchesHintableSelector(target: Element) {
 export function matchesExtraSelector(target: Element) {
 	return target.matches(extraSelector);
 }
+
+onSettingChange("customSelectors", async () => {
+	await updateCustomSelectors();
+	return refresh({ isHintable: true });
+});

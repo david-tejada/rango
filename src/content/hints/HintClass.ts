@@ -1,27 +1,24 @@
 import Color from "color";
 import { debounce } from "lodash";
 import { rgbaToRgb } from "../../lib/rgbaToRgb";
+import { Hint } from "../../typings/Hint";
+import { getAllSettings, getSetting } from "../settings/settingsManager";
+import { getToggles } from "../settings/toggles";
+import { createsStackingContext } from "../utils/createsStackingContext";
 import { getEffectiveBackgroundColor } from "../utils/getEffectiveBackgroundColor";
 import { getFirstTextNodeDescendant } from "../utils/nodeUtils";
-import { createsStackingContext } from "../utils/createsStackingContext";
-import { Hint } from "../../typings/Hint";
+import { refresh } from "../wrappers/refresh";
 import {
 	clearHintedWrapper,
 	getWrapper,
 	getWrapperForElement,
 	setHintedWrapper,
 } from "../wrappers/wrappers";
-import {
-	getCachedSetting,
-	getCachedSettingAll,
-} from "../settings/cacheSettings";
-import { refresh } from "../wrappers/refresh";
-import { getToggles } from "../settings/toggles";
 import { matchesStagedSelector } from "./customSelectorsStaging";
-import { getElementToPositionHint } from "./getElementToPositionHint";
 import { getAptContainer, getContextForHint } from "./getContextForHint";
+import { getCustomNudge } from "./getCustomNudge";
+import { getElementToPositionHint } from "./getElementToPositionHint";
 import { popHint, pushHint } from "./hintsCache";
-import { setStyleProperties } from "./setStyleProperties";
 import {
 	cacheLayout,
 	clearLayoutCache,
@@ -31,7 +28,7 @@ import {
 	getOffsetParent,
 	removeFromLayoutCache,
 } from "./layoutCache";
-import { getCustomNudge } from "./getCustomNudge";
+import { setStyleProperties } from "./setStyleProperties";
 
 const hintQueue: Set<HintClass> = new Set();
 
@@ -280,7 +277,7 @@ export class HintClass implements Hint {
 		this.target = target;
 		this.isActive = false;
 
-		this.borderWidth = getCachedSetting("hintBorderWidth");
+		this.borderWidth = getSetting("hintBorderWidth");
 
 		this.shadowHost = document.createElement("div");
 		this.shadowHost.className = "rango-hint";
@@ -397,9 +394,9 @@ export class HintClass implements Hint {
 			color = new Color("white");
 			this.borderColor = new Color("white");
 		} else {
-			const customBackgroundColor = getCachedSetting("hintBackgroundColor");
-			const customFontColor = getCachedSetting("hintFontColor");
-			const backgroundOpacity = getCachedSetting("hintBackgroundOpacity");
+			const customBackgroundColor = getSetting("hintBackgroundColor");
+			const customFontColor = getSetting("hintFontColor");
+			const backgroundOpacity = getSetting("hintBackgroundOpacity");
 
 			this.firstTextNodeDescendant = getFirstTextNodeDescendant(this.target);
 
@@ -440,7 +437,7 @@ export class HintClass implements Hint {
 
 			if (
 				backgroundColor.contrast(color) <
-					getCachedSetting("hintMinimumContrastRatio") &&
+					getSetting("hintMinimumContrastRatio") &&
 				!customFontColor
 			) {
 				color = backgroundColor.isLight()
@@ -448,7 +445,7 @@ export class HintClass implements Hint {
 					: new Color("white");
 			}
 
-			this.borderWidth = getCachedSetting("hintBorderWidth");
+			this.borderWidth = getSetting("hintBorderWidth");
 			this.borderColor = new Color(color).alpha(0.3);
 		}
 
@@ -746,7 +743,7 @@ export class HintClass implements Hint {
 			hintBorderWidth,
 			hintBorderRadius,
 			hintUppercaseLetters,
-		} = getCachedSettingAll();
+		} = getAllSettings();
 
 		this.computeColors();
 
@@ -777,7 +774,7 @@ export class HintClass implements Hint {
 
 	clearKeyHighlight() {
 		this.keyEmphasis = false;
-		this.borderWidth = getCachedSetting("hintBorderWidth");
+		this.borderWidth = getSetting("hintBorderWidth");
 		this.updateColors();
 	}
 }

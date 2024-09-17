@@ -1,5 +1,6 @@
 import { debounce } from "lodash";
 import { cacheHints, clearHintsCache } from "../hints/hintsCache";
+import { onSettingChange } from "../settings/settingsManager";
 import { getAllWrappers, getHintedWrappers } from "./wrappers";
 
 type Options = {
@@ -193,3 +194,34 @@ export async function refresh(options?: Options) {
 
 	await debouncedRefresh();
 }
+
+onSettingChange(
+	[
+		"includeSingleLetterHints",
+		"useNumberHints",
+		"hintsToExclude",
+		"keysToExclude",
+	],
+	async () => {
+		await refresh({ hintsCharacters: true });
+	}
+);
+
+onSettingChange(
+	[
+		"hintUppercaseLetters",
+		"hintFontFamily",
+		"hintFontSize",
+		"hintWeight",
+		"hintBackgroundColor",
+		"hintBackgroundOpacity",
+		"hintFontColor",
+		"hintBorderWidth",
+		"hintBorderRadius",
+		"hintMinimumContrastRatio",
+		"hintBorderWidth",
+	],
+	async () => {
+		await refresh({ hintsStyle: true, hintsPosition: true });
+	}
+);

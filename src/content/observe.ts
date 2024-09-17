@@ -1,4 +1,5 @@
-import { getCachedSetting } from "./settings/cacheSettings";
+import { notifyTogglesStatus } from "./notify/notify";
+import { getSetting, onSettingChange } from "./settings/settingsManager";
 import { getToggles } from "./settings/toggles";
 import {
 	addWrappersFrom,
@@ -16,7 +17,7 @@ const config = { attributes: true, childList: true, subtree: true };
 
 export async function updateHintsEnabled() {
 	const newEnabled = getToggles().computed;
-	const alwaysComputeHintables = getCachedSetting("alwaysComputeHintables");
+	const alwaysComputeHintables = getSetting("alwaysComputeHintables");
 
 	// Here we assume that just one change of state takes place. That is, in the
 	// same call to this function, either the hints have been switched or the
@@ -55,7 +56,7 @@ export async function updateHintsEnabled() {
 
 export default async function observe() {
 	enabled = getToggles().computed;
-	if (enabled || getCachedSetting("alwaysComputeHintables")) {
+	if (enabled || getSetting("alwaysComputeHintables")) {
 		// We observe all the initial elements before any mutation
 		if (document.body) addWrappersFrom(document.body);
 
@@ -63,3 +64,20 @@ export default async function observe() {
 		mutationObserver.observe(document, config);
 	}
 }
+
+onSettingChange(
+	[
+		"hintsToggleGlobal",
+		"hintsToggleHosts",
+		"hintsTogglePaths",
+		"hintsToggleTabs",
+	],
+	async () => {
+		await updateHintsEnabled();
+		await notifyTogglesStatus();
+	}
+);
+
+onSettingChange("alwaysComputeHintables", async () => {
+	await updateHintsEnabled();
+});

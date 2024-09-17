@@ -1,5 +1,5 @@
 import { getTabId } from "../setup/contentScriptContext";
-import { getCachedSettingAll } from "./cacheSettings";
+import { getAllSettings } from "./settingsManager";
 
 let navigationToggle: boolean | undefined;
 
@@ -13,7 +13,7 @@ export function getToggles() {
 		hintsToggleHosts,
 		hintsTogglePaths,
 		hintsToggleTabs,
-	} = getCachedSettingAll();
+	} = getAllSettings();
 
 	const tabSwitch = hintsToggleTabs.get(getTabId());
 	const hostSwitch = hintsToggleHosts.get(window.location.host);
