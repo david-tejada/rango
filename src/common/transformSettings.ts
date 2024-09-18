@@ -1,7 +1,7 @@
 import { z } from "zod";
-import { isValidSelector } from "../content/utils/selectorUtils";
-import { isValidRegExp } from "../content/utils/textUtils";
 import { CustomSelector, StorageSchema } from "../typings/StorageSchema";
+import { isValidSelector } from "./selectorUtils";
+import { isValidRegExp } from "./textUtils";
 
 type CustomsSelectorsLegacyEntry = [
 	string,

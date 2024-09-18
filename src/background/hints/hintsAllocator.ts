@@ -3,7 +3,7 @@ import browser from "webextension-polyfill";
 import { getKeysToExclude } from "../../common/getKeysToExclude";
 import { retrieve, store } from "../../common/storage";
 import { HintsStack } from "../../typings/StorageSchema";
-import { letterHints, numberHints } from "../utils/allHints";
+import { letterHints, numberHints } from "../../common/allHints";
 import { navigationOccurred } from "./preloadTabs";
 
 async function getEmptyStack(tabId: number): Promise<HintsStack> {
