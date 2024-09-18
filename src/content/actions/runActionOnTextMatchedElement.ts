@@ -1,6 +1,6 @@
 import Fuse from "fuse.js";
 import { RangoActionWithTargets } from "../../typings/RangoAction";
-import { getCachedSetting } from "../settings/cacheSettings";
+import { getSetting } from "../settings/settingsManager";
 import { getToggles } from "../settings/toggles";
 import { deepGetElements } from "../utils/deepGetElements";
 import { isHintable } from "../utils/isHintable";
@@ -24,7 +24,7 @@ function trimTextContent(element: Element) {
 
 async function getHintables() {
 	// Hints are on, there will be wrappers for the hintable elements
-	if (getToggles().computed || getCachedSetting("alwaysComputeHintables")) {
+	if (getToggles().computed || getSetting("alwaysComputeHintables")) {
 		return getAllWrappers()
 			.filter((wrapper) => wrapper.isHintable && isVisible(wrapper.element))
 			.map((wrapper) => ({

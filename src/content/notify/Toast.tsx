@@ -1,7 +1,7 @@
 import "react-toastify/dist/ReactToastify.css";
 import { Bounce, Flip, Slide, ToastContainer, Zoom } from "react-toastify";
 import "./Toast.css";
-import { getCachedSetting } from "../settings/cacheSettings";
+import { getSetting } from "../settings/settingsManager";
 
 const transitions = {
 	slide: Slide,
@@ -22,8 +22,8 @@ export function Toast() {
 			newestOnTop={false}
 			rtl={false}
 			theme="light"
-			position={getCachedSetting("toastPosition")}
-			transition={transitions[getCachedSetting("toastTransition")]}
+			position={getSetting("toastPosition")}
+			transition={transitions[getSetting("toastTransition")]}
 		/>
 	);
 }

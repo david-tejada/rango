@@ -1,12 +1,11 @@
-import { ToastOptions, toast } from "react-toastify";
 import { createRoot } from "react-dom/client";
-import { getCachedSetting } from "../settings/cacheSettings";
+import { ToastOptions, toast } from "react-toastify";
+import { getSetting } from "../settings/settingsManager";
 import { isCurrentTab, isMainframe } from "../setup/contentScriptContext";
-import { retrieve } from "../../common/storage";
 import { Toast } from "./Toast";
+import { ToastIcon } from "./ToastIcon";
 import { ToastMessage } from "./ToastMessage";
 import { TogglesStatusMessage } from "./ToastTogglesMessage";
-import { ToastIcon } from "./ToastIcon";
 
 let notificationAllowed = false;
 
@@ -37,7 +36,7 @@ async function shouldNotify() {
 	if (
 		!notificationAllowed ||
 		document.visibilityState !== "visible" ||
-		!getCachedSetting("enableNotifications") ||
+		!getSetting("enableNotifications") ||
 		!isMainframe() ||
 		!(await isCurrentTab())
 	) {
@@ -52,7 +51,7 @@ export async function notify(text: string, options?: ToastOptions) {
 
 	renderToast();
 
-	const autoClose = await retrieve("toastDuration");
+	const autoClose = getSetting("toastDuration");
 
 	options = Object.assign({ autoClose }, options);
 
@@ -90,14 +89,14 @@ export async function notify(text: string, options?: ToastOptions) {
 export async function notifyTogglesStatus(force = false) {
 	if (
 		!(await shouldNotify()) ||
-		(!force && !getCachedSetting("notifyWhenTogglingHints"))
+		(!force && !getSetting("notifyWhenTogglingHints"))
 	) {
 		return;
 	}
 
 	renderToast();
 
-	const autoClose = await retrieve("toastDuration");
+	const autoClose = getSetting("toastDuration");
 
 	if (toast.isActive("toggles")) {
 		toast.update("toggles");

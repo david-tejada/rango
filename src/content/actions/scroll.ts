@@ -1,7 +1,7 @@
 import { isHtmlElement } from "../../typings/TypingUtils";
-import { getCachedSetting } from "../settings/cacheSettings";
 import { getUserScrollableContainer } from "../utils/getUserScrollableContainer";
 import { ElementWrapper } from "../../typings/ElementWrapper";
+import { getSetting } from "../settings/settingsManager";
 
 const DEFAULT_SCROLL_FACTOR = 0.66;
 
@@ -28,7 +28,7 @@ export function getScrollBehavior() {
 	// Scroll tests fail if behavior is "smooth"
 	if (process.env["NODE_ENV"] !== "production") return "instant";
 
-	const scrollBehavior = getCachedSetting("scrollBehavior");
+	const scrollBehavior = getSetting("scrollBehavior");
 
 	if (scrollBehavior === "auto") {
 		const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");

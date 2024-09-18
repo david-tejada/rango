@@ -1,8 +1,8 @@
 import browser from "webextension-polyfill";
 import { throttle } from "lodash";
-import { getCachedSetting } from "../settings/cacheSettings";
 import { isMainframe } from "../setup/contentScriptContext";
 import { getToggles } from "../settings/toggles";
+import { getSetting, onSettingChange } from "../settings/settingsManager";
 
 // Settings
 let urlInTitle: boolean;
@@ -115,11 +115,11 @@ export async function initTitleDecoration() {
 
 	const globalHintsOff = getToggles().global;
 
-	urlInTitle = getCachedSetting("urlInTitle");
+	urlInTitle = getSetting("urlInTitle");
 	includeTabMarkers =
-		getCachedSetting("includeTabMarkers") &&
-		!(!globalHintsOff && getCachedSetting("hideTabMarkersWithGlobalHintsOff"));
-	uppercaseTabMarkers = getCachedSetting("uppercaseTabMarkers");
+		getSetting("includeTabMarkers") &&
+		!(!globalHintsOff && getSetting("hideTabMarkersWithGlobalHintsOff"));
+	uppercaseTabMarkers = getSetting("uppercaseTabMarkers");
 
 	if (
 		(previousUrlInTitle && !urlInTitle) ||
@@ -150,3 +150,19 @@ export async function initTitleDecoration() {
 		});
 	}
 }
+
+onSettingChange(
+	[
+		"urlInTitle",
+		"includeTabMarkers",
+		"uppercaseTabMarkers",
+		"hideTabMarkersWithGlobalHintsOff",
+	],
+	initTitleDecoration
+);
+
+onSettingChange("hintsToggleGlobal", async () => {
+	if (getSetting("hideTabMarkersWithGlobalHintsOff")) {
+		await initTitleDecoration();
+	}
+});

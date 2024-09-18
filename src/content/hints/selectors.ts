@@ -1,4 +1,6 @@
-import { retrieve, store } from "../../common/storage";
+import { store } from "../../common/storage";
+import { getSetting, onSettingChange } from "../settings/settingsManager";
+import { refresh } from "../wrappers/refresh";
 
 const defaultSelector =
 	// Elements
@@ -21,7 +23,7 @@ let excludeSelectorAll = "";
  * used when checking if an element should be hinted.
  */
 export async function updateCustomSelectors() {
-	const customSelectors = await retrieve("customSelectors");
+	const customSelectors = getSetting("customSelectors");
 
 	// This is stored when the extension first runs, so it shouldn't be undefined.
 	// But it is undefined when running tests. This way we also make extra sure.
@@ -67,3 +69,8 @@ export function matchesHintableSelector(target: Element) {
 export function matchesExtraSelector(target: Element) {
 	return target.matches(extraSelector);
 }
+
+onSettingChange("customSelectors", async () => {
+	await updateCustomSelectors();
+	return refresh({ isHintable: true });
+});
