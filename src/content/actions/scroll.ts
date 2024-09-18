@@ -5,16 +5,6 @@ import { getSetting } from "../settings/settingsManager";
 
 const DEFAULT_SCROLL_FACTOR = 0.66;
 
-// Officially "instant" is not part of the specification yet, although it works
-// in Firefox, Chrome and Safari.
-declare global {
-	interface ScrollToOptions {
-		left?: number;
-		top?: number;
-		behavior?: "auto" | "instant" | "smooth";
-	}
-}
-
 let lastScrollContainer: Element | undefined;
 let lastScrollFactor: number;
 
