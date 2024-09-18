@@ -126,7 +126,70 @@
 			"@typescript-eslint/ban-types": "off",
 			"no-redeclare": "off",
 			"@typescript-eslint/no-redeclare": "off"
-		}
+		},
+		"overrides": [
+			{
+				"files": [
+					"src/background/**"
+				],
+				"rules": {
+					"no-restricted-imports": [
+						"error",
+						{
+							"patterns": [
+								{
+									"group": [
+										"**/content/**"
+									],
+									"message": "Modules within /src/background can't import from /src/content"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"files": [
+					"src/content/**"
+				],
+				"rules": {
+					"no-restricted-imports": [
+						"error",
+						{
+							"patterns": [
+								{
+									"group": [
+										"**/background/**"
+									],
+									"message": "Modules within /src/content can't import from /src/background"
+								}
+							]
+						}
+					]
+				}
+			},
+			{
+				"files": [
+					"src/common/**"
+				],
+				"rules": {
+					"no-restricted-imports": [
+						"error",
+						{
+							"patterns": [
+								{
+									"group": [
+										"**/background/**",
+										"**/content/**"
+									],
+									"message": "Modules within /src/content can't import from /src/background or /src/content"
+								}
+							]
+						}
+					]
+				}
+			}
+		]
 	},
 	"prettier": {
 		"trailingComma": "es5",

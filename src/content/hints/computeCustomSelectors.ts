@@ -5,7 +5,7 @@ import {
 	getSpecificityValue,
 	isValidSelector,
 	selectorToArray,
-} from "../utils/selectorUtils";
+} from "../../common/selectorUtils";
 import { SelectorAlternative } from "../../typings/SelectorAlternative";
 
 function getChildNumber(target: Element) {

@@ -1,5 +1,5 @@
-import { letterHints } from "../background/utils/allHints";
 import { StorageSchema } from "../typings/StorageSchema";
+import { letterHints } from "./allHints";
 import { defaultSettings } from "./settings";
 
 export const defaultStorage: StorageSchema = {
