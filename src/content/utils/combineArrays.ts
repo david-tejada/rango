@@ -71,7 +71,7 @@ function odometerIncrement<T>(odometer: number[], arrayOfArrays: T[][]) {
 
 		if (odometer[iOdometerDigit]! + 1 <= maxee) {
 			// Increment, and you're done...
-			odometer[iOdometerDigit]++;
+			odometer[iOdometerDigit]!++;
 			return true;
 		}
 
