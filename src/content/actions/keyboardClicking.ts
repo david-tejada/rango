@@ -102,7 +102,7 @@ export function initKeyboardClicking() {
 	window.addEventListener("keydown", keydownHandler, true);
 }
 
-export function stopKeyboardClicking() {
+function stopKeyboardClicking() {
 	window.removeEventListener("keydown", keydownHandler, true);
 }
 

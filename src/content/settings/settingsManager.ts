@@ -6,7 +6,7 @@ import { hasMatchingKeys } from "../../lib/utils";
 import { assertDefined } from "../../typings/TypingUtils";
 
 // https://github.com/microsoft/TypeScript/issues/51572#issuecomment-1319153323
-export const entries = Object.entries as <T>(
+const entries = Object.entries as <T>(
 	object: T
 ) => Array<[keyof T, T[keyof T]]>;
 
