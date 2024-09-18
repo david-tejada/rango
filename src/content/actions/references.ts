@@ -1,12 +1,13 @@
 import browser from "webextension-polyfill";
 import { getCssSelector } from "css-selector-generator";
-import { retrieve, store } from "../../common/storage";
+import { store } from "../../common/storage";
 import { ElementWrapper } from "../../typings/ElementWrapper";
 import { showTooltip } from "../hints/showTooltip";
 import { getOrCreateWrapper } from "../wrappers/ElementWrapperClass";
 import { getHostPattern } from "../../common/utils";
 import { getActiveElement } from "../utils/domUtils";
 import { getWrapperForElement } from "../wrappers/wrappers";
+import { getSetting } from "../settings/settingsManager";
 
 function getWrapperFromUniqueSelector(selector: string) {
 	const element = document.querySelector(selector);
@@ -17,7 +18,7 @@ function getWrapperFromUniqueSelector(selector: string) {
 
 export async function getReferences() {
 	const hostPattern = getHostPattern(window.location.href);
-	const references = await retrieve("references");
+	const references = getSetting("references");
 	const hostReferences =
 		references.get(hostPattern) ?? new Map<string, string>();
 

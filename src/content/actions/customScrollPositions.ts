@@ -1,6 +1,7 @@
 import Fuse from "fuse.js";
-import { retrieve, store } from "../../common/storage";
+import { store } from "../../common/storage";
 import { notify } from "../notify/notify";
+import { getSetting } from "../settings/settingsManager";
 import { getMainScrollable, getScrollBehavior } from "./scroll";
 
 export async function storeScrollPosition(name: string) {
@@ -13,7 +14,7 @@ export async function storeScrollPosition(name: string) {
 
 	const { scrollTop } = scrollContainer;
 
-	const scrollPositions = await retrieve("customScrollPositions");
+	const scrollPositions = getSetting("customScrollPositions");
 	const scrollPositionsForCurrentPage =
 		scrollPositions.get(window.location.origin + window.location.pathname) ??
 		new Map<string, number>();
@@ -32,7 +33,7 @@ export async function storeScrollPosition(name: string) {
 export async function scrollToPosition(name: string) {
 	const scrollContainer = getMainScrollable("vertical");
 
-	const scrollPositions = await retrieve("customScrollPositions");
+	const scrollPositions = getSetting("customScrollPositions");
 	const scrollPositionsForCurrentPage =
 		scrollPositions.get(window.location.origin + window.location.pathname) ??
 		new Map<string, number>();

@@ -1,6 +1,5 @@
 import { createRoot } from "react-dom/client";
 import { ToastOptions, toast } from "react-toastify";
-import { retrieve } from "../../common/storage";
 import { getSetting } from "../settings/settingsManager";
 import { isCurrentTab, isMainframe } from "../setup/contentScriptContext";
 import { Toast } from "./Toast";
@@ -52,7 +51,7 @@ export async function notify(text: string, options?: ToastOptions) {
 
 	renderToast();
 
-	const autoClose = await retrieve("toastDuration");
+	const autoClose = getSetting("toastDuration");
 
 	options = Object.assign({ autoClose }, options);
 
@@ -97,7 +96,7 @@ export async function notifyTogglesStatus(force = false) {
 
 	renderToast();
 
-	const autoClose = await retrieve("toastDuration");
+	const autoClose = getSetting("toastDuration");
 
 	if (toast.isActive("toggles")) {
 		toast.update("toggles");
