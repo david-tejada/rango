@@ -9,8 +9,8 @@ import { loadContentScriptContext } from "./contentScriptContext";
 export async function initContentScript() {
 	loadDevtoolsUtils();
 	await loadContentScriptContext();
-	await updateCustomSelectors();
 	await initSettingsManager();
+	await updateCustomSelectors();
 	await initTitleDecoration();
 	await observe();
 	if (getSetting("keyboardClicking")) initKeyboardClicking();
