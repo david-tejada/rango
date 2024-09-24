@@ -1,5 +1,5 @@
 import tippy from "tippy.js";
-import { ElementWrapper } from "../../typings/ElementWrapper";
+import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { setStyleProperties } from "./setStyleProperties";
 
 export function showTooltip(
@@ -39,7 +39,7 @@ export function showTooltip(
 		zIndex: 2_147_483_647,
 		appendTo: tooltipAnchor,
 		maxWidth: "none",
-		allowHTML: true,
+		allowHTML: true, // eslint-disable-line @typescript-eslint/naming-convention
 	});
 
 	function handleScroll(event: Event) {

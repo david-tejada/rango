@@ -1,10 +1,10 @@
 /* eslint-disable no-await-in-loop */
 import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
-import { StorageSchema, zStorageSchema } from "../typings/StorageSchema";
+import { type StorageSchema, zStorageSchema } from "../typings/StorageSchema";
 import { defaultStorage } from "./defaultStorage";
 import {
-	Settings,
+	type Settings,
 	defaultSettings,
 	isSetting,
 	isValidSetting,
@@ -40,6 +40,7 @@ function reviver(_key: string, value: any) {
 		value.dataType === "Map" &&
 		value.value
 	) {
+		// eslint-disable-next-line @typescript-eslint/no-unsafe-argument
 		return new Map(value.value);
 	}
 
@@ -148,7 +149,7 @@ export async function retrieveSettings() {
 	let key: keyof Settings;
 
 	for (key in defaultSettings) {
-		if (Object.prototype.hasOwnProperty.call(defaultSettings, key)) {
+		if (Object.hasOwn(defaultSettings, key)) {
 			settings[key] = await retrieve(key);
 		}
 	}

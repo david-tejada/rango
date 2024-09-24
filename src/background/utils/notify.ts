@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { ToastOptions } from "react-toastify";
+import { type ToastOptions } from "react-toastify";
 import { urls } from "../../common/urls";
 import { retrieve } from "../../common/storage";
 import { getCurrentTabId } from "./getCurrentTab";

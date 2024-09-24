@@ -1,5 +1,8 @@
 import Color from "color";
-import { CustomSelector, StorageSchema } from "../typings/StorageSchema";
+import {
+	type CustomSelector,
+	type StorageSchema,
+} from "../typings/StorageSchema";
 
 export const defaultSettings = {
 	hintUppercaseLetters: false,
@@ -95,7 +98,7 @@ export function isValidSetting<T extends keyof StorageSchema>(
 	if (!isSetting(key)) return false;
 
 	const validator = validators[key];
-	if (typeof validator === "undefined") return true;
+	if (validator === undefined) return true;
 
 	return validator(value);
 }

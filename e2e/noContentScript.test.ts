@@ -1,5 +1,5 @@
 import clipboard from "clipboardy";
-import { ResponseToTalon } from "../src/typings/RequestFromTalon";
+import { type ResponseToTalon } from "../src/typings/RequestFromTalon";
 import {
 	rangoCommandWithTarget,
 	rangoCommandWithoutTarget,

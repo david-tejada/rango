@@ -1,62 +1,62 @@
-import { CustomSelector } from "./StorageSchema";
+import { type CustomSelector } from "./StorageSchema";
 
-interface OpenInNewTab {
+type OpenInNewTab = {
 	type: "openInNewTab";
 	url: string;
-}
-interface OpenInBackgroundTab {
+};
+type OpenInBackgroundTab = {
 	type: "openInBackgroundTab";
 	links: string[];
-}
+};
 
-interface ClaimHints {
+type ClaimHints = {
 	type: "claimHints";
 	amount: number;
-}
+};
 
-interface ReleaseHints {
+type ReleaseHints = {
 	type: "releaseHints";
 	hints: string[];
-}
+};
 
-interface ClickHintInFrame {
+type ClickHintInFrame = {
 	type: "clickHintInFrame";
 	hint: string;
-}
+};
 
-export interface MarkHintsAsKeyboardReachable {
+export type MarkHintsAsKeyboardReachable = {
 	type: "markHintsAsKeyboardReachable";
 	letter: string;
-}
+};
 
-interface ReclaimHintsFromOtherFrames {
+type ReclaimHintsFromOtherFrames = {
 	type: "reclaimHintsFromOtherFrames";
 	amount: number;
-}
+};
 
-interface StoreHintsInFrame {
+type StoreHintsInFrame = {
 	type: "storeHintsInFrame";
 	hints: string[];
-}
+};
 
-interface StoreCustomSelectors {
+type StoreCustomSelectors = {
 	type: "storeCustomSelectors";
 	url: string;
 	selectors: CustomSelector[];
-}
+};
 
-interface ResetCustomSelectors {
+type ResetCustomSelectors = {
 	type: "resetCustomSelectors";
 	url: string;
-}
+};
 
-interface RemoveReference {
+type RemoveReference = {
 	type: "removeReference";
 	hostPattern: string;
 	name: string;
-}
+};
 
-interface SimpleRequestFromContent {
+type SimpleRequestFromContent = {
 	type:
 		| "initStack"
 		| "getContentScriptContext"
@@ -64,7 +64,7 @@ interface SimpleRequestFromContent {
 		| "getHintsStackForTab"
 		| "isCurrentTab"
 		| "getTabMarker";
-}
+};
 
 export type RequestFromContent =
 	| SimpleRequestFromContent

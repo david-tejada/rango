@@ -63,8 +63,8 @@ export async function cycleTabsByText(step: number) {
 		step > 0
 			? selectedIndex % length
 			: selectedIndex < 0
-			? length - 1
-			: selectedIndex;
+				? length - 1
+				: selectedIndex;
 
 	const targetTab = matches[selectedIndex];
 

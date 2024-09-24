@@ -1,9 +1,8 @@
 import browser from "webextension-polyfill";
 import { urls } from "../../common/urls";
-
 import {
-	RequestFromTalon,
-	ResponseToTalon,
+	type RequestFromTalon,
+	type ResponseToTalon,
 } from "../../typings/RequestFromTalon";
 import { notify } from "./notify";
 import { isSafari } from "./isSafari";

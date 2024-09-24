@@ -1,4 +1,4 @@
-import { ChangeEvent, useId } from "react";
+import { type ChangeEvent, useId } from "react";
 import "./Input.css";
 import { Alert } from "./Alert";
 
@@ -8,14 +8,14 @@ function parseNumber(numberString: string) {
 }
 
 type InputProps = {
-	label: string;
-	defaultValue: number;
-	step?: number;
-	min?: number;
-	max?: number;
-	isDisabled?: boolean;
-	isValid?: boolean;
-	children?: React.ReactNode;
+	readonly label: string;
+	readonly defaultValue: number;
+	readonly step?: number;
+	readonly min?: number;
+	readonly max?: number;
+	readonly isDisabled?: boolean;
+	readonly isValid?: boolean;
+	readonly children?: React.ReactNode;
 	onChange(value: number): void;
 	onBlur(): void;
 };

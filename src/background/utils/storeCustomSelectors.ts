@@ -1,6 +1,6 @@
 import assertNever from "assert-never";
 import { debounce } from "lodash";
-import { CustomSelector } from "../../typings/StorageSchema";
+import { type CustomSelector } from "../../typings/StorageSchema";
 import { notify } from "./notify";
 import { withLockedStorageAccess } from "./withLockedStorageValue";
 import { filterInPlace } from "./arrayUtils";

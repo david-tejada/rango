@@ -1,8 +1,8 @@
 import browser from "webextension-polyfill";
 import { retrieve, store } from "../../common/storage";
 import { promiseWrap } from "../../lib/promiseWrap";
-import { RangoAction } from "../../typings/RangoAction";
-import { TalonAction } from "../../typings/RequestFromTalon";
+import { type RangoAction } from "../../typings/RangoAction";
+import { type TalonAction } from "../../typings/RequestFromTalon";
 import { activateTab } from "../actions/activateTab";
 import { closeTabsInWindow } from "../actions/closeTabsInWindow";
 import {
@@ -52,7 +52,7 @@ export async function runBackgroundCommand(
 			break;
 		}
 
-		case "historyGoBack":
+		case "historyGoBack": {
 			try {
 				await sendRequestToContent(command);
 			} catch {
@@ -60,8 +60,9 @@ export async function runBackgroundCommand(
 			}
 
 			break;
+		}
 
-		case "historyGoForward":
+		case "historyGoForward": {
 			try {
 				await sendRequestToContent(command);
 			} catch {
@@ -69,31 +70,37 @@ export async function runBackgroundCommand(
 			}
 
 			break;
+		}
 
-		case "toggleHints":
+		case "toggleHints": {
 			await toggleHintsGlobal();
 			break;
+		}
 
 		case "enableHints": {
 			await updateHintsToggle(command.arg, true);
 			break;
 		}
 
-		case "disableHints":
+		case "disableHints": {
 			await updateHintsToggle(command.arg, false);
 			break;
+		}
 
-		case "resetToggleLevel":
+		case "resetToggleLevel": {
 			await updateHintsToggle(command.arg);
 			break;
+		}
 
-		case "toggleTabMarkers":
+		case "toggleTabMarkers": {
 			await toggleTabMarkers();
 			break;
+		}
 
-		case "toggleKeyboardClicking":
+		case "toggleKeyboardClicking": {
 			await toggleKeyboardClicking();
 			break;
+		}
 
 		// To be removed in v0.5
 		case "includeSingleLetterHints":
@@ -101,9 +108,10 @@ export async function runBackgroundCommand(
 		case "setHintStyle":
 		case "setHintWeight":
 		case "enableUrlInTitle":
-		case "disableUrlInTitle":
+		case "disableUrlInTitle": {
 			await notifySettingRemoved();
 			break;
+		}
 
 		case "increaseHintSize": {
 			const hintFontSize = await retrieve("hintFontSize");
@@ -117,144 +125,176 @@ export async function runBackgroundCommand(
 			break;
 		}
 
-		case "closeOtherTabsInWindow":
+		case "closeOtherTabsInWindow": {
 			await closeTabsInWindow("other");
 			break;
+		}
 
-		case "closeTabsToTheLeftInWindow":
+		case "closeTabsToTheLeftInWindow": {
 			await closeTabsInWindow("left");
 			break;
+		}
 
-		case "closeTabsToTheRightInWindow":
+		case "closeTabsToTheRightInWindow": {
 			await closeTabsInWindow("right");
 			break;
+		}
 
-		case "closeTabsLeftEndInWindow":
+		case "closeTabsLeftEndInWindow": {
 			await closeTabsInWindow("leftEnd", command.arg);
 			break;
+		}
 
-		case "closeTabsRightEndInWindow":
+		case "closeTabsRightEndInWindow": {
 			await closeTabsInWindow("rightEnd", command.arg);
 			break;
+		}
 
-		case "closePreviousTabsInWindow":
+		case "closePreviousTabsInWindow": {
 			await closeTabsInWindow("previous", command.arg);
 			break;
+		}
 
-		case "closeNextTabsInWindow":
+		case "closeNextTabsInWindow": {
 			await closeTabsInWindow("next", command.arg);
 			break;
+		}
 
-		case "cloneCurrentTab":
+		case "cloneCurrentTab": {
 			if (currentTabId) {
 				await browser.tabs.duplicate(currentTabId);
 			}
 
 			break;
+		}
 
-		case "moveCurrentTabToNewWindow":
+		case "moveCurrentTabToNewWindow": {
 			await browser.windows.create({ tabId: currentTabId });
 			break;
+		}
 
-		case "focusPreviousTab":
+		case "focusPreviousTab": {
 			await focusPreviousTab();
 			break;
+		}
 
-		case "focusNextTabWithSound":
+		case "focusNextTabWithSound": {
 			await focusNextTabWithSound();
 			break;
+		}
 
-		case "focusNextMutedTab":
+		case "focusNextMutedTab": {
 			await focusNextMutedTab();
 			break;
+		}
 
-		case "focusNextAudibleTab":
+		case "focusNextAudibleTab": {
 			await focusNextAudibleTab();
 			break;
+		}
 
-		case "focusTabLastSounded":
+		case "focusTabLastSounded": {
 			await focusTabLastSounded();
 			break;
+		}
 
-		case "muteCurrentTab":
+		case "muteCurrentTab": {
 			await muteTab();
 			break;
+		}
 
-		case "unmuteCurrentTab":
+		case "unmuteCurrentTab": {
 			await muteTab(undefined, false);
 			break;
+		}
 
-		case "muteTab":
+		case "muteTab": {
 			await muteTab(command.target);
 			break;
+		}
 
-		case "unmuteTab":
+		case "unmuteTab": {
 			await muteTab(command.target, false);
 			break;
+		}
 
-		case "muteNextTabWithSound":
+		case "muteNextTabWithSound": {
 			await muteNextTabWithSound();
 			break;
+		}
 
-		case "unmuteNextMutedTab":
+		case "unmuteNextMutedTab": {
 			await unmuteNextMutedTab();
 			break;
+		}
 
-		case "muteAllTabsWithSound":
+		case "muteAllTabsWithSound": {
 			await muteAllTabsWithSound();
 			break;
+		}
 
-		case "unmuteAllMutedTabs":
+		case "unmuteAllMutedTabs": {
 			await unmuteAllMutedTabs();
 			break;
+		}
 
-		case "copyLocationProperty":
+		case "copyLocationProperty": {
 			if (currentTab) {
 				return copyLocationProperty(currentTab, command.arg);
 			}
 
 			break;
+		}
 
-		case "getBareTitle":
+		case "getBareTitle": {
 			if (currentTab) {
 				const title = await getBareTitle(currentTab);
 				return [{ name: "responseValue", value: title }];
 			}
 
 			break;
+		}
 
-		case "copyCurrentTabMarkdownUrl":
+		case "copyCurrentTabMarkdownUrl": {
 			if (currentTab) {
 				return copyMarkdownUrl(currentTab);
 			}
 
 			break;
+		}
 
-		case "openSettingsPage":
+		case "openSettingsPage": {
 			await browser.runtime.openOptionsPage();
 			break;
+		}
 
-		case "openPageInNewTab":
+		case "openPageInNewTab": {
 			await browser.tabs.create({ url: command.arg });
 			break;
+		}
 
-		case "refreshTabMarkers":
+		case "refreshTabMarkers": {
 			await refreshTabMarkers();
 			break;
+		}
 
-		case "focusOrCreateTabByUrl":
+		case "focusOrCreateTabByUrl": {
 			return focusOrCreateTabByUrl(command.arg);
+		}
 
-		case "focusTabByText":
+		case "focusTabByText": {
 			await focusTabByText(command.arg);
 			break;
+		}
 
-		case "cycleTabsByText":
+		case "cycleTabsByText": {
 			await cycleTabsByText(command.arg);
 			break;
+		}
 
-		default:
+		default: {
 			break;
+		}
 	}
 
 	return undefined;

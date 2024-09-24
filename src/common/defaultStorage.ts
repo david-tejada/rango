@@ -1,4 +1,4 @@
-import { StorageSchema } from "../typings/StorageSchema";
+import { type StorageSchema } from "../typings/StorageSchema";
 import { letterHints } from "./allHints";
 import { defaultSettings } from "./settings";
 

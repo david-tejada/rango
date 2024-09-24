@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
 import { getCssSelector } from "css-selector-generator";
 import { store } from "../../common/storage";
-import { ElementWrapper } from "../../typings/ElementWrapper";
+import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { showTooltip } from "../hints/showTooltip";
 import { getOrCreateWrapper } from "../wrappers/ElementWrapperClass";
 import { getHostPattern } from "../../common/utils";

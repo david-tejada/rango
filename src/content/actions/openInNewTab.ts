@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { ElementWrapper } from "../../typings/ElementWrapper";
+import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { assertDefined } from "../../typings/TypingUtils";
 
 export async function openInNewTab(wrappers: ElementWrapper[]) {

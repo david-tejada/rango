@@ -1,6 +1,7 @@
+import process from "process";
 import { retrieve } from "../../common/storage";
 import { promiseWrap } from "../../lib/promiseWrap";
-import { RequestFromTalon } from "../../typings/RequestFromTalon";
+import { type RequestFromTalon } from "../../typings/RequestFromTalon";
 import { dispatchCommand } from "../commands/dispatchCommand";
 import {
 	getRequestFromClipboard,

@@ -1,4 +1,4 @@
-import { ElementWrapper } from "../../typings/ElementWrapper";
+import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { assertDefined } from "../../typings/TypingUtils";
 import { findFirstTextNode, findLastTextNode } from "../utils/nodeUtils";
 import { activateEditable } from "../utils/activateEditable";

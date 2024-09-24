@@ -1,4 +1,4 @@
-interface RangoActionWithoutTargetWithoutArg {
+type RangoActionWithoutTargetWithoutArgument = {
 	type:
 		| "historyGoBack"
 		| "historyGoForward"
@@ -53,14 +53,14 @@ interface RangoActionWithoutTargetWithoutArg {
 		| "checkActiveElementIsEditable"
 		| "refreshTabMarkers"
 		| "showReferences";
-}
+};
 
-export interface RangoActionUpdateToggles {
+export type RangoActionUpdateToggles = {
 	type: "enableHints" | "disableHints" | "resetToggleLevel";
 	arg: "everywhere" | "global" | "tab" | "host" | "page" | "now";
-}
+};
 
-export interface RangoActionCopyLocationProperty {
+export type RangoActionCopyLocationProperty = {
 	type: "copyLocationProperty";
 	arg:
 		| "href"
@@ -70,19 +70,19 @@ export interface RangoActionCopyLocationProperty {
 		| "pathname"
 		| "port"
 		| "protocol";
-}
+};
 
-interface RangoActionSetHintStyle {
+type RangoActionSetHintStyle = {
 	type: "setHintStyle";
 	arg: "boxed" | "subtle";
-}
+};
 
-interface RangoActionSetHintWeight {
+type RangoActionSetHintWeight = {
 	type: "setHintWeight";
 	arg: "auto" | "normal" | "bold";
-}
+};
 
-interface RangoActionWithoutTargetWithNumberArg {
+type RangoActionWithoutTargetWithNumberArgument = {
 	type:
 		| "closeTabsLeftEndInWindow"
 		| "closeTabsRightEndInWindow"
@@ -90,14 +90,14 @@ interface RangoActionWithoutTargetWithNumberArg {
 		| "closeNextTabsInWindow"
 		| "cycleTabsByText";
 	arg: number;
-}
+};
 
-export interface RangoActionRemoveReference {
+export type RangoActionRemoveReference = {
 	type: "removeReference";
 	arg: string;
-}
+};
 
-interface RangoActionWithoutTargetWithOptionalNumberArg {
+type RangoActionWithoutTargetWithOptionalNumberArgument = {
 	type:
 		| "scrollUpPage"
 		| "scrollDownPage"
@@ -108,9 +108,9 @@ interface RangoActionWithoutTargetWithOptionalNumberArg {
 		| "scrollUpRightAside"
 		| "scrollDownRightAside";
 	arg?: number;
-}
+};
 
-export interface RangoActionWithTargets {
+export type RangoActionWithTargets = {
 	type:
 		| "activateTab"
 		| "muteTab"
@@ -137,9 +137,9 @@ export interface RangoActionWithTargets {
 		| "focusAndDeleteContents"
 		| "hideHint";
 	target: string[];
-}
+};
 
-interface RangoActionWithTargetsWithOptionalNumberArg {
+type RangoActionWithTargetsWithOptionalNumberArgument = {
 	type:
 		| "scrollUpAtElement"
 		| "scrollDownAtElement"
@@ -147,50 +147,50 @@ interface RangoActionWithTargetsWithOptionalNumberArg {
 		| "scrollRightAtElement";
 	target: string[];
 	arg?: number;
-}
+};
 
-interface RangoActionSaveReference {
+type RangoActionSaveReference = {
 	type: "saveReference";
 	target: string[];
 	arg: string;
-}
+};
 
-interface RangoActionSaveReferenceForActiveElement {
+type RangoActionSaveReferenceForActiveElement = {
 	type: "saveReferenceForActiveElement";
 	arg: string;
-}
+};
 
-export interface RangoActionRunActionOnReference {
+export type RangoActionRunActionOnReference = {
 	type: "runActionOnReference";
 	arg: RangoActionWithTargets["type"];
 	arg2: string;
-}
+};
 
-interface RangoActionInsertToField {
+type RangoActionInsertToField = {
 	type: "insertToField";
 	target: string[];
 	arg: string;
-}
+};
 
-interface RangoActionOpenPageInNewTab {
+type RangoActionOpenPageInNewTab = {
 	type: "openPageInNewTab";
 	arg: string;
-}
+};
 
-interface RangoActionScrollPosition {
+type RangoActionScrollPosition = {
 	type: "storeScrollPosition" | "scrollToPosition";
 	arg: string;
-}
+};
 
-interface RangoActionfocusOrCreateTabByUrl {
+type RangoActionfocusOrCreateTabByUrl = {
 	type: "focusOrCreateTabByUrl";
 	arg: string;
-}
+};
 
-interface RangoActionFocusTabByText {
+type RangoActionFocusTabByText = {
 	type: "focusTabByText";
 	arg: string;
-}
+};
 
 type RangoActionRunActionOnTextMatchedElement =
 	| {
@@ -211,15 +211,15 @@ type RangoActionRunActionOnTextMatchedElement =
 
 export type RangoActionWithTarget =
 	| RangoActionWithTargets
-	| RangoActionWithTargetsWithOptionalNumberArg
+	| RangoActionWithTargetsWithOptionalNumberArgument
 	| RangoActionInsertToField
 	| RangoActionSaveReference;
 
 export type RangoActionWithoutTarget =
-	| RangoActionWithoutTargetWithoutArg
+	| RangoActionWithoutTargetWithoutArgument
 	| RangoActionUpdateToggles
-	| RangoActionWithoutTargetWithNumberArg
-	| RangoActionWithoutTargetWithOptionalNumberArg
+	| RangoActionWithoutTargetWithNumberArgument
+	| RangoActionWithoutTargetWithOptionalNumberArgument
 	| RangoActionSetHintStyle
 	| RangoActionSetHintWeight
 	| RangoActionCopyLocationProperty
@@ -233,12 +233,3 @@ export type RangoActionWithoutTarget =
 	| RangoActionRunActionOnTextMatchedElement;
 
 export type RangoAction = RangoActionWithTarget | RangoActionWithoutTarget;
-
-// Utilities
-type RangoActionWithArg = RangoAction & { arg?: number | string };
-
-export function hasArg(
-	action: RangoActionWithArg
-): action is RangoActionWithArg {
-	return action.arg !== undefined;
-}

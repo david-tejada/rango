@@ -10,8 +10,8 @@ let keysPressedBuffer = "";
 let timeoutId: ReturnType<typeof setTimeout>;
 
 export function markHintsAsKeyboardReachable(letter: string) {
-	const wrappers = getHintedWrappers().filter(
-		(wrapper) => wrapper.hint?.string && wrapper.hint.string.startsWith(letter)
+	const wrappers = getHintedWrappers().filter((wrapper) =>
+		wrapper.hint?.string?.startsWith(letter)
 	);
 	for (const wrapper of wrappers) {
 		wrapper?.hint?.keyHighlight();

@@ -1,9 +1,9 @@
-import { ReactNode } from "react";
+import { type ReactNode } from "react";
 import "./Select.css";
 
 type OptionProps = {
-	value: string;
-	children: ReactNode;
+	readonly value: string;
+	readonly children: ReactNode;
 };
 
 export function Option({ value, children }: OptionProps) {
@@ -11,10 +11,10 @@ export function Option({ value, children }: OptionProps) {
 }
 
 type SelectProps<T extends string> = {
-	label: string;
-	defaultValue: T;
-	children: ReactNode;
-	isDisabled: boolean;
+	readonly label: string;
+	readonly defaultValue: T;
+	readonly children: ReactNode;
+	readonly isDisabled: boolean;
 	onChange(value: T): void;
 };
 

@@ -1,5 +1,5 @@
 import { Mutex } from "async-mutex";
-import { StorageSchema } from "../../typings/StorageSchema";
+import { type StorageSchema } from "../../typings/StorageSchema";
 import { retrieve, store } from "../../common/storage";
 
 const mutexes = new Map<keyof StorageSchema, Mutex>();

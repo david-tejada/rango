@@ -1,4 +1,4 @@
-const containersCache: Map<Element, HTMLElement> = new Map();
+const containersCache = new Map<Element, HTMLElement>();
 
 /**
  * Given an Element return the Element that contains it and might scroll it. It

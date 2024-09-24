@@ -1,4 +1,4 @@
-import { ElementHandle, Frame } from "puppeteer";
+import { type ElementHandle, type Frame } from "puppeteer";
 import { getHintForElement } from "./utils/getHintForElement";
 import {
 	rangoCommandWithTarget,
@@ -20,7 +20,7 @@ describe("Main frame", () => {
 	});
 
 	test("Extra hints are saved", async () => {
-		const hintable = await page.$("#custom-button")!;
+		const hintable = await page.$("#custom-button");
 		const hint = await hintable!.evaluate(getHintForElement);
 
 		await rangoCommandWithTarget("includeExtraSelectors", [hint]);
@@ -68,7 +68,7 @@ describe("iFrame", () => {
 	});
 
 	test("Extra hints are saved", async () => {
-		const hintable = await frame.$("#custom-button")!;
+		const hintable = await frame.$("#custom-button");
 		const hint = await hintable!.evaluate(getHintForElement);
 
 		await rangoCommandWithTarget("includeExtraSelectors", [hint]);
@@ -114,7 +114,7 @@ describe("Staging", () => {
 	});
 
 	test("Hints marked are removed after refreshing hints", async () => {
-		const hintable = await page.$("#custom-button")!;
+		const hintable = await page.$("#custom-button");
 		const hint = await hintable!.evaluate(getHintForElement);
 
 		await rangoCommandWithTarget("includeExtraSelectors", [hint]);
@@ -132,7 +132,7 @@ describe("Staging", () => {
 	});
 
 	test("Hints marked are removed after custom hints reset", async () => {
-		const hintable = await page.$("#custom-button")!;
+		const hintable = await page.$("#custom-button");
 		const hint = await hintable!.evaluate(getHintForElement);
 
 		await rangoCommandWithTarget("includeExtraSelectors", [hint]);

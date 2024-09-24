@@ -1,8 +1,8 @@
 import browser from "webextension-polyfill";
 import { getHostPattern } from "../../common/utils";
-import { ElementWrapper } from "../../typings/ElementWrapper";
-import { SelectorAlternative } from "../../typings/SelectorAlternative";
-import { CustomSelector } from "../../typings/StorageSchema";
+import { type ElementWrapper } from "../../typings/ElementWrapper";
+import { type SelectorAlternative } from "../../typings/SelectorAlternative";
+import { type CustomSelector } from "../../typings/StorageSchema";
 import { getSelectorAlternatives } from "./computeCustomSelectors";
 import { updateCustomSelectors } from "./selectors";
 

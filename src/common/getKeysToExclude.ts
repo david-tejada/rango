@@ -6,7 +6,7 @@ function stringToSet(keysString: string) {
 		keysString
 			.split(/[, ]/)
 			.map((string) => string.trim())
-			.filter((string) => string)
+			.filter(Boolean)
 	);
 }
 

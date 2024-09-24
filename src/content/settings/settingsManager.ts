@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import Emittery from "emittery";
-import { defaultSettings, Settings } from "../../common/settings";
+import { defaultSettings, type Settings } from "../../common/settings";
 import { retrieve, retrieveSettings } from "../../common/storage";
 import { hasMatchingKeys } from "../../lib/utils";
 import { assertDefined } from "../../typings/TypingUtils";

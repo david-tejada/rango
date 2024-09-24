@@ -1,4 +1,4 @@
-import { ElementWrapper } from "../../typings/ElementWrapper";
+import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { getHintedWrappers } from "../wrappers/wrappers";
 
 export async function hoverElement(wrappers: ElementWrapper[]) {

@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { ToastOptions, toast } from "react-toastify";
+import { type ToastOptions, toast } from "react-toastify";
 import { getSetting } from "../settings/settingsManager";
 import { isCurrentTab, isMainframe } from "../setup/contentScriptContext";
 import { Toast } from "./Toast";

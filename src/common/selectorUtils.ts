@@ -4,7 +4,8 @@ export function getSpecificityValue(selector: string) {
 	const { specificityArray } = calculate(selector)[0]!;
 
 	return (specificityArray as number[]).reduce(
-		(acc, curr, index, array) => acc + curr * 10 ** (array.length - index - 1)
+		(accumulator, current, index, array) =>
+			accumulator + current * 10 ** (array.length - index - 1)
 	);
 }
 

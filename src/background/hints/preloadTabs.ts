@@ -29,7 +29,7 @@ export async function preloadTabCompleted() {
 export async function navigationOccurred(tabId: number) {
 	const preloadTabDetails = preloadTabs.get(tabId);
 
-	if (!preloadTabDetails || !preloadTabDetails.completed) return false;
+	if (!preloadTabDetails?.completed) return false;
 
 	// I should be using browser.webNavigation.getFrame here but for whatever
 	// reason it's not working in Safari, although it is supposed to be supported.

@@ -1,8 +1,8 @@
 import browser from "webextension-polyfill";
 // eslint-disable-next-line import/no-unassigned-import
 import "requestidlecallback-polyfill";
-import { RequestFromBackground } from "../typings/RequestFromBackground";
-import { TalonAction } from "../typings/RequestFromTalon";
+import { type RequestFromBackground } from "../typings/RequestFromBackground";
+import { type TalonAction } from "../typings/RequestFromTalon";
 import {
 	markHintsAsKeyboardReachable,
 	restoreKeyboardReachableHints,
@@ -51,13 +51,15 @@ browser.runtime.onMessage.addListener(
 		try {
 			switch (request.type) {
 				// SCRIPT REQUESTS
-				case "onCompleted":
+				case "onCompleted": {
 					await synchronizeHints();
 					break;
+				}
 
-				case "displayToastNotification":
+				case "displayToastNotification": {
 					await notify(request.text, request.options);
 					break;
+				}
 
 				case "reclaimHints": {
 					const reclaimed = reclaimHintsFromCache(request.amount);
@@ -69,45 +71,55 @@ browser.runtime.onMessage.addListener(
 					return reclaimed;
 				}
 
-				case "updateHintsInTab":
+				case "updateHintsInTab": {
 					updateHintsInTab(request.hints);
 					break;
+				}
 
-				case "markHintsAsKeyboardReachable":
+				case "markHintsAsKeyboardReachable": {
 					markHintsAsKeyboardReachable(request.letter);
 					break;
+				}
 
-				case "restoreKeyboardReachableHints":
+				case "restoreKeyboardReachableHints": {
 					restoreKeyboardReachableHints();
 					break;
+				}
 
-				case "checkIfDocumentHasFocus":
+				case "checkIfDocumentHasFocus": {
 					return document.hasFocus();
+				}
 
-				case "checkContentScriptRunning":
+				case "checkContentScriptRunning": {
 					return true;
+				}
 
-				case "updateNavigationToggle":
+				case "updateNavigationToggle": {
 					setNavigationToggle(request.enable);
 					await updateHintsEnabled();
 					await notifyTogglesStatus();
 					break;
+				}
 
-				case "allowToastNotification":
+				case "allowToastNotification": {
 					allowToastNotification();
 					break;
+				}
 
-				case "tryToFocusPage":
+				case "tryToFocusPage": {
 					window.focus();
 					break;
+				}
 
-				case "getTitleBeforeDecoration":
+				case "getTitleBeforeDecoration": {
 					return getTitleBeforeDecoration();
+				}
 
-				case "refreshTitleDecorations":
+				case "refreshTitleDecorations": {
 					removeDecorations();
 					await initTitleDecoration();
 					break;
+				}
 
 				default: {
 					const result = await runRangoActionWithoutTarget(request);

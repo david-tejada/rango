@@ -1,18 +1,19 @@
+import process from "process";
 import { isHtmlElement } from "../../typings/TypingUtils";
 import { getUserScrollableContainer } from "../utils/getUserScrollableContainer";
-import { ElementWrapper } from "../../typings/ElementWrapper";
+import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { getSetting } from "../settings/settingsManager";
 
-const DEFAULT_SCROLL_FACTOR = 0.66;
+const defaultScrollFactor = 0.66;
 
 let lastScrollContainer: Element | undefined;
 let lastScrollFactor: number;
 
-interface ScrollOptions {
+type ScrollOptions = {
 	dir: "up" | "down" | "left" | "right";
 	target: ElementWrapper | "page" | "leftAside" | "rightAside" | "repeatLast";
 	factor?: number;
-}
+};
 
 export function getScrollBehavior() {
 	// Scroll tests fail if behavior is "smooth"
@@ -349,7 +350,7 @@ export function scroll(options: ScrollOptions) {
 
 	let left = 0;
 	let top = 0;
-	factor ??= DEFAULT_SCROLL_FACTOR;
+	factor ??= defaultScrollFactor;
 
 	// We store the values for future use
 	lastScrollContainer = scrollContainer;

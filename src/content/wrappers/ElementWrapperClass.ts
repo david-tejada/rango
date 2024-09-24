@@ -1,5 +1,6 @@
 import { debounce } from "lodash";
-import { ElementWrapper } from "../../typings/ElementWrapper";
+import { type ElementWrapper } from "../../typings/ElementWrapper";
+import { type Hint } from "../../typings/Hint";
 import { getExtraHintsToggle } from "../actions/customHints";
 import { openInNewTab } from "../actions/openInNewTab";
 import { HintClass } from "../hints/HintClass";
@@ -150,10 +151,10 @@ const addWrappersIntersectionObserver = new IntersectionObserver(
 
 // INTERSECTION OBSERVER
 
-const scrollIntersectionObservers: Map<
+const scrollIntersectionObservers = new Map<
 	Element | null,
 	BoundedIntersectionObserver
-> = new Map();
+>();
 
 async function intersectionCallback(entries: IntersectionObserverEntry[]) {
 	const entriesIntersecting = entries.filter((entry) => entry.isIntersecting);
@@ -216,10 +217,10 @@ function isNonRangoMutation(mutation: MutationRecord) {
 		mutation.attributeName === "data-hint" ||
 		(mutation.addedNodes.length === 1 &&
 			mutation.addedNodes[0]! instanceof Element &&
-			mutation.addedNodes[0]!.className === "rango-hint") ||
+			mutation.addedNodes[0].className === "rango-hint") ||
 		(mutation.removedNodes.length === 1 &&
 			mutation.removedNodes[0]! instanceof Element &&
-			mutation.removedNodes[0]!.className === "rango-hint");
+			mutation.removedNodes[0].className === "rango-hint");
 
 	return !isRangoMutation;
 }
@@ -322,15 +323,27 @@ document.addEventListener("focusout", debouncedHandleFocusChange);
 // WRAPPER CLASS
 // =============================================================================
 
-// This is necessary to not have to define the Wrapper interface properties again
-interface ElementWrapperClass extends ElementWrapper {}
-
 /**
  * A wrapper for a DOM Element.
  */
 class ElementWrapperClass implements ElementWrapper {
-	constructor(element: Element, active = true) {
-		this.element = element;
+	isIntersecting?: boolean;
+	observingIntersection?: boolean;
+	isIntersectingViewport?: boolean;
+	isActiveEditable: boolean;
+	isHintable: boolean;
+	shouldBeHinted?: boolean;
+
+	// These properties are only needed for hintables
+	intersectionObserver?: BoundedIntersectionObserver;
+	userScrollableContainer?: Element;
+	effectiveBackgroundColor?: string;
+	hint?: Hint;
+
+	constructor(
+		public element: Element,
+		active = true
+	) {
 		this.isActiveEditable =
 			this.element === document.activeElement && isEditable(this.element);
 

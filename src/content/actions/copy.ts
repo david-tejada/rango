@@ -1,4 +1,4 @@
-import { ElementWrapper } from "../../typings/ElementWrapper";
+import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { hasPropertyValue } from "../../typings/TypingUtils";
 import { showTooltip } from "../hints/showTooltip";
 
