@@ -17,7 +17,7 @@ import {
 	notify,
 	notifyTogglesStatus,
 } from "./notify/notify";
-import { initContentScript } from "./setup/initContentScript";
+import { initContentScriptOrWait } from "./setup/initContentScript";
 import { setNavigationToggle } from "./settings/toggles";
 import { updateHintsEnabled } from "./observe";
 import { getFrameId } from "./setup/contentScriptContext";
@@ -42,6 +42,7 @@ browser.runtime.onMessage.addListener(
 	): Promise<
 		string | number | string[] | TalonAction[] | boolean | undefined
 	> => {
+		await initContentScriptOrWait();
 		if (await isWrongFrame(request)) return;
 
 		if ("target" in request) {
@@ -136,7 +137,7 @@ browser.runtime.onMessage.addListener(
 
 (async () => {
 	try {
-		await initContentScript();
+		await initContentScriptOrWait();
 	} catch (error: unknown) {
 		console.error(error);
 	}
