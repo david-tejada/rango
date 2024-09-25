@@ -1,5 +1,5 @@
 import { promiseWrap } from "../../lib/promiseWrap";
-import { RangoActionWithTargets } from "../../typings/RangoAction";
+import { type RangoActionWithTargets } from "../../typings/RangoAction";
 import { getOrCreateWrapper } from "../wrappers/ElementWrapperClass";
 import { getLastWrapper } from "../wrappers/lastWrapper";
 import { getReferences } from "./references";
@@ -19,9 +19,9 @@ function findClosestElement(
 		// Calculate the distance between the top left points of the elements. We
 		// could calculate the distance between the center points but this is
 		// simpler and I think it's enough.
-		const distance = Math.sqrt(
-			(currentRect.left - targetRect.left) ** 2 +
-				(currentRect.top - targetRect.top) ** 2
+		const distance = Math.hypot(
+			currentRect.left - targetRect.left,
+			currentRect.top - targetRect.top
 		);
 
 		if (distance < minDistance) {
@@ -50,7 +50,7 @@ async function getElementFromSelector(selector: string, maxWait: number) {
 		}
 
 		const timeout = setTimeout(() => {
-			reject();
+			reject(new Error("Timed out waiting for element matching selector."));
 		}, maxWait);
 
 		const observer = new MutationObserver(() => {

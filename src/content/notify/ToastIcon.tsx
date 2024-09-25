@@ -22,7 +22,7 @@ const icons = {
 };
 
 type ToastIconProps = {
-	iconType: keyof typeof icons;
+	readonly iconType: keyof typeof icons;
 };
 
 export function ToastIcon({ iconType }: ToastIconProps) {

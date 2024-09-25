@@ -1,10 +1,10 @@
 import "./Toggle.css";
 
 type ToggleProps = {
-	label: string;
-	isPressed: boolean;
-	isDisabled?: boolean;
-	children?: React.ReactNode;
+	readonly label: string;
+	readonly isPressed: boolean;
+	readonly isDisabled?: boolean;
+	readonly children?: React.ReactNode;
 	onClick(): void;
 };
 

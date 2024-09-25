@@ -1,13 +1,13 @@
-interface CopyToClipboardMessage {
+type CopyToClipboardMessage = {
 	type: "copy-to-clipboard";
 	target: "offscreen-doc";
 	text: string;
-}
+};
 
-interface ReadClipboardMessage {
+type ReadClipboardMessage = {
 	type: "read-clipboard";
 	target: "offscreen-doc";
-}
+};
 
 type OffscreenMessage = CopyToClipboardMessage | ReadClipboardMessage;
 
@@ -18,20 +18,23 @@ chrome.runtime.onMessage.addListener(
 		if (message.target !== "offscreen-doc") return;
 
 		switch (message.type) {
-			case "copy-to-clipboard":
+			case "copy-to-clipboard": {
 				textarea.value = message.text;
 				textarea.select();
 				document.execCommand("copy");
 				break;
+			}
 
-			case "read-clipboard":
+			case "read-clipboard": {
 				textarea.select();
 				document.execCommand("paste");
 				sendResponse(textarea.value);
 				return true;
+			}
 
-			default:
+			default: {
 				break;
+			}
 		}
 
 		return false;

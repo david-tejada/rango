@@ -6,7 +6,7 @@ import {
 	isValidSelector,
 	selectorToArray,
 } from "../../common/selectorUtils";
-import { SelectorAlternative } from "../../typings/SelectorAlternative";
+import { type SelectorAlternative } from "../../typings/SelectorAlternative";
 
 function getChildNumber(target: Element) {
 	if (!target.parentElement) return undefined;
@@ -115,10 +115,10 @@ function getCommonSelectors(targets: Element[]) {
 		getSignificantSelectors(element)
 	);
 
-	const targetSelectors: Set<string> = new Set();
+	const targetSelectors = new Set<string>();
 
 	for (const list of selectorLists) {
-		const targetSelector = list[list.length - 1];
+		const targetSelector = list.at(-1);
 		if (targetSelector) targetSelectors.add(targetSelector);
 	}
 
@@ -214,13 +214,11 @@ export function getSelectorAlternatives(elements: Element[]) {
 		}
 
 		// If no element match the selector the elements are shadow dom elements
-		if (!amountOfElementsMatching) {
-			amountOfElementsMatching = deepGetElements(
-				document.body,
-				false,
-				selector
-			).length;
-		}
+		amountOfElementsMatching ||= deepGetElements(
+			document.body,
+			false,
+			selector
+		).length;
 
 		const specificityValue = getSpecificityValue(selector);
 

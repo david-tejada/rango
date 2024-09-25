@@ -1,5 +1,5 @@
 import { keyTap } from "@hurdlegroup/robotjs";
-import { Frame, Page } from "puppeteer";
+import { type Frame, type Page } from "puppeteer";
 import { rangoCommandWithoutTarget } from "./utils/rangoCommands";
 import { sleep } from "./utils/testHelpers";
 

@@ -49,7 +49,7 @@ function combineOptions(existingOptions: Options, newOptions: Options) {
 
 	let key: keyof Options;
 	for (key in newOptions) {
-		if (Object.prototype.hasOwnProperty.call(newOptions, key)) {
+		if (Object.hasOwn(newOptions, key)) {
 			if (key === "filterIn") {
 				if (!existingOptions.filterIn) continue;
 
@@ -78,7 +78,11 @@ function combineOptions(existingOptions: Options, newOptions: Options) {
  * @returns An array of ElementWrappers that need to be updated.
  */
 function getElementWrappersToUpdate(options: Options) {
-	const { hintsCharacters, isHintable, shouldBeHinted } = options;
+	const {
+		hintsCharacters = false,
+		isHintable = false,
+		shouldBeHinted = false,
+	} = options;
 
 	const wrappersToUpdate =
 		isHintable || shouldBeHinted ? getAllWrappers() : getHintedWrappers();

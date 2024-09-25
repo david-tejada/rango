@@ -1,19 +1,19 @@
 import { faBan, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { CustomSelector } from "../typings/StorageSchema";
-import "./CustomHintsSetting.css";
 import { isValidSelector } from "../common/selectorUtils";
 import { isValidRegExp } from "../common/textUtils";
+import { type CustomSelector } from "../typings/StorageSchema";
+import "./CustomHintsSetting.css";
 
-type CustomHintsSettingProp = {
-	value: CustomSelector[];
+type CustomHintsSettingProps = {
+	readonly value: CustomSelector[];
 	onChange(value: CustomSelector[]): void;
 };
 
 export function CustomHintsSetting({
 	value,
 	onChange,
-}: CustomHintsSettingProp) {
+}: CustomHintsSettingProps) {
 	function handleChange(
 		event: React.ChangeEvent<HTMLInputElement>,
 		key: "pattern" | "selector",

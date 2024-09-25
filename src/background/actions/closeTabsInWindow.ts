@@ -1,4 +1,4 @@
-import browser, { Tabs } from "webextension-polyfill";
+import browser, { type Tabs } from "webextension-polyfill";
 import { assertDefined } from "../../typings/TypingUtils";
 import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
 
@@ -23,42 +23,50 @@ export async function closeTabsInWindow(
 	let filterFunction: (tab: Tabs.Tab) => boolean;
 
 	switch (tabsToClose) {
-		case "other":
+		case "other": {
 			filterFunction = (tab) => tab.id !== currentTabId;
 			break;
+		}
 
-		case "left":
+		case "left": {
 			filterFunction = (tab) => tab.index < currentTab.index;
 			break;
+		}
 
-		case "right":
+		case "right": {
 			filterFunction = (tab) => tab.index > currentTab.index;
 			break;
+		}
 
-		case "leftEnd":
+		case "leftEnd": {
 			assertDefined(amount);
 			filterFunction = (tab) => tab.index < amount;
 			break;
+		}
 
-		case "rightEnd":
+		case "rightEnd": {
 			assertDefined(amount);
 			filterFunction = (tab) => tab.index >= allTabsInWindow.length - amount;
 			break;
+		}
 
-		case "previous":
+		case "previous": {
 			assertDefined(amount);
 			filterFunction = (tab) =>
 				tab.index >= currentTab.index - amount && tab.index < currentTab.index;
 			break;
+		}
 
-		case "next":
+		case "next": {
 			assertDefined(amount);
 			filterFunction = (tab) =>
 				tab.index > currentTab.index && tab.index <= currentTab.index + amount;
 			break;
+		}
 
-		default:
+		default: {
 			break;
+		}
 	}
 
 	const tabsIdsToRemove = allTabsInWindow

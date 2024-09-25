@@ -5,9 +5,7 @@ import { retrieve } from "../../common/storage";
 /**
  * `browser.browserAction` for MV2 and `browser.action` for MV3.
  */
-export const browserAction = browser.action
-	? browser.action
-	: browser.browserAction;
+export const browserAction = browser.action ?? browser.browserAction;
 
 /**
  * Set the browserAction icon depending on wether keyboardClicking is enabled.

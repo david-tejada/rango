@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { Mutex } from "async-mutex";
-import { HintsStack } from "../../typings/StorageSchema";
+import { type HintsStack } from "../../typings/StorageSchema";
 import {
 	addHintsInFrame,
 	clearHintsInFrame,

@@ -1,3 +1,4 @@
+import process from "process";
 import { getHintsCache } from "../hints/hintsCache";
 import { getHintsStackForTab } from "../hints/hintsRequests";
 import {
@@ -8,7 +9,7 @@ import {
 
 // This is not exact but I can't find a definition of exportFunction
 declare function exportFunction(
-	func: Function,
+	function_: Function,
 	target: EventTarget,
 	options: { defineAs: string }
 ): void;
@@ -17,6 +18,7 @@ declare function exportFunction(
 export function loadDevtoolsUtils() {
 	if (
 		process.env["NODE_ENV"] !== "production" &&
+		// eslint-disable-next-line unicorn/no-typeof-undefined
 		typeof exportFunction !== "undefined"
 	) {
 		exportFunction(

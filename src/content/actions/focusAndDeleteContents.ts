@@ -1,5 +1,5 @@
-import { ElementWrapper } from "../../typings/ElementWrapper";
-import { TalonAction } from "../../typings/RequestFromTalon";
+import { type ElementWrapper } from "../../typings/ElementWrapper";
+import { type TalonAction } from "../../typings/RequestFromTalon";
 import { isEditable } from "../utils/domUtils";
 
 export function focusAndDeleteContents(

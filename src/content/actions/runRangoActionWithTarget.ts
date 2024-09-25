@@ -1,9 +1,9 @@
-import { RangoActionWithTarget } from "../../typings/RangoAction";
+import { type RangoActionWithTarget } from "../../typings/RangoAction";
 import { assertDefined } from "../../typings/TypingUtils";
 import { getWrapper, getWrapperForElement } from "../wrappers/wrappers";
-import { TalonAction } from "../../typings/RequestFromTalon";
+import { type TalonAction } from "../../typings/RequestFromTalon";
 import { activateEditable } from "../utils/activateEditable";
-import { ElementWrapper } from "../../typings/ElementWrapper";
+import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { notify } from "../notify/notify";
 import { setLastWrapper } from "../wrappers/lastWrapper";
 import { clickElement } from "./clickElement";
@@ -66,8 +66,9 @@ export async function runRangoActionWithTarget(
 	setLastWrapper(wrapper);
 	switch (request.type) {
 		case "clickElement":
-		case "directClickElement":
+		case "directClickElement": {
 			return clickElement(wrappers);
+		}
 
 		case "tryToFocusElementAndCheckIsEditable": {
 			// This might result in a Talon time out exception if tryToFocusOnEditable
@@ -76,109 +77,133 @@ export async function runRangoActionWithTarget(
 			return [{ name: "responseValue", value: Boolean(activeEditable) }];
 		}
 
-		case "focusElement":
+		case "focusElement": {
 			return focus(wrappers);
+		}
 
-		case "showLink":
+		case "showLink": {
 			showTitleAndHref(wrappers);
 			break;
+		}
 
-		case "openInNewTab":
+		case "openInNewTab": {
 			await openInNewTab(wrappers);
 			break;
+		}
 
-		case "openInBackgroundTab":
+		case "openInBackgroundTab": {
 			await openInBackgroundTab(wrappers);
 			break;
+		}
 
-		case "hoverElement":
+		case "hoverElement": {
 			await hoverElement(wrappers);
 			break;
+		}
 
-		case "copyLink":
+		case "copyLink": {
 			return copyLinkToClipboard(wrappers);
+		}
 
-		case "copyMarkdownLink":
+		case "copyMarkdownLink": {
 			return copyMarkdownLinkToClipboard(wrappers);
+		}
 
-		case "copyElementTextContent":
+		case "copyElementTextContent": {
 			return copyElementTextContentToClipboard(wrappers);
+		}
 
 		// This is not used anymore. I leave it here for now for backwards
 		// compatibility - 2023-06-02
-		case "insertToField":
+		case "insertToField": {
 			await insertToField(wrappers, request.arg);
 			break;
+		}
 
-		case "setSelectionBefore":
+		case "setSelectionBefore": {
 			// This might result in a Talon time out exception if setSelectionBefofre
 			// causes a navigation, as the current content script is stopped.
 			await setSelectionBefore(wrapper);
 			break;
+		}
 
-		case "setSelectionAfter":
+		case "setSelectionAfter": {
 			// This might result in a Talon time out exception if setSelectionAfter
 			// causes a navigation, as the current content script is stopped.
 			await setSelectionAfter(wrapper);
 			break;
+		}
 
 		// This is not used anymore. I leave it here for now for backwards
 		// compatibility - 2023-06-02
-		case "focusAndDeleteContents":
+		case "focusAndDeleteContents": {
 			return focusAndDeleteContents(wrapper);
+		}
 
-		case "scrollUpAtElement":
+		case "scrollUpAtElement": {
 			scroll({ dir: "up", target: wrapper, factor: request.arg });
 			break;
+		}
 
-		case "scrollDownAtElement":
+		case "scrollDownAtElement": {
 			scroll({ dir: "down", target: wrapper, factor: request.arg });
 			break;
+		}
 
-		case "scrollLeftAtElement":
+		case "scrollLeftAtElement": {
 			scroll({ dir: "left", target: wrapper, factor: request.arg });
 			break;
+		}
 
-		case "scrollRightAtElement":
+		case "scrollRightAtElement": {
 			scroll({ dir: "right", target: wrapper, factor: request.arg });
 			break;
+		}
 
-		case "scrollElementToTop":
+		case "scrollElementToTop": {
 			snapScroll("top", wrapper);
 			break;
+		}
 
-		case "scrollElementToBottom":
+		case "scrollElementToBottom": {
 			snapScroll("bottom", wrapper);
 			break;
+		}
 
-		case "scrollElementToCenter":
+		case "scrollElementToCenter": {
 			snapScroll("center", wrapper);
 			break;
+		}
 
-		case "includeExtraSelectors":
+		case "includeExtraSelectors": {
 			await markHintsForInclusion(wrappers);
 			break;
+		}
 
-		case "excludeExtraSelectors":
+		case "excludeExtraSelectors": {
 			await markHintsForExclusion(wrappers);
 			break;
+		}
 
-		case "saveReference":
+		case "saveReference": {
 			await saveReference(wrapper, request.arg);
 			break;
+		}
 
-		case "hideHint":
+		case "hideHint": {
 			for (const wrapper of wrappers) {
 				wrapper.hint?.hide();
 			}
 
 			break;
+		}
 
-		default:
+		default: {
 			await notify(`Invalid action "${request.type}"`, {
 				type: "error",
 			});
 			break;
+		}
 	}
 
 	return undefined;

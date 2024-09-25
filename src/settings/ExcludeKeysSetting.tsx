@@ -1,9 +1,9 @@
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
-import "./ExcludeKeysSetting.css";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import "./ExcludeKeysSetting.css";
 
 type ExcludeKeysSettingProps = {
-	value: Array<[string, string]>;
+	readonly value: Array<[string, string]>;
 	onChange(value: Array<[string, string]>): void;
 };
 

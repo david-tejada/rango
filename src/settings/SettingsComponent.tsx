@@ -3,7 +3,7 @@ import { useEffect, useState } from "react";
 import Color from "color";
 import { defaultSettingsMutable, isValidSetting } from "../common/settings";
 import { retrieveSettings, store } from "../common/storage";
-import { StorageSchema } from "../typings/StorageSchema";
+import { type StorageSchema } from "../typings/StorageSchema";
 import { hasMatchingKeys } from "../lib/utils";
 import { SettingsGroup } from "./SettingsGroup";
 import { Toggle } from "./Toggle";

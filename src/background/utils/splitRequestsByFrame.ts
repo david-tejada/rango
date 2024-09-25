@@ -1,4 +1,4 @@
-import { RangoActionWithTarget, hasArg } from "../../typings/RangoAction";
+import { type RangoActionWithTarget } from "../../typings/RangoAction";
 import { withStack } from "../hints/hintsAllocator";
 
 /**
@@ -14,8 +14,8 @@ export async function splitRequestsByFrame(
 ): Promise<Map<number, RangoActionWithTarget> | undefined> {
 	const hints =
 		typeof request.target === "string" ? [request.target] : request.target;
-	const hintsByFrame: Map<number, string[]> = new Map();
-	const requests: Map<number, any> = new Map();
+	const hintsByFrame = new Map<number, string[]>();
+	const requests = new Map<number, any>();
 
 	return withStack(tabId, async (stack) => {
 		for (const hint of hints) {
@@ -33,7 +33,7 @@ export async function splitRequestsByFrame(
 		}
 
 		for (const [key, value] of hintsByFrame.entries()) {
-			const arg = hasArg(request) ? request.arg : undefined;
+			const arg = "arg" in request ? request.arg : undefined;
 
 			requests.set(key, {
 				type: request.type,

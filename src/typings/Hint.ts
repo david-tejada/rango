@@ -1,6 +1,6 @@
-import Color from "color";
+import type Color from "color";
 
-export interface Hint {
+export type Hint = {
 	/**
 	 * The Element the hint is referencing.
 	 */
@@ -35,7 +35,6 @@ export interface Hint {
 	updateColors(): void;
 	claim(): string | undefined;
 	position(): void;
-	display(): void;
 	flash(ms?: number): void;
 	clearFlash(): void;
 
@@ -53,4 +52,4 @@ export interface Hint {
 	applyDefaultStyle(): void;
 	keyHighlight(): void;
 	clearKeyHighlight(): void;
-}
+};

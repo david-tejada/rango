@@ -1,33 +1,33 @@
-import { ToastOptions } from "react-toastify";
-import { RangoAction } from "./RangoAction";
-import { MarkHintsAsKeyboardReachable } from "./RequestFromContent";
+import { type ToastOptions } from "react-toastify";
+import { type RangoAction } from "./RangoAction";
+import { type MarkHintsAsKeyboardReachable } from "./RequestFromContent";
 
-interface UpdateHintsInTab {
+type UpdateHintsInTab = {
 	type: "updateHintsInTab";
 	hints: string[];
-}
+};
 
-interface ReclaimHints {
+type ReclaimHints = {
 	type: "reclaimHints";
 	amount: number;
-}
+};
 
-interface DisplayToastNotification {
+type DisplayToastNotification = {
 	type: "displayToastNotification";
 	text: string;
 	options?: ToastOptions;
-}
+};
 
-interface AllowToastNotification {
+type AllowToastNotification = {
 	type: "allowToastNotification";
-}
+};
 
-interface UpdateNavigationToggle {
+type UpdateNavigationToggle = {
 	type: "updateNavigationToggle";
 	enable: boolean | undefined;
-}
+};
 
-interface SimpleContentRequest {
+type SimpleContentRequest = {
 	type:
 		| "restoreKeyboardReachableHints"
 		| "checkIfDocumentHasFocus"
@@ -36,7 +36,7 @@ interface SimpleContentRequest {
 		| "tryToFocusPage"
 		| "getTitleBeforeDecoration"
 		| "refreshTitleDecorations";
-}
+};
 
 export type RequestFromBackground = { frameId?: number } & (
 	| RangoAction

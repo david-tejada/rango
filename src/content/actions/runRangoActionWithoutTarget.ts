@@ -1,5 +1,5 @@
 import { toast } from "react-toastify";
-import { RangoActionWithoutTarget } from "../../typings/RangoAction";
+import { type RangoActionWithoutTarget } from "../../typings/RangoAction";
 import { notify, notifyTogglesStatus } from "../notify/notify";
 import { isEditable } from "../utils/domUtils";
 import {
@@ -31,166 +31,204 @@ export async function runRangoActionWithoutTarget(
 	request: RangoActionWithoutTarget
 ): Promise<string | number | boolean | undefined> {
 	switch (request.type) {
-		case "historyGoBack":
+		case "historyGoBack": {
 			window.history.back();
 			break;
+		}
 
-		case "historyGoForward":
+		case "historyGoForward": {
 			window.history.forward();
 			break;
+		}
 
-		case "navigateToPageRoot":
+		case "navigateToPageRoot": {
 			window.location.href = "/";
 			break;
+		}
 
-		case "navigateToNextPage":
+		case "navigateToNextPage": {
 			navigateToNextPage();
 			break;
+		}
 
-		case "navigateToPreviousPage":
+		case "navigateToPreviousPage": {
 			navigateToPreviousPage();
 			break;
+		}
 
-		case "displayTogglesStatus":
+		case "displayTogglesStatus": {
 			await notifyTogglesStatus(true);
 			break;
+		}
 
-		case "focusFirstInput":
+		case "focusFirstInput": {
 			await focusFirstInput();
 			break;
+		}
 
-		case "scrollUpPage":
+		case "scrollUpPage": {
 			scroll({ dir: "up", target: "page", factor: request.arg });
 			break;
+		}
 
-		case "scrollDownPage":
+		case "scrollDownPage": {
 			scroll({ dir: "down", target: "page", factor: request.arg });
 			break;
+		}
 
-		case "scrollUpLeftAside":
+		case "scrollUpLeftAside": {
 			scroll({ dir: "up", target: "leftAside", factor: request.arg });
 			break;
+		}
 
-		case "scrollDownLeftAside":
+		case "scrollDownLeftAside": {
 			scroll({ dir: "down", target: "leftAside", factor: request.arg });
 			break;
+		}
 
-		case "scrollUpRightAside":
+		case "scrollUpRightAside": {
 			scroll({ dir: "up", target: "rightAside", factor: request.arg });
 			break;
+		}
 
-		case "scrollDownRightAside":
+		case "scrollDownRightAside": {
 			scroll({ dir: "down", target: "rightAside", factor: request.arg });
 			break;
+		}
 
-		case "scrollLeftPage":
+		case "scrollLeftPage": {
 			scroll({ dir: "left", target: "page", factor: request.arg });
 			break;
+		}
 
-		case "scrollRightPage":
+		case "scrollRightPage": {
 			scroll({ dir: "right", target: "page", factor: request.arg });
 			break;
+		}
 
-		case "scrollUpAtElement":
+		case "scrollUpAtElement": {
 			scroll({ dir: "up", target: "repeatLast" });
 			break;
+		}
 
-		case "scrollDownAtElement":
+		case "scrollDownAtElement": {
 			scroll({ dir: "down", target: "repeatLast" });
 			break;
+		}
 
-		case "scrollRightAtElement":
+		case "scrollRightAtElement": {
 			scroll({ dir: "right", target: "repeatLast" });
 			break;
+		}
 
-		case "scrollLeftAtElement":
+		case "scrollLeftAtElement": {
 			scroll({ dir: "left", target: "repeatLast" });
 			break;
+		}
 
-		case "storeScrollPosition":
+		case "storeScrollPosition": {
 			await storeScrollPosition(request.arg);
 			break;
+		}
 
-		case "scrollToPosition":
+		case "scrollToPosition": {
 			await scrollToPosition(request.arg);
 			break;
+		}
 
-		case "displayExtraHints":
+		case "displayExtraHints": {
 			await displayMoreOrLessHints({ extra: true });
 			break;
+		}
 
-		case "displayExcludedHints":
+		case "displayExcludedHints": {
 			await displayMoreOrLessHints({ excluded: true });
 			break;
+		}
 
-		case "displayLessHints":
+		case "displayLessHints": {
 			await displayMoreOrLessHints({ extra: false, excluded: false });
 			break;
+		}
 
-		case "confirmSelectorsCustomization":
+		case "confirmSelectorsCustomization": {
 			await customHintsConfirm();
 			break;
+		}
 
 		case "resetCustomSelectors": {
 			await customHintsReset();
 			break;
 		}
 
-		case "includeOrExcludeMoreSelectors":
+		case "includeOrExcludeMoreSelectors": {
 			await markHintsWithBroaderSelector();
 			break;
+		}
 
-		case "includeOrExcludeLessSelectors":
+		case "includeOrExcludeLessSelectors": {
 			await markHintsWithNarrowerSelector();
 			break;
+		}
 
-		case "excludeAllHints":
+		case "excludeAllHints": {
 			await markAllHintsForExclusion();
 			break;
+		}
 
-		case "refreshHints":
+		case "refreshHints": {
 			await refreshHints();
 			break;
+		}
 
-		case "unhoverAll":
+		case "unhoverAll": {
 			blur();
 			unhoverAll();
 			toast.dismiss();
 			break;
+		}
 
-		case "checkActiveElementIsEditable":
+		case "checkActiveElementIsEditable": {
 			return Boolean(
 				document.hasFocus() &&
 					document.activeElement &&
 					isEditable(document.activeElement)
 			);
+		}
 
-		case "saveReferenceForActiveElement":
+		case "saveReferenceForActiveElement": {
 			await saveReferenceForActiveElement(request.arg);
 			break;
+		}
 
-		case "runActionOnReference":
+		case "runActionOnReference": {
 			return runActionOnReference(request.arg, request.arg2);
+		}
 
-		case "showReferences":
+		case "showReferences": {
 			await showReferences();
 			break;
+		}
 
-		case "removeReference":
+		case "removeReference": {
 			return removeReference(request.arg);
+		}
 
-		case "matchElementByText":
+		case "matchElementByText": {
 			return matchElementByText(request.text, request.prioritizeViewport);
+		}
 
-		case "executeActionOnTextMatchedElement":
+		case "executeActionOnTextMatchedElement": {
 			await executeActionOnTextMatchedElement(request.actionType);
 			break;
+		}
 
-		default:
+		default: {
 			await notify(`Invalid action "${request.type}"`, {
 				type: "error",
 			});
 			break;
+		}
 	}
 
 	return undefined;

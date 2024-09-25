@@ -1,7 +1,8 @@
+import process from "process";
 import Color from "color";
 import { debounce } from "lodash";
 import { rgbaToRgb } from "../../lib/rgbaToRgb";
-import { Hint } from "../../typings/Hint";
+import { type Hint } from "../../typings/Hint";
 import { getAllSettings, getSetting } from "../settings/settingsManager";
 import { getToggles } from "../settings/toggles";
 import { createsStackingContext } from "../utils/createsStackingContext";
@@ -30,7 +31,7 @@ import {
 } from "./layoutCache";
 import { setStyleProperties } from "./setStyleProperties";
 
-const hintQueue: Set<HintClass> = new Set();
+const hintQueue = new Set<HintClass>();
 
 function addToHintQueue(hint: HintClass) {
 	hintQueue.add(hint);
@@ -137,6 +138,7 @@ const processHintQueue = debounce(() => {
 	clearLayoutCache();
 }, 100);
 
+// eslint-disable-next-line @typescript-eslint/naming-convention
 function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {
 	const descendants = target.querySelectorAll("*");
 	let zIndex = 0;
@@ -270,11 +272,31 @@ const shadowHostMutationObserver = new MutationObserver((entries) => {
 // HINT CLASS
 // =============================================================================
 
-export interface HintClass extends Hint {}
-
 export class HintClass implements Hint {
-	constructor(target: Element) {
-		this.target = target;
+	shadowHost: HTMLDivElement;
+	isActive: boolean;
+	outer: HTMLDivElement;
+	inner: HTMLDivElement;
+	container: HTMLElement | ShadowRoot;
+	limitParent: HTMLElement;
+	availableSpaceLeft?: number;
+	availableSpaceTop?: number;
+	wrapperRelative?: boolean;
+	elementToPositionHint: Element | SVGElement | Text;
+	zIndex?: number;
+	positioned: boolean;
+	toBeReattached: boolean;
+	wasReattached: boolean;
+	color: Color;
+	backgroundColor: Color;
+	borderColor: Color;
+	borderWidth: number;
+	keyEmphasis?: boolean;
+	freezeColors?: boolean;
+	firstTextNodeDescendant?: Text;
+	string?: string;
+
+	constructor(public target: Element) {
 		this.isActive = false;
 
 		this.borderWidth = getSetting("hintBorderWidth");
@@ -674,7 +696,6 @@ export class HintClass implements Hint {
 			this.shadowHost.remove();
 		}
 
-		/* eslint-disable @typescript-eslint/no-dynamic-delete */
 		delete this.shadowHost.dataset["hint"];
 
 		if (
@@ -694,7 +715,6 @@ export class HintClass implements Hint {
 	show() {
 		addToHintQueue(this);
 	}
-	/* eslint-enable @typescript-eslint/no-dynamic-delete */
 
 	/**
 	 * Reattach a hint that has being removed by the page. First we try

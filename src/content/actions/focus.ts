@@ -1,8 +1,8 @@
-import { TalonAction } from "../../typings/RequestFromTalon";
+import { type TalonAction } from "../../typings/RequestFromTalon";
 import { notify } from "../notify/notify";
 import { dispatchKeyDown, dispatchKeyUp } from "../utils/dispatchEvents";
 import { editableElementSelector, getFocusable } from "../utils/domUtils";
-import { ElementWrapper } from "../../typings/ElementWrapper";
+import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { getOrCreateWrapper } from "../wrappers/ElementWrapperClass";
 
 export function focus(wrappers: ElementWrapper[]): TalonAction[] | undefined {

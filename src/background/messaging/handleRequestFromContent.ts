@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { RequestFromContent } from "../../typings/RequestFromContent";
+import { type RequestFromContent } from "../../typings/RequestFromContent";
 import { assertDefined } from "../../typings/TypingUtils";
 import {
 	claimHints,
@@ -33,7 +33,7 @@ export async function handleRequestFromContent(
 	const frameId = sender.frameId ?? 0;
 
 	switch (request.type) {
-		case "initStack":
+		case "initStack": {
 			// This is to be extra safe as we already make sure we are only sending
 			// this request from the main frame of the content script
 			if (frameId !== 0) {
@@ -44,45 +44,54 @@ export async function handleRequestFromContent(
 			}
 
 			return initStack(tabId);
+		}
 
-		case "claimHints":
+		case "claimHints": {
 			return claimHints(tabId, frameId, request.amount);
+		}
 
-		case "reclaimHintsFromOtherFrames":
+		case "reclaimHintsFromOtherFrames": {
 			return reclaimHintsFromOtherFrames(tabId, frameId, request.amount);
+		}
 
-		case "releaseHints":
+		case "releaseHints": {
 			return releaseHints(tabId, request.hints);
+		}
 
-		case "storeHintsInFrame":
+		case "storeHintsInFrame": {
 			return storeHintsInFrame(tabId, frameId, request.hints);
+		}
 
-		case "getHintsStackForTab":
+		case "getHintsStackForTab": {
 			return withStack(tabId, async (stack) => {
 				return stack;
 			});
+		}
 
-		case "openInNewTab":
+		case "openInNewTab": {
 			await openInNewTab([request.url], true);
 			break;
+		}
 
-		case "openInBackgroundTab":
+		case "openInBackgroundTab": {
 			await openInNewTab(request.links, false);
 
 			break;
+		}
 
 		case "getContentScriptContext": {
 			return { tabId, frameId, currentTabId };
 		}
 
-		case "clickHintInFrame":
+		case "clickHintInFrame": {
 			await sendRequestToContent({
 				type: "clickElement",
 				target: [request.hint],
 			});
 			break;
+		}
 
-		case "markHintsAsKeyboardReachable":
+		case "markHintsAsKeyboardReachable": {
 			await sendRequestToContent(
 				{
 					type: "markHintsAsKeyboardReachable",
@@ -91,8 +100,9 @@ export async function handleRequestFromContent(
 				tabId
 			);
 			break;
+		}
 
-		case "restoreKeyboardReachableHints":
+		case "restoreKeyboardReachableHints": {
 			await sendRequestToContent(
 				{
 					type: "restoreKeyboardReachableHints",
@@ -100,26 +110,33 @@ export async function handleRequestFromContent(
 				tabId
 			);
 			break;
+		}
 
-		case "isCurrentTab":
+		case "isCurrentTab": {
 			return isCurrentTab;
+		}
 
-		case "getTabMarker":
+		case "getTabMarker": {
 			return getTabMarker(tabId);
+		}
 
-		case "storeCustomSelectors":
+		case "storeCustomSelectors": {
 			await storeCustomSelectors(request.url, request.selectors);
 			break;
+		}
 
-		case "resetCustomSelectors":
+		case "resetCustomSelectors": {
 			return resetCustomSelectors(request.url);
+		}
 
-		case "removeReference":
+		case "removeReference": {
 			return removeReference(request.hostPattern, request.name);
+		}
 
-		default:
+		default: {
 			console.error(request);
 			throw new Error("Bad request to background script");
+		}
 	}
 
 	return undefined;

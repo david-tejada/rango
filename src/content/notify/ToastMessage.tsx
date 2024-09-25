@@ -1,5 +1,5 @@
 type ToastMessageProps = {
-	children: React.ReactNode;
+	readonly children: React.ReactNode;
 };
 
 export function ToastMessage({ children }: ToastMessageProps) {

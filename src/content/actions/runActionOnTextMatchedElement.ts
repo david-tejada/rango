@@ -1,5 +1,5 @@
 import Fuse from "fuse.js";
-import { RangoActionWithTargets } from "../../typings/RangoAction";
+import { type RangoActionWithTargets } from "../../typings/RangoAction";
 import { getSetting } from "../settings/settingsManager";
 import { getToggles } from "../settings/toggles";
 import { deepGetElements } from "../utils/deepGetElements";
@@ -91,7 +91,7 @@ export async function matchElementByText(
 				}
 
 				return a.score! - b.score!;
-		  })
+			})
 		: matches;
 
 	const bestMatch = sortedMatches[0];

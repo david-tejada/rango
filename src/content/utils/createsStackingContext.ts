@@ -1,4 +1,4 @@
-const props =
+const properties =
 	/\b(?:position|zIndex|opacity|mixBlendMode|transform|filter|backdrop-filter|perspective|clip-path|mask|mask-image|mask-border|isolation)\b/;
 
 function isFlexOrGridChild(element: Element) {
@@ -44,7 +44,7 @@ export function createsStackingContext(element: Element) {
 	if ("mask-border" in style && style.filter !== "none") return true;
 
 	if ("isolation" in style && style.isolation === "isolate") return true;
-	if (props.test(style.willChange)) return true;
+	if (properties.test(style.willChange)) return true;
 
 	return false;
 }

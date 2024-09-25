@@ -28,7 +28,7 @@ async function updateRecentTab(
 			tabsIds.splice(index, 1);
 		}
 
-		if (!remove && tabsIds[tabsIds.length - 1] !== tabId) {
+		if (!remove && tabsIds.at(-1) !== tabId) {
 			tabsIds.push(tabId);
 		}
 

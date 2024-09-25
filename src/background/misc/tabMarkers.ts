@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
 import { Mutex } from "async-mutex";
 import { retrieve, store } from "../../common/storage";
-import { TabMarkers } from "../../typings/StorageSchema";
+import { type TabMarkers } from "../../typings/StorageSchema";
 import { letterHints } from "../../common/allHints";
 import { sendRequestToContent } from "../messaging/sendRequestToContent";
 

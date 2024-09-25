@@ -1,5 +1,8 @@
 import { z } from "zod";
-import { CustomSelector, StorageSchema } from "../typings/StorageSchema";
+import {
+	type CustomSelector,
+	type StorageSchema,
+} from "../typings/StorageSchema";
 import { isValidSelector } from "./selectorUtils";
 import { isValidRegExp } from "./textUtils";
 
@@ -8,7 +11,7 @@ type CustomsSelectorsLegacyEntry = [
 	{
 		include: string[];
 		exclude: string[];
-	}
+	},
 ];
 
 /**
@@ -88,7 +91,7 @@ export function prepareSettingForStoring<T extends keyof StorageSchema>(
 	value: StorageSchema[T]
 ) {
 	switch (key) {
-		case "customSelectors":
+		case "customSelectors": {
 			return (
 				(value as StorageSchema["customSelectors"])
 					.filter(
@@ -104,11 +107,16 @@ export function prepareSettingForStoring<T extends keyof StorageSchema>(
 							(a.type === "include" ? -1 : 1)
 					) as StorageSchema[T]
 			);
-		case "keysToExclude":
+		}
+
+		case "keysToExclude": {
 			return (value as StorageSchema["keysToExclude"]).filter(
 				([pattern]) => pattern
 			) as StorageSchema[T];
-		default:
+		}
+
+		default: {
 			return value;
+		}
 	}
 }

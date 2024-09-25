@@ -1,9 +1,9 @@
-import { Tabs } from "webextension-polyfill";
+import { type Tabs } from "webextension-polyfill";
 import { promiseWrap } from "../../lib/promiseWrap";
 import { assertDefined } from "../../typings/TypingUtils";
 import { sendRequestToContent } from "../messaging/sendRequestToContent";
 import { notify } from "../utils/notify";
-import { RangoActionCopyLocationProperty } from "../../typings/RangoAction";
+import { type RangoActionCopyLocationProperty } from "../../typings/RangoAction";
 
 export async function getBareTitle(tab: Tabs.Tab) {
 	const [title] = await promiseWrap(

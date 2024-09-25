@@ -21,8 +21,8 @@ const icons = {
 };
 
 type AlertProps = {
-	type: keyof typeof icons;
-	children?: React.ReactNode;
+	readonly type: keyof typeof icons;
+	readonly children?: React.ReactNode;
 };
 
 export function Alert({ type, children }: AlertProps) {

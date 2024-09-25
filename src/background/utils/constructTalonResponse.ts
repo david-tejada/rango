@@ -1,7 +1,7 @@
 import {
-	ResponseToTalon,
-	TalonAction,
-	TalonActionLegacy,
+	type ResponseToTalon,
+	type TalonAction,
+	type TalonActionLegacy,
 } from "../../typings/RequestFromTalon";
 
 export function constructTalonResponse(

@@ -1,4 +1,4 @@
-import { ElementWrapper } from "../../typings/ElementWrapper";
+import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { hasPropertyValue } from "../../typings/TypingUtils";
 import { setSelectionAfter } from "./setSelection";
 
@@ -12,7 +12,7 @@ export async function insertToField(wrappers: ElementWrapper[], text: string) {
 		}
 	}
 
-	const lastWrapper = wrappers[wrappers.length - 1]!;
+	const lastWrapper = wrappers.at(-1)!;
 	await setSelectionAfter(lastWrapper);
 	if (lastWrapper.element instanceof HTMLElement) {
 		lastWrapper.element.focus();

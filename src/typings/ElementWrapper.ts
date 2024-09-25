@@ -1,5 +1,5 @@
-import { BoundedIntersectionObserver } from "../content/utils/BoundedIntersectionObserver";
-import { Hint } from "./Hint";
+import { type BoundedIntersectionObserver } from "../content/utils/BoundedIntersectionObserver";
+import { type Hint } from "./Hint";
 
 /**
  * A wrapper for a DOM Element.
@@ -8,7 +8,7 @@ import { Hint } from "./Hint";
  * is to avoid cycle dependencies since ElementWrapperClass must import other modules
  * that also import ElementWrapper.
  */
-export interface ElementWrapper {
+export type ElementWrapper = {
 	element: Element;
 
 	isIntersecting?: boolean;
@@ -44,4 +44,4 @@ export interface ElementWrapper {
 	 * This method should be called when the element is removed from the DOM.
 	 */
 	suspend(): void;
-}
+};

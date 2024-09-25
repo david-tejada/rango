@@ -1,13 +1,13 @@
 import browser from "webextension-polyfill";
-import { RequestFromBackground } from "../../typings/RequestFromBackground";
-import { TalonAction } from "../../typings/RequestFromTalon";
+import { type RequestFromBackground } from "../../typings/RequestFromBackground";
+import { type TalonAction } from "../../typings/RequestFromTalon";
 import { isPromiseFulfilledResult } from "../../typings/TypingUtils";
 import { getCurrentTabId } from "../utils/getCurrentTab";
 import { splitRequestsByFrame } from "../utils/splitRequestsByFrame";
 import {
-	RangoActionRemoveReference,
-	RangoActionRunActionOnReference,
-	RangoActionWithTargets,
+	type RangoActionRemoveReference,
+	type RangoActionRunActionOnReference,
+	type RangoActionWithTargets,
 } from "../../typings/RangoAction";
 import { notify } from "../utils/notify";
 
@@ -164,7 +164,7 @@ export async function sendRequestToContent(
 				// talon "noHintFound" to type those letters
 				results.length === 1 &&
 				isPromiseFulfilledResult(results[0]!) &&
-				results[0]!.value
+				results[0].value
 			) {
 				return results[0].value as TalonAction;
 			}
@@ -189,7 +189,7 @@ export async function sendRequestToContent(
 		);
 	}
 
-	frameId = frameId ?? toAllFrames.has(request.type) ? undefined : 0;
+	frameId = (frameId ?? toAllFrames.has(request.type)) ? undefined : 0;
 	request.frameId = frameId;
 
 	return browser.tabs.sendMessage(targetTabId, request, {

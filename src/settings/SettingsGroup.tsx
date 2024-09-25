@@ -1,8 +1,8 @@
 import "./SettingsGroup.css";
 
 type SettingsGroupProps = {
-	label: string;
-	children: React.ReactNode;
+	readonly label: string;
+	readonly children: React.ReactNode;
 };
 
 export function SettingsGroup({ label, children }: SettingsGroupProps) {

@@ -7,7 +7,7 @@ import { Alert } from "./Alert";
 const iconSvgUrl = new URL("../assets/icon.svg", import.meta.url);
 
 type AppProps = {
-	hasSeenSettingsPage: boolean;
+	readonly hasSeenSettingsPage: boolean;
 };
 
 export function App({ hasSeenSettingsPage }: AppProps) {

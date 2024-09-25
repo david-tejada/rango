@@ -2,10 +2,10 @@ import { useId } from "react";
 import "./Input.css";
 
 type InputProps = {
-	label: string;
-	defaultValue: string | number;
-	isValid?: boolean;
-	children?: React.ReactNode;
+	readonly label: string;
+	readonly defaultValue: string | number;
+	readonly isValid?: boolean;
+	readonly children?: React.ReactNode;
 	onChange(value: string): void;
 	onBlur?(): void;
 };

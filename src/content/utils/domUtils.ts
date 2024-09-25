@@ -52,6 +52,6 @@ const focusableSelector =
 export function getFocusable(element: Element) {
 	return element.matches(focusableSelector)
 		? element
-		: element.querySelector(focusableSelector) ??
-				element.closest(focusableSelector);
+		: (element.querySelector(focusableSelector) ??
+				element.closest(focusableSelector));
 }

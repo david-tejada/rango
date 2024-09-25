@@ -6,16 +6,10 @@ import {
 	getFirstCharacterRect,
 } from "./layoutCache";
 
-declare global {
-	interface CSSStyleDeclaration {
-		contentVisibility: string;
-	}
-}
-
 // Minimum space that needs to be available so that we can place the hint in the
 // current element
-const ENOUGH_LEFT = 15;
-const ENOUGH_TOP = 10;
+const enoughLeft = 15;
+const enoughTop = 10;
 
 function getPaddingRect(element: Element): DOMRect {
 	const {
@@ -193,12 +187,12 @@ export function getAptContainer(origin: Element) {
 	return document.body;
 }
 
-interface HintContext {
+type HintContext = {
 	container: HTMLElement | ShadowRoot;
 	limitParent: HTMLElement;
 	availableSpaceLeft?: number;
 	availableSpaceTop?: number;
-}
+};
 
 export function getContextForHint(
 	element: Element,
@@ -305,7 +299,7 @@ export function getContextForHint(
 		previousSpaceLeft ??= spaceLeft;
 		previousSpaceTop ??= spaceTop;
 
-		if (spaceLeft > ENOUGH_LEFT && spaceTop > ENOUGH_TOP) {
+		if (spaceLeft > enoughLeft && spaceTop > enoughTop) {
 			// For example, with the following clipAncestors:
 			// clipAncestor[n]: (spaceLeft, spaceTop)
 			// -----------------------
@@ -320,8 +314,8 @@ export function getContextForHint(
 			container =
 				spaceLeft > previousSpaceLeft || spaceTop > previousSpaceTop
 					? // We know there's got to be a previousClipAncestor as for
-					  // clipAncestor[0] the spaces and candidate spaces are the same
-					  getAptContainer(previousClipAncestor!)
+						// clipAncestor[0] the spaces and candidate spaces are the same
+						getAptContainer(previousClipAncestor!)
 					: candidate;
 
 			previousSpaceLeft = spaceLeft;
@@ -334,8 +328,8 @@ export function getContextForHint(
 		// Once we have enough space in that direction there is no need to change
 		// the candidate
 		if (
-			(spaceLeft > previousSpaceLeft && previousSpaceLeft < ENOUGH_LEFT) ||
-			(spaceTop > previousSpaceTop && previousSpaceTop < ENOUGH_TOP)
+			(spaceLeft > previousSpaceLeft && previousSpaceLeft < enoughLeft) ||
+			(spaceTop > previousSpaceTop && previousSpaceTop < enoughTop)
 		) {
 			// We know there's got to be a previousClipAncestor as for
 			// clipAncestor[0] the spaces and previous spaces are the same

@@ -20,7 +20,7 @@ jobs:
         env:
           PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
         with:
-          node-version: 18
+          node-version: 20
       - run: npm install
       - uses: david-tejada/puppeteer-headful@master
         with:

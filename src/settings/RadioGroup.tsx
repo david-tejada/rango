@@ -1,14 +1,14 @@
-import { createContext, ReactNode, useContext, useMemo } from "react";
+import { createContext, type ReactNode, useContext, useMemo } from "react";
 import "./RadioGroup.css";
 
-type TRadioContext = {
+type TypeRadioContext = {
 	name: string;
 	selectedValue: string;
 	isDisabled?: boolean;
 	onChange(value: string): void;
 };
 
-const RadioContext = createContext<TRadioContext>({
+const RadioContext = createContext<TypeRadioContext>({
 	name: "",
 	selectedValue: "",
 	isDisabled: false,
@@ -17,8 +17,8 @@ const RadioContext = createContext<TRadioContext>({
 });
 
 type RadioProps = {
-	value: string;
-	children: ReactNode;
+	readonly value: string;
+	readonly children: ReactNode;
 };
 
 export function Radio({ value, children }: RadioProps) {
@@ -44,11 +44,11 @@ export function Radio({ value, children }: RadioProps) {
 }
 
 type RadioGroupProps<T extends string> = {
-	label: string;
-	name: string;
-	defaultValue: T;
-	isDisabled?: boolean;
-	children: ReactNode;
+	readonly label: string;
+	readonly name: string;
+	readonly defaultValue: T;
+	readonly isDisabled?: boolean;
+	readonly children: ReactNode;
 	onChange(value: T): void;
 };
 

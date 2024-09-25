@@ -13,12 +13,6 @@ import {
 	getFirstCharacterRect,
 } from "./layoutCache";
 
-declare global {
-	interface CSSStyleDeclaration {
-		maskImage: string;
-	}
-}
-
 function elementsAreNear(a: Element, b: Element) {
 	const aRect = getBoundingClientRect(a);
 	const bRect = getBoundingClientRect(b);

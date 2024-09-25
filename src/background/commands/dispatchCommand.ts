@@ -1,5 +1,8 @@
-import { ResponseToTalon, TalonAction } from "../../typings/RequestFromTalon";
-import { RangoAction } from "../../typings/RangoAction";
+import {
+	type ResponseToTalon,
+	type TalonAction,
+} from "../../typings/RequestFromTalon";
+import { type RangoAction } from "../../typings/RangoAction";
 import { sendRequestToContent } from "../messaging/sendRequestToContent";
 import { constructTalonResponse } from "../utils/constructTalonResponse";
 import { promiseWrap } from "../../lib/promiseWrap";

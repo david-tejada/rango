@@ -1,11 +1,11 @@
 function rgbaToRgb(rgba: string, backgroundRgb: string) {
 	const [r, g, b, a] = rgba
-		.replace(/[^\d.\s,]/g, "")
+		.replaceAll(/[^\d.\s,]/g, "")
 		.split(",")
 		.map((v) => Number.parseFloat(v));
 
 	const [backgroundR, backgroundG, backgroundB] = backgroundRgb
-		.replace(/[^\d.\s,]/g, "")
+		.replaceAll(/[^\d.\s,]/g, "")
 		.split(",")
 		.map((v) => Number.parseFloat(v));
 

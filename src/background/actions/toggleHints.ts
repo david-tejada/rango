@@ -2,7 +2,7 @@ import { assertDefined } from "../../typings/TypingUtils";
 import { sendRequestToContent } from "../messaging/sendRequestToContent";
 import { getCurrentTab } from "../utils/getCurrentTab";
 import { retrieve, store } from "../../common/storage";
-import { RangoActionUpdateToggles } from "../../typings/RangoAction";
+import { type RangoActionUpdateToggles } from "../../typings/RangoAction";
 
 export async function toggleHintsGlobal() {
 	const hintsToggleGlobal = await retrieve("hintsToggleGlobal");
@@ -20,7 +20,7 @@ export async function updateHintsToggle(
 	const { host, origin, pathname } = new URL(currentTab.url);
 
 	switch (level) {
-		case "everywhere":
+		case "everywhere": {
 			if (enable === undefined) {
 				await store("hintsToggleGlobal", true);
 				await store("hintsToggleTabs", new Map());
@@ -33,6 +33,7 @@ export async function updateHintsToggle(
 			}
 
 			break;
+		}
 
 		case "now": {
 			await sendRequestToContent({
@@ -42,9 +43,10 @@ export async function updateHintsToggle(
 			break;
 		}
 
-		case "global":
-			await store("hintsToggleGlobal", enable === undefined ? true : enable);
+		case "global": {
+			await store("hintsToggleGlobal", enable ?? true);
 			break;
+		}
 
 		case "tab": {
 			const hintsToggleTabs = await retrieve("hintsToggleTabs");
@@ -90,7 +92,8 @@ export async function updateHintsToggle(
 			break;
 		}
 
-		default:
+		default: {
 			break;
+		}
 	}
 }

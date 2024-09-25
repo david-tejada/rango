@@ -62,10 +62,9 @@ export async function contextMenusOnClicked({
 		const keysToExclude = await retrieve("keysToExclude");
 		const tab = await getCurrentTab();
 		const hostPattern = tab.url && getHostPattern(tab.url);
-		const keysToExcludeForHost =
-			(hostPattern &&
-				keysToExclude.find(([pattern]) => pattern === hostPattern)) ||
-			undefined;
+		const keysToExcludeForHost = keysToExclude.find(
+			([pattern]) => pattern === hostPattern
+		);
 
 		if (!keysToExcludeForHost && hostPattern) {
 			keysToExclude.push([hostPattern, ""]);

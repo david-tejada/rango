@@ -1,10 +1,10 @@
-import { ElementWrapper } from "../../typings/ElementWrapper";
+import { type ElementWrapper } from "../../typings/ElementWrapper";
 
-const boundingClientRects: Map<Element, DOMRect> = new Map();
-const offsetParents: Map<Element, Element | null> = new Map();
-const firstCharacterRects: Map<Text, DOMRect> = new Map();
-const textRects: Map<Text, DOMRect> = new Map();
-const clientDimensions: Map<
+const boundingClientRects = new Map<Element, DOMRect>();
+const offsetParents = new Map<Element, Element | null>();
+const firstCharacterRects = new Map<Text, DOMRect>();
+const textRects = new Map<Text, DOMRect>();
+const clientDimensions = new Map<
 	Element,
 	{
 		clientWidth: number;
@@ -14,8 +14,8 @@ const clientDimensions: Map<
 		offsetWidth?: number;
 		offsetHeight?: number;
 	}
-> = new Map();
-const styles: Map<Element, CSSStyleDeclaration> = new Map();
+>();
+const styles = new Map<Element, CSSStyleDeclaration>();
 
 export function clearLayoutCache() {
 	boundingClientRects.clear();
@@ -100,9 +100,9 @@ export function cacheLayout(
 	const elements = isElementWrapperArray(targets)
 		? targets.map((wrapper) => wrapper.element)
 		: targets;
-	const toCache: Set<Element> = new Set();
+	const toCache = new Set<Element>();
 
-	const firstTextNodes: Map<Element, Text[]> = new Map();
+	const firstTextNodes = new Map<Element, Text[]>();
 
 	for (const element of elements) {
 		if (element instanceof Element && includeTextRect) {
@@ -179,11 +179,11 @@ export function getClientDimensions(element: Element) {
 
 	const offsetWidth =
 		element instanceof HTMLElement
-			? clientDimensions.get(element)?.offsetWidth ?? element.offsetWidth
+			? (clientDimensions.get(element)?.offsetWidth ?? element.offsetWidth)
 			: undefined;
 	const offsetHeight =
 		element instanceof HTMLElement
-			? clientDimensions.get(element)?.offsetHeight ?? element.offsetHeight
+			? (clientDimensions.get(element)?.offsetHeight ?? element.offsetHeight)
 			: undefined;
 
 	return {

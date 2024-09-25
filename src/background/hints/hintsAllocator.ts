@@ -2,7 +2,7 @@ import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
 import { getKeysToExclude } from "../../common/getKeysToExclude";
 import { retrieve, store } from "../../common/storage";
-import { HintsStack } from "../../typings/StorageSchema";
+import { type HintsStack } from "../../typings/StorageSchema";
 import { letterHints, numberHints } from "../../common/allHints";
 import { navigationOccurred } from "./preloadTabs";
 
@@ -17,8 +17,8 @@ async function getEmptyStack(tabId: number): Promise<HintsStack> {
 		useNumberHints && !keyboardClicking
 			? [...numberHints]
 			: includeSingleLetterHints && !keyboardClicking
-			? [...letterHints]
-			: letterHints.slice(0, -26);
+				? [...letterHints]
+				: letterHints.slice(0, -26);
 
 	// We filter out any hint the user has excluded or any hint that starts with
 	// an excluded key for the current url.
@@ -34,7 +34,7 @@ async function getEmptyStack(tabId: number): Promise<HintsStack> {
 			!hintsToExclude
 				.toLowerCase()
 				.split(/[, ]/)
-				.filter((string) => string)
+				.filter(Boolean)
 				.map((string) => string.trim())
 				.includes(hint)
 	);

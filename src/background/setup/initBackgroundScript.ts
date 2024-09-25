@@ -1,3 +1,4 @@
+import process from "process";
 import browser from "webextension-polyfill";
 import { retrieve, store } from "../../common/storage";
 import { urls } from "../../common/urls";
@@ -35,12 +36,12 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 		const [currentMajor, currentMinor] = currentVersion.split(".") as [
 			string,
 			string,
-			string
+			string,
 		];
 		const [previousMajor, previousMinor] = previousVersion!.split(".") as [
 			string,
 			string,
-			string
+			string,
 		];
 
 		if (currentMajor !== previousMajor || currentMinor !== previousMinor) {

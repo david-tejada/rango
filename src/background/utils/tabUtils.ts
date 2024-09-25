@@ -1,4 +1,4 @@
-import browser from "webextension-polyfill";
+import type browser from "webextension-polyfill";
 import { getCurrentTab } from "./getCurrentTab";
 
 /**

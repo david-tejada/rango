@@ -1,5 +1,5 @@
 /* eslint-disable max-nested-callbacks */
-import { ElementHandle } from "puppeteer";
+import { type ElementHandle } from "puppeteer";
 import {
 	rangoCommandWithoutTarget,
 	rangoCommandWithTarget,
@@ -56,7 +56,7 @@ async function getActionableHint(containerSelector: string, top = true) {
 		if (visible) $$visible.push($node);
 	}
 
-	const $target = top ? $$visible[0] : $$visible[$$visible.length - 1];
+	const $target = top ? $$visible[0] : $$visible.at(-1);
 
 	return $target!.evaluate(getHintForElement);
 }

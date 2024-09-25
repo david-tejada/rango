@@ -20,15 +20,14 @@ function isIntersectingViewportMargin(target: Element, margin: number) {
 	);
 }
 
-interface ObservationTargetStatus {
+type ObservationTargetStatus = {
 	// Is intersecting the scroll container or the viewport if root is null, including margins
 	isIntersectingRoot?: boolean;
 	// This can only be true if isIntersectingRoot is true
 	isIntersecting?: boolean;
-}
+};
 
 export class BoundedIntersectionObserver implements IntersectionObserver {
-	readonly callback: IntersectionObserverCallback;
 	readonly root: Element | Document | null;
 	readonly rootMargin: string;
 	readonly rootMarginNumber: number;
@@ -38,10 +37,9 @@ export class BoundedIntersectionObserver implements IntersectionObserver {
 	trueObserver: IntersectionObserver;
 
 	constructor(
-		callback: IntersectionObserverCallback,
+		readonly callback: IntersectionObserverCallback,
 		options: IntersectionObserverInit
 	) {
-		this.callback = callback;
 		this.root = options.root ?? null;
 
 		// For the moment we assume that we will receive just one value for all the margins

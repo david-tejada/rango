@@ -9,8 +9,8 @@ function getIconType(value: boolean | undefined) {
 }
 
 type ToggleStatusProps = {
-	label: string;
-	status: boolean | undefined;
+	readonly label: string;
+	readonly status: boolean | undefined;
 };
 
 function ToggleStatus({ label, status }: ToggleStatusProps) {
