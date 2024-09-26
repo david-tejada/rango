@@ -108,6 +108,11 @@
 		"web-ext": "^8.3.0",
 		"xo": "^0.59.3"
 	},
+	"overrides": {
+		"serve-handler": {
+			"path-to-regexp": "^8.2.0"
+		}
+	},
 	"webExt": {
 		"sourceDir": "dist-mv2",
 		"run": {
