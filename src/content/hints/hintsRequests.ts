@@ -31,12 +31,12 @@ export async function synchronizeHints() {
 	});
 }
 
-export async function claimHints(amount: number): Promise<string[]> {
+export async function claimHints(amount: number) {
 	return mutex.runExclusive(async () => {
-		const claimed = (await browser.runtime.sendMessage({
+		const claimed: string[] = await browser.runtime.sendMessage({
 			type: "claimHints",
 			amount,
-		})) as string[];
+		});
 
 		addHintsInFrame(claimed);
 
@@ -46,10 +46,10 @@ export async function claimHints(amount: number): Promise<string[]> {
 
 export async function reclaimHintsFromOtherFrames(amount: number) {
 	return mutex.runExclusive(async () => {
-		const reclaimed = (await browser.runtime.sendMessage({
+		const reclaimed: string[] = await browser.runtime.sendMessage({
 			type: "reclaimHintsFromOtherFrames",
 			amount,
-		})) as string[];
+		});
 
 		addHintsInFrame(reclaimed);
 
@@ -68,8 +68,8 @@ export async function releaseHints(hints: string[]) {
 	});
 }
 
-export async function getHintsStackForTab() {
+export async function getHintsStackForTab(): Promise<HintsStack> {
 	return browser.runtime.sendMessage({
 		type: "getHintsStackForTab",
-	}) as Promise<HintsStack>;
+	});
 }

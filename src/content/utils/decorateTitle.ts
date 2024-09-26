@@ -16,9 +16,9 @@ let titleAfterDecoration: string | undefined;
 async function getTitlePrefix() {
 	if (!includeTabMarkers) return "";
 
-	const tabMarker = (await browser.runtime.sendMessage({
+	const tabMarker: string = await browser.runtime.sendMessage({
 		type: "getTabMarker",
-	})) as string;
+	});
 
 	if (!tabMarker) return "";
 

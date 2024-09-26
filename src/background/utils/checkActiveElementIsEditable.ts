@@ -9,7 +9,7 @@ import { getCurrentTabId } from "./getCurrentTab";
  */
 export async function checkActiveElementIsEditable() {
 	const tabId = await getCurrentTabId();
-	const frames = await browser.webNavigation.getAllFrames({ tabId });
+	const frames = (await browser.webNavigation.getAllFrames({ tabId })) ?? [];
 
 	const sending = frames.map(async (frame) => {
 		return browser.tabs.sendMessage(

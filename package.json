@@ -63,7 +63,7 @@
 		"requestidlecallback-polyfill": "^1.0.2",
 		"specificity": "^0.4.1",
 		"tippy.js": "^6.3.7",
-		"webextension-polyfill": "^0.8.0",
+		"webextension-polyfill": "^0.12.0",
 		"zod": "^3.22.4"
 	},
 	"devDependencies": {
@@ -72,7 +72,7 @@
 		"@parcel/transformer-image": "^2.5.0",
 		"@parcel/transformer-inline-string": "^2.8.3",
 		"@sindresorhus/tsconfig": "^2.0.0",
-		"@types/chrome": "^0.0.216",
+		"@types/chrome": "^0.0.272",
 		"@types/color": "^3.0.3",
 		"@types/combinations": "^1.0.0",
 		"@types/intersect": "^1.0.0",
@@ -81,7 +81,7 @@
 		"@types/lodash": "^4.14.195",
 		"@types/react-dom": "^18.0.11",
 		"@types/serve-handler": "^6.1.1",
-		"@types/webextension-polyfill": "^0.8.2",
+		"@types/webextension-polyfill": "^0.12.1",
 		"@typescript-eslint/eslint-plugin": "^5.16.0",
 		"@typescript-eslint/parser": "^5.16.0",
 		"clipboardy": "^2.3.0",
@@ -94,7 +94,7 @@
 		"jest-environment-jsdom": "^29.4.3",
 		"jest-puppeteer": "^10.1.1",
 		"npm-run-all": "^4.1.5",
-		"parcel": "^2.5.0",
+		"parcel": "^2.12.0",
 		"path-browserify": "^1.0.1",
 		"process": "^0.11.10",
 		"puppeteer": "^19.7.2",
@@ -105,8 +105,13 @@
 		"ts-jest": "^29.0.5",
 		"ts-unused-exports": "^8.0.5",
 		"typescript": "^5.6.2",
-		"web-ext": "^7.4.0",
+		"web-ext": "^8.3.0",
 		"xo": "^0.59.3"
+	},
+	"overrides": {
+		"serve-handler": {
+			"path-to-regexp": "^8.2.0"
+		}
 	},
 	"webExt": {
 		"sourceDir": "dist-mv2",
