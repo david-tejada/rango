@@ -112,13 +112,13 @@ describe("With hints in other frames", () => {
 
 	test("Typing one hint character marks the hint with a border 1px wider and opacity 0.7 and resets after typing the second character", async () => {
 		const frame = await page.$("iframe");
-		const contentFrame = (await frame!.contentFrame())!;
+		const contentFrame = await frame!.contentFrame();
 		await testKeyboardClickingHighlighting(contentFrame);
 	});
 
 	test("Typing the hint characters clicks the link", async () => {
 		const frame = await page.$("iframe");
-		const contentFrame = (await frame!.contentFrame())!;
+		const contentFrame = await frame!.contentFrame();
 		await contentFrame.waitForSelector(".rango-hint");
 
 		keyTap("a");
