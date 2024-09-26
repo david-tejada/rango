@@ -6,9 +6,9 @@ let frameId: number;
 export async function loadContentScriptContext() {
 	if (tabId !== undefined && frameId !== undefined) return;
 
-	({ tabId, frameId } = (await browser.runtime.sendMessage({
+	({ tabId, frameId } = await browser.runtime.sendMessage({
 		type: "getContentScriptContext",
-	})) as { tabId: number; frameId: number });
+	}));
 }
 
 export function getTabId() {
@@ -21,10 +21,10 @@ export function getTabId() {
 	return tabId;
 }
 
-export async function isCurrentTab() {
-	return (await browser.runtime.sendMessage({
+export async function isCurrentTab(): Promise<boolean> {
+	return browser.runtime.sendMessage({
 		type: "isCurrentTab",
-	})) as boolean;
+	});
 }
 
 export function isMainframe() {

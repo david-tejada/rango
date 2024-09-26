@@ -38,10 +38,11 @@ async function isWrongFrame(request: RequestFromBackground) {
 
 browser.runtime.onMessage.addListener(
 	async (
-		request: RequestFromBackground
+		message: unknown
 	): Promise<
 		string | number | string[] | TalonAction[] | boolean | undefined
 	> => {
+		const request = message as RequestFromBackground;
 		await initContentScriptOrWait();
 		if (await isWrongFrame(request)) return;
 

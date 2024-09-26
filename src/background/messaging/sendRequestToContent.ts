@@ -32,9 +32,10 @@ async function handleActionOnReference(
 	request: RangoActionRemoveReference | RangoActionRunActionOnReference,
 	tabId: number
 ) {
-	const allFrames = await browser.webNavigation.getAllFrames({
-		tabId,
-	});
+	const allFrames =
+		(await browser.webNavigation.getAllFrames({
+			tabId,
+		})) ?? [];
 
 	const sending = allFrames.map(async (frame) =>
 		browser.tabs.sendMessage(tabId, request, {
@@ -67,20 +68,23 @@ async function runActionOnTextMatchedElement(
 	prioritizeViewport: boolean
 ) {
 	const tabId = await getCurrentTabId();
-	const allFrames = await browser.webNavigation.getAllFrames({
-		tabId,
-	});
-
-	const bestScoreByFramePromise = allFrames.map(async (frame) => ({
-		frameId: frame.frameId,
-		score: (await browser.tabs.sendMessage(
+	const allFrames =
+		(await browser.webNavigation.getAllFrames({
 			tabId,
-			{ type: "matchElementByText", text, prioritizeViewport },
-			{
-				frameId: frame.frameId,
-			}
-		)) as number | undefined,
-	}));
+		})) ?? [];
+
+	const bestScoreByFramePromise = allFrames.map(
+		async (frame): Promise<{ frameId: number; score: number | undefined }> => ({
+			frameId: frame.frameId,
+			score: await browser.tabs.sendMessage(
+				tabId,
+				{ type: "matchElementByText", text, prioritizeViewport },
+				{
+					frameId: frame.frameId,
+				}
+			),
+		})
+	);
 
 	const results = await Promise.allSettled(bestScoreByFramePromise);
 	const matches = results

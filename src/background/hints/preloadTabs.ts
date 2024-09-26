@@ -33,7 +33,7 @@ export async function navigationOccurred(tabId: number) {
 
 	// I should be using browser.webNavigation.getFrame here but for whatever
 	// reason it's not working in Safari, although it is supposed to be supported.
-	const allFrames = await browser.webNavigation.getAllFrames({ tabId });
+	const allFrames = (await browser.webNavigation.getAllFrames({ tabId })) ?? [];
 	const currentMainFrame = allFrames.find((frame) => frame.frameId === 0);
 
 	// We need to check that the current URL and the URL of the navigation event

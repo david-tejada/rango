@@ -1,12 +1,13 @@
 import browser from "webextension-polyfill";
-import { initBackgroundScript } from "./setup/initBackgroundScript";
+import type { RequestFromContent } from "../typings/RequestFromContent";
 import { toggleHintsGlobal, updateHintsToggle } from "./actions/toggleHints";
 import { toggleKeyboardClicking } from "./actions/toggleKeyboardClicking";
-import { handleRequestFromTalon } from "./messaging/handleRequestFromTalon";
 import { handleRequestFromContent } from "./messaging/handleRequestFromContent";
+import { handleRequestFromTalon } from "./messaging/handleRequestFromTalon";
 import { sendRequestToContent } from "./messaging/sendRequestToContent";
-import { browserAction } from "./utils/browserAction";
 import { contextMenusOnClicked } from "./misc/createContextMenus";
+import { initBackgroundScript } from "./setup/initBackgroundScript";
+import { browserAction } from "./utils/browserAction";
 
 // We need to add the listener right away or else clicking the context menu item
 // while the background script/service worker is inactive might fail.
@@ -16,7 +17,9 @@ browser.contextMenus.onClicked.addListener(contextMenusOnClicked);
 	await initBackgroundScript();
 })();
 
-browser.runtime.onMessage.addListener(handleRequestFromContent);
+browser.runtime.onMessage.addListener(async (message, sender) => {
+	return handleRequestFromContent(message as RequestFromContent, sender);
+});
 
 browserAction.onClicked.addListener(async () => {
 	await toggleHintsGlobal();

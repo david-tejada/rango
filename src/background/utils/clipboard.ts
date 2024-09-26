@@ -52,9 +52,10 @@ async function copyToClipboardManifestV3(text: string) {
 
 async function getTextFromClipboard(): Promise<string | undefined> {
 	if (isSafari()) {
-		const response = (await browser.runtime.sendNativeMessage("", {
-			request: "getTextFromClipboard",
-		})) as { textFromClipboard: string };
+		const response: { textFromClipboard: string } =
+			await browser.runtime.sendNativeMessage("", {
+				request: "getTextFromClipboard",
+			});
 
 		return response.textFromClipboard;
 	}
