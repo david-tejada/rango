@@ -67,7 +67,7 @@
 		"zod": "^3.22.4"
 	},
 	"devDependencies": {
-		"@hurdlegroup/robotjs": "^0.11.7",
+		"@hurdlegroup/robotjs": "^0.12.2",
 		"@parcel/config-webextension": "^2.5.0",
 		"@parcel/transformer-image": "^2.5.0",
 		"@parcel/transformer-inline-string": "^2.8.3",
