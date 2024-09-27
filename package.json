@@ -92,7 +92,7 @@
 		"path-browserify": "^1.0.1",
 		"process": "^0.11.10",
 		"puppeteer": "^23.4.1",
-		"rimraf": "^3.0.2",
+		"rimraf": "^6.0.1",
 		"serve-handler": "^6.1.5",
 		"stylelint": "^16.9.0",
 		"stylelint-config-standard": "^36.0.1",
