@@ -1,6 +1,6 @@
 /* eslint-disable */
 .tippy-box[data-animation="fade"][data-state="hidden"] {
-	opacity: 0%;
+	opacity: 0;
 }
 
 [data-tippy-root] {

@@ -14,8 +14,16 @@
 }
 
 .CustomHintsSetting .row svg {
-	justify-self: center;
-	align-self: center;
+	place-self: center center;
+}
+
+.CustomHintsSetting .button-add {
+	margin-top: 0.5rem;
+	padding-inline: 1rem;
+}
+
+.CustomHintsSetting .button-add:focus {
+	margin-top: calc(0.5rem - 1px);
 }
 
 .CustomHintsSetting .row .button-add:first-child {
@@ -42,23 +50,14 @@
 	width: 100%;
 }
 
-.CustomHintsSetting input:focus,
-.CustomHintsSetting button:focus {
-	border: 2px solid var(--blue-600);
-	margin: -1px;
-}
-
 .CustomHintsSetting button {
 	background-color: white;
 }
 
-.CustomHintsSetting .button-add {
-	margin-top: 0.5rem;
-	padding-inline: 1rem;
-}
-
-.CustomHintsSetting .button-add:focus {
-	margin-top: calc(0.5rem - 1px);
+.CustomHintsSetting input:focus,
+.CustomHintsSetting button:focus {
+	border: 2px solid var(--blue-600);
+	margin: -1px;
 }
 
 .CustomHintsSetting .explanation {

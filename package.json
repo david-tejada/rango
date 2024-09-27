@@ -33,12 +33,6 @@
 		"bracketSpacing": true,
 		"proseWrap": "always"
 	},
-	"stylelint": {
-		"extends": "stylelint-config-prettier",
-		"rules": {
-			"string-quotes": "double"
-		}
-	},
 	"@parcel/bundler-default": {
 		"minBundles": 10000000,
 		"minBundleSize": 3000,
@@ -100,8 +94,8 @@
 		"puppeteer": "^23.4.1",
 		"rimraf": "^3.0.2",
 		"serve-handler": "^6.1.5",
-		"stylelint": "^14.6.0",
-		"stylelint-config-prettier": "^9.0.5",
+		"stylelint": "^16.9.0",
+		"stylelint-config-standard": "^36.0.1",
 		"ts-jest": "^29.0.5",
 		"ts-unused-exports": "^8.0.5",
 		"typescript": "^5.6.2",
