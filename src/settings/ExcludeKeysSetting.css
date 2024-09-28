@@ -30,14 +30,14 @@
 	width: 100%;
 }
 
+.ExcludeKeysSetting button {
+	background-color: white;
+}
+
 .ExcludeKeysSetting input:focus,
 .ExcludeKeysSetting button:focus {
 	border: 2px solid var(--blue-600);
 	margin: -1px;
-}
-
-.ExcludeKeysSetting button {
-	background-color: white;
 }
 
 .ExcludeKeysSetting .button-add {

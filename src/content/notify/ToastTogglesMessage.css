@@ -9,5 +9,5 @@
 
 #rango-toast .ToggleStatus.set ~ .ToggleStatus.set,
 #rango-toast .ToggleStatus.unset {
-	opacity: 40%;
+	opacity: 0.4;
 }

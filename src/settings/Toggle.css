@@ -11,6 +11,7 @@
 	--width: 2.5rem;
 	--height: calc(var(--width) / 2);
 	--border-width: 2px;
+
 	display: inline-block;
 	position: relative;
 	width: var(--width);
@@ -63,9 +64,6 @@
 
 .Toggle button[aria-pressed="true"]::after {
 	content: "\2713";
-}
-
-.Toggle button[aria-pressed="true"]::after {
 	transform: translateX(var(--height));
 }
 
