@@ -1,12 +1,9 @@
-import { calculate } from "specificity";
+import { calculate, calculateWithDetails } from "specificity";
 
 export function getSpecificityValue(selector: string) {
-	const { specificityArray } = calculate(selector)[0]!;
+	const specificity = calculate(selector);
 
-	return (specificityArray as number[]).reduce(
-		(accumulator, current, index, array) =>
-			accumulator + current * 10 ** (array.length - index - 1)
-	);
+	return specificity.A * 100 + specificity.B * 10 + specificity.C;
 }
 
 /**
@@ -29,7 +26,10 @@ export function isValidSelector(selector: string) {
 	return true;
 }
 
-export function selectorToArray(selector: string) {
-	const specificity = calculate(selector);
-	return specificity[0]!.parts.map((part) => part.selector);
+export function getSelectorParts(selector: string) {
+	const oneLiner = selector.replace("\n", " ");
+
+	return calculateWithDetails(oneLiner).contributingParts.map((part) =>
+		oneLiner.slice(part.start.column - 1, part.end.column - 1)
+	);
 }

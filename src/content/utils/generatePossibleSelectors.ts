@@ -1,5 +1,5 @@
 import combinations from "combinations";
-import { calculate } from "specificity";
+import { getSelectorParts } from "../../common/selectorUtils";
 import { combineArrays } from "./combineArrays";
 
 /**
@@ -38,15 +38,14 @@ export function generatePossibleSelectors(
 	// We need to reverse the selectors because we want to keep the selector parts
 	// closest to the target
 	for (const selector of [...selectors].reverse()) {
-		const parts = calculate(selector)[0]!.parts;
-		const selectorParts = parts.map((part) => part.selector);
+		const parts = getSelectorParts(selector);
 
 		// If the selector is just the tag we included it
-		if (selectorParts.length === 1) {
-			selectorsTrimmed.unshift(selectorParts[0]!);
+		if (parts.length === 1) {
+			selectorsTrimmed.unshift(parts[0]!);
 		} else {
 			let filteredSelector = "";
-			for (const part of selectorParts) {
+			for (const part of parts) {
 				if (/^[.:]/.test(part) && classesAdded < maxClasses) {
 					classesAdded++;
 					filteredSelector += part;
@@ -55,7 +54,7 @@ export function generatePossibleSelectors(
 
 			if (filteredSelector) {
 				// We always include the tag
-				filteredSelector = selectorParts[0]! + filteredSelector;
+				filteredSelector = parts[0]! + filteredSelector;
 				selectorsTrimmed.unshift(filteredSelector);
 			}
 		}
@@ -92,20 +91,19 @@ export function generatePossibleSelectors(
 		// (value that we get from selectorCombined)
 		const selectorListCombined: string[][] = [];
 		for (const [index, selector] of selectorList.entries()) {
-			const parts = calculate(selector)[0]!.parts;
-			const selectors = parts.map((part) => part.selector);
+			const parts = getSelectorParts(selector);
 
 			let selectorCombined: string[];
 
 			// This will be true for the target selector. For this one we also want to
 			// include the tag by itself, so that we get selectors like ".media a"
 			if (index === selectorList.length - 1) {
-				selectorCombined = combinations(selectors).map((selectors) =>
+				selectorCombined = combinations(parts).map((selectors) =>
 					selectors.join("")
 				);
 			} else {
-				const tagName = selectors.shift();
-				selectorCombined = combinations(selectors).map(
+				const tagName = parts.shift();
+				selectorCombined = combinations(parts).map(
 					(selectors) => `${tagName!}${selectors.join("")}`
 				);
 			}

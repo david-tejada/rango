@@ -55,7 +55,7 @@
 		"react-dom": "^18.2.0",
 		"react-toastify": "^9.1.2",
 		"requestidlecallback-polyfill": "^1.0.2",
-		"specificity": "^0.4.1",
+		"specificity": "^1.0.0",
 		"tippy.js": "^6.3.7",
 		"webextension-polyfill": "^0.12.0",
 		"zod": "^3.22.4"
