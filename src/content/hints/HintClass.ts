@@ -1,4 +1,3 @@
-import process from "process";
 import Color from "color";
 import { debounce } from "lodash";
 import { rgbaToRgb } from "../../lib/rgbaToRgb";
