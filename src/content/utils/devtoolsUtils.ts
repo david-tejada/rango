@@ -1,4 +1,3 @@
-import process from "process";
 import { getHintsCache } from "../hints/hintsCache";
 import { getHintsStackForTab } from "../hints/hintsRequests";
 import {

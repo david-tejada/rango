@@ -1,4 +1,3 @@
-import process from "process";
 import { retrieve } from "../../common/storage";
 import { promiseWrap } from "../../lib/promiseWrap";
 import { type RequestFromTalon } from "../../typings/RequestFromTalon";
