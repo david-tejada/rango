@@ -10,18 +10,14 @@ jobs:
   security:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
+      - uses: actions/checkout@v4
       - run: npx lockfile-lint --path package-lock.json --validate-https
   test:
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v3
-      - uses: actions/setup-node@v3
-        env:
-          PUPPETEER_SKIP_CHROMIUM_DOWNLOAD: "true"
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
       - run: npm install
-      - uses: david-tejada/puppeteer-headful@master
-        with:
-          args: npm test
+      - run: npm test
