@@ -7,6 +7,26 @@ import {
 import { notify } from "./notify";
 import { isSafari } from "./isSafari";
 
+/**
+ * This is used to make headless testing possible. Because in Chrome for Testing
+ * `document.execCommand` doesn't work we need a way to test without using the
+ * real clipboard. It reads and writes from and to local storage, that we can
+ * then access in our tests.
+ */
+const storageClipboard = {
+	async readText() {
+		const { clipboard } = (await browser.storage.local.get("clipboard")) as {
+			clipboard: string;
+		};
+		return clipboard;
+	},
+	async writeText(text: string) {
+		await browser.storage.local.set({
+			clipboard: text,
+		});
+	},
+};
+
 async function getClipboardManifestV3(): Promise<string | undefined> {
 	try {
 		const hasDocument = await chrome.offscreen.hasDocument();
@@ -51,6 +71,10 @@ async function copyToClipboardManifestV3(text: string) {
 }
 
 async function getTextFromClipboard(): Promise<string | undefined> {
+	if (process.env["NODE_ENV"] === "test") {
+		return storageClipboard.readText();
+	}
+
 	if (isSafari()) {
 		const response: { textFromClipboard: string } =
 			await browser.runtime.sendNativeMessage("", {
@@ -102,7 +126,13 @@ export async function getRequestFromClipboard(): Promise<
 export async function writeResponseToClipboard(response: ResponseToTalon) {
 	// We send the response so that talon can make sure the request was received
 	// and to tell talon to execute any actions
+
 	const jsonResponse = JSON.stringify(response);
+
+	if (process.env["NODE_ENV"] === "test") {
+		await storageClipboard.writeText(jsonResponse);
+	}
+
 	if (navigator.clipboard) {
 		if (isSafari()) {
 			const copyPasteArea =

@@ -17,6 +17,8 @@ browser.contextMenus.onClicked.addListener(contextMenusOnClicked);
 	await initBackgroundScript();
 })();
 
+addEventListener("handle-test-request", handleRequestFromTalon);
+
 browser.runtime.onMessage.addListener(async (message, sender) => {
 	return handleRequestFromContent(message as RequestFromContent, sender);
 });

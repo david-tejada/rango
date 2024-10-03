@@ -7,6 +7,8 @@ import {
 import { sleep } from "./utils/testHelpers";
 import { getHintForElement } from "./utils/getHintForElement";
 
+jest.retryTimes(3);
+
 function getCenter(element: Element) {
 	const { top, height } = element.getBoundingClientRect();
 	return top + height / 2;

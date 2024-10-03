@@ -1,20 +1,23 @@
-import { keyTap } from "@hurdlegroup/robotjs";
-import { type Frame, type Page } from "puppeteer";
+import { type Frame } from "puppeteer";
 import { rangoCommandWithoutTarget } from "./utils/rangoCommands";
 import { sleep } from "./utils/testHelpers";
 
-async function testKeyboardClickingHighlighting(page: Page | Frame) {
-	await page.waitForSelector(".rango-hint");
+async function testKeyboardClickingHighlighting(frame?: Frame) {
+	const pageOrFrame = frame ?? page;
+	await pageOrFrame.waitForSelector(".rango-hint");
 
-	const borderWidthBefore = await page.$eval(".rango-hint", (element) => {
-		const inner = element.shadowRoot!.querySelector(".inner")!;
-		return Number.parseInt(window.getComputedStyle(inner).borderWidth, 10);
-	});
+	const borderWidthBefore = await pageOrFrame.$eval(
+		".rango-hint",
+		(element) => {
+			const inner = element.shadowRoot!.querySelector(".inner")!;
+			return Number.parseInt(window.getComputedStyle(inner).borderWidth, 10);
+		}
+	);
 
-	keyTap("a");
+	await page.keyboard.type("a");
 	await sleep(100);
 
-	const [borderWidthAfter, borderColorAfter] = await page.$eval(
+	const [borderWidthAfter, borderColorAfter] = await pageOrFrame.$eval(
 		".rango-hint",
 		(element) => {
 			const inner = element.shadowRoot!.querySelector(".inner")!;
@@ -26,11 +29,11 @@ async function testKeyboardClickingHighlighting(page: Page | Frame) {
 	expect(borderWidthAfter).toBe(borderWidthBefore + 1);
 	expect(borderColorAfter).toMatch(/^rgba\(.+0\.7\)$/);
 
-	keyTap("a");
+	await page.keyboard.type("a");
 	await sleep(100);
 
 	const [borderWidthAfterCompletion, borderColorAfterCompletion] =
-		await page.$eval(".rango-hint", (element) => {
+		await pageOrFrame.$eval(".rango-hint", (element) => {
 			const inner = element.shadowRoot!.querySelector(".inner")!;
 			const style = window.getComputedStyle(inner);
 			return [Number.parseInt(style.borderWidth, 10), style.borderColor];
@@ -82,16 +85,14 @@ describe("With hints in main frame", () => {
 	});
 
 	test("Typing the hint characters clicks the link", async () => {
-		keyTap("a");
-		keyTap("a");
-
+		await page.keyboard.type("aa");
 		await page.waitForNavigation();
 
 		expect(page.url()).toBe("http://localhost:8080/singleLink.html#");
 	});
 
 	test("Typing one hint character marks the hint with a border 1px wider and opacity 0.7 and resets after typing the second character", async () => {
-		await testKeyboardClickingHighlighting(page);
+		await testKeyboardClickingHighlighting();
 	});
 });
 
@@ -117,15 +118,13 @@ describe("With hints in other frames", () => {
 	});
 
 	test("Typing the hint characters clicks the link", async () => {
-		const frame = await page.$("iframe");
-		const contentFrame = await frame!.contentFrame();
-		await contentFrame.waitForSelector(".rango-hint");
+		const $frame = await page.$("iframe");
+		const frame = await $frame!.contentFrame();
+		await frame.waitForSelector(".rango-hint");
 
-		keyTap("a");
-		keyTap("a");
+		await page.keyboard.type("aa");
+		await frame.waitForNavigation();
 
-		await contentFrame.waitForNavigation();
-
-		expect(contentFrame.url()).toBe("http://localhost:8080/singleLink.html#");
+		expect(frame.url()).toBe("http://localhost:8080/singleLink.html#");
 	});
 });
