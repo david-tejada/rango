@@ -63,7 +63,7 @@
 	"devDependencies": {
 		"@parcel/config-webextension": "^2.5.0",
 		"@sindresorhus/tsconfig": "^2.0.0",
-		"@types/chrome": "^0.0.272",
+		"@types/chrome": "^0.0.276",
 		"@types/color": "^3.0.3",
 		"@types/combinations": "^1.0.0",
 		"@types/intersect": "^1.0.0",
