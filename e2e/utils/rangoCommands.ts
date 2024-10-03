@@ -1,17 +1,18 @@
 /* eslint-disable no-await-in-loop */
-import { keyTap } from "@hurdlegroup/robotjs";
-import clipboard from "clipboardy";
+import { storageClipboard, runTestRequest } from "./serviceWorker";
 import { sleep } from "./testHelpers";
 
-async function waitForCompletion() {
+async function waitResponseReady() {
 	let message: any;
 
 	while (!message || message.type !== "response") {
-		const clip = clipboard.readSync();
+		const clip = await storageClipboard.readText();
 
 		try {
 			message = JSON.parse(clip) as unknown;
-		} catch {}
+		} catch {
+			// Ignore parsing errors
+		}
 
 		await sleep(10);
 	}
@@ -32,11 +33,10 @@ export async function rangoCommandWithTarget(
 		},
 	};
 
-	const commandString = JSON.stringify(command);
+	const request = JSON.stringify(command);
 
-	clipboard.writeSync(commandString);
-	keyTap("3", ["control", "shift"]);
-	await waitForCompletion();
+	await runTestRequest(request);
+	await waitResponseReady();
 }
 
 export async function rangoCommandWithoutTarget(
@@ -52,9 +52,8 @@ export async function rangoCommandWithoutTarget(
 		},
 	};
 
-	const commandString = JSON.stringify(command);
+	const request = JSON.stringify(command);
 
-	clipboard.writeSync(commandString);
-	keyTap("3", ["control", "shift"]);
-	await waitForCompletion();
+	await runTestRequest(request);
+	await waitResponseReady();
 }

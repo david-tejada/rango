@@ -5,10 +5,10 @@ module.exports = {
 	launch: {
 		dumpio: false,
 		devtools: false,
-		headless: false,
 		product: "chrome",
 		executablePath: process.env.PUPPETEER_EXEC_PATH,
 		args: [
+			"--remote-debugging-port=9222",
 			"--no-sandbox",
 			`--disable-extensions-except=${EXTENSION_PATH}`,
 			`--load-extension=${EXTENSION_PATH}`,
