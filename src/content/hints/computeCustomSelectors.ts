@@ -4,7 +4,7 @@ import { generatePossibleSelectors } from "../utils/generatePossibleSelectors";
 import {
 	getSpecificityValue,
 	isValidSelector,
-	selectorToArray,
+	getSelectorParts,
 } from "../../common/selectorUtils";
 import { type SelectorAlternative } from "../../typings/SelectorAlternative";
 
@@ -125,7 +125,7 @@ function getCommonSelectors(targets: Element[]) {
 	let commonTargetSelectors: string[] | undefined;
 
 	for (const selector of targetSelectors) {
-		const parts = selectorToArray(selector);
+		const parts = getSelectorParts(selector);
 		commonTargetSelectors = commonTargetSelectors
 			? intersect(commonTargetSelectors, parts)
 			: parts;
