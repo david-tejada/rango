@@ -1,4 +1,3 @@
-import process from "process";
 import { isHtmlElement } from "../../typings/TypingUtils";
 import { getUserScrollableContainer } from "../utils/getUserScrollableContainer";
 import { type ElementWrapper } from "../../typings/ElementWrapper";

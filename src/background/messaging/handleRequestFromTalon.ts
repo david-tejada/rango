@@ -1,12 +1,8 @@
-import process from "process";
 import { retrieve } from "../../common/storage";
 import { promiseWrap } from "../../lib/promiseWrap";
 import { type RequestFromTalon } from "../../typings/RequestFromTalon";
 import { dispatchCommand } from "../commands/dispatchCommand";
-import {
-	getRequestFromClipboard,
-	writeResponseToClipboard,
-} from "../utils/clipboard";
+import { getRequest, postResponse } from "../utils/requestAndResponse";
 import { constructTalonResponse } from "../utils/constructTalonResponse";
 import { notify } from "../utils/notify";
 import { shouldTryToFocusDocument } from "../utils/shouldTryToFocusDocument";
@@ -16,7 +12,7 @@ import { sendRequestToContent } from "./sendRequestToContent";
 let talonIsWaitingForResponse = false;
 
 async function writeTypeCharactersResponse() {
-	await writeResponseToClipboard({
+	await postResponse({
 		type: "response",
 		action: { type: "noHintFound" },
 		actions: [
@@ -67,7 +63,7 @@ async function handleDirectClickElementRequest(request: RequestFromTalon) {
 
 export async function handleRequestFromTalon() {
 	try {
-		const request = await getRequestFromClipboard();
+		const request = await getRequest();
 		if (process.env["NODE_ENV"] !== "production") {
 			console.log(JSON.stringify(request, null, 2));
 		}
@@ -94,13 +90,13 @@ export async function handleRequestFromTalon() {
 			(await shouldTryToFocusDocument())
 		) {
 			const response = constructTalonResponse([{ name: "focusPageAndResend" }]);
-			await writeResponseToClipboard(response);
+			await postResponse(response);
 			return;
 		}
 
 		const response = await dispatchCommand(request.action);
 		if (talonIsWaitingForResponse) {
-			await writeResponseToClipboard(response);
+			await postResponse(response);
 			talonIsWaitingForResponse = false;
 		}
 	} catch (error: unknown) {

@@ -1,4 +1,3 @@
-import process from "process";
 import browser from "webextension-polyfill";
 import { retrieve, store } from "../../common/storage";
 import { urls } from "../../common/urls";

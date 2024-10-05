@@ -13,6 +13,7 @@
 	},
 	"rules": {
 		"@typescript-eslint/switch-exhaustiveness-check": "off",
+		"n/prefer-global/process": "off",
 		"no-unused-vars": [
 			"error",
 			{
