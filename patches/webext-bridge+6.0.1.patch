@@ -1,0 +1,150 @@
+diff --git a/node_modules/webext-bridge/dist/background.d.ts b/node_modules/webext-bridge/dist/background.d.ts
+index 5bf7dd1..4c1a90c 100644
+--- a/node_modules/webext-bridge/dist/background.d.ts
++++ b/node_modules/webext-bridge/dist/background.d.ts
+@@ -1,9 +1,10 @@
++import { ProtocolMap } from 'webext-bridge';
+ import { S as Stream } from './stream-c68f23c8';
+ import { G as GetDataType, D as Destination, c as GetReturnType, O as OnMessageCallback, E as Endpoint } from './types-248b79c4';
+ import * as type_fest from 'type-fest';
+ 
+-declare const sendMessage: <ReturnType_1 extends type_fest.JsonValue, K extends string = string>(messageID: K, data: GetDataType<K, type_fest.JsonValue>, destination?: Destination) => Promise<GetReturnType<K, ReturnType_1>>;
+-declare const onMessage: <Data extends type_fest.JsonValue, K extends string = string>(messageID: K, callback: OnMessageCallback<GetDataType<K, Data>, GetReturnType<K, any>>) => () => void;
++declare const sendMessage: <ReturnType_1 extends type_fest.JsonValue, K extends keyof ProtocolMap>(messageID: K, data: GetDataType<K, type_fest.JsonValue>, destination?: Destination) => Promise<GetReturnType<K, ReturnType_1>>;
++declare const onMessage: <Data extends type_fest.JsonValue, K extends keyof ProtocolMap>(messageID: K, callback: OnMessageCallback<GetDataType<K, Data>, GetReturnType<K, any>>) => () => void;
+ declare const openStream: (channel: string, destination: string | Endpoint) => Promise<Stream>;
+ declare const onOpenStreamChannel: (channel: string, callback: (stream: Stream) => void) => void;
+ 
+diff --git a/node_modules/webext-bridge/dist/background.js b/node_modules/webext-bridge/dist/background.js
+index f77e834..976de24 100644
+--- a/node_modules/webext-bridge/dist/background.js
++++ b/node_modules/webext-bridge/dist/background.js
+@@ -158,8 +158,8 @@ browser.runtime.onConnect.addListener((incomingPort) => {
+     return;
+   connArgs.endpointName || (connArgs.endpointName = formatEndpoint({
+     context: "content-script",
+-    tabId: incomingPort.sender.tab.id,
+-    frameId: incomingPort.sender.frameId
++    tabId: incomingPort.sender?.tab?.id,
++    frameId: incomingPort.sender?.frameId
+   }));
+   const { tabId: linkedTabId, frameId: linkedFrameId } = parseEndpoint(connArgs.endpointName);
+   connMap.set(connArgs.endpointName, {
+diff --git a/node_modules/webext-bridge/dist/chunk-REMFLVJH.js b/node_modules/webext-bridge/dist/chunk-REMFLVJH.js
+index 3fb9883..baf56c3 100644
+--- a/node_modules/webext-bridge/dist/chunk-REMFLVJH.js
++++ b/node_modules/webext-bridge/dist/chunk-REMFLVJH.js
+@@ -25,13 +25,13 @@ var parseEndpoint = (endpoint) => {
+   return {
+     context,
+     tabId: +tabId,
+-    frameId: frameId ? +frameId : void 0
++    frameId: frameId !== undefined ? +frameId : void 0
+   };
+ };
+ var formatEndpoint = ({ context, tabId, frameId }) => {
+   if (["background", "popup", "options"].includes(context))
+     return context;
+-  return `${context}@${tabId}${frameId ? `.${frameId}` : ""}`;
++  return `${context}@${tabId}${frameId !== undefined ? `.${frameId}` : ""}`;
+ };
+ 
+ export {
+diff --git a/node_modules/webext-bridge/dist/content-script.d.ts b/node_modules/webext-bridge/dist/content-script.d.ts
+index 8288413..b8fc5b7 100644
+--- a/node_modules/webext-bridge/dist/content-script.d.ts
++++ b/node_modules/webext-bridge/dist/content-script.d.ts
+@@ -1,10 +1,11 @@
++import { ProtocolMap } from 'webext-bridge';
+ import { S as Stream } from './stream-c68f23c8';
+ import { G as GetDataType, D as Destination, c as GetReturnType, O as OnMessageCallback, E as Endpoint } from './types-248b79c4';
+ import * as type_fest from 'type-fest';
+ 
+ declare function allowWindowMessaging(nsps: string): void;
+-declare const sendMessage: <ReturnType_1 extends type_fest.JsonValue, K extends string = string>(messageID: K, data: GetDataType<K, type_fest.JsonValue>, destination?: Destination) => Promise<GetReturnType<K, ReturnType_1>>;
+-declare const onMessage: <Data extends type_fest.JsonValue, K extends string = string>(messageID: K, callback: OnMessageCallback<GetDataType<K, Data>, GetReturnType<K, any>>) => () => void;
++declare const sendMessage: <ReturnType_1 extends type_fest.JsonValue, K extends keyof ProtocolMap>(messageID: K, data: GetDataType<K, type_fest.JsonValue>, destination?: Destination) => Promise<GetReturnType<K, ReturnType_1>>;
++declare const onMessage: <Data extends type_fest.JsonValue, K extends keyof ProtocolMap>(messageID: K, callback: OnMessageCallback<GetDataType<K, Data>, GetReturnType<K, any>>) => () => void;
+ declare const openStream: (channel: string, destination: string | Endpoint) => Promise<Stream>;
+ declare const onOpenStreamChannel: (channel: string, callback: (stream: Stream) => void) => void;
+ 
+diff --git a/node_modules/webext-bridge/dist/devtools.d.ts b/node_modules/webext-bridge/dist/devtools.d.ts
+index 5bf7dd1..4c1a90c 100644
+--- a/node_modules/webext-bridge/dist/devtools.d.ts
++++ b/node_modules/webext-bridge/dist/devtools.d.ts
+@@ -1,9 +1,10 @@
++import { ProtocolMap } from 'webext-bridge';
+ import { S as Stream } from './stream-c68f23c8';
+ import { G as GetDataType, D as Destination, c as GetReturnType, O as OnMessageCallback, E as Endpoint } from './types-248b79c4';
+ import * as type_fest from 'type-fest';
+ 
+-declare const sendMessage: <ReturnType_1 extends type_fest.JsonValue, K extends string = string>(messageID: K, data: GetDataType<K, type_fest.JsonValue>, destination?: Destination) => Promise<GetReturnType<K, ReturnType_1>>;
+-declare const onMessage: <Data extends type_fest.JsonValue, K extends string = string>(messageID: K, callback: OnMessageCallback<GetDataType<K, Data>, GetReturnType<K, any>>) => () => void;
++declare const sendMessage: <ReturnType_1 extends type_fest.JsonValue, K extends keyof ProtocolMap>(messageID: K, data: GetDataType<K, type_fest.JsonValue>, destination?: Destination) => Promise<GetReturnType<K, ReturnType_1>>;
++declare const onMessage: <Data extends type_fest.JsonValue, K extends keyof ProtocolMap>(messageID: K, callback: OnMessageCallback<GetDataType<K, Data>, GetReturnType<K, any>>) => () => void;
+ declare const openStream: (channel: string, destination: string | Endpoint) => Promise<Stream>;
+ declare const onOpenStreamChannel: (channel: string, callback: (stream: Stream) => void) => void;
+ 
+diff --git a/node_modules/webext-bridge/dist/options.d.ts b/node_modules/webext-bridge/dist/options.d.ts
+index 5bf7dd1..e8f966d 100644
+--- a/node_modules/webext-bridge/dist/options.d.ts
++++ b/node_modules/webext-bridge/dist/options.d.ts
+@@ -2,8 +2,8 @@ import { S as Stream } from './stream-c68f23c8';
+ import { G as GetDataType, D as Destination, c as GetReturnType, O as OnMessageCallback, E as Endpoint } from './types-248b79c4';
+ import * as type_fest from 'type-fest';
+ 
+-declare const sendMessage: <ReturnType_1 extends type_fest.JsonValue, K extends string = string>(messageID: K, data: GetDataType<K, type_fest.JsonValue>, destination?: Destination) => Promise<GetReturnType<K, ReturnType_1>>;
+-declare const onMessage: <Data extends type_fest.JsonValue, K extends string = string>(messageID: K, callback: OnMessageCallback<GetDataType<K, Data>, GetReturnType<K, any>>) => () => void;
++declare const sendMessage: <ReturnType_1 extends type_fest.JsonValue, K extends keyof ProtocolMap>(messageID: K, data: GetDataType<K, type_fest.JsonValue>, destination?: Destination) => Promise<GetReturnType<K, ReturnType_1>>;
++declare const onMessage: <Data extends type_fest.JsonValue, K extends keyof ProtocolMap>(messageID: K, callback: OnMessageCallback<GetDataType<K, Data>, GetReturnType<K, any>>) => () => void;
+ declare const openStream: (channel: string, destination: string | Endpoint) => Promise<Stream>;
+ declare const onOpenStreamChannel: (channel: string, callback: (stream: Stream) => void) => void;
+ 
+diff --git a/node_modules/webext-bridge/dist/popup.d.ts b/node_modules/webext-bridge/dist/popup.d.ts
+index 5bf7dd1..4c1a90c 100644
+--- a/node_modules/webext-bridge/dist/popup.d.ts
++++ b/node_modules/webext-bridge/dist/popup.d.ts
+@@ -1,9 +1,10 @@
++import { ProtocolMap } from 'webext-bridge';
+ import { S as Stream } from './stream-c68f23c8';
+ import { G as GetDataType, D as Destination, c as GetReturnType, O as OnMessageCallback, E as Endpoint } from './types-248b79c4';
+ import * as type_fest from 'type-fest';
+ 
+-declare const sendMessage: <ReturnType_1 extends type_fest.JsonValue, K extends string = string>(messageID: K, data: GetDataType<K, type_fest.JsonValue>, destination?: Destination) => Promise<GetReturnType<K, ReturnType_1>>;
+-declare const onMessage: <Data extends type_fest.JsonValue, K extends string = string>(messageID: K, callback: OnMessageCallback<GetDataType<K, Data>, GetReturnType<K, any>>) => () => void;
++declare const sendMessage: <ReturnType_1 extends type_fest.JsonValue, K extends keyof ProtocolMap>(messageID: K, data: GetDataType<K, type_fest.JsonValue>, destination?: Destination) => Promise<GetReturnType<K, ReturnType_1>>;
++declare const onMessage: <Data extends type_fest.JsonValue, K extends keyof ProtocolMap>(messageID: K, callback: OnMessageCallback<GetDataType<K, Data>, GetReturnType<K, any>>) => () => void;
+ declare const openStream: (channel: string, destination: string | Endpoint) => Promise<Stream>;
+ declare const onOpenStreamChannel: (channel: string, callback: (stream: Stream) => void) => void;
+ 
+diff --git a/node_modules/webext-bridge/dist/types-248b79c4.d.ts b/node_modules/webext-bridge/dist/types-248b79c4.d.ts
+index 558f7a7..e715092 100644
+--- a/node_modules/webext-bridge/dist/types-248b79c4.d.ts
++++ b/node_modules/webext-bridge/dist/types-248b79c4.d.ts
+@@ -3,7 +3,7 @@ import { JsonValue, Jsonify } from 'type-fest';
+ declare type RuntimeContext = 'devtools' | 'background' | 'popup' | 'options' | 'content-script' | 'window';
+ interface Endpoint {
+     context: RuntimeContext;
+-    tabId: number;
++    tabId?: number;
+     frameId?: number;
+ }
+ interface BridgeMessage<T extends JsonValue> {
+diff --git a/node_modules/webext-bridge/dist/window.d.ts b/node_modules/webext-bridge/dist/window.d.ts
+index e52eb33..222f944 100644
+--- a/node_modules/webext-bridge/dist/window.d.ts
++++ b/node_modules/webext-bridge/dist/window.d.ts
+@@ -1,10 +1,11 @@
++import { ProtocolMap } from 'webext-bridge';
+ import { S as Stream } from './stream-c68f23c8';
+ import { G as GetDataType, D as Destination, c as GetReturnType, O as OnMessageCallback, E as Endpoint } from './types-248b79c4';
+ import * as type_fest from 'type-fest';
+ 
+ declare function setNamespace(nsps: string): void;
+-declare const sendMessage: <ReturnType_1 extends type_fest.JsonValue, K extends string = string>(messageID: K, data: GetDataType<K, type_fest.JsonValue>, destination?: Destination) => Promise<GetReturnType<K, ReturnType_1>>;
+-declare const onMessage: <Data extends type_fest.JsonValue, K extends string = string>(messageID: K, callback: OnMessageCallback<GetDataType<K, Data>, GetReturnType<K, any>>) => () => void;
++declare const sendMessage: <ReturnType_1 extends type_fest.JsonValue, K extends keyof ProtocolMap>(messageID: K, data: GetDataType<K, type_fest.JsonValue>, destination?: Destination) => Promise<GetReturnType<K, ReturnType_1>>;
++declare const onMessage: <Data extends type_fest.JsonValue, K extends keyof ProtocolMap>(messageID: K, callback: OnMessageCallback<GetDataType<K, Data>, GetReturnType<K, any>>) => () => void;
+ declare const openStream: (channel: string, destination: string | Endpoint) => Promise<Stream>;
+ declare const onOpenStreamChannel: (channel: string, callback: (stream: Stream) => void) => void;
+ 

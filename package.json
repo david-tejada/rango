@@ -1,6 +1,7 @@
 {
 	"private": true,
 	"scripts": {
+		"postinstall": "patch-package",
 		"build:mv2": "rimraf dist-mv2 && parcel build src/mv2/manifest.json --no-content-hash --dist-dir dist-mv2 --no-cache --no-source-maps --detailed-report 0",
 		"build:mv2-safari": "rimraf dist-mv2-safari && parcel build src/mv2-safari/manifest.json --no-content-hash --dist-dir dist-mv2-safari --no-cache --detailed-report 0",
 		"build:mv3": "rimraf dist-mv3 && parcel build src/mv3/manifest.json --no-content-hash --dist-dir dist-mv3 --no-cache --detailed-report 0",
@@ -33,6 +34,9 @@
 		"minBundleSize": 3000,
 		"maxParallelRequests": 20
 	},
+	"@parcel/resolver-default": {
+		"packageExports": true
+	},
 	"dependencies": {
 		"@fortawesome/fontawesome-svg-core": "^6.4.0",
 		"@fortawesome/free-solid-svg-icons": "^6.4.0",
@@ -52,6 +56,7 @@
 		"requestidlecallback-polyfill": "^1.0.2",
 		"specificity": "^0.4.1",
 		"tippy.js": "^6.3.7",
+		"webext-bridge": "^6.0.1",
 		"webextension-polyfill": "^0.12.0",
 		"zod": "^3.22.4"
 	},
@@ -76,6 +81,7 @@
 		"jest-puppeteer": "^10.1.1",
 		"npm-run-all2": "^6.0.0",
 		"parcel": "^2.12.0",
+		"patch-package": "^8.0.0",
 		"prettier": "3.3.3",
 		"puppeteer": "^23.4.1",
 		"rimraf": "^6.0.1",
