@@ -11,6 +11,7 @@
 		"package": "run-p package:*",
 		"build-and-package": "run-s build package",
 		"check-types": "tsc --noemit",
+		"check-format": "prettier --check .",
 		"unused-exports": "ts-unused-exports ./tsconfig.json",
 		"lint-fix": "run-p 'lint:* -- --fix'",
 		"lint:css": "stylelint src/**/*.css",
@@ -27,12 +28,6 @@
 		"last 1 Chrome version",
 		"last 1 Firefox version"
 	],
-	"prettier": {
-		"trailingComma": "es5",
-		"singleQuote": false,
-		"bracketSpacing": true,
-		"proseWrap": "always"
-	},
 	"@parcel/bundler-default": {
 		"minBundles": 10000000,
 		"minBundleSize": 3000,
@@ -81,6 +76,7 @@
 		"jest-puppeteer": "^10.1.1",
 		"npm-run-all2": "^6.0.0",
 		"parcel": "^2.12.0",
+		"prettier": "3.3.3",
 		"puppeteer": "^23.4.1",
 		"rimraf": "^6.0.1",
 		"serve-handler": "^6.1.5",

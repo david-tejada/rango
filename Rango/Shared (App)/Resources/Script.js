@@ -1,5 +1,5 @@
 function hasPreferences() {
-    document.body.classList.add(`has-preferences`);
+	document.body.classList.add(`has-preferences`);
 }
 
 function show(platform, enabled) {

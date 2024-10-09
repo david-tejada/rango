@@ -19,5 +19,7 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 20
-      - run: npm install
+          cache: "npm"
+      - run: npm ci
+      - run: npm run check-format
       - run: npm test
