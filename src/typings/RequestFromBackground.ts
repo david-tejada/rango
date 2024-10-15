@@ -1,6 +1,5 @@
 import { type ToastOptions } from "react-toastify";
 import { type RangoAction } from "./RangoAction";
-import { type MarkHintsAsKeyboardReachable } from "./RequestFromContent";
 
 type UpdateHintsInTab = {
 	type: "updateHintsInTab";
@@ -29,7 +28,6 @@ type UpdateNavigationToggle = {
 
 type SimpleContentRequest = {
 	type:
-		| "restoreKeyboardReachableHints"
 		| "checkIfDocumentHasFocus"
 		| "checkContentScriptRunning"
 		| "onCompleted"
@@ -42,7 +40,6 @@ export type RequestFromBackground = { frameId?: number } & (
 	| RangoAction
 	| SimpleContentRequest
 	| UpdateHintsInTab
-	| MarkHintsAsKeyboardReachable
 	| ReclaimHints
 	| DisplayToastNotification
 	| UpdateNavigationToggle

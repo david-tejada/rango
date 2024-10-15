@@ -1,8 +1,8 @@
-import browser from "webextension-polyfill";
 import { throttle } from "lodash";
-import { isMainframe } from "../setup/contentScriptContext";
-import { getToggles } from "../settings/toggles";
+import { sendMessage } from "webext-bridge/content-script";
 import { getSetting, onSettingChange } from "../settings/settingsManager";
+import { getToggles } from "../settings/toggles";
+import { isMainframe } from "../setup/contentScriptContext";
 
 // Settings
 let urlInTitle: boolean;
@@ -16,9 +16,7 @@ let titleAfterDecoration: string | undefined;
 async function getTitlePrefix() {
 	if (!includeTabMarkers) return "";
 
-	const tabMarker: string = await browser.runtime.sendMessage({
-		type: "getTabMarker",
-	});
+	const tabMarker = await sendMessage("getTabMarker", undefined, "background");
 
 	if (!tabMarker) return "";
 

@@ -1,10 +1,10 @@
-import browser from "webextension-polyfill";
-import { getHintsInTab } from "../utils/getHintsInTab";
-import { getHintedWrappers } from "../wrappers/wrappers";
-import { isEditable, getActiveElement } from "../utils/domUtils";
-import { onSettingChange } from "../settings/settingsManager";
+import { sendMessage } from "webext-bridge/content-script";
 import { notify } from "../notify/notify";
+import { onSettingChange } from "../settings/settingsManager";
+import { getActiveElement, isEditable } from "../utils/domUtils";
+import { getHintsInTab } from "../utils/getHintsInTab";
 import { refresh } from "../wrappers/refresh";
+import { getHintedWrappers } from "../wrappers/wrappers";
 
 let keysPressedBuffer = "";
 let timeoutId: ReturnType<typeof setTimeout>;
@@ -39,9 +39,7 @@ async function keydownHandler(event: KeyboardEvent) {
 	// Escape or any non alphabetic key to restart the buffer
 	if (keysPressedBuffer.length === 1 && !/^[A-Za-z]$/.test(event.key)) {
 		keysPressedBuffer = "";
-		await browser.runtime.sendMessage({
-			type: "restoreKeyboardReachableHints",
-		});
+		await sendMessage("restoreKeyboardReachableHints", undefined, "background");
 		return;
 	}
 
@@ -68,28 +66,34 @@ async function keydownHandler(event: KeyboardEvent) {
 		keysPressedBuffer += event.key;
 
 		if (keysPressedBuffer.length === 2) {
-			await browser.runtime.sendMessage({
-				type: "restoreKeyboardReachableHints",
-			});
+			await sendMessage(
+				"restoreKeyboardReachableHints",
+				undefined,
+				"background"
+			);
 
 			if (getHintsInTab().includes(keysPressedBuffer)) {
-				await browser.runtime.sendMessage({
-					type: "clickHintInFrame",
-					hint: keysPressedBuffer,
-				});
+				await sendMessage(
+					"clickHintInFrame",
+					{ hint: keysPressedBuffer },
+					"background"
+				);
 			}
 
 			keysPressedBuffer = "";
 		} else {
-			await browser.runtime.sendMessage({
-				type: "markHintsAsKeyboardReachable",
-				letter: event.key,
-			});
+			await sendMessage(
+				"markHintsAsKeyboardReachable",
+				{ letter: event.key },
+				"background"
+			);
 
 			timeoutId = setTimeout(async () => {
-				await browser.runtime.sendMessage({
-					type: "restoreKeyboardReachableHints",
-				});
+				await sendMessage(
+					"restoreKeyboardReachableHints",
+					undefined,
+					"background"
+				);
 				keysPressedBuffer = "";
 			}, 3000);
 		}

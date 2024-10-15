@@ -1,13 +1,13 @@
-import browser from "webextension-polyfill";
 import { getCssSelector } from "css-selector-generator";
+import { sendMessage } from "webext-bridge/content-script";
 import { store } from "../../common/storage";
+import { getHostPattern } from "../../common/utils";
 import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { showTooltip } from "../hints/showTooltip";
-import { getOrCreateWrapper } from "../wrappers/ElementWrapperClass";
-import { getHostPattern } from "../../common/utils";
-import { getActiveElement } from "../utils/domUtils";
-import { getWrapperForElement } from "../wrappers/wrappers";
 import { getSetting } from "../settings/settingsManager";
+import { getActiveElement } from "../utils/domUtils";
+import { getOrCreateWrapper } from "../wrappers/ElementWrapperClass";
+import { getWrapperForElement } from "../wrappers/wrappers";
 
 function getWrapperFromUniqueSelector(selector: string) {
 	const element = document.querySelector(selector);
@@ -68,11 +68,7 @@ export async function removeReference(name: string) {
 
 	if (!selector) return false;
 
-	await browser.runtime.sendMessage({
-		type: "removeReference",
-		hostPattern,
-		name,
-	});
+	await sendMessage("removeReference", { hostPattern, name }, "background");
 
 	const wrapper = getWrapperFromUniqueSelector(selector);
 	if (wrapper) showTooltip(wrapper, `❌ ${name}`);

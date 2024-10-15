@@ -1,6 +1,6 @@
+import { sendMessage } from "webext-bridge/background";
 import browser from "webextension-polyfill";
-import { type RequestFromContent } from "../../typings/RequestFromContent";
-import { assertDefined } from "../../typings/TypingUtils";
+import { openInNewTab } from "../actions/openInNewTab";
 import {
 	claimHints,
 	initStack,
@@ -9,135 +9,115 @@ import {
 	storeHintsInFrame,
 	withStack,
 } from "../hints/hintsAllocator";
-import { getCurrentTabId } from "../utils/getCurrentTab";
-import { openInNewTab } from "../actions/openInNewTab";
 import { getTabMarker } from "../misc/tabMarkers";
+import { getCurrentTabId } from "../utils/getCurrentTab";
+import { removeReference } from "../utils/removeReference";
 import {
 	resetCustomSelectors,
 	storeCustomSelectors,
 } from "../utils/storeCustomSelectors";
-import { removeReference } from "../utils/removeReference";
-import { sendRequestToContent } from "./sendRequestToContent";
+import { onMessage, sendMessageToAllFrames } from "./webextBridgeWrapper";
 
-export async function handleRequestFromContent(
-	request: RequestFromContent,
-	sender: browser.Runtime.MessageSender
-) {
-	assertDefined(sender.tab);
-	const tabId = sender.tab.id;
-	const lastFocusedWindow = await browser.windows.getLastFocused();
-	const isCurrentTab =
-		sender.tab.active && sender.tab.windowId === lastFocusedWindow.id;
-	const currentTabId = await getCurrentTabId();
-	assertDefined(tabId);
-	const frameId = sender.frameId ?? 0;
+export function setupContentScriptMessageHandlers() {
+	onMessage("initStack", async ({ sender }) => {
+		// Only the main frame (frameId 0) should be able to initialize the stack.
+		// This is to be safe as we already make sure we are only sending this
+		// request from the main frame of the content script.
+		if (sender.frameId !== 0) return;
 
-	switch (request.type) {
-		case "initStack": {
-			// This is to be extra safe as we already make sure we are only sending
-			// this request from the main frame of the content script
-			if (frameId !== 0) {
-				console.warn(
-					"Ignoring request to initiate stack that doesn't come from the main frame"
-				);
-				return;
-			}
+		return initStack(sender.tabId);
+	});
 
-			return initStack(tabId);
-		}
+	onMessage("claimHints", async ({ sender, data }) => {
+		return claimHints(sender.tabId, sender.frameId, data.amount);
+	});
 
-		case "claimHints": {
-			return claimHints(tabId, frameId, request.amount);
-		}
+	onMessage("reclaimHintsFromOtherFrames", async ({ sender, data }) => {
+		return reclaimHintsFromOtherFrames(
+			sender.tabId,
+			sender.frameId,
+			data.amount
+		);
+	});
 
-		case "reclaimHintsFromOtherFrames": {
-			return reclaimHintsFromOtherFrames(tabId, frameId, request.amount);
-		}
+	onMessage("releaseHints", async ({ sender, data }) => {
+		return releaseHints(sender.tabId, data.hints);
+	});
 
-		case "releaseHints": {
-			return releaseHints(tabId, request.hints);
-		}
+	onMessage("storeHintsInFrame", async ({ sender, data }) => {
+		return storeHintsInFrame(sender.tabId, sender.frameId, data.hints);
+	});
 
-		case "storeHintsInFrame": {
-			return storeHintsInFrame(tabId, frameId, request.hints);
-		}
+	onMessage("getHintsStackForTab", async ({ sender }) => {
+		return withStack(sender.tabId, async (stack) => stack);
+	});
 
-		case "getHintsStackForTab": {
-			return withStack(tabId, async (stack) => {
-				return stack;
-			});
-		}
+	onMessage("openInNewTab", async ({ data }) => {
+		await openInNewTab([data.url], true);
+	});
 
-		case "openInNewTab": {
-			await openInNewTab([request.url], true);
-			break;
-		}
+	onMessage("openInBackgroundTab", async ({ data }) => {
+		await openInNewTab(data.urls, false);
+	});
 
-		case "openInBackgroundTab": {
-			await openInNewTab(request.links, false);
+	onMessage("getContentScriptContext", async ({ sender }) => {
+		const currentTabId = await getCurrentTabId();
+		return {
+			tabId: sender.tabId,
+			frameId: sender.frameId,
+			currentTabId,
+		};
+	});
 
-			break;
-		}
+	onMessage("clickHintInFrame", async ({ data, sender }) => {
+		const targetFrame = await withStack(sender.tabId, async (stack) => {
+			return stack.assigned.get(data.hint);
+		});
 
-		case "getContentScriptContext": {
-			return { tabId, frameId, currentTabId };
-		}
+		if (targetFrame === undefined) return;
 
-		case "clickHintInFrame": {
-			await sendRequestToContent({
-				type: "clickElement",
-				target: [request.hint],
-			});
-			break;
-		}
+		await sendMessage(
+			"clickElement",
+			{ hint: data.hint },
+			`content-script@${sender.tabId}.${targetFrame}`
+		);
+	});
 
-		case "markHintsAsKeyboardReachable": {
-			await sendRequestToContent(
-				{
-					type: "markHintsAsKeyboardReachable",
-					letter: request.letter,
-				},
-				tabId
-			);
-			break;
-		}
+	onMessage("markHintsAsKeyboardReachable", async ({ sender, data }) => {
+		await sendMessageToAllFrames(
+			"markHintsAsKeyboardReachable",
+			{ letter: data.letter },
+			sender.tabId
+		);
+	});
 
-		case "restoreKeyboardReachableHints": {
-			await sendRequestToContent(
-				{
-					type: "restoreKeyboardReachableHints",
-				},
-				tabId
-			);
-			break;
-		}
+	onMessage("restoreKeyboardReachableHints", async ({ sender }) => {
+		await sendMessageToAllFrames(
+			"restoreKeyboardReachableHints",
+			undefined,
+			sender.tabId
+		);
+	});
 
-		case "isCurrentTab": {
-			return isCurrentTab;
-		}
+	onMessage("isCurrentTab", async ({ sender }) => {
+		const lastFocusedWindow = await browser.windows.getLastFocused();
+		const tab = await browser.tabs.get(sender.tabId);
+		return tab?.active && tab.windowId === lastFocusedWindow.id;
+	});
 
-		case "getTabMarker": {
-			return getTabMarker(tabId);
-		}
+	onMessage("getTabMarker", async ({ sender }) => {
+		return getTabMarker(sender.tabId);
+	});
 
-		case "storeCustomSelectors": {
-			await storeCustomSelectors(request.url, request.selectors);
-			break;
-		}
+	onMessage("storeCustomSelectors", async ({ data }) => {
+		await storeCustomSelectors(data.url, data.selectors);
+	});
 
-		case "resetCustomSelectors": {
-			return resetCustomSelectors(request.url);
-		}
+	onMessage("resetCustomSelectors", async ({ data }) => {
+		return resetCustomSelectors(data.url);
+	});
 
-		case "removeReference": {
-			return removeReference(request.hostPattern, request.name);
-		}
-
-		default: {
-			console.error(request);
-			throw new Error("Bad request to background script");
-		}
-	}
-
-	return undefined;
+	onMessage("removeReference", async ({ data }) => {
+		return removeReference(data.hostPattern, data.name);
+	});
 }

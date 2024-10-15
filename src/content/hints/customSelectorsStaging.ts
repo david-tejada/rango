@@ -1,4 +1,4 @@
-import browser from "webextension-polyfill";
+import { sendMessage } from "webext-bridge/content-script";
 import { getHostPattern } from "../../common/utils";
 import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { type SelectorAlternative } from "../../typings/SelectorAlternative";
@@ -113,11 +113,11 @@ export async function saveCustomSelectors() {
 
 	// Even if both include and exclude are empty arrays we need to send the
 	// message to the background script to handle notifications
-	await browser.runtime.sendMessage({
-		type: "storeCustomSelectors",
-		url: window.location.href,
-		selectors: newCustomSelectors,
-	});
+	await sendMessage(
+		"storeCustomSelectors",
+		{ url: window.location.href, selectors: newCustomSelectors },
+		"background"
+	);
 
 	includeSelectors = [];
 	excludeSelectors = [];

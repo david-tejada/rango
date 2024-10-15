@@ -1,10 +1,10 @@
-import browser from "webextension-polyfill";
+import { sendMessage } from "webext-bridge/content-script";
 import { type ElementWrapper } from "../../typings/ElementWrapper";
 import {
+	pickSelectorAlternative,
+	resetStagedSelectors,
 	saveCustomSelectors,
 	stageCustomSelectors,
-	resetStagedSelectors,
-	pickSelectorAlternative,
 	stageExcludeUniversalSelector,
 } from "../hints/customSelectorsStaging";
 import {
@@ -118,10 +118,11 @@ export async function customHintsReset() {
 	showExtraHints = false;
 	showExcludedHints = false;
 
-	await browser.runtime.sendMessage({
-		type: "resetCustomSelectors",
-		url: window.location.href,
-	});
+	await sendMessage(
+		"resetCustomSelectors",
+		{ url: window.location.href },
+		"background"
+	);
 
 	await updateCustomSelectors();
 	await resetStagedSelectors();

@@ -16,40 +16,30 @@ index 5bf7dd1..4c1a90c 100644
  declare const onOpenStreamChannel: (channel: string, callback: (stream: Stream) => void) => void;
  
 diff --git a/node_modules/webext-bridge/dist/background.js b/node_modules/webext-bridge/dist/background.js
-index f77e834..976de24 100644
+index f77e834..5bd33df 100644
 --- a/node_modules/webext-bridge/dist/background.js
 +++ b/node_modules/webext-bridge/dist/background.js
-@@ -158,8 +158,8 @@ browser.runtime.onConnect.addListener((incomingPort) => {
+@@ -156,6 +156,7 @@ browser.runtime.onConnect.addListener((incomingPort) => {
+   const connArgs = decodeConnectionArgs(incomingPort.name);
+   if (!connArgs)
      return;
++  if (!connArgs.endpointName && !incomingPort.sender.tab) return;
    connArgs.endpointName || (connArgs.endpointName = formatEndpoint({
      context: "content-script",
--    tabId: incomingPort.sender.tab.id,
--    frameId: incomingPort.sender.frameId
-+    tabId: incomingPort.sender?.tab?.id,
-+    frameId: incomingPort.sender?.frameId
-   }));
-   const { tabId: linkedTabId, frameId: linkedFrameId } = parseEndpoint(connArgs.endpointName);
-   connMap.set(connArgs.endpointName, {
+     tabId: incomingPort.sender.tab.id,
 diff --git a/node_modules/webext-bridge/dist/chunk-REMFLVJH.js b/node_modules/webext-bridge/dist/chunk-REMFLVJH.js
-index 3fb9883..baf56c3 100644
+index 3fb9883..2f39389 100644
 --- a/node_modules/webext-bridge/dist/chunk-REMFLVJH.js
 +++ b/node_modules/webext-bridge/dist/chunk-REMFLVJH.js
-@@ -25,13 +25,13 @@ var parseEndpoint = (endpoint) => {
+@@ -25,7 +25,7 @@ var parseEndpoint = (endpoint) => {
    return {
      context,
      tabId: +tabId,
 -    frameId: frameId ? +frameId : void 0
-+    frameId: frameId !== undefined ? +frameId : void 0
++    frameId: frameId ? +frameId : context === "content-script" ? 0 : undefined
    };
  };
  var formatEndpoint = ({ context, tabId, frameId }) => {
-   if (["background", "popup", "options"].includes(context))
-     return context;
--  return `${context}@${tabId}${frameId ? `.${frameId}` : ""}`;
-+  return `${context}@${tabId}${frameId !== undefined ? `.${frameId}` : ""}`;
- };
- 
- export {
 diff --git a/node_modules/webext-bridge/dist/content-script.d.ts b/node_modules/webext-bridge/dist/content-script.d.ts
 index 8288413..b8fc5b7 100644
 --- a/node_modules/webext-bridge/dist/content-script.d.ts

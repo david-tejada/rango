@@ -1,33 +1,34 @@
 import browser from "webextension-polyfill";
 // eslint-disable-next-line import/no-unassigned-import
 import "requestidlecallback-polyfill";
+import { onMessage } from "webext-bridge/content-script";
 import { type RequestFromBackground } from "../typings/RequestFromBackground";
 import { type TalonAction } from "../typings/RequestFromTalon";
 import {
 	markHintsAsKeyboardReachable,
 	restoreKeyboardReachableHints,
 } from "./actions/keyboardClicking";
-import { updateHintsInTab } from "./utils/getHintsInTab";
 import { runRangoActionWithTarget } from "./actions/runRangoActionWithTarget";
 import { runRangoActionWithoutTarget } from "./actions/runRangoActionWithoutTarget";
-import { reclaimHints } from "./wrappers/wrappers";
 import { reclaimHintsFromCache } from "./hints/hintsCache";
+import { deleteHintsInFrame } from "./hints/hintsInFrame";
+import { synchronizeHints } from "./hints/hintsRequests";
 import {
 	allowToastNotification,
 	notify,
 	notifyTogglesStatus,
 } from "./notify/notify";
-import { initContentScriptOrWait } from "./setup/initContentScript";
-import { setNavigationToggle } from "./settings/toggles";
 import { updateHintsEnabled } from "./observe";
+import { setNavigationToggle } from "./settings/toggles";
 import { getFrameId } from "./setup/contentScriptContext";
-import { deleteHintsInFrame } from "./hints/hintsInFrame";
-import { synchronizeHints } from "./hints/hintsRequests";
+import { initContentScriptOrWait } from "./setup/initContentScript";
 import {
 	getTitleBeforeDecoration,
 	initTitleDecoration,
 	removeDecorations,
 } from "./utils/decorateTitle";
+import { updateHintsInTab } from "./utils/getHintsInTab";
+import { reclaimHints } from "./wrappers/wrappers";
 
 // Sending to specific frames from the background script is buggy in Safari, we
 // need to check that the request was actually intended for this frame.
@@ -78,16 +79,6 @@ browser.runtime.onMessage.addListener(
 					break;
 				}
 
-				case "markHintsAsKeyboardReachable": {
-					markHintsAsKeyboardReachable(request.letter);
-					break;
-				}
-
-				case "restoreKeyboardReachableHints": {
-					restoreKeyboardReachableHints();
-					break;
-				}
-
 				case "checkIfDocumentHasFocus": {
 					return document.hasFocus();
 				}
@@ -135,6 +126,18 @@ browser.runtime.onMessage.addListener(
 		return undefined;
 	}
 );
+
+onMessage("markHintsAsKeyboardReachable", ({ data }) => {
+	markHintsAsKeyboardReachable(data.letter);
+});
+
+onMessage("restoreKeyboardReachableHints", () => {
+	restoreKeyboardReachableHints();
+});
+
+onMessage("clickElement", async ({ data }) => {
+	await runRangoActionWithTarget({ type: "clickElement", target: [data.hint] });
+});
 
 (async () => {
 	try {

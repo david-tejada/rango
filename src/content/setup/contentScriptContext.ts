@@ -1,4 +1,4 @@
-import browser from "webextension-polyfill";
+import { sendMessage } from "webext-bridge/content-script";
 
 let tabId: number;
 let frameId: number;
@@ -6,9 +6,11 @@ let frameId: number;
 export async function loadContentScriptContext() {
 	if (tabId !== undefined && frameId !== undefined) return;
 
-	({ tabId, frameId } = await browser.runtime.sendMessage({
-		type: "getContentScriptContext",
-	}));
+	({ tabId, frameId } = await sendMessage(
+		"getContentScriptContext",
+		undefined,
+		"background"
+	));
 }
 
 export function getTabId() {
@@ -22,9 +24,7 @@ export function getTabId() {
 }
 
 export async function isCurrentTab(): Promise<boolean> {
-	return browser.runtime.sendMessage({
-		type: "isCurrentTab",
-	});
+	return sendMessage("isCurrentTab", undefined, "background");
 }
 
 export function isMainframe() {

@@ -1,8 +1,6 @@
 import browser from "webextension-polyfill";
-import type { RequestFromContent } from "../typings/RequestFromContent";
 import { toggleHintsGlobal, updateHintsToggle } from "./actions/toggleHints";
 import { toggleKeyboardClicking } from "./actions/toggleKeyboardClicking";
-import { handleRequestFromContent } from "./messaging/handleRequestFromContent";
 import { handleRequestFromTalon } from "./messaging/handleRequestFromTalon";
 import { sendRequestToContent } from "./messaging/sendRequestToContent";
 import { contextMenusOnClicked } from "./misc/createContextMenus";
@@ -23,10 +21,6 @@ browser.contextMenus.onClicked.addListener(contextMenusOnClicked);
 })();
 
 addEventListener("handle-test-request", handleRequestFromTalon);
-
-browser.runtime.onMessage.addListener(async (message, sender) => {
-	return handleRequestFromContent(message as RequestFromContent, sender);
-});
 
 browserAction.onClicked.addListener(async () => {
 	try {
