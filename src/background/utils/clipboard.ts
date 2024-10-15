@@ -64,25 +64,19 @@ async function readClipboardSafari() {
 }
 
 async function readClipboardManifestV3(): Promise<string | undefined> {
-	try {
-		const hasDocument = await chrome.offscreen.hasDocument();
-		if (!hasDocument) {
-			await chrome.offscreen.createDocument({
-				url: urls.offscreenDocument.href,
-				reasons: [chrome.offscreen.Reason.CLIPBOARD],
-				justification: "Read the request from Talon from the clipboard",
-			});
-		}
-
-		return await chrome.runtime.sendMessage({
-			type: "read-clipboard",
-			target: "offscreen-doc",
+	const hasDocument = await chrome.offscreen.hasDocument();
+	if (!hasDocument) {
+		await chrome.offscreen.createDocument({
+			url: urls.offscreenDocument.href,
+			reasons: [chrome.offscreen.Reason.CLIPBOARD],
+			justification: "Read the request from Talon from the clipboard",
 		});
-	} catch (error: unknown) {
-		console.error(error);
 	}
 
-	return undefined;
+	return chrome.runtime.sendMessage({
+		type: "read-clipboard",
+		target: "offscreen-doc",
+	});
 }
 
 async function writeClipboardSafari(text: string) {
@@ -100,22 +94,18 @@ async function writeClipboardSafari(text: string) {
 }
 
 async function writeClipboardManifestV3(text: string) {
-	try {
-		const hasDocument = await chrome.offscreen.hasDocument();
-		if (!hasDocument) {
-			await chrome.offscreen.createDocument({
-				url: urls.offscreenDocument.href,
-				reasons: [chrome.offscreen.Reason.CLIPBOARD],
-				justification: "Write the response to Talon to the clipboard",
-			});
-		}
-
-		await chrome.runtime.sendMessage({
-			type: "copy-to-clipboard",
-			target: "offscreen-doc",
-			text,
+	const hasDocument = await chrome.offscreen.hasDocument();
+	if (!hasDocument) {
+		await chrome.offscreen.createDocument({
+			url: urls.offscreenDocument.href,
+			reasons: [chrome.offscreen.Reason.CLIPBOARD],
+			justification: "Write the response to Talon to the clipboard",
 		});
-	} catch (error: unknown) {
-		console.error(error);
 	}
+
+	await chrome.runtime.sendMessage({
+		type: "copy-to-clipboard",
+		target: "offscreen-doc",
+		text,
+	});
 }
