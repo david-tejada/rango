@@ -28,18 +28,14 @@ export async function openInNewTab(urls: string[], active: boolean) {
 		index = 99_999;
 	}
 
-	try {
-		await Promise.all(
-			urls.map(async (url) =>
-				browser.tabs.create({
-					url,
-					active,
-					index: index ? index++ : undefined,
-					openerTabId: currentTab.id,
-				})
-			)
-		);
-	} catch (error: unknown) {
-		console.error(error);
-	}
+	await Promise.all(
+		urls.map(async (url) =>
+			browser.tabs.create({
+				url,
+				active,
+				index: index ? index++ : undefined,
+				openerTabId: currentTab.id,
+			})
+		)
+	);
 }

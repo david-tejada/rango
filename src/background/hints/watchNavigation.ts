@@ -49,14 +49,10 @@ export function watchNavigation() {
 		// We also send the frame id in the request as Safari is buggy sending
 		// messages to a specific frame and also sends them to other frames. This
 		// way we can check in the content script.
-		try {
-			await sendRequestToContent(
-				{ type: "onCompleted", frameId },
-				tabId,
-				frameId
-			);
-		} catch (error: unknown) {
-			console.error(error);
-		}
+		await sendRequestToContent(
+			{ type: "onCompleted", frameId },
+			tabId,
+			frameId
+		);
 	});
 }
