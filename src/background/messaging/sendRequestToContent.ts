@@ -193,7 +193,7 @@ export async function sendRequestToContent(
 		);
 	}
 
-	frameId = (frameId ?? toAllFrames.has(request.type)) ? undefined : 0;
+	frameId ??= toAllFrames.has(request.type) ? undefined : 0;
 	request.frameId = frameId;
 
 	return browser.tabs.sendMessage(targetTabId, request, {

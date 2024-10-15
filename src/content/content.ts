@@ -20,7 +20,6 @@ import {
 } from "./notify/notify";
 import { updateHintsEnabled } from "./observe";
 import { setNavigationToggle } from "./settings/toggles";
-import { getFrameId } from "./setup/contentScriptContext";
 import { initContentScriptOrWait } from "./setup/initContentScript";
 import {
 	getTitleBeforeDecoration,
@@ -30,13 +29,6 @@ import {
 import { updateHintsInTab } from "./utils/getHintsInTab";
 import { reclaimHints } from "./wrappers/wrappers";
 
-// Sending to specific frames from the background script is buggy in Safari, we
-// need to check that the request was actually intended for this frame.
-async function isWrongFrame(request: RequestFromBackground) {
-	const frameId = await getFrameId();
-	return request.frameId !== undefined && frameId !== request.frameId;
-}
-
 browser.runtime.onMessage.addListener(
 	async (
 		message: unknown
@@ -45,7 +37,6 @@ browser.runtime.onMessage.addListener(
 	> => {
 		const request = message as RequestFromBackground;
 		await initContentScriptOrWait();
-		if (await isWrongFrame(request)) return;
 
 		if ("target" in request) {
 			return runRangoActionWithTarget(request);
