@@ -3,40 +3,40 @@ import type {
 	ResponseToTalon,
 } from "../../typings/RequestFromTalon";
 import { readClipboard, writeClipboard } from "./clipboard";
-import { notify } from "./notify";
 
 /**
  * Reads and parses the request from the clipboard.
  */
-export async function getRequest(): Promise<RequestFromTalon | undefined> {
+export async function getRequest() {
 	const clipText = await readClipboard();
-	let request: RequestFromTalon;
 
-	if (clipText) {
-		try {
-			request = JSON.parse(clipText) as RequestFromTalon;
-			// This is just to be extra safe
-			if (request.type !== "request") {
-				console.error(
-					'Error: The message present in the clipboard is not of type "request"'
-				);
-			}
-
-			return request;
-		} catch (error: unknown) {
-			// We already check that we are sending valid json in rango-talon, but
-			// just to be extra sure
-			if (error instanceof SyntaxError) {
-				console.error(error);
-			}
-		}
-	} else {
-		await notify("Unable to read the request present on the clipboard", {
-			type: "error",
-		});
+	if (clipText === "") {
+		throw new Error(
+			"Clipboard content is not a valid request. Clipboard is empty."
+		);
 	}
 
-	return undefined;
+	if (clipText === undefined) {
+		throw new Error("Unable to read clipboard content.");
+	}
+
+	try {
+		const request = JSON.parse(clipText) as RequestFromTalon;
+
+		if (request.type !== "request") {
+			throw new Error("Clipboard content is not a valid request.");
+		}
+
+		return request;
+	} catch (error: unknown) {
+		// We already check that we are sending valid json in rango-talon, but
+		// just to be extra sure
+		if (error instanceof SyntaxError) {
+			throw new SyntaxError("Clipboard content is not valid JSON.");
+		}
+
+		throw new Error("Unable to read clipboard content.");
+	}
 }
 
 /**
