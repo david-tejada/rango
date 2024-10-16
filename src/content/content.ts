@@ -45,25 +45,6 @@ browser.runtime.onMessage.addListener(
 		try {
 			switch (request.type) {
 				// SCRIPT REQUESTS
-				case "onCompleted": {
-					await synchronizeHints();
-					break;
-				}
-
-				case "displayToastNotification": {
-					await notify(request.text, request.options);
-					break;
-				}
-
-				case "reclaimHints": {
-					const reclaimed = reclaimHintsFromCache(request.amount);
-					if (reclaimed.length < request.amount) {
-						reclaimed.push(...reclaimHints(request.amount - reclaimed.length));
-					}
-
-					deleteHintsInFrame(reclaimed);
-					return reclaimed;
-				}
 
 				case "updateHintsInTab": {
 					updateHintsInTab(request.hints);
@@ -122,12 +103,28 @@ onMessage("markHintsAsKeyboardReachable", ({ data }) => {
 	markHintsAsKeyboardReachable(data.letter);
 });
 
-onMessage("restoreKeyboardReachableHints", () => {
-	restoreKeyboardReachableHints();
-});
+onMessage("restoreKeyboardReachableHints", restoreKeyboardReachableHints);
 
 onMessage("clickElement", async ({ data }) => {
 	await runRangoActionWithTarget({ type: "clickElement", target: [data.hint] });
+});
+
+onMessage("getTitleBeforeDecoration", getTitleBeforeDecoration);
+
+onMessage("onCompleted", synchronizeHints);
+
+onMessage("displayToastNotification", async ({ data }) => {
+	await notify(data.text, data.options);
+});
+
+onMessage("reclaimHints", async ({ data }) => {
+	const reclaimed = reclaimHintsFromCache(data.amount);
+	if (reclaimed.length < data.amount) {
+		reclaimed.push(...reclaimHints(data.amount - reclaimed.length));
+	}
+
+	deleteHintsInFrame(reclaimed);
+	return reclaimed;
 });
 
 (async () => {

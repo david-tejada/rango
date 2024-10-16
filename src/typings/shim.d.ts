@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/consistent-type-definitions */
+import { type ToastOptions } from "react-toastify";
 import type { ProtocolWithReturn } from "webext-bridge";
-import type { HintsStack, CustomSelector } from "./StorageSchema";
+import type { CustomSelector, HintsStack } from "./StorageSchema";
 
 declare module "webext-bridge" {
 	export interface ProtocolMap {
@@ -14,11 +15,13 @@ declare module "webext-bridge" {
 		releaseHints: { hints: string[] };
 		storeHintsInFrame: { hints: string[] };
 		getHintsStackForTab: ProtocolWithReturn<undefined, HintsStack>;
+		reclaimHints: ProtocolWithReturn<{ amount: number }, string[]>;
 
 		// Tabs
 		openInNewTab: { url: string };
 		openInBackgroundTab: { urls: string[] };
 		getTabMarker: ProtocolWithReturn<undefined, string>;
+		getTitleBeforeDecoration: ProtocolWithReturn<undefined, string | undefined>;
 
 		// Context
 		getContentScriptContext: ProtocolWithReturn<
@@ -41,5 +44,11 @@ declare module "webext-bridge" {
 
 		// Click
 		clickElement: { hint: string };
+
+		// Navigation
+		onCompleted: undefined;
+
+		// Notifications
+		displayToastNotification: { text: string; options?: ToastOptions };
 	}
 }

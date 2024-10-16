@@ -1,7 +1,8 @@
-import browser from "webextension-polyfill";
 import { type ToastOptions } from "react-toastify";
-import { urls } from "../../common/urls";
+import { sendMessage } from "webext-bridge/background";
+import browser from "webextension-polyfill";
 import { retrieve } from "../../common/storage";
+import { urls } from "../../common/urls";
 import { getCurrentTabId } from "./getCurrentTab";
 
 export async function notify(text: string, options?: ToastOptions) {
@@ -9,13 +10,11 @@ export async function notify(text: string, options?: ToastOptions) {
 
 	try {
 		const tabId = await getCurrentTabId();
-
-		// Not using sendRequestToContent here to avoid dependency cycle
-		await browser.tabs.sendMessage(tabId, {
-			type: "displayToastNotification",
-			text,
-			options,
-		});
+		await sendMessage(
+			"displayToastNotification",
+			{ text, options },
+			`content-script@${tabId}`
+		);
 	} catch {
 		void browser.notifications.create("rango-notification", {
 			type: "basic",

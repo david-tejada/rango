@@ -1,9 +1,10 @@
 import { Mutex } from "async-mutex";
+import { sendMessage } from "webext-bridge/background";
 import browser from "webextension-polyfill";
+import { letterHints, numberHints } from "../../common/allHints";
 import { getKeysToExclude } from "../../common/getKeysToExclude";
 import { retrieve, store } from "../../common/storage";
 import { type HintsStack } from "../../typings/StorageSchema";
-import { letterHints, numberHints } from "../../common/allHints";
 import { navigationOccurred } from "./preloadTabs";
 
 async function getEmptyStack(tabId: number): Promise<HintsStack> {
@@ -125,13 +126,10 @@ export async function reclaimHintsFromOtherFrames(
 
 		for (const id of otherFramesIds) {
 			// eslint-disable-next-line no-await-in-loop
-			const reclaimedFromFrame: string[] = await browser.tabs.sendMessage(
-				tabId,
-				{
-					type: "reclaimHints",
-					amount: amount - reclaimed.length,
-				},
-				{ frameId: id }
+			const reclaimedFromFrame: string[] = await sendMessage(
+				"reclaimHints",
+				{ amount: amount - reclaimed.length },
+				{ context: "content-script", tabId, frameId: id }
 			);
 
 			reclaimed.push(...reclaimedFromFrame);

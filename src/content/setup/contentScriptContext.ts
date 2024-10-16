@@ -36,11 +36,3 @@ export function isMainframe() {
 
 	return frameId === 0;
 }
-
-export async function getFrameId() {
-	if (!frameId) {
-		await loadContentScriptContext();
-	}
-
-	return frameId;
-}
