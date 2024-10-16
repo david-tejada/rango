@@ -1,7 +1,7 @@
 import { createRoot } from "react-dom/client";
 import { type ToastOptions, toast } from "react-toastify";
 import { getSetting } from "../settings/settingsManager";
-import { isCurrentTab, isMainframe } from "../setup/contentScriptContext";
+import { isCurrentTab, isMainFrame } from "../setup/contentScriptContext";
 import { Toast } from "./Toast";
 import { ToastIcon } from "./ToastIcon";
 import { ToastMessage } from "./ToastMessage";
@@ -37,7 +37,7 @@ async function shouldNotify() {
 		!notificationAllowed ||
 		document.visibilityState !== "visible" ||
 		!getSetting("enableNotifications") ||
-		!isMainframe() ||
+		!isMainFrame() ||
 		!(await isCurrentTab())
 	) {
 		return false;

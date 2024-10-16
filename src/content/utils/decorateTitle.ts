@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { throttle } from "lodash";
-import { isMainframe } from "../setup/contentScriptContext";
+import { isMainFrame } from "../setup/contentScriptContext";
 import { getToggles } from "../settings/toggles";
 import { getSetting, onSettingChange } from "../settings/settingsManager";
 
@@ -108,7 +108,7 @@ const throttledMutationCallback = throttle(async () => {
 let mutationObserver: MutationObserver | undefined;
 
 export async function initTitleDecoration() {
-	if (!isMainframe()) return;
+	if (!isMainFrame()) return;
 
 	const previousUrlInTitle = urlInTitle;
 	const previousIncludeTabMarkers = includeTabMarkers;

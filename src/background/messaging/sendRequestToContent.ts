@@ -193,10 +193,13 @@ export async function sendRequestToContent(
 		);
 	}
 
-	frameId = (frameId ?? toAllFrames.has(request.type)) ? undefined : 0;
-	request.frameId = frameId;
+	// If frameId is provided we send it to that frame. If not we send it to the
+	// main frame or to all frames depending on if it is in toAllFrames.
+	const targetFrameId =
+		frameId ?? (toAllFrames.has(request.type) ? undefined : 0);
+	request.frameId = targetFrameId;
 
 	return browser.tabs.sendMessage(targetTabId, request, {
-		frameId,
+		frameId: targetFrameId,
 	});
 }

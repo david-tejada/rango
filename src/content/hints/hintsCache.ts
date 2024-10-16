@@ -1,4 +1,4 @@
-import { isMainframe } from "../setup/contentScriptContext";
+import { isMainFrame } from "../setup/contentScriptContext";
 import { reclaimHints } from "../wrappers/wrappers";
 import { clearHintsInFrame } from "./hintsInFrame";
 import {
@@ -88,7 +88,7 @@ export async function clearHintsCache() {
 
 	clearHintsInFrame();
 
-	if (isMainframe()) await initStack();
+	if (isMainFrame()) await initStack();
 }
 
 // For debugging purposes

@@ -27,7 +27,7 @@ export async function isCurrentTab(): Promise<boolean> {
 	});
 }
 
-export function isMainframe() {
+export function isMainFrame() {
 	if (frameId === undefined) {
 		throw new Error(
 			"Unable to retrieve frameId. Context script context is not loaded"
@@ -35,12 +35,4 @@ export function isMainframe() {
 	}
 
 	return frameId === 0;
-}
-
-export async function getFrameId() {
-	if (!frameId) {
-		await loadContentScriptContext();
-	}
-
-	return frameId;
 }
