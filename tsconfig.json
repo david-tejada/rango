@@ -4,7 +4,6 @@
 		"outDir": "dist",
 		"esModuleInterop": true,
 		"lib": ["es2022", "DOM", "DOM.Iterable"],
-		"strictPropertyInitialization": false,
 		"jsx": "react-jsx",
 		"noErrorTruncation": true
 	}

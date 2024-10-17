@@ -333,7 +333,7 @@ class ElementWrapperClass implements ElementWrapper {
 	observingIntersection?: boolean;
 	isIntersectingViewport?: boolean;
 	isActiveEditable: boolean;
-	isHintable: boolean;
+	isHintable!: boolean;
 	shouldBeHinted?: boolean;
 
 	// These properties are only needed for hintables
