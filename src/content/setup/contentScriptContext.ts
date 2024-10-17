@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
 
-let tabId: number;
-let frameId: number;
+let tabId: number | undefined;
+let frameId: number | undefined;
 
 export async function loadContentScriptContext() {
 	if (tabId !== undefined && frameId !== undefined) return;
