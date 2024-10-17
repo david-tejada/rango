@@ -4,14 +4,14 @@ import { type RequestFromTalon } from "../../typings/RequestFromTalon";
 import { dispatchCommand } from "../commands/dispatchCommand";
 import { checkActiveElementIsEditable } from "../utils/checkActiveElementIsEditable";
 import { constructTalonResponse } from "../utils/constructTalonResponse";
-import { getRequest, postResponse } from "../utils/requestAndResponse";
+import { readRequest, writeResponse } from "../utils/requestAndResponse";
 import { shouldTryToFocusDocument } from "../utils/shouldTryToFocusDocument";
 import { sendRequestToContent } from "./sendRequestToContent";
 
 let talonIsWaitingForResponse = false;
 
 async function writeTypeCharactersResponse() {
-	await postResponse({
+	await writeResponse({
 		type: "response",
 		action: { type: "noHintFound" },
 		actions: [
@@ -61,7 +61,7 @@ async function handleDirectClickElementRequest(request: RequestFromTalon) {
 }
 
 export async function handleRequestFromTalon() {
-	const request = await getRequest();
+	const request = await readRequest();
 	if (process.env["NODE_ENV"] !== "production") {
 		console.log(JSON.stringify(request, null, 2));
 	}
@@ -84,13 +84,13 @@ export async function handleRequestFromTalon() {
 		(await shouldTryToFocusDocument())
 	) {
 		const response = constructTalonResponse([{ name: "focusPageAndResend" }]);
-		await postResponse(response);
+		await writeResponse(response);
 		return;
 	}
 
 	const response = await dispatchCommand(request.action);
 	if (talonIsWaitingForResponse) {
-		await postResponse(response);
+		await writeResponse(response);
 		talonIsWaitingForResponse = false;
 	}
 }
