@@ -14,12 +14,6 @@
 	"rules": {
 		"@typescript-eslint/switch-exhaustiveness-check": "off",
 		"n/prefer-global/process": "off",
-		"no-unused-vars": [
-			"error",
-			{
-				"varsIgnorePattern": "browser"
-			}
-		],
 		"unicorn/prefer-top-level-await": "off",
 		"n/file-extension-in-import": "off",
 		"import/extensions": [
@@ -39,14 +33,8 @@
 				}
 			}
 		],
-		"node/prefer-global/process": "off",
 		"complexity": "off",
-		"no-use-extend-native/no-use-extend-native": "off",
-		"unicorn/no-array-callback-reference": "off",
-		"unicorn/prefer-node-protocol": "off",
 		"@typescript-eslint/ban-types": "off",
-		"no-redeclare": "off",
-		"@typescript-eslint/no-redeclare": "off",
 		"unicorn/prevent-abbreviations": [
 			"error",
 			{

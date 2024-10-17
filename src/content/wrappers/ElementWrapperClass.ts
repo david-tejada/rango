@@ -226,7 +226,9 @@ function isNonRangoMutation(mutation: MutationRecord) {
 }
 
 const mutationCallback: MutationCallback = async (mutationList) => {
-	const nonRangoMutations = mutationList.filter(isNonRangoMutation);
+	const nonRangoMutations = mutationList.filter((mutation) =>
+		isNonRangoMutation(mutation)
+	);
 
 	if (nonRangoMutations.length === 0) return;
 
@@ -331,7 +333,7 @@ class ElementWrapperClass implements ElementWrapper {
 	observingIntersection?: boolean;
 	isIntersectingViewport?: boolean;
 	isActiveEditable: boolean;
-	isHintable: boolean;
+	isHintable!: boolean;
 	shouldBeHinted?: boolean;
 
 	// These properties are only needed for hintables

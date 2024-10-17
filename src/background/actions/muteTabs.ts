@@ -6,7 +6,9 @@ import { notify } from "../utils/notify";
 
 export async function muteTab(tabMarkers?: string[], mute = true) {
 	if (tabMarkers) {
-		const tabsToMute = await Promise.all(tabMarkers.map(getTabIdForMarker));
+		const tabsToMute = await Promise.all(
+			tabMarkers.map(async (marker) => getTabIdForMarker(marker))
+		);
 
 		return Promise.all(
 			tabsToMute.map(async (tabId) =>
