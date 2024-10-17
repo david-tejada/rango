@@ -34,10 +34,7 @@
 			}
 		],
 		"complexity": "off",
-		"unicorn/prefer-node-protocol": "off",
 		"@typescript-eslint/ban-types": "off",
-		"no-redeclare": "off",
-		"@typescript-eslint/no-redeclare": "off",
 		"unicorn/prevent-abbreviations": [
 			"error",
 			{
