@@ -7,6 +7,5 @@
 		"strictPropertyInitialization": false,
 		"jsx": "react-jsx",
 		"noErrorTruncation": true
-	},
-	"include": ["src/**/*", "tests/**/*"]
+	}
 }
