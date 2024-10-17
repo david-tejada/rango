@@ -124,7 +124,7 @@ function getScrollableAtCenter(direction: "horizontal" | "vertical") {
 
 function getLeftmostScrollable() {
 	const scrollables = [...document.querySelectorAll("*")]
-		.filter(isHtmlElement)
+		.filter((element) => isHtmlElement(element))
 		.filter(
 			(element) =>
 				isScrollable(element, "vertical") && element.matches(":not(html, body)")
@@ -152,7 +152,7 @@ function getLeftmostScrollable() {
 
 function getRightmostScrollable() {
 	const scrollables = [...document.querySelectorAll("*")]
-		.filter(isHtmlElement)
+		.filter((element) => isHtmlElement(element))
 		.filter(
 			(element) =>
 				element instanceof HTMLElement &&

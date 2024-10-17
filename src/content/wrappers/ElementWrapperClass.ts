@@ -226,7 +226,9 @@ function isNonRangoMutation(mutation: MutationRecord) {
 }
 
 const mutationCallback: MutationCallback = async (mutationList) => {
-	const nonRangoMutations = mutationList.filter(isNonRangoMutation);
+	const nonRangoMutations = mutationList.filter((mutation) =>
+		isNonRangoMutation(mutation)
+	);
 
 	if (nonRangoMutations.length === 0) return;
 

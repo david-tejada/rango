@@ -6,7 +6,7 @@ import { getFocusable, isEditable } from "./domUtils";
 // implemented in the other browsers.
 // https://github.com/whatwg/html/pull/8087
 declare global {
-	// eslint-disable-next-line @typescript-eslint/consistent-type-definitions, no-unused-vars
+	// eslint-disable-next-line @typescript-eslint/consistent-type-definitions
 	interface FocusOptions {
 		focusVisible?: boolean;
 	}

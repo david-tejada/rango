@@ -45,7 +45,7 @@ async function handleActionOnReference(
 
 	const results = await Promise.allSettled(sending);
 	const found = results
-		.filter(isPromiseFulfilledResult)
+		.filter((result) => isPromiseFulfilledResult(result))
 		.some((result) => result.value);
 
 	const reference =
@@ -88,7 +88,7 @@ async function runActionOnTextMatchedElement(
 
 	const results = await Promise.allSettled(bestScoreByFramePromise);
 	const matches = results
-		.filter(isPromiseFulfilledResult)
+		.filter((result) => isPromiseFulfilledResult(result))
 		.map((result) => result.value)
 		.filter((value) => typeof value.score === "number");
 
@@ -152,7 +152,7 @@ export async function sendRequestToContent(
 			// If it is a copy command we need to join the results of different frames
 			if (request.type.startsWith("copy")) {
 				const texts = results
-					.filter(isPromiseFulfilledResult)
+					.filter((result) => isPromiseFulfilledResult(result))
 					.filter((result) => result.value)
 					.map((result) => {
 						return result.value as string;
