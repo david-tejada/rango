@@ -7,7 +7,7 @@ import { readClipboard, writeClipboard } from "./clipboard";
 /**
  * Reads and parses the request from the clipboard.
  */
-export async function getRequest() {
+export async function readRequest() {
 	const clipText = await readClipboard();
 
 	if (clipText === "") {
@@ -42,7 +42,7 @@ export async function getRequest() {
 /**
  * Stringifies and writes the response to the clipboard.
  */
-export async function postResponse(response: ResponseToTalon) {
+export async function writeResponse(response: ResponseToTalon) {
 	const jsonResponse = JSON.stringify(response);
 	await writeClipboard(jsonResponse);
 }

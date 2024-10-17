@@ -72,16 +72,6 @@ export type RangoActionCopyLocationProperty = {
 		| "protocol";
 };
 
-type RangoActionSetHintStyle = {
-	type: "setHintStyle";
-	arg: "boxed" | "subtle";
-};
-
-type RangoActionSetHintWeight = {
-	type: "setHintWeight";
-	arg: "auto" | "normal" | "bold";
-};
-
 type RangoActionWithoutTargetWithNumberArgument = {
 	type:
 		| "closeTabsLeftEndInWindow"
@@ -220,8 +210,6 @@ export type RangoActionWithoutTarget =
 	| RangoActionUpdateToggles
 	| RangoActionWithoutTargetWithNumberArgument
 	| RangoActionWithoutTargetWithOptionalNumberArgument
-	| RangoActionSetHintStyle
-	| RangoActionSetHintWeight
 	| RangoActionCopyLocationProperty
 	| RangoActionOpenPageInNewTab
 	| RangoActionSaveReferenceForActiveElement

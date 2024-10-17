@@ -141,6 +141,8 @@ export async function reclaimHintsFromOtherFrames(
 			if (reclaimed.length === amount) break;
 		}
 
+		if (reclaimed.length === 0) return [];
+
 		for (const hint of reclaimed) {
 			stack.assigned.set(hint, frameId);
 		}

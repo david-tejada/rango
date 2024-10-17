@@ -3,8 +3,7 @@ import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { assertDefined } from "../../typings/TypingUtils";
 
 export async function openInNewTab(wrappers: ElementWrapper[]) {
-	const first = wrappers[0];
-	const rest = wrappers.slice(1);
+	const [first, ...rest] = wrappers;
 
 	assertDefined(first);
 	first.hint?.flash();

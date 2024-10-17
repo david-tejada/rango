@@ -22,7 +22,9 @@ browser.contextMenus.onClicked.addListener(contextMenusOnClicked);
 	}
 })();
 
-addEventListener("handle-test-request", handleRequestFromTalon);
+if (process.env["NODE_ENV"] === "test") {
+	addEventListener("handle-test-request", handleRequestFromTalon);
+}
 
 browser.runtime.onMessage.addListener(async (message, sender) => {
 	return handleRequestFromContent(message as RequestFromContent, sender);
