@@ -4,6 +4,7 @@ import { promiseWrap } from "../../lib/promiseWrap";
 import { type RangoAction } from "../../typings/RangoAction";
 import { type TalonAction } from "../../typings/RequestFromTalon";
 import { activateTab } from "../actions/activateTab";
+import { closeTab } from "../actions/closeTab";
 import { closeTabsInWindow } from "../actions/closeTabsInWindow";
 import {
 	copyLocationProperty,
@@ -12,21 +13,13 @@ import {
 } from "../actions/copyTabInfo";
 import { focusOrCreateTabByUrl } from "../actions/focusOrCreateTabByUrl";
 import { focusPreviousTab } from "../actions/focusPreviousTab";
-import { cycleTabsByText, focusTabByText } from "../actions/focusTabByText";
-import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
-import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
-import { toggleTabMarkers } from "../actions/toggleTabMarkers";
-import { sendRequestToContent } from "../messaging/sendRequestToContent";
-import { refreshTabMarkers } from "../misc/tabMarkers";
-import { getCurrentTab } from "../utils/getCurrentTab";
-import { notifySettingRemoved } from "../utils/notify";
-import { closeTab } from "../actions/closeTab";
 import {
 	focusNextAudibleTab,
 	focusNextMutedTab,
 	focusNextTabWithSound,
 	focusTabLastSounded,
 } from "../actions/focusTabBySound";
+import { cycleTabsByText, focusTabByText } from "../actions/focusTabByText";
 import {
 	muteAllTabsWithSound,
 	muteNextTabWithSound,
@@ -34,6 +27,12 @@ import {
 	unmuteAllMutedTabs,
 	unmuteNextMutedTab,
 } from "../actions/muteTabs";
+import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
+import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
+import { toggleTabMarkers } from "../actions/toggleTabMarkers";
+import { sendRequestToContent } from "../messaging/sendRequestToContent";
+import { refreshTabMarkers } from "../misc/tabMarkers";
+import { getCurrentTab } from "../utils/getCurrentTab";
 
 export async function runBackgroundCommand(
 	command: RangoAction
@@ -99,17 +98,6 @@ export async function runBackgroundCommand(
 
 		case "toggleKeyboardClicking": {
 			await toggleKeyboardClicking();
-			break;
-		}
-
-		// To be removed in v0.5
-		case "includeSingleLetterHints":
-		case "excludeSingleLetterHints":
-		case "setHintStyle":
-		case "setHintWeight":
-		case "enableUrlInTitle":
-		case "disableUrlInTitle": {
-			await notifySettingRemoved();
 			break;
 		}
 

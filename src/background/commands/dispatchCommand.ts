@@ -15,8 +15,6 @@ const backgroundCommands = new Set<RangoAction["type"]>([
 	"resetToggleLevel",
 	"increaseHintSize",
 	"decreaseHintSize",
-	"setHintStyle",
-	"setHintWeight",
 	"copyLocationProperty",
 	"copyCurrentTabMarkdownUrl",
 	"getBareTitle",

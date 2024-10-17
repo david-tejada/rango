@@ -25,13 +25,3 @@ export async function notify(text: string, options?: ToastOptions) {
 		});
 	}
 }
-
-export async function notifySettingRemoved() {
-	await notify(
-		"This command has been removed. Update rango-talon and use the command 'rango settings' to open the settings page.",
-		{
-			type: "warning",
-			autoClose: 8000,
-		}
-	);
-}
