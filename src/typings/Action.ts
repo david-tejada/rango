@@ -30,6 +30,8 @@ export type ActionMap = {
 	closeTabsRightEndInWindow: { arg: number };
 	closeTabsToTheLeftInWindow: {};
 	closeTabsToTheRightInWindow: {};
+	copyCurrentTabMarkdownUrl: {};
+	copyLocationProperty: { arg: LocationProperty };
 	cycleTabsByText: { arg: number };
 	focusNextAudibleTab: {};
 	focusNextMutedTab: {};
@@ -38,6 +40,7 @@ export type ActionMap = {
 	focusPreviousTab: {};
 	focusTabByText: { arg: string };
 	focusTabLastSounded: {};
+	getBareTitle: {};
 	moveCurrentTabToNewWindow: {};
 	muteAllTabsWithSound: {};
 	muteCurrentTab: {};
@@ -53,11 +56,6 @@ export type ActionMap = {
 
 	// Keyboard Clicking
 	toggleKeyboardClicking: {};
-
-	// Get or Copy Info
-	copyCurrentTabMarkdownUrl: {};
-	copyLocationProperty: { arg: LocationProperty };
-	getBareTitle: {};
 
 	// Elements
 	clickElement: { target: string[] };
