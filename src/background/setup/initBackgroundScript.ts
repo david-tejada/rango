@@ -10,8 +10,10 @@ import { setBrowserActionIcon } from "../utils/browserAction";
 import { getCurrentTab } from "../utils/getCurrentTab";
 import { isSafari } from "../utils/isSafari";
 import { trackRecentTabs } from "./trackRecentTabs";
+import { setupCommandListeners } from "./setupCommandListeners";
 
 export async function initBackgroundScript() {
+	setupCommandListeners();
 	await trackRecentTabs();
 	watchNavigation();
 }
