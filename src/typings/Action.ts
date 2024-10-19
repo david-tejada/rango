@@ -1,7 +1,10 @@
-type ToggleLevelData = {
-	arg: "everywhere" | "global" | "tab" | "host" | "page" | "now";
-};
-
+export type ToggleLevel =
+	| "everywhere"
+	| "global"
+	| "tab"
+	| "host"
+	| "page"
+	| "now";
 type LocationProperty =
 	| "href"
 	| "hostname"
@@ -111,11 +114,11 @@ export type ActionMap = {
 	resetCustomSelectors: {};
 
 	// Toggle Hints
-	disableHints: ToggleLevelData;
+	disableHints: { arg: ToggleLevel };
 	displayTogglesStatus: {};
-	enableHints: ToggleLevelData;
+	enableHints: { arg: ToggleLevel };
 	toggleHints: {};
-	resetToggleLevel: ToggleLevelData;
+	resetToggleLevel: { arg: ToggleLevel };
 
 	// Hints
 	hideHint: { target: string[] };

@@ -1,8 +1,8 @@
+import { retrieve, store } from "../../common/storage";
+import { type ToggleLevel } from "../../typings/Action";
 import { assertDefined } from "../../typings/TypingUtils";
 import { sendRequestToContent } from "../messaging/sendRequestToContent";
 import { getCurrentTab } from "../utils/getCurrentTab";
-import { retrieve, store } from "../../common/storage";
-import { type RangoActionUpdateToggles } from "../../typings/RangoAction";
 
 export async function toggleHintsGlobal() {
 	const hintsToggleGlobal = await retrieve("hintsToggleGlobal");
@@ -11,10 +11,7 @@ export async function toggleHintsGlobal() {
 	return newStatus;
 }
 
-export async function updateHintsToggle(
-	level: RangoActionUpdateToggles["arg"],
-	enable?: boolean
-) {
+export async function updateHintsToggle(level: ToggleLevel, enable?: boolean) {
 	const currentTab = await getCurrentTab();
 	assertDefined(currentTab.url);
 	const { host, origin, pathname } = new URL(currentTab.url);
