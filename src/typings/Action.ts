@@ -11,6 +11,9 @@ type LocationProperty =
 	| "port"
 	| "protocol";
 
+/**
+ * Relationship between the name of an action and its arguments.
+ */
 export type ActionMap = {
 	// Navigation
 	historyGoBack: {};
