@@ -41,6 +41,7 @@
 				"extendDefaultAllowList": true,
 				"allowList": {
 					"arg": true,
+					"args": true,
 					"i": true
 				},
 				"replacements": {
