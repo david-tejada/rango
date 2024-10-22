@@ -6,6 +6,7 @@ import type {
 	ProtocolMap,
 } from "../../typings/ProtocolMap";
 import { getCurrentTabId } from "../utils/getCurrentTab";
+import { splitHintsByFrame } from "../utils/splitHintsByFrame";
 
 type Destination = { tabId?: number; frameId?: number };
 type Sender = { tab: Tabs.Tab; tabId: number; frameId: number };
@@ -53,15 +54,67 @@ export async function handleIncomingMessage<K extends keyof ProtocolMap>(
 	});
 }
 
-export async function sendMessage<K extends keyof ProtocolMap>(
+type MessageWithoutTarget = {
+	[K in keyof ProtocolMap]: GetDataType<K> extends { target: string[] }
+		? never
+		: K;
+}[keyof ProtocolMap];
+
+export async function sendMessage<K extends MessageWithoutTarget>(
 	messageId: K,
 	data: GetDataType<K>,
 	destination?: Destination
 ): Promise<GetReturnType<K>> {
 	const currentTabId = await getCurrentTabId();
+	const tabId = destination?.tabId ?? currentTabId;
+
 	return browser.tabs.sendMessage(
-		destination?.tabId ?? currentTabId,
+		tabId,
 		{ messageId, data },
 		{ frameId: destination?.frameId ?? 0 }
 	);
+}
+
+type MessageWithTarget = {
+	[K in keyof ProtocolMap]: GetDataType<K> extends { target: string[] }
+		? K
+		: never;
+}[keyof ProtocolMap];
+
+/**
+ * Send a message to the frames who own the hints in `target`. It will group the
+ * hints in `target` by their `frameId`. It will then send a message to each
+ * frame and return an object in the shape `{ results, values }`. The `values`
+ * property is just the values within `results` unwrapped. They are provided
+ * like this for better ergonomics.
+ */
+export async function sendMessagesToTargetFrames<K extends MessageWithTarget>(
+	messageId: K,
+	data: NonNullable<GetDataType<K>>,
+	tabId?: number
+) {
+	const destinationTabId = tabId ?? (await getCurrentTabId());
+
+	const hintsByFrameMap = await splitHintsByFrame(
+		destinationTabId,
+		data.target
+	);
+
+	const sending = [...hintsByFrameMap].map(async ([frameId, hints]) => {
+		const frameData = { ...data, target: hints };
+		return (
+			browser.tabs.sendMessage(
+				destinationTabId,
+				{ messageId, data: frameData },
+				{ frameId }
+			) as Promise<GetReturnType<K>>
+		).then((value) => ({
+			frameId,
+			value,
+		}));
+	});
+
+	const results = await Promise.all(sending);
+
+	return { results, values: results.map((result) => result.value) };
 }
