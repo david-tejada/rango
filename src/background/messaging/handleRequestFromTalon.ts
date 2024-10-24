@@ -1,11 +1,9 @@
 import { retrieve } from "../../common/storage";
 import { promiseWrap } from "../../lib/promiseWrap";
 import { type RequestFromTalon } from "../../typings/RequestFromTalon";
-import { dispatchCommand } from "../commands/dispatchCommand";
 import { checkActiveElementIsEditable } from "../utils/checkActiveElementIsEditable";
-import { constructTalonResponse } from "../utils/constructTalonResponse";
 import { readRequest, writeResponse } from "../utils/requestAndResponse";
-import { shouldTryToFocusDocument } from "../utils/shouldTryToFocusDocument";
+import { dispatchCommand } from "../commands/commandEvents";
 import { sendRequestToContent } from "./sendRequestToContent";
 
 let talonIsWaitingForResponse = false;
@@ -61,36 +59,42 @@ async function handleDirectClickElementRequest(request: RequestFromTalon) {
 }
 
 export async function handleRequestFromTalon() {
-	const request = await readRequest();
-	if (process.env["NODE_ENV"] !== "production") {
-		console.log(JSON.stringify(request, null, 2));
-	}
+	const command = await readRequest();
+	console.log(JSON.stringify(command, null, 2));
 
-	talonIsWaitingForResponse = !(request.action.type === "requestTimedOut");
+	const { type: name, ...args } = command.action;
 
-	if (request.action.type === "requestTimedOut") return;
+	const commandResult = await dispatchCommand(name, args);
 
-	if (request.action.type === "directClickElement") {
-		const isRequestHandled = await handleDirectClickElementRequest(request);
-		if (isRequestHandled) return;
-	}
+	if (commandResult === "noResponse") return;
 
-	// For these three actions we need to make sure that the document is focused
-	// or they might fail
-	if (
-		(request.action.type === "setSelectionAfter" ||
-			request.action.type === "setSelectionBefore" ||
-			request.action.type === "tryToFocusElementAndCheckIsEditable") &&
-		(await shouldTryToFocusDocument())
-	) {
-		const response = constructTalonResponse([{ name: "focusPageAndResend" }]);
-		await writeResponse(response);
-		return;
-	}
+	await writeResponse(commandResult ?? []);
 
-	const response = await dispatchCommand(request.action);
-	if (talonIsWaitingForResponse) {
-		await writeResponse(response);
-		talonIsWaitingForResponse = false;
-	}
+	// talonIsWaitingForResponse = !(request.action.type === "requestTimedOut");
+
+	// if (request.action.type === "requestTimedOut") return;
+
+	// if (request.action.type === "directClickElement") {
+	// 	const isRequestHandled = await handleDirectClickElementRequest(request);
+	// 	if (isRequestHandled) return;
+	// }
+
+	// // For these three actions we need to make sure that the document is focused
+	// // or they might fail
+	// if (
+	// 	(request.action.type === "setSelectionAfter" ||
+	// 		request.action.type === "setSelectionBefore" ||
+	// 		request.action.type === "tryToFocusElementAndCheckIsEditable") &&
+	// 	(await shouldTryToFocusDocument())
+	// ) {
+	// 	const response = constructTalonResponse([{ name: "focusPageAndResend" }]);
+	// 	await writeResponse(response);
+	// 	return;
+	// }
+
+	// const response = await dispatchCommand(request.action);
+	// if (talonIsWaitingForResponse) {
+	// 	await writeResponse(response);
+	// 	talonIsWaitingForResponse = false;
+	// }
 }
