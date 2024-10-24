@@ -1,9 +1,11 @@
+import { type TalonAction } from "../../typings/RequestFromTalon";
 import { activateTab } from "../actions/activateTab";
 import { closeTab } from "../actions/closeTab";
 import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { onCommand } from "../commands/commandEvents";
 import { sendMessagesToTargetFrames } from "../messaging/backgroundMessageBroker";
 import { notify } from "../utils/notify";
+import { discardNextResponse } from "../utils/requestAndResponse";
 
 export function setupCommandListeners() {
 	// ===========================================================================
