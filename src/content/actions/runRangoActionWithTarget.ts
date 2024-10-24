@@ -57,11 +57,6 @@ export async function runRangoActionWithTarget(
 	assertDefined(wrapper);
 	setLastWrapper(wrapper);
 	switch (request.type) {
-		case "openInBackgroundTab": {
-			await getAnchorHrefs(wrappers);
-			break;
-		}
-
 		case "hoverElement": {
 			await hoverElement(wrappers);
 			break;

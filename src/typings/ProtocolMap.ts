@@ -21,8 +21,6 @@ export type BackgroundBoundMessageMap = {
 		frameId: number;
 		currentTabId: number;
 	};
-	openInNewTab: (data: { url: string }) => void;
-	openInBackgroundTab: (data: { urls: string[] }) => void;
 	getTabMarker: () => string;
 
 	// Hints Allocator

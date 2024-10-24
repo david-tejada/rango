@@ -54,14 +54,6 @@ export function setupBackgroundBoundMessageHandlers() {
 		return withStack(tabId, async (stack) => stack);
 	});
 
-	onMessage("openInNewTab", async ({ url }) => {
-		await openInNewTab([url], true);
-	});
-
-	onMessage("openInBackgroundTab", async ({ urls }) => {
-		await openInNewTab(urls, false);
-	});
-
 	onMessage("getContentScriptContext", async (_, { tabId, frameId }) => {
 		const currentTabId = await getCurrentTabId();
 		return {
