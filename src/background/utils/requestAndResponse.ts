@@ -1,8 +1,14 @@
-import type {
-	RequestFromTalon,
-	ResponseToTalon,
-} from "../../typings/RequestFromTalon";
+import { z } from "zod";
+import type { Command } from "../../typings/Command";
 import { readClipboard, writeClipboard } from "./clipboard";
+
+const zRequest = z
+	.object({
+		version: z.literal(1),
+		type: z.literal("request"),
+		action: z.object({ type: z.any() }).passthrough(),
+	})
+	.passthrough();
 
 /**
  * Reads and parses the request from the clipboard.
@@ -21,13 +27,14 @@ export async function readRequest() {
 	}
 
 	try {
-		const request = JSON.parse(clipText) as RequestFromTalon;
+		const parsedJson = JSON.parse(clipText) as unknown;
+		const result = zRequest.safeParse(parsedJson);
 
-		if (request.type !== "request") {
+		if (result.error) {
 			throw new Error("Clipboard content is not a valid request.");
 		}
 
-		return request;
+		return result.data as Command;
 	} catch (error: unknown) {
 		// We already check that we are sending valid json in rango-talon, but
 		// just to be extra sure
