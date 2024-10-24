@@ -64,6 +64,7 @@ export type ContentBoundMessageMap = {
 		noHintFound?: boolean;
 	} | void;
 	copyElementTextContent: (data: { target: string[] }) => string[];
+	showLink: (data: { target: string[] }) => void;
 
 	// Hints
 	reclaimHints: (data: { amount: number }) => string[];
@@ -71,12 +72,14 @@ export type ContentBoundMessageMap = {
 
 	// Tabs
 	getTitleBeforeDecoration: () => string | undefined;
+	refreshTitleDecorations: () => void;
 
 	// Notifications
 	displayToastNotification: (data: {
 		text: string;
 		options?: ToastOptions;
 	}) => void;
+	allowToastNotification: () => void;
 
 	// Keyboard Clicking
 	markHintsAsKeyboardReachable: (data: { letter: string }) => void;
@@ -84,4 +87,11 @@ export type ContentBoundMessageMap = {
 
 	// Navigation
 	onCompleted: () => void;
+
+	// Document
+	checkIfDocumentHasFocus: () => boolean;
+	tryToFocusPage: () => void;
+
+	// Hint Toggles
+	updateNavigationToggle: (data: { enable: boolean }) => void;
 };
