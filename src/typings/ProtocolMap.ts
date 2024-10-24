@@ -64,6 +64,7 @@ export type ContentBoundMessageMap = {
 		noHintFound?: boolean;
 	} | void;
 	copyElementTextContent: (data: { target: string[] }) => string[];
+	tryToFocusElementAndCheckIsEditable: (data: { target: string[] }) => boolean;
 	focusElement: (data: { target: string[] }) => { focusPage?: boolean };
 	showLink: (data: { target: string[] }) => void;
 	getAnchorHrefs: (data: { target: string[] }) => string[];

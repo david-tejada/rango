@@ -258,10 +258,15 @@ export function setupCommandListeners() {
 		// todo
 	});
 	onCommand("showLink", async ({ target }) => {
-		// todo
+		await sendMessagesToTargetFrames("showLink", { target });
 	});
 	onCommand("tryToFocusElementAndCheckIsEditable", async ({ target }) => {
-		// todo
+		const { values } = await sendMessagesToTargetFrames(
+			"tryToFocusElementAndCheckIsEditable",
+			{ target }
+		);
+
+		return [{ name: "responseValue", value: values[0]! }];
 	});
 	onCommand("unhoverAll", async () => {
 		// todo
@@ -405,7 +410,7 @@ export function setupCommandListeners() {
 		// todo
 	});
 	onCommand("requestTimedOut", async () => {
-		cancelNextResponse();
+		discardNextResponse();
 		return "noResponse";
 	});
 
