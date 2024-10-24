@@ -1,9 +1,7 @@
-import { retrieve } from "../../common/storage";
+import { getStack } from "../hints/hintsAllocator";
 
 export async function splitHintsByFrame(tabId: number, hints: string[]) {
-	const stacks = await retrieve("hintStacks");
-	const stack = stacks.get(tabId);
-	if (!stack) throw new Error(`No hint stack found for tab with id ${tabId}`);
+	const stack = await getStack(tabId);
 
 	const hintsByFrame = new Map<number, string[]>();
 

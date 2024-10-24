@@ -2,7 +2,6 @@ import { sendMessage } from "../messaging/contentMessageBroker";
 import { notify } from "../notify/notify";
 import { onSettingChange } from "../settings/settingsManager";
 import { getActiveElement, isEditable } from "../utils/domUtils";
-import { getHintsInTab } from "../utils/getHintsInTab";
 import { refresh } from "../wrappers/refresh";
 import { getHintedWrappers } from "../wrappers/wrappers";
 
@@ -43,10 +42,12 @@ async function keydownHandler(event: KeyboardEvent) {
 		return;
 	}
 
+	const hintsInTab = await sendMessage("getHintsInTab");
+
 	// After typing the first character we need to check if any of the hints start
 	// with that letter
 	const firstCharactersInHints = new Set(
-		getHintsInTab().map((hint) => hint.slice(0, 1))
+		hintsInTab.map((hint) => hint.slice(0, 1))
 	);
 
 	const hintIsReachable =
@@ -68,7 +69,7 @@ async function keydownHandler(event: KeyboardEvent) {
 		if (keysPressedBuffer.length === 2) {
 			await sendMessage("restoreKeyboardReachableHints");
 
-			if (getHintsInTab().includes(keysPressedBuffer)) {
+			if (hintsInTab.includes(keysPressedBuffer)) {
 				await sendMessage("clickHintInFrame", {
 					hint: keysPressedBuffer,
 				});

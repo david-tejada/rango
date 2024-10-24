@@ -24,7 +24,6 @@ import {
 	removeDecorations,
 } from "../utils/decorateTitle";
 import { isEditable } from "../utils/domUtils";
-import { updateHintsInTab } from "../utils/getHintsInTab";
 import { getWrapper, reclaimHints } from "../wrappers/wrappers";
 import { onMessage } from "./contentMessageBroker";
 
@@ -54,10 +53,6 @@ export function setupContentBoundMessageHandlers() {
 
 		deleteHintsInFrame(reclaimed);
 		return reclaimed;
-	});
-
-	onMessage("updateHintsInTab", ({ hints }) => {
-		updateHintsInTab(hints);
 	});
 
 	onMessage("markHintsAsKeyboardReachable", async ({ letter }) => {

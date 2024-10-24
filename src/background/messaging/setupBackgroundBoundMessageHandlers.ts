@@ -1,6 +1,7 @@
 import browser from "webextension-polyfill";
 import {
 	claimHints,
+	getStack,
 	initStack,
 	reclaimHintsFromOtherFrames,
 	releaseHints,
@@ -51,6 +52,11 @@ export function setupBackgroundBoundMessageHandlers() {
 
 	onMessage("getHintStackForTab", async (_, { tabId }) => {
 		return withStack(tabId, async (stack) => stack);
+	});
+
+	onMessage("getHintsInTab", async (_, { tabId }) => {
+		const stack = await getStack(tabId);
+		return [...stack.assigned.keys()];
 	});
 
 	onMessage("getContentScriptContext", async (_, { tabId, frameId }) => {

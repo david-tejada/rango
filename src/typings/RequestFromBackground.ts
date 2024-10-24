@@ -2,11 +2,6 @@ import { type ToastOptions } from "react-toastify";
 import { type RangoAction } from "./RangoAction";
 import { type MarkHintsAsKeyboardReachable } from "./RequestFromContent";
 
-type UpdateHintsInTab = {
-	type: "updateHintsInTab";
-	hints: string[];
-};
-
 type ReclaimHints = {
 	type: "reclaimHints";
 	amount: number;
@@ -41,7 +36,6 @@ type SimpleContentRequest = {
 export type RequestFromBackground = { frameId?: number } & (
 	| RangoAction
 	| SimpleContentRequest
-	| UpdateHintsInTab
 	| MarkHintsAsKeyboardReachable
 	| ReclaimHints
 	| DisplayToastNotification

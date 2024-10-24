@@ -33,6 +33,7 @@ export type BackgroundBoundMessageMap = {
 	createTabs: (data: {
 		createPropertiesArray: Tabs.CreateCreatePropertiesType[];
 	}) => void;
+	getHintsInTab: () => string[];
 
 	// References
 	removeReference: (data: { hostPattern: string; name: string }) => void;
@@ -69,7 +70,6 @@ export type ContentBoundMessageMap = {
 
 	// Hints
 	reclaimHints: (data: { amount: number }) => string[];
-	updateHintsInTab: (data: { hints: string[] }) => void;
 
 	// Tabs
 	getTitleBeforeDecoration: () => string | undefined;

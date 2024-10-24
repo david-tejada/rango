@@ -4,8 +4,14 @@ import { letterHints, numberHints } from "../../common/allHints";
 import { getKeysToExclude } from "../../common/getKeysToExclude";
 import { retrieve, store } from "../../common/storage";
 import { type HintStack } from "../../typings/StorageSchema";
-import { sendMessage } from "../messaging/backgroundMessageBroker";
 import { navigationOccurred } from "./preloadTabs";
+
+export class NoHintStackError extends Error {
+	constructor(message: string) {
+		super(message);
+		this.name = "NoHintStackError";
+	}
+}
 
 async function getEmptyStack(tabId: number): Promise<HintStack> {
 	const includeSingleLetterHints = await retrieve("includeSingleLetterHints");
@@ -64,6 +70,16 @@ async function _saveStack(tabId: number, stack: HintStack) {
 	await store("hintStacks", stacks);
 }
 
+export async function getStack(tabId: number) {
+	const stack = await _getStack(tabId);
+
+	if (!stack) {
+		throw new NoHintStackError(`No hint stack found for tab with id ${tabId}`);
+	}
+
+	return stack;
+}
+
 const mutex = new Mutex();
 
 export async function withStack<T>(
@@ -99,16 +115,6 @@ export async function claimHints(
 		for (const hint of hintsClaimed) {
 			stack.assigned.set(hint, frameId);
 		}
-
-		// This is necessary for keyboard clicking
-		const hintsInTab = [...stack.assigned.keys()];
-		await sendMessage(
-			"updateHintsInTab",
-			{
-				hints: hintsInTab,
-			},
-			{ tabId }
-		);
 
 		return hintsClaimed;
 	});
@@ -150,12 +156,6 @@ export async function reclaimHintsFromOtherFrames(
 		for (const hint of reclaimed) {
 			stack.assigned.set(hint, frameId);
 		}
-
-		const hintsInTab = [...stack.assigned.keys()];
-		await browser.tabs.sendMessage(tabId, {
-			type: "updateHintsInTab",
-			hints: hintsInTab,
-		});
 
 		return reclaimed;
 	});
