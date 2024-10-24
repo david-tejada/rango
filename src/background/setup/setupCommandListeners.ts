@@ -236,9 +236,7 @@ export function setupCommandListeners() {
 		try {
 			const { values } = await sendMessagesToTargetFrames(
 				"directClickElement",
-				{
-					target,
-				}
+				{ target }
 			);
 
 			if (target.length === 1 && values[0]?.noHintFound) {
