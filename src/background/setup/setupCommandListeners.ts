@@ -3,6 +3,7 @@ import { closeTab } from "../actions/closeTab";
 import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { onCommand } from "../commands/commandEvents";
 import { sendMessagesToTargetFrames } from "../messaging/backgroundMessageBroker";
+import { notify } from "../utils/notify";
 
 export function setupCommandListeners() {
 	// ===========================================================================
@@ -207,9 +208,21 @@ export function setupCommandListeners() {
 	onCommand("focusAndDeleteContents", async ({ target }) => {
 		// todo
 	});
+
 	onCommand("focusElement", async ({ target }) => {
-		// todo
+		if (target.length > 1) {
+			await notify("Only one element can be focused.", { type: "warning" });
+		}
+
+		const filteredTarget = target[0] ? [target[0]] : [];
+
+		const { values } = await sendMessagesToTargetFrames("focusElement", {
+			target: filteredTarget,
+		});
+
+		return values[0]?.focusPage ? [{ name: "focusPage" }] : undefined;
 	});
+
 	onCommand("focusFirstInput", async () => {
 		// todo
 	});

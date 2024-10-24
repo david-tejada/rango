@@ -1,5 +1,6 @@
 import { clickElement } from "../actions/clickElement";
 import { copyElementTextContent } from "../actions/copy";
+import { focus } from "../actions/focus";
 import {
 	markHintsAsKeyboardReachable,
 	restoreKeyboardReachableHints,
@@ -110,6 +111,13 @@ export function setupContentBoundMessageHandlers() {
 
 		const activeEditable = await activateEditable(wrapper);
 		return Boolean(activeEditable);
+	});
+
+	onMessage("focusElement", ({ target }) => {
+		const wrapper = getIntersectingWrappers(target)[0];
+		if (!wrapper) return { focusPage: false };
+		const focusWasPerformed = focus(wrapper);
+		return { focusPage: focusWasPerformed ? !document.hasFocus() : false };
 	});
 
 	onMessage("showLink", ({ target }) => {
