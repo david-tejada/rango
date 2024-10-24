@@ -3,6 +3,8 @@ import type { TalonAction } from "../../typings/RequestFromTalon";
 import type { Command } from "../../typings/Command";
 import { readClipboard, writeClipboard } from "./clipboard";
 
+let shouldDiscardNextResponse = false;
+
 const zRequest = z
 	.object({
 		version: z.literal(1),
@@ -51,6 +53,15 @@ export async function readRequest() {
  * Stringifies and writes the response to the clipboard.
  */
 export async function writeResponse(actions: TalonAction[] = []) {
+	if (shouldDiscardNextResponse) {
+		shouldDiscardNextResponse = false;
+		return;
+	}
+
 	const jsonResponse = JSON.stringify({ type: "response", actions });
 	await writeClipboard(jsonResponse);
+}
+
+export function discardNextResponse() {
+	shouldDiscardNextResponse = true;
 }
