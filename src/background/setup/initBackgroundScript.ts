@@ -4,15 +4,17 @@ import { urls } from "../../common/urls";
 import { setTabLastSounded } from "../actions/focusTabBySound";
 import { watchNavigation } from "../hints/watchNavigation";
 import { sendRequestToContent } from "../messaging/sendRequestToContent";
+import { setupBackgroundBoundMessageHandlers } from "../messaging/setupBackgroundBoundMessageHandlers";
 import { createContextMenus } from "../misc/createContextMenus";
 import { initTabMarkers } from "../misc/tabMarkers";
 import { setBrowserActionIcon } from "../utils/browserAction";
 import { getCurrentTab } from "../utils/getCurrentTab";
 import { isSafari } from "../utils/isSafari";
-import { trackRecentTabs } from "./trackRecentTabs";
 import { setupCommandListeners } from "./setupCommandListeners";
+import { trackRecentTabs } from "./trackRecentTabs";
 
 export async function initBackgroundScript() {
+	setupBackgroundBoundMessageHandlers();
 	setupCommandListeners();
 	await trackRecentTabs();
 	watchNavigation();
