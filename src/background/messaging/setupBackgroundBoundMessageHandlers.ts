@@ -1,5 +1,4 @@
 import browser from "webextension-polyfill";
-import { openInNewTab } from "../actions/openInNewTab";
 import {
 	claimHints,
 	initStack,
