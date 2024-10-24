@@ -1,8 +1,8 @@
-import browser from "webextension-polyfill";
 import { throttle } from "lodash";
-import { isMainFrame } from "../setup/contentScriptContext";
-import { getToggles } from "../settings/toggles";
+import { sendMessage } from "../messaging/contentMessageBroker";
 import { getSetting, onSettingChange } from "../settings/settingsManager";
+import { getToggles } from "../settings/toggles";
+import { isMainFrame } from "../setup/contentScriptContext";
 
 // Settings
 let urlInTitle: boolean;
@@ -16,12 +16,7 @@ let titleAfterDecoration: string | undefined;
 async function getTitlePrefix() {
 	if (!includeTabMarkers) return "";
 
-	const tabMarker: string = await browser.runtime.sendMessage({
-		type: "getTabMarker",
-	});
-
-	if (!tabMarker) return "";
-
+	const tabMarker = await sendMessage("getTabMarker");
 	const marker = uppercaseTabMarkers ? tabMarker.toUpperCase() : tabMarker;
 
 	return `${marker} | `;
