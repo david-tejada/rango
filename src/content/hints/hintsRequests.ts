@@ -1,6 +1,5 @@
-import browser from "webextension-polyfill";
 import { Mutex } from "async-mutex";
-import { type HintsStack } from "../../typings/StorageSchema";
+import { sendMessage } from "../messaging/contentMessageBroker";
 import {
 	addHintsInFrame,
 	clearHintsInFrame,
@@ -13,9 +12,7 @@ const mutex = new Mutex();
 export async function initStack() {
 	return mutex.runExclusive(async () => {
 		clearHintsInFrame();
-		return browser.runtime.sendMessage({
-			type: "initStack",
-		});
+		return sendMessage("initStack");
 	});
 }
 
@@ -23,21 +20,14 @@ export async function synchronizeHints() {
 	await mutex.runExclusive(async () => {
 		const hintsInFrame = getHintsInFrame();
 		if (hintsInFrame.length > 0) {
-			await browser.runtime.sendMessage({
-				type: "storeHintsInFrame",
-				hints: hintsInFrame,
-			});
+			await sendMessage("storeHintsInFrame", { hints: hintsInFrame });
 		}
 	});
 }
 
 export async function claimHints(amount: number) {
 	return mutex.runExclusive(async () => {
-		const claimed: string[] = await browser.runtime.sendMessage({
-			type: "claimHints",
-			amount,
-		});
-
+		const claimed = await sendMessage("claimHints", { amount });
 		addHintsInFrame(claimed);
 
 		return claimed;
@@ -46,8 +36,7 @@ export async function claimHints(amount: number) {
 
 export async function reclaimHintsFromOtherFrames(amount: number) {
 	return mutex.runExclusive(async () => {
-		const reclaimed: string[] = await browser.runtime.sendMessage({
-			type: "reclaimHintsFromOtherFrames",
+		const reclaimed = await sendMessage("reclaimHintsFromOtherFrames", {
 			amount,
 		});
 
@@ -60,16 +49,10 @@ export async function reclaimHintsFromOtherFrames(amount: number) {
 export async function releaseHints(hints: string[]) {
 	await mutex.runExclusive(async () => {
 		deleteHintsInFrame(hints);
-
-		await browser.runtime.sendMessage({
-			type: "releaseHints",
-			hints,
-		});
+		await sendMessage("releaseHints", { hints });
 	});
 }
 
-export async function getHintsStackForTab(): Promise<HintsStack> {
-	return browser.runtime.sendMessage({
-		type: "getHintsStackForTab",
-	});
+export async function getHintsStackForTab() {
+	return sendMessage("getHintsStackForTab");
 }
