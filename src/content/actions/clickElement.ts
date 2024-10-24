@@ -4,7 +4,6 @@ import { sendMessage } from "../messaging/contentMessageBroker";
 export async function clickElement(wrappers: ElementWrapper[]) {
 	for (const wrapper of wrappers) wrapper.hint?.flash();
 
-	let focusPage = false;
 	const anchors = wrappers
 		.map((wrapper) => wrapper.element)
 		.filter((element) => element instanceof HTMLAnchorElement);
@@ -23,10 +22,10 @@ export async function clickElement(wrappers: ElementWrapper[]) {
 		});
 	}
 
-	for (const wrapper of nonAnchorWrappers) {
-		const shouldFocusPage = wrapper.click();
-		if (shouldFocusPage) focusPage = true;
-	}
+	const shouldFocusPageArray = await Promise.all(
+		nonAnchorWrappers.map(async (wrapper) => wrapper.click())
+	);
+	const focusPage = shouldFocusPageArray.includes(true);
 
 	if (
 		wrappers.length === 1 &&

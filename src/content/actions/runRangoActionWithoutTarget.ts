@@ -47,12 +47,12 @@ export async function runRangoActionWithoutTarget(
 		}
 
 		case "navigateToNextPage": {
-			navigateToNextPage();
+			await navigateToNextPage();
 			break;
 		}
 
 		case "navigateToPreviousPage": {
-			navigateToPreviousPage();
+			await navigateToPreviousPage();
 			break;
 		}
 

@@ -2,9 +2,9 @@ import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { type TalonAction } from "../../typings/RequestFromTalon";
 import { isEditable } from "../utils/domUtils";
 
-export function focusAndDeleteContents(
+export async function focusAndDeleteContents(
 	wrapper: ElementWrapper
-): TalonAction[] | undefined {
+): Promise<TalonAction[] | undefined> {
 	if (
 		wrapper.element instanceof HTMLInputElement ||
 		wrapper.element instanceof HTMLTextAreaElement
@@ -16,7 +16,7 @@ export function focusAndDeleteContents(
 	}
 
 	if (wrapper.element instanceof HTMLElement && isEditable(wrapper.element)) {
-		wrapper.click();
+		await wrapper.click();
 
 		if (wrapper.element.textContent) {
 			const range = document.createRange();

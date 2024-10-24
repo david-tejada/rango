@@ -31,7 +31,7 @@ export type ElementWrapper = {
 	unobserveIntersection(): void;
 	intersect(isIntersecting: boolean): void;
 	intersectViewport(isIntersecting: boolean): void;
-	click(): boolean;
+	click(): Promise<boolean>;
 	flashElement(): void;
 	hover(): void;
 	unhover(): void;

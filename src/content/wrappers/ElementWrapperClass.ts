@@ -2,12 +2,12 @@ import { debounce } from "lodash";
 import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { type Hint } from "../../typings/Hint";
 import { getExtraHintsToggle } from "../actions/customHints";
-import { openInNewTab } from "../actions/openInNewTab";
 import { HintClass } from "../hints/HintClass";
 import { cacheHints } from "../hints/hintsCache";
 import { cacheLayout, clearLayoutCache } from "../hints/layoutCache";
 import { matchesCustomExclude, matchesCustomInclude } from "../hints/selectors";
 import { setStyleProperties } from "../hints/setStyleProperties";
+import { sendMessage } from "../messaging/contentMessageBroker";
 import { getSetting } from "../settings/settingsManager";
 import { BoundedIntersectionObserver } from "../utils/BoundedIntersectionObserver";
 import { deepGetElements } from "../utils/deepGetElements";
@@ -466,7 +466,7 @@ class ElementWrapperClass implements ElementWrapper {
 		}
 	}
 
-	click(): boolean {
+	async click(): Promise<boolean> {
 		const pointerTarget = getPointerTarget(this.element);
 		if (this.hint?.inner.isConnected) {
 			this.hint.flash();
@@ -498,7 +498,12 @@ class ElementWrapperClass implements ElementWrapper {
 				// javascript. For example Slack has this for opening a thread in the
 				// side panel. So here we make sure that there is an href attribute
 				// before we open the link in a new tab.
-				void openInNewTab([this]);
+				await sendMessage("createTabs", {
+					createPropertiesArray: [this].map((wrapper) => ({
+						url: (wrapper.element as HTMLAnchorElement).href,
+						active: true,
+					})),
+				});
 				return false;
 			}
 		}

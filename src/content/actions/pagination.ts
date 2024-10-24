@@ -60,7 +60,7 @@ function isLinkToPreviousPage(element: Element) {
 	return false;
 }
 
-export function navigateToNextPage() {
+export async function navigateToNextPage() {
 	const nextWrapper = getAllWrappers().find(
 		(wrapper) =>
 			wrapper.element.isConnected &&
@@ -68,10 +68,10 @@ export function navigateToNextPage() {
 			isLinkToNextPage(wrapper.element)
 	);
 
-	nextWrapper?.click();
+	await nextWrapper?.click();
 }
 
-export function navigateToPreviousPage() {
+export async function navigateToPreviousPage() {
 	const previousWrapper = getAllWrappers().find(
 		(wrapper) =>
 			wrapper.element.isConnected &&
@@ -79,5 +79,5 @@ export function navigateToPreviousPage() {
 			isLinkToPreviousPage(wrapper.element)
 	);
 
-	previousWrapper?.click();
+	await previousWrapper?.click();
 }
