@@ -4,22 +4,25 @@ import { sendMessage } from "../messaging/contentMessageBroker";
 export async function clickElement(wrappers: ElementWrapper[]) {
 	for (const wrapper of wrappers) wrapper.hint?.flash();
 
-	const anchors = wrappers
-		.map((wrapper) => wrapper.element)
-		.filter((element) => element instanceof HTMLAnchorElement);
+	const anchorWrappers = wrappers.filter(
+		(wrapper) => wrapper.element instanceof HTMLAnchorElement
+	);
 	const nonAnchorWrappers = wrappers.filter(
 		(wrapper) => !(wrapper.element instanceof HTMLAnchorElement)
 	);
 
 	// If there are multiple targets and some of them are anchor elements we open
 	// those in a new inactive tab.
-	if (wrappers.length > 1 && anchors.length > 0) {
+	if (wrappers.length > 1 && anchorWrappers.length > 0) {
 		await sendMessage("createTabs", {
-			createPropertiesArray: anchors.map((anchor) => ({
-				url: anchor.href,
+			createPropertiesArray: anchorWrappers.map((anchorWrapper) => ({
+				url: (anchorWrapper.element as HTMLAnchorElement).href,
 				active: false,
 			})),
 		});
+	} else {
+		// If not we simply click the only anchor element in case there is one.
+		await anchorWrappers[0]?.click();
 	}
 
 	const shouldFocusPageArray = await Promise.all(
