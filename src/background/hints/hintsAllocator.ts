@@ -1,9 +1,10 @@
 import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
+import { letterHints, numberHints } from "../../common/allHints";
 import { getKeysToExclude } from "../../common/getKeysToExclude";
 import { retrieve, store } from "../../common/storage";
 import { type HintsStack } from "../../typings/StorageSchema";
-import { letterHints, numberHints } from "../../common/allHints";
+import { sendMessage } from "../messaging/backgroundMessageBroker";
 import { navigationOccurred } from "./preloadTabs";
 
 async function getEmptyStack(tabId: number): Promise<HintsStack> {
@@ -101,10 +102,13 @@ export async function claimHints(
 
 		// This is necessary for keyboard clicking
 		const hintsInTab = [...stack.assigned.keys()];
-		await browser.tabs.sendMessage(tabId, {
-			type: "updateHintsInTab",
-			hints: hintsInTab,
-		});
+		await sendMessage(
+			"updateHintsInTab",
+			{
+				hints: hintsInTab,
+			},
+			{ tabId }
+		);
 
 		return hintsClaimed;
 	});
