@@ -1,9 +1,12 @@
 import browser from "webextension-polyfill";
+import { retrieve } from "../../common/storage";
+import { promiseWrap } from "../../lib/promiseWrap";
 import { type TalonAction } from "../../typings/RequestFromTalon";
 import { activateTab } from "../actions/activateTab";
 import { closeTab } from "../actions/closeTab";
 import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { onCommand } from "../commands/commandEvents";
+import { NoHintStackError } from "../hints/hintsAllocator";
 import {
 	sendMessage,
 	sendMessagesToTargetFrames,
@@ -11,8 +14,6 @@ import {
 } from "../messaging/backgroundMessageBroker";
 import { notify } from "../utils/notify";
 import { discardNextResponse } from "../utils/requestAndResponse";
-import { retrieve } from "../../common/storage";
-import { promiseWrap } from "../../lib/promiseWrap";
 
 export function setupCommandListeners() {
 	// ===========================================================================
@@ -232,15 +233,26 @@ export function setupCommandListeners() {
 			}
 		}
 
-		const { values } = await sendMessagesToTargetFrames("directClickElement", {
-			target,
-		});
+		try {
+			const { values } = await sendMessagesToTargetFrames(
+				"directClickElement",
+				{
+					target,
+				}
+			);
 
-		if (target.length === 1 && values[0]?.noHintFound) {
-			return [{ name: "typeTargetCharacters" }];
+			if (target.length === 1 && values[0]?.noHintFound) {
+				return [{ name: "typeTargetCharacters" }];
+			}
+
+			return handleClickResults(values);
+		} catch (error: unknown) {
+			if (target.length === 1 && error instanceof NoHintStackError) {
+				return [{ name: "typeTargetCharacters" }];
+			}
+
+			throw error;
 		}
-
-		return handleClickResults(values);
 	});
 
 	onCommand("focusAndDeleteContents", async ({ target }) => {
