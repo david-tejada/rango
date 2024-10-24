@@ -75,6 +75,41 @@ export async function sendMessage<K extends MessageWithoutTarget>(
 	);
 }
 
+export async function sendMessageToAllFrames<K extends MessageWithoutTarget>(
+	messageId: K,
+	data: GetDataType<K>,
+	tabId?: number
+) {
+	const destinationTabId = tabId ?? (await getCurrentTabId());
+	const frames = await browser.webNavigation.getAllFrames({
+		tabId: destinationTabId,
+	});
+
+	if (!frames) {
+		throw new Error(
+			`Error finding frames for tab with id "${destinationTabId}".`
+		);
+	}
+
+	const frameIds = frames.map((frame) => frame.frameId);
+
+	const sending = frameIds.map(async (frameId) => {
+		return (
+			browser.tabs.sendMessage(
+				destinationTabId,
+				{ messageId, data },
+				{ frameId }
+			) as Promise<GetReturnType<K>>
+		).then((value) => ({
+			frameId,
+			value,
+		}));
+	});
+
+	const results = await Promise.all(sending);
+	return { results, values: results.map((result) => result.value) };
+}
+
 type MessageWithTarget = {
 	[K in keyof ProtocolMap]: GetDataType<K> extends { target: string[] }
 		? K
