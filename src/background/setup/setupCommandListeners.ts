@@ -2,7 +2,7 @@ import { activateTab } from "../actions/activateTab";
 import { closeTab } from "../actions/closeTab";
 import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { onCommand } from "../commands/commandEvents";
-import { cancelNextResponse } from "../utils/requestAndResponse";
+import { sendMessagesToTargetFrames } from "../messaging/backgroundMessageBroker";
 
 export function setupCommandListeners() {
 	// ===========================================================================
@@ -171,8 +171,20 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("copyElementTextContent", async ({ target }) => {
-		// todo
+		const { values } = await sendMessagesToTargetFrames(
+			"copyElementTextContent",
+			{ target }
+		);
+		if (values.length === 0) return;
+
+		return [
+			{
+				name: "copyToClipboard",
+				textToCopy: values.flat().join("\n"),
+			},
+		];
 	});
+
 	onCommand("copyLink", async ({ target }) => {
 		// todo
 	});

@@ -1,4 +1,5 @@
 import { clickElement } from "../actions/clickElement";
+import { copyElementTextContent } from "../actions/copy";
 import {
 	markHintsAsKeyboardReachable,
 	restoreKeyboardReachableHints,
@@ -96,6 +97,11 @@ export function setupContentBoundMessageHandlers() {
 		}
 
 		return clickElement(wrappers);
+	});
+
+	onMessage("copyElementTextContent", async ({ target }) => {
+		const wrappers = getIntersectingWrappers(target);
+		return copyElementTextContent(wrappers);
 	});
 
 	onMessage("tryToFocusElementAndCheckIsEditable", async ({ target }) => {

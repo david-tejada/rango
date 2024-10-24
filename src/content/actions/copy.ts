@@ -2,9 +2,7 @@ import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { hasPropertyValue } from "../../typings/TypingUtils";
 import { showTooltip } from "../hints/showTooltip";
 
-export function copyElementTextContentToClipboard(
-	wrappers: ElementWrapper[]
-): string | undefined {
+export function copyElementTextContent(wrappers: ElementWrapper[]) {
 	const textContents: string[] = [];
 
 	for (const wrapper of wrappers) {
@@ -20,7 +18,7 @@ export function copyElementTextContentToClipboard(
 		}
 	}
 
-	return textContents.length > 0 ? textContents.join("\n") : undefined;
+	return textContents;
 }
 
 export function copyLinkToClipboard(
