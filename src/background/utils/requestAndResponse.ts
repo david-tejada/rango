@@ -1,4 +1,5 @@
 import { z } from "zod";
+import type { TalonAction } from "../../typings/RequestFromTalon";
 import type { Command } from "../../typings/Command";
 import { readClipboard, writeClipboard } from "./clipboard";
 
@@ -49,7 +50,7 @@ export async function readRequest() {
 /**
  * Stringifies and writes the response to the clipboard.
  */
-export async function writeResponse(response: ResponseToTalon) {
-	const jsonResponse = JSON.stringify(response);
+export async function writeResponse(actions: TalonAction[] = []) {
+	const jsonResponse = JSON.stringify({ type: "response", actions });
 	await writeClipboard(jsonResponse);
 }
