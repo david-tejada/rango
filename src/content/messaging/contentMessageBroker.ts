@@ -1,18 +1,19 @@
 import browser from "webextension-polyfill";
 import type {
+	BackgroundBoundMessageMap,
+	ContentBoundMessageMap,
 	GetDataType,
 	GetReturnType,
-	ProtocolMap,
 } from "../../typings/ProtocolMap";
 import { isValidMessage } from "../../common/messaging/isValidMessage";
 
-const messageHandlers = new Map<keyof ProtocolMap, unknown>();
+const messageHandlers = new Map<keyof ContentBoundMessageMap, unknown>();
 
-type OnMessageCallback<K extends keyof ProtocolMap> = (
+type OnMessageCallback<K extends keyof ContentBoundMessageMap> = (
 	data: GetDataType<K>
 ) => GetReturnType<K> | Promise<GetReturnType<K>>;
 
-export function onMessage<K extends keyof ProtocolMap>(
+export function onMessage<K extends keyof ContentBoundMessageMap>(
 	messageId: K,
 	callback: OnMessageCallback<K>
 ) {
@@ -23,10 +24,11 @@ export function onMessage<K extends keyof ProtocolMap>(
 	messageHandlers.set(messageId, callback);
 }
 
-export async function handleIncomingMessage<K extends keyof ProtocolMap>(
-	message: unknown
-) {
+export async function handleIncomingMessage<
+	K extends keyof ContentBoundMessageMap,
+>(message: unknown) {
 	if (!isValidMessage(message)) {
+		console.log(message);
 		throw new Error("Invalid message coming from background script");
 	}
 
@@ -40,7 +42,7 @@ export async function handleIncomingMessage<K extends keyof ProtocolMap>(
 	return handler(data);
 }
 
-export async function sendMessage<K extends keyof ProtocolMap>(
+export async function sendMessage<K extends keyof BackgroundBoundMessageMap>(
 	messageId: K,
 	...args: GetDataType<K> extends undefined ? [] : [GetDataType<K>]
 ): Promise<GetReturnType<K>> {

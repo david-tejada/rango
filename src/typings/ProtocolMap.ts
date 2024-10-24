@@ -10,7 +10,20 @@ export type GetReturnType<K extends keyof ProtocolMap> = ReturnType<
 	ProtocolMap[K]
 >;
 
-export type ProtocolMap = {
+type ProtocolMap = BackgroundBoundMessageMap & ContentBoundMessageMap;
+
+export type BackgroundBoundMessageMap = {
+	// Tabs
+	isCurrentTab: () => boolean;
+	getContentScriptContext: () => {
+		tabId: number;
+		frameId: number;
+		currentTabId: number;
+	};
+	openInNewTab: (data: { url: string }) => void;
+	openInBackgroundTab: (data: { urls: string[] }) => void;
+	getTabMarker: () => string;
+
 	// Hints Allocator
 	initStack: () => void;
 	claimHints: (data: { amount: number }) => string[];
@@ -34,10 +47,8 @@ export type ProtocolMap = {
 	};
 	isCurrentTab: () => boolean;
 
-	// Keyboard Clicking
-	clickHintInFrame: (data: { hint: string }) => void;
-	markHintsAsKeyboardReachable: (data: { letter: string }) => void;
-	restoreKeyboardReachableHints: () => void;
+	// References
+	removeReference: (data: { hostPattern: string; name: string }) => void;
 
 	// Custom Selectors
 	storeCustomSelectors: (data: {
@@ -46,21 +57,14 @@ export type ProtocolMap = {
 	}) => void;
 	resetCustomSelectors: (data: { url: string }) => void;
 
-	// References
-	removeReference: (data: { hostPattern: string; name: string }) => void;
+	// Keyboard Clicking
+	clickHintInFrame: (data: { hint: string }) => void;
+	markHintsAsKeyboardReachable: (data: { letter: string }) => void;
+	restoreKeyboardReachableHints: () => void;
+};
 
-	// Navigation
-	onCompleted: () => void;
-
-	// Notifications
-	displayToastNotification: (data: {
-		text: string;
-		options?: ToastOptions;
-	}) => void;
-
-	// ===========================================================================
-	// BACKGROUND --> CONTENT SCRIPT
-	// ===========================================================================
+export type ContentBoundMessageMap = {
+	// Elements
 	clickElement: (data: { target: string[] }) => {
 		isSelect?: boolean;
 		focusPage?: boolean;
@@ -71,4 +75,24 @@ export type ProtocolMap = {
 		noHintFound?: boolean;
 	} | void;
 	copyElementTextContent: (data: { target: string[] }) => string[];
+
+	// Hints
+	reclaimHints: (data: { amount: number }) => string[];
+	updateHintsInTab: (data: { hints: string[] }) => void;
+
+	// Tabs
+	getTitleBeforeDecoration: () => string | undefined;
+
+	// Notifications
+	displayToastNotification: (data: {
+		text: string;
+		options?: ToastOptions;
+	}) => void;
+
+	// Keyboard Clicking
+	markHintsAsKeyboardReachable: (data: { letter: string }) => void;
+	restoreKeyboardReachableHints: () => void;
+
+	// Navigation
+	onCompleted: () => void;
 };

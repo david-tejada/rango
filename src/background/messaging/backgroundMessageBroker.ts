@@ -1,9 +1,10 @@
 import browser, { type Runtime, type Tabs } from "webextension-polyfill";
 import { isValidMessage } from "../../common/messaging/isValidMessage";
 import type {
+	BackgroundBoundMessageMap,
+	ContentBoundMessageMap,
 	GetDataType,
 	GetReturnType,
-	ProtocolMap,
 } from "../../typings/ProtocolMap";
 import { getCurrentTabId } from "../utils/getCurrentTab";
 import { splitHintsByFrame } from "../utils/splitHintsByFrame";
@@ -11,14 +12,14 @@ import { splitHintsByFrame } from "../utils/splitHintsByFrame";
 type Destination = { tabId?: number; frameId?: number };
 type Sender = { tab: Tabs.Tab; tabId: number; frameId: number };
 
-type OnMessageCallback<K extends keyof ProtocolMap> = (
+type OnMessageCallback<K extends keyof BackgroundBoundMessageMap> = (
 	data: GetDataType<K>,
 	sender: Sender
 ) => GetReturnType<K> | Promise<GetReturnType<K>>;
 
-const messageHandlers = new Map<keyof ProtocolMap, unknown>();
+const messageHandlers = new Map<keyof BackgroundBoundMessageMap, unknown>();
 
-export function onMessage<K extends keyof ProtocolMap>(
+export function onMessage<K extends keyof BackgroundBoundMessageMap>(
 	messageId: K,
 	callback: OnMessageCallback<K>
 ) {
@@ -29,10 +30,9 @@ export function onMessage<K extends keyof ProtocolMap>(
 	messageHandlers.set(messageId, callback);
 }
 
-export async function handleIncomingMessage<K extends keyof ProtocolMap>(
-	message: unknown,
-	sender: Runtime.MessageSender
-) {
+export async function handleIncomingMessage<
+	K extends keyof BackgroundBoundMessageMap,
+>(message: unknown, sender: Runtime.MessageSender) {
 	if (!isValidMessage(message)) {
 		console.log(message);
 		throw new Error("Invalid message coming from content script.");
@@ -55,10 +55,12 @@ export async function handleIncomingMessage<K extends keyof ProtocolMap>(
 }
 
 type MessageWithoutTarget = {
-	[K in keyof ProtocolMap]: GetDataType<K> extends { target: string[] }
+	[K in keyof ContentBoundMessageMap]: GetDataType<K> extends {
+		target: string[];
+	}
 		? never
 		: K;
-}[keyof ProtocolMap];
+}[keyof ContentBoundMessageMap];
 
 export async function sendMessage<K extends MessageWithoutTarget>(
 	messageId: K,
@@ -111,10 +113,12 @@ export async function sendMessageToAllFrames<K extends MessageWithoutTarget>(
 }
 
 type MessageWithTarget = {
-	[K in keyof ProtocolMap]: GetDataType<K> extends { target: string[] }
+	[K in keyof ContentBoundMessageMap]: GetDataType<K> extends {
+		target: string[];
+	}
 		? K
 		: never;
-}[keyof ProtocolMap];
+}[keyof ContentBoundMessageMap];
 
 /**
  * Send a message to the frames who own the hints in `target`. It will group the
