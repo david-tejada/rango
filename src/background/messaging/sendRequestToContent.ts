@@ -3,7 +3,7 @@ import { type RequestFromBackground } from "../../typings/RequestFromBackground"
 import { type TalonAction } from "../../typings/RequestFromTalon";
 import { isPromiseFulfilledResult } from "../../typings/TypingUtils";
 import { getCurrentTabId } from "../utils/getCurrentTab";
-import { splitRequestsByFrame } from "../utils/splitRequestsByFrame";
+import { splitHintsByFrame } from "../utils/splitHintsByFrame";
 import {
 	type RangoActionRemoveReference,
 	type RangoActionRunActionOnReference,
@@ -124,7 +124,7 @@ export async function sendRequestToContent(
 
 	if ("target" in request) {
 		// We need to take into account that the targets could be in different frames
-		const requestsByFrame = await splitRequestsByFrame(targetTabId, request);
+		const requestsByFrame = await splitHintsByFrame(targetTabId, request);
 
 		if (
 			request.type === "directClickElement" &&
@@ -149,7 +149,7 @@ export async function sendRequestToContent(
 
 			const results = await Promise.allSettled(sending);
 
-			// If it is a copy command we need to join the results of different frames
+			// If it  a copy command we need to join the results of different frames
 			if (request.type.startsWith("copy")) {
 				const texts = results
 					.filter((result) => isPromiseFulfilledResult(result))
