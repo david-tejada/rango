@@ -1,11 +1,11 @@
 import { clickElement } from "../actions/clickElement";
 import { copyElementTextContent } from "../actions/copy";
 import { focus } from "../actions/focus";
+import { getAnchorHrefs } from "../actions/getAnchorHrefs";
 import {
 	markHintsAsKeyboardReachable,
 	restoreKeyboardReachableHints,
 } from "../actions/keyboardClicking";
-import { getAnchorHrefs } from "../actions/getAnchorHrefs";
 import { showTitleAndHref } from "../actions/showTitleAndHref";
 import { reclaimHintsFromCache } from "../hints/hintsCache";
 import { deleteHintsInFrame } from "../hints/hintsInFrame";
@@ -23,6 +23,7 @@ import {
 	initTitleDecoration,
 	removeDecorations,
 } from "../utils/decorateTitle";
+import { isEditable } from "../utils/domUtils";
 import { updateHintsInTab } from "../utils/getHintsInTab";
 import { getWrapper, reclaimHints } from "../wrappers/wrappers";
 import { onMessage } from "./contentMessageBroker";
@@ -82,6 +83,14 @@ export function setupContentBoundMessageHandlers() {
 	onMessage("refreshTitleDecorations", async () => {
 		removeDecorations();
 		await initTitleDecoration();
+	});
+
+	onMessage("checkActiveElementIsEditable", () => {
+		return Boolean(
+			document.hasFocus() &&
+				document.activeElement &&
+				isEditable(document.activeElement)
+		);
 	});
 
 	// =============================================================================

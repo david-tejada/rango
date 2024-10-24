@@ -4,9 +4,15 @@ import { activateTab } from "../actions/activateTab";
 import { closeTab } from "../actions/closeTab";
 import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { onCommand } from "../commands/commandEvents";
-import { sendMessagesToTargetFrames } from "../messaging/backgroundMessageBroker";
+import {
+	sendMessage,
+	sendMessagesToTargetFrames,
+	sendMessageToAllFrames,
+} from "../messaging/backgroundMessageBroker";
 import { notify } from "../utils/notify";
 import { discardNextResponse } from "../utils/requestAndResponse";
+import { retrieve } from "../../common/storage";
+import { promiseWrap } from "../../lib/promiseWrap";
 
 export function setupCommandListeners() {
 	// ===========================================================================
@@ -197,6 +203,35 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("directClickElement", async ({ target }) => {
+		// Handle the possibility that the user might have intended to type those
+		// characters.
+		if (target.length === 1) {
+			const directClickWithNoFocusedDocument = await retrieve(
+				"directClickWithNoFocusedDocument"
+			);
+
+			if (!directClickWithNoFocusedDocument) {
+				const [focusedDocument] = await promiseWrap(
+					sendMessage("checkIfDocumentHasFocus", undefined)
+				);
+
+				if (!focusedDocument) {
+					return [{ name: "typeTargetCharacters" }];
+				}
+			}
+
+			const directClickWhenEditing = await retrieve("directClickWhenEditing");
+
+			if (!directClickWhenEditing) {
+				const { values } = await sendMessageToAllFrames(
+					"checkActiveElementIsEditable",
+					undefined
+				);
+
+				if (values.includes(true)) return [{ name: "typeTargetCharacters" }];
+			}
+		}
+
 		const { values } = await sendMessagesToTargetFrames("directClickElement", {
 			target,
 		});
