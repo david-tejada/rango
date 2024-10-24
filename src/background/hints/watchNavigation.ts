@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { sendRequestToContent } from "../messaging/sendRequestToContent";
+import { sendMessage } from "../messaging/backgroundMessageBroker";
 import { initStack } from "./hintsAllocator";
 import { preloadTabCommitted, preloadTabCompleted } from "./preloadTabs";
 
@@ -46,13 +46,6 @@ export function watchNavigation() {
 		const isPreloadTab = !(await browser.tabs.get(tabId));
 		if (isPreloadTab) return;
 
-		// We also send the frame id in the request as Safari is buggy sending
-		// messages to a specific frame and also sends them to other frames. This
-		// way we can check in the content script.
-		await sendRequestToContent(
-			{ type: "onCompleted", frameId },
-			tabId,
-			frameId
-		);
+		await sendMessage("onCompleted", undefined, { tabId, frameId });
 	});
 }
