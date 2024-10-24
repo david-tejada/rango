@@ -1,3 +1,4 @@
+import browser from "webextension-polyfill";
 import { type TalonAction } from "../../typings/RequestFromTalon";
 import { activateTab } from "../actions/activateTab";
 import { closeTab } from "../actions/closeTab";
@@ -237,9 +238,19 @@ export function setupCommandListeners() {
 	onCommand("openInBackgroundTab", async ({ target }) => {
 		// todo
 	});
+
 	onCommand("openInNewTab", async ({ target }) => {
-		// todo
+		const { values } = await sendMessagesToTargetFrames("getAnchorHrefs", {
+			target,
+		});
+
+		await Promise.all(
+			values
+				.flat()
+				.map(async (href) => browser.tabs.create({ url: href, active: false }))
+		);
 	});
+
 	onCommand("setSelectionAfter", async ({ target }) => {
 		// todo
 	});

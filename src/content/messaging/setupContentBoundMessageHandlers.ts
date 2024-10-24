@@ -5,6 +5,7 @@ import {
 	markHintsAsKeyboardReachable,
 	restoreKeyboardReachableHints,
 } from "../actions/keyboardClicking";
+import { getAnchorHrefs } from "../actions/getAnchorHrefs";
 import { showTitleAndHref } from "../actions/showTitleAndHref";
 import { reclaimHintsFromCache } from "../hints/hintsCache";
 import { deleteHintsInFrame } from "../hints/hintsInFrame";
@@ -123,5 +124,10 @@ export function setupContentBoundMessageHandlers() {
 	onMessage("showLink", ({ target }) => {
 		const wrappers = getIntersectingWrappers(target);
 		showTitleAndHref(wrappers);
+	});
+
+	onMessage("getAnchorHrefs", async ({ target }) => {
+		const wrappers = getIntersectingWrappers(target);
+		return getAnchorHrefs(wrappers);
 	});
 }

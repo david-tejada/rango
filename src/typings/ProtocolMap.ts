@@ -66,6 +66,7 @@ export type ContentBoundMessageMap = {
 	copyElementTextContent: (data: { target: string[] }) => string[];
 	focusElement: (data: { target: string[] }) => { focusPage?: boolean };
 	showLink: (data: { target: string[] }) => void;
+	getAnchorHrefs: (data: { target: string[] }) => string[];
 
 	// Hints
 	reclaimHints: (data: { amount: number }) => string[];
