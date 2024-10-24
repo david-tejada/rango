@@ -141,9 +141,35 @@ export function setupCommandListeners() {
 	// ===========================================================================
 	// ELEMENTS
 	// ===========================================================================
+	function handleClickResults<T extends "clickElement" | "directClickElement">(
+		values: Awaited<ReturnType<typeof sendMessagesToTargetFrames<T>>>["values"]
+	) {
+		const focusPage = values.find((value) => value?.focusPage);
+
+		// We can't open multiple selects and I don't think it's safe to press keys
+		// if there have been multiple things clicked.
+		const isSelect = values.length === 1 && values[0]?.isSelect;
+
+		const actions: TalonAction[] = [];
+		if (focusPage) actions.push({ name: "focusPage" });
+		if (isSelect)
+			actions.push({
+				name: "key",
+				key: "alt-down",
+				main: true,
+			});
+
+		return actions;
+	}
+
 	onCommand("clickElement", async ({ target }) => {
-		// todo
+		const { values } = await sendMessagesToTargetFrames("clickElement", {
+			target,
+		});
+
+		return handleClickResults(values);
 	});
+
 	onCommand("copyElementTextContent", async ({ target }) => {
 		// todo
 	});
@@ -153,9 +179,19 @@ export function setupCommandListeners() {
 	onCommand("copyMarkdownLink", async ({ target }) => {
 		// todo
 	});
+
 	onCommand("directClickElement", async ({ target }) => {
-		// todo
+		const { values } = await sendMessagesToTargetFrames("directClickElement", {
+			target,
+		});
+
+		if (target.length === 1 && values[0]?.noHintFound) {
+			return [{ name: "typeTargetCharacters" }];
+		}
+
+		return handleClickResults(values);
 	});
+
 	onCommand("focusAndDeleteContents", async ({ target }) => {
 		// todo
 	});

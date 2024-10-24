@@ -97,6 +97,14 @@ export function setupBackgroundBoundMessageHandlers() {
 		return tab?.active && tab.windowId === lastFocusedWindow.id;
 	});
 
+	onMessage("createTabs", async ({ createPropertiesArray }) => {
+		await Promise.all(
+			createPropertiesArray.map(async (createProperties) =>
+				browser.tabs.create(createProperties)
+			)
+		);
+	});
+
 	onMessage("getTabMarker", async (_, { tabId }) => {
 		return getTabMarker(tabId);
 	});

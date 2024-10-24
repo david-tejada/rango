@@ -1,3 +1,4 @@
+import { clickElement } from "../actions/clickElement";
 import {
 	markHintsAsKeyboardReachable,
 	restoreKeyboardReachableHints,
@@ -83,6 +84,20 @@ export function setupContentBoundMessageHandlers() {
 	// =============================================================================
 	// COMMANDS WITH TARGET
 	// =============================================================================
+	onMessage("clickElement", async ({ target }) => {
+		const wrappers = getIntersectingWrappers(target);
+		return clickElement(wrappers);
+	});
+
+	onMessage("directClickElement", async ({ target }) => {
+		const wrappers = getIntersectingWrappers(target);
+		if (wrappers.length === 0) {
+			return { noHintFound: true };
+		}
+
+		return clickElement(wrappers);
+	});
+
 	onMessage("tryToFocusElementAndCheckIsEditable", async ({ target }) => {
 		const wrapper = getIntersectingWrappers(target)[0];
 		if (!wrapper) return false;

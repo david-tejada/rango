@@ -1,4 +1,5 @@
 import { type ToastOptions } from "react-toastify";
+import { type Tabs } from "webextension-polyfill";
 import { type CustomSelector, type HintsStack } from "./StorageSchema";
 
 export type GetDataType<K extends keyof ProtocolMap> =
@@ -31,21 +32,9 @@ export type BackgroundBoundMessageMap = {
 	releaseHints: (data: { hints: string[] }) => void;
 	storeHintsInFrame: (data: { hints: string[] }) => void;
 	getHintsStackForTab: () => HintsStack;
-	reclaimHints: (data: { amount: number }) => string[];
-
-	// Tabs
-	openInNewTab: (data: { url: string }) => void;
-	openInBackgroundTab: (data: { urls: string[] }) => void;
-	getTabMarker: () => string;
-	getTitleBeforeDecoration: () => string | undefined;
-
-	// Context
-	getContentScriptContext: () => {
-		tabId: number;
-		frameId: number;
-		currentTabId: number;
-	};
-	isCurrentTab: () => boolean;
+	createTabs: (data: {
+		createPropertiesArray: Tabs.CreateCreatePropertiesType[];
+	}) => void;
 
 	// References
 	removeReference: (data: { hostPattern: string; name: string }) => void;
