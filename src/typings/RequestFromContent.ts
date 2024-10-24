@@ -61,7 +61,7 @@ type SimpleRequestFromContent = {
 		| "initStack"
 		| "getContentScriptContext"
 		| "restoreKeyboardReachableHints"
-		| "getHintsStackForTab"
+		| "getHintStackForTab"
 		| "isCurrentTab"
 		| "getTabMarker";
 };

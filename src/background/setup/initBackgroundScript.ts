@@ -53,8 +53,8 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 	}
 
 	// If this is an update the content scrips either reload (Firefox) or stop
-	// completely (Chrome), either way we need to reset the hints stacks
-	await store("hintsStacks", new Map());
+	// completely (Chrome), either way we need to reset the hint stacks
+	await store("hintStacks", new Map());
 
 	if (reason === "install") {
 		await initTabMarkers();
@@ -64,7 +64,7 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 browser.runtime.onStartup.addListener(async () => {
 	await initTabMarkers();
 	await setBrowserActionIcon();
-	await store("hintsStacks", new Map());
+	await store("hintStacks", new Map());
 	await store("hintsToggleTabs", new Map());
 	await store("tabsByRecency", new Map());
 	// In Safari we need to create the menus every time the browser starts.

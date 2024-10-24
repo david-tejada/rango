@@ -53,6 +53,6 @@ export async function releaseHints(hints: string[]) {
 	});
 }
 
-export async function getHintsStackForTab() {
-	return sendMessage("getHintsStackForTab");
+export async function getHintStackForTab() {
+	return sendMessage("getHintStackForTab");
 }

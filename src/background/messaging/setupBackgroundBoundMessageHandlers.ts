@@ -50,7 +50,7 @@ export function setupBackgroundBoundMessageHandlers() {
 		return storeHintsInFrame(tabId, frameId, hints);
 	});
 
-	onMessage("getHintsStackForTab", async (_, { tabId }) => {
+	onMessage("getHintStackForTab", async (_, { tabId }) => {
 		return withStack(tabId, async (stack) => stack);
 	});
 

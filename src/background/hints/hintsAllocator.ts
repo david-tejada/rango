@@ -3,11 +3,11 @@ import browser from "webextension-polyfill";
 import { letterHints, numberHints } from "../../common/allHints";
 import { getKeysToExclude } from "../../common/getKeysToExclude";
 import { retrieve, store } from "../../common/storage";
-import { type HintsStack } from "../../typings/StorageSchema";
+import { type HintStack } from "../../typings/StorageSchema";
 import { sendMessage } from "../messaging/backgroundMessageBroker";
 import { navigationOccurred } from "./preloadTabs";
 
-async function getEmptyStack(tabId: number): Promise<HintsStack> {
+async function getEmptyStack(tabId: number): Promise<HintStack> {
 	const includeSingleLetterHints = await retrieve("includeSingleLetterHints");
 	const keyboardClicking = await retrieve("keyboardClicking");
 	const useNumberHints = await retrieve("useNumberHints");
@@ -46,29 +46,29 @@ async function getEmptyStack(tabId: number): Promise<HintsStack> {
 	};
 }
 
-async function resetStack(stack: HintsStack, tabId: number) {
+async function resetStack(stack: HintStack, tabId: number) {
 	const emptyStack = await getEmptyStack(tabId);
 	stack.free = emptyStack.free;
 	stack.assigned = emptyStack.assigned;
 }
 
 // These two functions should only be used by the withStack function
-async function _getStack(tabId: number): Promise<HintsStack | undefined> {
-	const stacks = await retrieve("hintsStacks");
+async function _getStack(tabId: number): Promise<HintStack | undefined> {
+	const stacks = await retrieve("hintStacks");
 	return stacks.has(tabId) ? stacks.get(tabId) : undefined;
 }
 
-async function _saveStack(tabId: number, stack: HintsStack) {
-	const stacks = await retrieve("hintsStacks");
+async function _saveStack(tabId: number, stack: HintStack) {
+	const stacks = await retrieve("hintStacks");
 	stacks.set(tabId, stack);
-	await store("hintsStacks", stacks);
+	await store("hintStacks", stacks);
 }
 
 const mutex = new Mutex();
 
 export async function withStack<T>(
 	tabId: number,
-	callback: (stack: HintsStack) => Promise<T>
+	callback: (stack: HintStack) => Promise<T>
 ): Promise<T> {
 	return mutex.runExclusive(async () => {
 		const stack = (await _getStack(tabId)) ?? (await getEmptyStack(tabId));

@@ -18,9 +18,9 @@ export async function initSettingsManager() {
 	settingsCache = await retrieveSettings();
 	browser.storage.onChanged.addListener(async (changes) => {
 		// Most of the time this event fires because we are storing or retrieving
-		// hints stacks, so we can directly ignore it here to gain a bit of
+		// hint stacks, so we can directly ignore it here to gain a bit of
 		// performance.
-		if (Object.keys(changes).includes("hintsStacks")) return;
+		if (Object.keys(changes).includes("hintStacks")) return;
 
 		if (hasMatchingKeys(defaultSettings, changes)) {
 			if (document.visibilityState === "visible") {

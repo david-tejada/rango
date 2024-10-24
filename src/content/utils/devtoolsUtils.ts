@@ -1,5 +1,5 @@
 import { getHintsCache } from "../hints/hintsCache";
-import { getHintsStackForTab } from "../hints/hintsRequests";
+import { getHintStackForTab } from "../hints/hintsRequests";
 import {
 	getAllWrappers,
 	getHintedWrappers,
@@ -40,11 +40,11 @@ export function loadDevtoolsUtils() {
 
 		exportFunction(
 			async () => {
-				const stack = await getHintsStackForTab();
+				const stack = await getHintStackForTab();
 				console.log(stack);
 			},
 			window,
-			{ defineAs: "logHintsStack" }
+			{ defineAs: "logHintStack" }
 		);
 
 		exportFunction(

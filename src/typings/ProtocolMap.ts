@@ -1,6 +1,6 @@
 import { type ToastOptions } from "react-toastify";
 import { type Tabs } from "webextension-polyfill";
-import { type CustomSelector, type HintsStack } from "./StorageSchema";
+import { type CustomSelector, type HintStack } from "./StorageSchema";
 
 export type GetDataType<K extends keyof ProtocolMap> =
 	Parameters<ProtocolMap[K]> extends { length: 0 }
@@ -29,7 +29,7 @@ export type BackgroundBoundMessageMap = {
 	reclaimHintsFromOtherFrames: (data: { amount: number }) => string[];
 	releaseHints: (data: { hints: string[] }) => void;
 	storeHintsInFrame: (data: { hints: string[] }) => void;
-	getHintsStackForTab: () => HintsStack;
+	getHintStackForTab: () => HintStack;
 	createTabs: (data: {
 		createPropertiesArray: Tabs.CreateCreatePropertiesType[];
 	}) => void;
