@@ -1,27 +1,19 @@
-import { type RangoActionWithTarget } from "../../typings/RangoAction";
-import { assertDefined } from "../../typings/TypingUtils";
-import { getWrapper, getWrapperForElement } from "../wrappers/wrappers";
-import { type TalonAction } from "../../typings/RequestFromTalon";
-import { activateEditable } from "../utils/activateEditable";
 import { type ElementWrapper } from "../../typings/ElementWrapper";
+import { type RangoActionWithTarget } from "../../typings/RangoAction";
+import { type TalonAction } from "../../typings/RequestFromTalon";
+import { assertDefined } from "../../typings/TypingUtils";
 import { notify } from "../notify/notify";
 import { setLastWrapper } from "../wrappers/lastWrapper";
-import { clickElement } from "./clickElement";
-import {
-	copyElementTextContentToClipboard,
-	copyLinkToClipboard,
-	copyMarkdownLinkToClipboard,
-} from "./copy";
-import { scroll, snapScroll } from "./scroll";
-import { hoverElement } from "./hoverElement";
-import { openInBackgroundTab, openInNewTab } from "./openInNewTab";
-import { showTitleAndHref } from "./showTitleAndHref";
-import { insertToField } from "./insertToField";
-import { setSelectionAfter, setSelectionBefore } from "./setSelection";
-import { focusAndDeleteContents } from "./focusAndDeleteContents";
-import { focus } from "./focus";
+import { getWrapper, getWrapperForElement } from "../wrappers/wrappers";
+import { copyLinkToClipboard, copyMarkdownLinkToClipboard } from "./copy";
 import { markHintsForExclusion, markHintsForInclusion } from "./customHints";
+import { focusAndDeleteContents } from "./focusAndDeleteContents";
+import { getAnchorHrefs } from "./getAnchorHrefs";
+import { hoverElement } from "./hoverElement";
+import { insertToField } from "./insertToField";
 import { saveReference } from "./references";
+import { scroll, snapScroll } from "./scroll";
+import { setSelectionAfter, setSelectionBefore } from "./setSelection";
 
 export async function runRangoActionWithTarget(
 	request: RangoActionWithTarget,
@@ -65,34 +57,8 @@ export async function runRangoActionWithTarget(
 	assertDefined(wrapper);
 	setLastWrapper(wrapper);
 	switch (request.type) {
-		case "clickElement":
-		case "directClickElement": {
-			return clickElement(wrappers);
-		}
-
-		case "tryToFocusElementAndCheckIsEditable": {
-			// This might result in a Talon time out exception if tryToFocusOnEditable
-			// causes a navigation, as the current content script is stopped.
-			const activeEditable = await activateEditable(wrapper);
-			return [{ name: "responseValue", value: Boolean(activeEditable) }];
-		}
-
-		case "focusElement": {
-			return focus(wrappers);
-		}
-
-		case "showLink": {
-			showTitleAndHref(wrappers);
-			break;
-		}
-
-		case "openInNewTab": {
-			await openInNewTab(wrappers);
-			break;
-		}
-
 		case "openInBackgroundTab": {
-			await openInBackgroundTab(wrappers);
+			await getAnchorHrefs(wrappers);
 			break;
 		}
 
@@ -107,10 +73,6 @@ export async function runRangoActionWithTarget(
 
 		case "copyMarkdownLink": {
 			return copyMarkdownLinkToClipboard(wrappers);
-		}
-
-		case "copyElementTextContent": {
-			return copyElementTextContentToClipboard(wrappers);
 		}
 
 		// This is not used anymore. I leave it here for now for backwards
