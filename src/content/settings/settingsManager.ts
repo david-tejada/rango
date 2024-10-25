@@ -1,5 +1,5 @@
-import browser from "webextension-polyfill";
 import Emittery from "emittery";
+import browser from "webextension-polyfill";
 import { defaultSettings, type Settings } from "../../common/settings";
 import { retrieve, retrieveSettings } from "../../common/storage";
 import { hasMatchingKeys } from "../../lib/utils";

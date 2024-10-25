@@ -20,23 +20,23 @@ export function setupCommandListeners() {
 	// NAVIGATION
 	// ===========================================================================
 	onCommand("historyGoBack", async () => {
-		// todo
+		// Todo
 	});
 
 	onCommand("historyGoForward", async () => {
-		// todo
+		// Todo
 	});
 
 	onCommand("navigateToNextPage", async () => {
-		// todo
+		// Todo
 	});
 
 	onCommand("navigateToPageRoot", async () => {
-		// todo
+		// Todo
 	});
 
 	onCommand("navigateToPreviousPage", async () => {
-		// todo
+		// Todo
 	});
 
 	// ===========================================================================
@@ -46,107 +46,107 @@ export function setupCommandListeners() {
 		await activateTab(target);
 	});
 	onCommand("cloneCurrentTab", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("closeNextTabsInWindow", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("closeOtherTabsInWindow", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("closePreviousTabsInWindow", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("closeTab", async ({ target }) => {
 		await closeTab(target);
 	});
 	onCommand("closeTabsLeftEndInWindow", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("closeTabsRightEndInWindow", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("closeTabsToTheLeftInWindow", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("closeTabsToTheRightInWindow", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("copyCurrentTabMarkdownUrl", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("copyLocationProperty", async ({ arg }) => {
-		// todo
+		// Todo
 	});
 	onCommand("cycleTabsByText", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("focusNextAudibleTab", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("focusNextMutedTab", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("focusNextTabWithSound", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("focusOrCreateTabByUrl", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("focusPreviousTab", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("focusTabByText", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("focusTabLastSounded", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("getBareTitle", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("moveCurrentTabToNewWindow", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("muteAllTabsWithSound", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("muteCurrentTab", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("muteNextTabWithSound", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("muteTab", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("openPageInNewTab", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("refreshTabMarkers", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("toggleTabMarkers", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("unmuteAllMutedTabs", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("unmuteCurrentTab", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("unmuteNextMutedTab", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("unmuteTab", async () => {
-		// todo
+		// Todo
 	});
 
 	// ===========================================================================
 	// KEYBOARD CLICKING
 	// ===========================================================================
 	onCommand("toggleKeyboardClicking", async () => {
-		// todo
+		// Todo
 	});
 
 	// ===========================================================================
@@ -197,10 +197,10 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("copyLink", async ({ target }) => {
-		// todo
+		// Todo
 	});
 	onCommand("copyMarkdownLink", async ({ target }) => {
-		// todo
+		// Todo
 	});
 
 	onCommand("directClickElement", async ({ target }) => {
@@ -254,7 +254,7 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("focusAndDeleteContents", async ({ target }) => {
-		// todo
+		// Todo
 	});
 
 	onCommand("focusElement", async ({ target }) => {
@@ -272,16 +272,16 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("focusFirstInput", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("hoverElement", async ({ target }) => {
-		// todo
+		// Todo
 	});
 	onCommand("insertToField", async ({ target, arg }) => {
-		// todo
+		// Todo
 	});
 	onCommand("openInBackgroundTab", async ({ target }) => {
-		// todo
+		// Todo
 	});
 
 	onCommand("openInNewTab", async ({ target }) => {
@@ -297,10 +297,10 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("setSelectionAfter", async ({ target }) => {
-		// todo
+		// Todo
 	});
 	onCommand("setSelectionBefore", async ({ target }) => {
-		// todo
+		// Todo
 	});
 	onCommand("showLink", async ({ target }) => {
 		await sendMessagesToTargetFrames("showLink", { target });
@@ -314,96 +314,96 @@ export function setupCommandListeners() {
 		return [{ name: "responseValue", value: values[0]! }];
 	});
 	onCommand("unhoverAll", async () => {
-		// todo
+		// Todo
 	});
 
 	// ===========================================================================
 	// SCROLL
 	// ===========================================================================
 	onCommand("scrollDownAtElement", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("scrollDownLeftAside", async ({ arg }) => {
-		// todo
+		// Todo
 	});
 	onCommand("scrollDownPage", async ({ arg }) => {
-		// todo
+		// Todo
 	});
 	onCommand("scrollDownRightAside", async ({ arg }) => {
-		// todo
+		// Todo
 	});
 	onCommand("scrollElementToBottom", async ({ target }) => {
-		// todo
+		// Todo
 	});
 	onCommand("scrollElementToCenter", async ({ target }) => {
-		// todo
+		// Todo
 	});
 	onCommand("scrollElementToTop", async ({ target }) => {
-		// todo
+		// Todo
 	});
 	onCommand("scrollLeftAtElement", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("scrollLeftPage", async ({ arg }) => {
-		// todo
+		// Todo
 	});
 	onCommand("scrollRightAtElement", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("scrollRightPage", async ({ arg }) => {
-		// todo
+		// Todo
 	});
 	onCommand("scrollToPosition", async ({ arg }) => {
-		// todo
+		// Todo
 	});
 	onCommand("scrollUpAtElement", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("scrollUpLeftAside", async ({ arg }) => {
-		// todo
+		// Todo
 	});
 	onCommand("scrollUpPage", async ({ arg }) => {
-		// todo
+		// Todo
 	});
 	onCommand("scrollUpRightAside", async ({ arg }) => {
-		// todo
+		// Todo
 	});
 	onCommand("storeScrollPosition", async ({ arg }) => {
-		// todo
+		// Todo
 	});
 
 	// ===========================================================================
 	// CUSTOM SELECTORS
 	// ===========================================================================
 	onCommand("confirmSelectorsCustomization", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("displayExcludedHints", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("displayExtraHints", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("displayLessHints", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("excludeAllHints", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("excludeExtraSelectors", async ({ target }) => {
-		// todo
+		// Todo
 	});
 	onCommand("includeExtraSelectors", async ({ target }) => {
-		// todo
+		// Todo
 	});
 	onCommand("includeOrExcludeLessSelectors", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("includeOrExcludeMoreSelectors", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("resetCustomSelectors", async () => {
-		// todo
+		// Todo
 	});
 
 	// ===========================================================================
@@ -413,7 +413,7 @@ export function setupCommandListeners() {
 		await updateHintsToggle(arg, false);
 	});
 	onCommand("displayTogglesStatus", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("enableHints", async ({ arg }) => {
 		await updateHintsToggle(arg, true);
@@ -429,30 +429,30 @@ export function setupCommandListeners() {
 	// HINTS
 	// ===========================================================================
 	onCommand("hideHint", async ({ target }) => {
-		// todo
+		// Todo
 	});
 	onCommand("refreshHints", async () => {
-		// todo
+		// Todo
 	});
 
 	// ===========================================================================
 	// SETTINGS
 	// ===========================================================================
 	onCommand("decreaseHintSize", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("increaseHintSize", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("openSettingsPage", async () => {
-		// todo
+		// Todo
 	});
 
 	// ===========================================================================
 	// HELPERS
 	// ===========================================================================
 	onCommand("checkActiveElementIsEditable", async () => {
-		// todo
+		// Todo
 	});
 	onCommand("requestTimedOut", async () => {
 		discardNextResponse();
@@ -463,31 +463,31 @@ export function setupCommandListeners() {
 	// REFERENCES
 	// ===========================================================================
 	onCommand("removeReference", async ({ arg }) => {
-		// todo
+		// Todo
 	});
 	onCommand("runActionOnReference", async ({ arg, arg2 }) => {
-		// todo
+		// Todo
 	});
 	onCommand("saveReference", async ({ target, arg }) => {
-		// todo
+		// Todo
 	});
 	onCommand("saveReferenceForActiveElement", async ({ arg }) => {
-		// todo
+		// Todo
 	});
 	onCommand("showReferences", async ({}) => {
-		// todo
+		// Todo
 	});
 
 	// ===========================================================================
 	// FUZZY SEARCH ELEMENTS
 	// ===========================================================================
 	onCommand("executeActionOnTextMatchedElement", async ({ actionType }) => {
-		// todo
+		// Todo
 	});
 	onCommand("matchElementByText", async ({ text, prioritizeViewport }) => {
-		// todo
+		// Todo
 	});
 	onCommand("runActionOnTextMatchedElement", async ({ arg, arg2, arg3 }) => {
-		// todo
+		// Todo
 	});
 }
