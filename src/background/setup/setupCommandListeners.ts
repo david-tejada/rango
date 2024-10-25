@@ -6,7 +6,7 @@ import { activateTab } from "../actions/activateTab";
 import { closeTab } from "../actions/closeTab";
 import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { onCommand } from "../commands/commandEvents";
-import { NoHintStackError } from "../hints/hintsAllocator";
+import { HintStackError } from "../hints/hintsAllocator";
 import {
 	sendMessage,
 	sendMessagesToTargetFrames,
@@ -245,7 +245,7 @@ export function setupCommandListeners() {
 
 			return handleClickResults(values);
 		} catch (error: unknown) {
-			if (target.length === 1 && error instanceof NoHintStackError) {
+			if (target.length === 1 && error instanceof HintStackError) {
 				return [{ name: "typeTargetCharacters" }];
 			}
 

@@ -6,10 +6,10 @@ import { retrieve, store } from "../../common/storage";
 import { type HintStack } from "../../typings/StorageSchema";
 import { navigationOccurred } from "./preloadTabs";
 
-export class NoHintStackError extends Error {
+export class HintStackError extends Error {
 	constructor(message: string) {
 		super(message);
-		this.name = "NoHintStackError";
+		this.name = "HintStackError";
 	}
 }
 
@@ -74,7 +74,7 @@ export async function getStack(tabId: number) {
 	const stack = await _getStack(tabId);
 
 	if (!stack) {
-		throw new NoHintStackError(`No hint stack found for tab with id ${tabId}`);
+		throw new HintStackError(`No hint stack found for tab with id ${tabId}`);
 	}
 
 	return stack;
