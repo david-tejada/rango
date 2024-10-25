@@ -1,9 +1,11 @@
 import browser from "webextension-polyfill";
 import { toggleHintsGlobal, updateHintsToggle } from "./actions/toggleHints";
 import { toggleKeyboardClicking } from "./actions/toggleKeyboardClicking";
-import { handleIncomingMessage } from "./messaging/backgroundMessageBroker";
+import {
+	handleIncomingMessage,
+	sendMessage,
+} from "./messaging/backgroundMessageBroker";
 import { handleRequestFromTalon } from "./messaging/handleRequestFromTalon";
-import { sendRequestToContent } from "./messaging/sendRequestToContent";
 import { contextMenusOnClicked } from "./misc/createContextMenus";
 import { initBackgroundScript } from "./setup/initBackgroundScript";
 import { browserAction } from "./utils/browserAction";
@@ -42,7 +44,7 @@ browserAction.onClicked.addListener(async () => {
 
 browser.commands.onCommand.addListener(async (internalCommand: string) => {
 	try {
-		await sendRequestToContent({ type: "allowToastNotification" });
+		await sendMessage("allowToastNotification", undefined);
 	} catch {
 		// No content script. We do nothing.
 	}
