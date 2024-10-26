@@ -54,6 +54,29 @@ export async function handleIncomingMessage<
 	});
 }
 
+export class UnreachableContentScriptError extends Error {
+	constructor(tabId: number) {
+		const message = `Unable to communicate with content script for tab with id ${tabId}.`;
+		super(message);
+		this.name = "UnreachableContentScriptError";
+		this.message = message;
+	}
+}
+
+export async function pingContentScript(tabId: number) {
+	try {
+		const contentScriptReached = await browser.tabs.sendMessage(
+			tabId,
+			{ messageId: "pingContentScript" },
+			{ frameId: 0 }
+		);
+
+		if (!contentScriptReached) throw new Error("No content script.");
+	} catch {
+		throw new UnreachableContentScriptError(tabId);
+	}
+}
+
 type MessageWithoutTarget = {
 	[K in keyof ContentBoundMessageMap]: GetDataType<K> extends {
 		target: string[];
@@ -69,6 +92,7 @@ export async function sendMessage<K extends MessageWithoutTarget>(
 ): Promise<GetReturnType<K>> {
 	const currentTabId = await getCurrentTabId();
 	const tabId = destination?.tabId ?? currentTabId;
+	await pingContentScript(tabId);
 
 	return browser.tabs.sendMessage(
 		tabId,
@@ -83,6 +107,7 @@ export async function sendMessageToAllFrames<K extends MessageWithoutTarget>(
 	tabId?: number
 ) {
 	const destinationTabId = tabId ?? (await getCurrentTabId());
+	await pingContentScript(destinationTabId);
 	const frames = await browser.webNavigation.getAllFrames({
 		tabId: destinationTabId,
 	});
@@ -133,6 +158,7 @@ export async function sendMessagesToTargetFrames<K extends MessageWithTarget>(
 	tabId?: number
 ) {
 	const destinationTabId = tabId ?? (await getCurrentTabId());
+	await pingContentScript(destinationTabId);
 
 	const hintsByFrameMap = await splitHintsByFrame(
 		destinationTabId,

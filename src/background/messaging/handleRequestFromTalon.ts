@@ -1,5 +1,7 @@
 import { dispatchCommand } from "../commands/commandEvents";
+import { notify } from "../utils/notify";
 import { readRequest, writeResponse } from "../utils/requestAndResponse";
+import { UnreachableContentScriptError } from "./backgroundMessageBroker";
 
 export async function handleRequestFromTalon() {
 	const command = await readRequest();
@@ -7,11 +9,23 @@ export async function handleRequestFromTalon() {
 
 	const { type: name, ...args } = command.action;
 
-	const commandResult = await dispatchCommand(name, args);
+	try {
+		const commandResult = await dispatchCommand(name, args);
 
-	if (commandResult === "noResponse") return;
+		if (commandResult === "noResponse") return;
 
-	await writeResponse(commandResult ?? []);
+		await writeResponse(commandResult ?? []);
+	} catch (error: unknown) {
+		if (!(error instanceof UnreachableContentScriptError)) {
+			throw error;
+		}
+
+		console.error(error);
+		const message =
+			"Unreachable content script error: The command issued is not able to run in the current page.";
+		await notify(message, { type: "error" });
+		await writeResponse([{ name: "printError", message }]);
+	}
 
 	// // For these three actions we need to make sure that the document is focused
 	// // or they might fail

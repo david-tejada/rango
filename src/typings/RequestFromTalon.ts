@@ -49,6 +49,11 @@ type TalonActionOpenInNewTab = {
 	url: string;
 };
 
+type TalonActionPrintError = {
+	name: "printError";
+	message: string;
+};
+
 export type TalonAction = { main?: true } & (
 	| TalonActionCopyToClipboard
 	| TalonActionTypeTargetCharacters
@@ -59,6 +64,7 @@ export type TalonAction = { main?: true } & (
 	| TalonActionFocusPageAndResend
 	| TalonActionResponseValue
 	| TalonActionOpenInNewTab
+	| TalonActionPrintError
 );
 
 export type ResponseToTalon = {

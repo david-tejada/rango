@@ -1,5 +1,8 @@
 import browser from "webextension-polyfill";
-import { sendMessage } from "../messaging/backgroundMessageBroker";
+import {
+	UnreachableContentScriptError,
+	sendMessage,
+} from "../messaging/backgroundMessageBroker";
 import { initStack } from "./hintsAllocator";
 import { preloadTabCommitted, preloadTabCompleted } from "./preloadTabs";
 
@@ -46,6 +49,16 @@ export function watchNavigation() {
 		const isPreloadTab = !(await browser.tabs.get(tabId));
 		if (isPreloadTab) return;
 
-		await sendMessage("onCompleted", undefined, { tabId, frameId });
+		try {
+			await sendMessage("onCompleted", undefined, { tabId, frameId });
+		} catch (error: unknown) {
+			// At this point the content script might not have yet loaded. This is ok
+			// and expected. This command is only used for synchronizing hints when
+			// navigating back and forward in history and the content script being
+			// restored.
+			if (!(error instanceof UnreachableContentScriptError)) {
+				throw error;
+			}
+		}
 	});
 }

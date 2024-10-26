@@ -35,6 +35,8 @@ export function setupContentBoundMessageHandlers() {
 	// =============================================================================
 	// OPERATIONAL
 	// =============================================================================
+	onMessage("pingContentScript", () => true);
+
 	onMessage("onCompleted", async () => {
 		await synchronizeHints();
 	});

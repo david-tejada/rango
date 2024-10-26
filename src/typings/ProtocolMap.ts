@@ -96,4 +96,7 @@ export type ContentBoundMessageMap = {
 
 	// Hint Toggles
 	updateNavigationToggle: (data: { enable: boolean }) => void;
+
+	// Utils
+	pingContentScript: () => true;
 };

@@ -6,11 +6,11 @@ import { activateTab } from "../actions/activateTab";
 import { closeTab } from "../actions/closeTab";
 import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { onCommand } from "../commands/commandEvents";
-import { HintStackError } from "../hints/hintsAllocator";
 import {
 	sendMessage,
 	sendMessagesToTargetFrames,
 	sendMessageToAllFrames,
+	UnreachableContentScriptError,
 } from "../messaging/backgroundMessageBroker";
 import { notify } from "../utils/notify";
 import { discardNextResponse } from "../utils/requestAndResponse";
@@ -245,7 +245,10 @@ export function setupCommandListeners() {
 
 			return handleClickResults(values);
 		} catch (error: unknown) {
-			if (target.length === 1 && error instanceof HintStackError) {
+			if (
+				target.length === 1 &&
+				error instanceof UnreachableContentScriptError
+			) {
 				return [{ name: "typeTargetCharacters" }];
 			}
 
