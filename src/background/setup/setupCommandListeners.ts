@@ -5,7 +5,7 @@ import { type TalonAction } from "../../typings/RequestFromTalon";
 import { activateTab } from "../actions/activateTab";
 import { closeTab } from "../actions/closeTab";
 import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
-import { onCommand } from "../commands/commandEvents";
+import { onCommand } from "../commands/commandBroker";
 import {
 	sendMessage,
 	sendMessagesToTargetFrames,

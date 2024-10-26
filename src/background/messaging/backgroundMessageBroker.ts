@@ -55,8 +55,7 @@ export async function handleIncomingMessage<
 }
 
 export class UnreachableContentScriptError extends Error {
-	constructor(tabId: number) {
-		const message = `Unable to communicate with content script for tab with id ${tabId}.`;
+	constructor(message = "Unable to communicate with content script.") {
 		super(message);
 		this.name = "UnreachableContentScriptError";
 		this.message = message;
@@ -73,7 +72,9 @@ export async function pingContentScript(tabId: number) {
 
 		if (!contentScriptReached) throw new Error("No content script.");
 	} catch {
-		throw new UnreachableContentScriptError(tabId);
+		throw new UnreachableContentScriptError(
+			`Unable to communicate with content script for tab with id ${tabId}.`
+		);
 	}
 }
 

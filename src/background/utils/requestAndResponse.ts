@@ -1,6 +1,6 @@
 import { z } from "zod";
-import type { TalonAction } from "../../typings/RequestFromTalon";
 import type { Command } from "../../typings/Command";
+import type { TalonAction } from "../../typings/RequestFromTalon";
 import { readClipboard, writeClipboard } from "./clipboard";
 
 let shouldDiscardNextResponse = false;
@@ -37,7 +37,12 @@ export async function readRequest() {
 			throw new Error("Clipboard content is not a valid request.");
 		}
 
-		return result.data as Command;
+		const command = result.data as Command;
+
+		// Log the Command to the backgrounds script console.
+		console.log(JSON.stringify(command, null, 2));
+
+		return command;
 	} catch (error: unknown) {
 		// We already check that we are sending valid json in rango-talon, but
 		// just to be extra sure

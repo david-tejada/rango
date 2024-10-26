@@ -1,11 +1,11 @@
 import browser from "webextension-polyfill";
 import { toggleHintsGlobal, updateHintsToggle } from "./actions/toggleHints";
 import { toggleKeyboardClicking } from "./actions/toggleKeyboardClicking";
+import { handleIncomingCommand } from "./commands/handleIncomingCommand";
 import {
 	handleIncomingMessage,
 	sendMessage,
 } from "./messaging/backgroundMessageBroker";
-import { handleRequestFromTalon } from "./messaging/handleRequestFromTalon";
 import { contextMenusOnClicked } from "./misc/createContextMenus";
 import { initBackgroundScript } from "./setup/initBackgroundScript";
 import { browserAction } from "./utils/browserAction";
@@ -24,7 +24,7 @@ browser.contextMenus.onClicked.addListener(contextMenusOnClicked);
 })();
 
 if (process.env["NODE_ENV"] === "test") {
-	addEventListener("handle-test-request", handleRequestFromTalon);
+	addEventListener("handle-test-request", handleIncomingCommand);
 }
 
 browser.runtime.onMessage.addListener(async (message, sender) =>
@@ -54,7 +54,7 @@ browser.commands.onCommand.addListener(async (internalCommand: string) => {
 			internalCommand === "get-talon-request" ||
 			internalCommand === "get-talon-request-alternative"
 		) {
-			await handleRequestFromTalon();
+			await handleIncomingCommand();
 		}
 
 		if (internalCommand === "toggle-hints") {
