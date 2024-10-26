@@ -88,6 +88,8 @@ export type ContentBoundMessageMap = {
 
 	// Navigation
 	onCompleted: () => void;
+	historyGoBack: () => void;
+	historyGoForward: () => void;
 
 	// Document
 	checkIfDocumentHasFocus: () => boolean;

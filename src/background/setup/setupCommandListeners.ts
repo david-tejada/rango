@@ -20,11 +20,27 @@ export function setupCommandListeners() {
 	// NAVIGATION
 	// ===========================================================================
 	onCommand("historyGoBack", async () => {
-		// Todo
+		try {
+			await sendMessage("historyGoBack", undefined);
+		} catch (error: unknown) {
+			if (!(error instanceof UnreachableContentScriptError)) {
+				throw error;
+			}
+
+			await browser.tabs.goBack();
+		}
 	});
 
 	onCommand("historyGoForward", async () => {
-		// Todo
+		try {
+			await sendMessage("historyGoForward", undefined);
+		} catch (error: unknown) {
+			if (!(error instanceof UnreachableContentScriptError)) {
+				throw error;
+			}
+
+			await browser.tabs.goForward();
+		}
 	});
 
 	onCommand("navigateToNextPage", async () => {
@@ -447,8 +463,9 @@ export function setupCommandListeners() {
 	onCommand("increaseHintSize", async () => {
 		// Todo
 	});
+
 	onCommand("openSettingsPage", async () => {
-		// Todo
+		await browser.runtime.openOptionsPage();
 	});
 
 	// ===========================================================================

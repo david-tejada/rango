@@ -136,4 +136,15 @@ export function setupContentBoundMessageHandlers() {
 		const wrappers = getIntersectingWrappers(target);
 		return getAnchorHrefs(wrappers);
 	});
+
+	// =============================================================================
+	// COMMANDS WITHOUT TARGET
+	// =============================================================================
+	onMessage("historyGoBack", () => {
+		window.history.back();
+	});
+
+	onMessage("historyGoForward", () => {
+		window.history.forward();
+	});
 }
