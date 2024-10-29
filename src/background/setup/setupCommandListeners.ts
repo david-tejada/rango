@@ -136,6 +136,10 @@ export function setupCommandListeners() {
 		await cycleTabsByText(arg);
 	});
 
+	onCommand("openPageInNewTab", async ({ arg }) => {
+		await browser.tabs.create({ url: arg });
+	});
+
 	onCommand("focusNextAudibleTab", async () => {
 		// Todo
 	});
@@ -171,9 +175,7 @@ export function setupCommandListeners() {
 	onCommand("muteTab", async () => {
 		// Todo
 	});
-	onCommand("openPageInNewTab", async () => {
-		// Todo
-	});
+
 	onCommand("refreshTabMarkers", async () => {
 		// Todo
 	});
