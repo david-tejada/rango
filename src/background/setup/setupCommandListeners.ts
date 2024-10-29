@@ -142,6 +142,11 @@ export function setupCommandListeners() {
 		await cycleTabsByText(arg);
 	});
 
+	onCommand("moveCurrentTabToNewWindow", async () => {
+		const tabId = await getCurrentTabId();
+		await browser.windows.create({ tabId });
+	});
+
 	onCommand("openPageInNewTab", async ({ arg }) => {
 		await browser.tabs.create({ url: arg });
 	});
@@ -164,9 +169,6 @@ export function setupCommandListeners() {
 		// Todo
 	});
 
-	onCommand("moveCurrentTabToNewWindow", async () => {
-		// Todo
-	});
 	onCommand("muteAllTabsWithSound", async () => {
 		// Todo
 	});
