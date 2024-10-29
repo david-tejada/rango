@@ -57,11 +57,15 @@ export async function readRequest() {
 /**
  * Stringifies and writes the response to the clipboard.
  */
-export async function writeResponse(actions: TalonAction[] = []) {
+export async function writeResponse(
+	talonActions: TalonAction | TalonAction[] = []
+) {
 	if (shouldDiscardNextResponse) {
 		shouldDiscardNextResponse = false;
 		return;
 	}
+
+	const actions = Array.isArray(talonActions) ? talonActions : [talonActions];
 
 	const jsonResponse = JSON.stringify({ type: "response", actions });
 	await writeClipboard(jsonResponse);

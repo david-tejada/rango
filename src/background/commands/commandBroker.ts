@@ -10,7 +10,7 @@ export function onCommand<Name extends keyof ActionMap>(
 	name: Name,
 	handler: (
 		args: ActionMap[Name]
-	) => Promise<void | TalonAction[] | "noResponse">
+	) => Promise<void | TalonAction | TalonAction[] | "noResponse">
 ) {
 	if (commandHandlers.has(name)) {
 		throw new Error("Only one command handler per command can be registered.");

@@ -108,7 +108,7 @@ export function setupCommandListeners() {
 
 		await notify("Markdown link copied to the clipboard.", { type: "success" });
 
-		return [{ name: "copyToClipboard", textToCopy: markdownUrl }];
+		return { name: "copyToClipboard", textToCopy: markdownUrl };
 	});
 
 	onCommand("copyLocationProperty", async ({ arg }) => {
@@ -119,12 +119,12 @@ export function setupCommandListeners() {
 			type: "success",
 		});
 
-		return [{ name: "copyToClipboard", textToCopy: url[arg] }];
+		return { name: "copyToClipboard", textToCopy: url[arg] };
 	});
 
 	onCommand("getBareTitle", async () => {
 		const value = await getBareTitle();
-		return [{ name: "responseValue", value }];
+		return { name: "responseValue", value };
 	});
 
 	onCommand("cycleTabsByText", async () => {
@@ -235,12 +235,10 @@ export function setupCommandListeners() {
 		);
 		if (values.length === 0) return;
 
-		return [
-			{
-				name: "copyToClipboard",
-				textToCopy: values.flat().join("\n"),
-			},
-		];
+		return {
+			name: "copyToClipboard",
+			textToCopy: values.flat().join("\n"),
+		};
 	});
 
 	onCommand("copyLink", async ({ target }) => {
@@ -264,7 +262,7 @@ export function setupCommandListeners() {
 				);
 
 				if (!focusedDocument) {
-					return [{ name: "typeTargetCharacters" }];
+					return { name: "typeTargetCharacters" };
 				}
 			}
 
@@ -275,7 +273,7 @@ export function setupCommandListeners() {
 					"checkActiveElementIsEditable"
 				);
 
-				if (values.includes(true)) return [{ name: "typeTargetCharacters" }];
+				if (values.includes(true)) return { name: "typeTargetCharacters" };
 			}
 		}
 
@@ -286,7 +284,7 @@ export function setupCommandListeners() {
 			);
 
 			if (target.length === 1 && values[0]?.noHintFound) {
-				return [{ name: "typeTargetCharacters" }];
+				return { name: "typeTargetCharacters" };
 			}
 
 			return handleClickResults(values);
@@ -295,7 +293,7 @@ export function setupCommandListeners() {
 				target.length === 1 &&
 				error instanceof UnreachableContentScriptError
 			) {
-				return [{ name: "typeTargetCharacters" }];
+				return { name: "typeTargetCharacters" };
 			}
 
 			throw error;
@@ -317,7 +315,7 @@ export function setupCommandListeners() {
 			target: filteredTarget,
 		});
 
-		return values[0]?.focusPage ? [{ name: "focusPage" }] : undefined;
+		return values[0]?.focusPage ? { name: "focusPage" } : undefined;
 	});
 
 	onCommand("focusFirstInput", async () => {
@@ -360,7 +358,7 @@ export function setupCommandListeners() {
 			{ target }
 		);
 
-		return [{ name: "responseValue", value: values[0]! }];
+		return { name: "responseValue", value: values[0]! };
 	});
 	onCommand("unhoverAll", async () => {
 		// Todo
