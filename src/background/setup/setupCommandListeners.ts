@@ -6,6 +6,7 @@ import { activateTab } from "../actions/activateTab";
 import { closeTab } from "../actions/closeTab";
 import { closeTabsInWindow } from "../actions/closeTabsInWindow";
 import { focusOrCreateTabByUrl } from "../actions/focusOrCreateTabByUrl";
+import { focusPreviousTab } from "../actions/focusPreviousTab";
 import { cycleTabsByText, focusTabByText } from "../actions/focusTabByText";
 import { getBareTitle } from "../actions/getBareTitle";
 import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
@@ -129,6 +130,10 @@ export function setupCommandListeners() {
 		return { name: "responseValue", value };
 	});
 
+	onCommand("focusPreviousTab", async () => {
+		await focusPreviousTab();
+	});
+
 	onCommand("focusTabByText", async ({ arg }) => {
 		await focusTabByText(arg);
 	});
@@ -152,10 +157,6 @@ export function setupCommandListeners() {
 		// Todo
 	});
 	onCommand("focusNextTabWithSound", async () => {
-		// Todo
-	});
-
-	onCommand("focusPreviousTab", async () => {
 		// Todo
 	});
 
