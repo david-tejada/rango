@@ -52,7 +52,7 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("navigateToPageRoot", async () => {
-		// Todo
+		await sendMessage("navigateToPageRoot");
 	});
 
 	// ===========================================================================

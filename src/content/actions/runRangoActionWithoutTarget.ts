@@ -40,11 +40,6 @@ export async function runRangoActionWithoutTarget(
 			break;
 		}
 
-		case "navigateToPageRoot": {
-			window.location.href = "/";
-			break;
-		}
-
 		case "displayTogglesStatus": {
 			await notifyTogglesStatus(true);
 			break;

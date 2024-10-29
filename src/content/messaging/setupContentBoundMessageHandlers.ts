@@ -155,4 +155,8 @@ export function setupContentBoundMessageHandlers() {
 	onMessage("navigateToNextPage", navigateToNextPage);
 
 	onMessage("navigateToPreviousPage", navigateToPreviousPage);
+
+	onMessage("navigateToPageRoot", () => {
+		window.location.href = "/";
+	});
 }
