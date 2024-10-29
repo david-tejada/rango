@@ -122,6 +122,11 @@ export function setupCommandListeners() {
 		return [{ name: "copyToClipboard", textToCopy: url[arg] }];
 	});
 
+	onCommand("getBareTitle", async () => {
+		const value = await getBareTitle();
+		return [{ name: "responseValue", value }];
+	});
+
 	onCommand("cycleTabsByText", async () => {
 		// Todo
 	});
@@ -146,9 +151,7 @@ export function setupCommandListeners() {
 	onCommand("focusTabLastSounded", async () => {
 		// Todo
 	});
-	onCommand("getBareTitle", async () => {
-		// Todo
-	});
+
 	onCommand("moveCurrentTabToNewWindow", async () => {
 		// Todo
 	});
