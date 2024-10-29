@@ -31,7 +31,7 @@ function getTitleSuffix() {
 }
 
 export function getTitleBeforeDecoration() {
-	return titleBeforeDecoration;
+	return titleBeforeDecoration ?? document.title;
 }
 
 export function removeDecorations(prefix?: string) {

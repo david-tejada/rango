@@ -6,11 +6,7 @@ import { type TalonAction } from "../../typings/RequestFromTalon";
 import { activateTab } from "../actions/activateTab";
 import { closeTab } from "../actions/closeTab";
 import { closeTabsInWindow } from "../actions/closeTabsInWindow";
-import {
-	copyLocationProperty,
-	copyMarkdownUrl,
-	getBareTitle,
-} from "../actions/copyTabInfo";
+import { copyLocationProperty, getBareTitle } from "../actions/copyTabInfo";
 import { focusOrCreateTabByUrl } from "../actions/focusOrCreateTabByUrl";
 import { focusPreviousTab } from "../actions/focusPreviousTab";
 import {
@@ -238,14 +234,6 @@ export async function runBackgroundCommand(
 			if (currentTab) {
 				const title = await getBareTitle(currentTab);
 				return [{ name: "responseValue", value: title }];
-			}
-
-			break;
-		}
-
-		case "copyCurrentTabMarkdownUrl": {
-			if (currentTab) {
-				return copyMarkdownUrl(currentTab);
 			}
 
 			break;

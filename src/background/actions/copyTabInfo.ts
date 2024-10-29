@@ -1,18 +1,24 @@
 import { type Tabs } from "webextension-polyfill";
-import { promiseWrap } from "../../lib/promiseWrap";
-import { assertDefined } from "../../typings/TypingUtils";
-import { sendRequestToContent } from "../messaging/sendRequestToContent";
-import { notify } from "../utils/notify";
 import { type RangoActionCopyLocationProperty } from "../../typings/RangoAction";
+import { assertDefined } from "../../typings/TypingUtils";
+import {
+	sendMessage,
+	UnreachableContentScriptError,
+} from "../messaging/backgroundMessageBroker";
+import { getCurrentTab } from "../utils/getCurrentTab";
+import { notify } from "../utils/notify";
 
-export async function getBareTitle(tab: Tabs.Tab) {
-	const [title] = await promiseWrap(
-		sendRequestToContent({
-			type: "getTitleBeforeDecoration",
-		}) as Promise<string>
-	);
+export async function getBareTitle() {
+	try {
+		return await sendMessage("getTitleBeforeDecoration");
+	} catch (error: unknown) {
+		if (error instanceof UnreachableContentScriptError) {
+			const tab = await getCurrentTab();
+			return tab.title!;
+		}
 
-	return title ?? tab.title;
+		throw error;
+	}
 }
 
 export async function copyLocationProperty(
@@ -27,14 +33,4 @@ export async function copyLocationProperty(
 	const result = url[property];
 
 	return result;
-}
-
-export async function copyMarkdownUrl(tab: Tabs.Tab) {
-	const title = await getBareTitle(tab);
-	assertDefined(tab.url);
-	assertDefined(title);
-
-	await notify("Copied to the clipboard", { type: "success" });
-
-	return `[${title}](${tab.url})`;
 }

@@ -5,6 +5,7 @@ import { type TalonAction } from "../../typings/RequestFromTalon";
 import { activateTab } from "../actions/activateTab";
 import { closeTab } from "../actions/closeTab";
 import { closeTabsInWindow } from "../actions/closeTabsInWindow";
+import { getBareTitle } from "../actions/copyTabInfo";
 import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { onCommand } from "../commands/commandBroker";
 import {
@@ -13,7 +14,7 @@ import {
 	sendMessageToAllFrames,
 	UnreachableContentScriptError,
 } from "../messaging/backgroundMessageBroker";
-import { getCurrentTabId } from "../utils/getCurrentTab";
+import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
 import { notify } from "../utils/notify";
 import { discardNextResponse } from "../utils/requestAndResponse";
 
@@ -101,8 +102,15 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("copyCurrentTabMarkdownUrl", async () => {
-		// Todo
+		const bareTitle = await getBareTitle();
+		const tab = await getCurrentTab();
+		const markdownUrl = `[${bareTitle}](${tab.url!})`;
+
+		await notify("Markdown link copied to the clipboard.", { type: "success" });
+
+		return [{ name: "copyToClipboard", textToCopy: markdownUrl }];
 	});
+
 	onCommand("copyLocationProperty", async ({ arg }) => {
 		// Todo
 	});

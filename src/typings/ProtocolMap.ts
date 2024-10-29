@@ -72,7 +72,7 @@ export type ContentBoundMessageMap = {
 	reclaimHints: (data: { amount: number }) => string[];
 
 	// Tabs
-	getTitleBeforeDecoration: () => string | undefined;
+	getTitleBeforeDecoration: () => string;
 	refreshTitleDecorations: () => void;
 
 	// Notifications
