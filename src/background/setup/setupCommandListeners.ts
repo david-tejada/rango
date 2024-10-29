@@ -5,6 +5,7 @@ import { type TalonAction } from "../../typings/RequestFromTalon";
 import { activateTab } from "../actions/activateTab";
 import { closeTab } from "../actions/closeTab";
 import { closeTabsInWindow } from "../actions/closeTabsInWindow";
+import { focusOrCreateTabByUrl } from "../actions/focusOrCreateTabByUrl";
 import { cycleTabsByText, focusTabByText } from "../actions/focusTabByText";
 import { getBareTitle } from "../actions/getBareTitle";
 import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
@@ -140,6 +141,10 @@ export function setupCommandListeners() {
 		await browser.tabs.create({ url: arg });
 	});
 
+	onCommand("focusOrCreateTabByUrl", async ({ arg }) => {
+		await focusOrCreateTabByUrl(arg);
+	});
+
 	onCommand("focusNextAudibleTab", async () => {
 		// Todo
 	});
@@ -149,9 +154,7 @@ export function setupCommandListeners() {
 	onCommand("focusNextTabWithSound", async () => {
 		// Todo
 	});
-	onCommand("focusOrCreateTabByUrl", async () => {
-		// Todo
-	});
+
 	onCommand("focusPreviousTab", async () => {
 		// Todo
 	});
