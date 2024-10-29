@@ -4,6 +4,7 @@ import { promiseWrap } from "../../lib/promiseWrap";
 import { type TalonAction } from "../../typings/RequestFromTalon";
 import { activateTab } from "../actions/activateTab";
 import { closeTab } from "../actions/closeTab";
+import { closeTabsInWindow } from "../actions/closeTabsInWindow";
 import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { onCommand } from "../commands/commandBroker";
 import {
@@ -63,34 +64,42 @@ export function setupCommandListeners() {
 		await activateTab(target);
 	});
 
+	onCommand("closeTab", async ({ target }) => {
+		await closeTab(target);
+	});
+
 	onCommand("cloneCurrentTab", async () => {
 		await browser.tabs.duplicate(await getCurrentTabId());
 	});
 
-	onCommand("closeNextTabsInWindow", async () => {
-		// Todo
+	onCommand("closeNextTabsInWindow", async ({ arg }) => {
+		await closeTabsInWindow("next", arg);
 	});
+
 	onCommand("closeOtherTabsInWindow", async () => {
-		// Todo
+		await closeTabsInWindow("other");
 	});
-	onCommand("closePreviousTabsInWindow", async () => {
-		// Todo
+
+	onCommand("closePreviousTabsInWindow", async ({ arg }) => {
+		await closeTabsInWindow("previous", arg);
 	});
-	onCommand("closeTab", async ({ target }) => {
-		await closeTab(target);
+
+	onCommand("closeTabsLeftEndInWindow", async ({ arg }) => {
+		await closeTabsInWindow("leftEnd", arg);
 	});
-	onCommand("closeTabsLeftEndInWindow", async () => {
-		// Todo
+
+	onCommand("closeTabsRightEndInWindow", async ({ arg }) => {
+		await closeTabsInWindow("rightEnd", arg);
 	});
-	onCommand("closeTabsRightEndInWindow", async () => {
-		// Todo
-	});
+
 	onCommand("closeTabsToTheLeftInWindow", async () => {
-		// Todo
+		await closeTabsInWindow("left");
 	});
+
 	onCommand("closeTabsToTheRightInWindow", async () => {
-		// Todo
+		await closeTabsInWindow("right");
 	});
+
 	onCommand("copyCurrentTabMarkdownUrl", async () => {
 		// Todo
 	});
