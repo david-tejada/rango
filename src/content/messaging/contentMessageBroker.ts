@@ -1,11 +1,11 @@
 import browser from "webextension-polyfill";
+import { isValidMessage } from "../../common/messaging/isValidMessage";
 import type {
 	BackgroundBoundMessageMap,
 	ContentBoundMessageMap,
 	GetDataType,
 	GetReturnType,
 } from "../../typings/ProtocolMap";
-import { isValidMessage } from "../../common/messaging/isValidMessage";
 
 const messageHandlers = new Map<keyof ContentBoundMessageMap, unknown>();
 
@@ -44,7 +44,7 @@ export async function handleIncomingMessage<
 
 export async function sendMessage<K extends keyof BackgroundBoundMessageMap>(
 	messageId: K,
-	...args: GetDataType<K> extends undefined ? [] : [GetDataType<K>]
+	...args: GetDataType<K> extends undefined ? [] : [data: GetDataType<K>]
 ): Promise<GetReturnType<K>> {
 	const data = args[0];
 	return browser.runtime.sendMessage({ messageId, data });
