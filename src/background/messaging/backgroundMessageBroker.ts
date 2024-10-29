@@ -86,11 +86,16 @@ type MessageWithoutTarget = {
 		: K;
 }[keyof ContentBoundMessageMap];
 
+type HasRequiredData<K extends MessageWithoutTarget> =
+	GetDataType<K> extends undefined ? false : true;
+
 export async function sendMessage<K extends MessageWithoutTarget>(
 	messageId: K,
-	data: GetDataType<K>,
-	destination?: Destination
+	...args: HasRequiredData<K> extends true
+		? [data: GetDataType<K>, destination?: Destination]
+		: [data?: GetDataType<K>, destination?: Destination]
 ): Promise<GetReturnType<K>> {
+	const [data, destination] = args;
 	const currentTabId = await getCurrentTabId();
 	const tabId = destination?.tabId ?? currentTabId;
 	await pingContentScript(tabId);
@@ -104,9 +109,11 @@ export async function sendMessage<K extends MessageWithoutTarget>(
 
 export async function sendMessageToAllFrames<K extends MessageWithoutTarget>(
 	messageId: K,
-	data: GetDataType<K>,
-	tabId?: number
+	...args: HasRequiredData<K> extends true
+		? [data: GetDataType<K>, tabId?: number]
+		: [data?: GetDataType<K>, tabId?: number]
 ) {
+	const [data, tabId] = args;
 	const destinationTabId = tabId ?? (await getCurrentTabId());
 	await pingContentScript(destinationTabId);
 	const frames = await browser.webNavigation.getAllFrames({

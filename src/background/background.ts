@@ -44,7 +44,7 @@ browserAction.onClicked.addListener(async () => {
 
 browser.commands.onCommand.addListener(async (internalCommand: string) => {
 	try {
-		await sendMessage("allowToastNotification", undefined);
+		await sendMessage("allowToastNotification");
 	} catch {
 		// No content script. We do nothing.
 	}

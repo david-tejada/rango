@@ -21,7 +21,7 @@ export function setupCommandListeners() {
 	// ===========================================================================
 	onCommand("historyGoBack", async () => {
 		try {
-			await sendMessage("historyGoBack", undefined);
+			await sendMessage("historyGoBack");
 		} catch (error: unknown) {
 			if (!(error instanceof UnreachableContentScriptError)) {
 				throw error;
@@ -33,7 +33,7 @@ export function setupCommandListeners() {
 
 	onCommand("historyGoForward", async () => {
 		try {
-			await sendMessage("historyGoForward", undefined);
+			await sendMessage("historyGoForward");
 		} catch (error: unknown) {
 			if (!(error instanceof UnreachableContentScriptError)) {
 				throw error;
@@ -48,10 +48,6 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("navigateToPageRoot", async () => {
-		// Todo
-	});
-
-	onCommand("navigateToPreviousPage", async () => {
 		// Todo
 	});
 
@@ -229,7 +225,7 @@ export function setupCommandListeners() {
 
 			if (!directClickWithNoFocusedDocument) {
 				const [focusedDocument] = await promiseWrap(
-					sendMessage("checkIfDocumentHasFocus", undefined)
+					sendMessage("checkIfDocumentHasFocus")
 				);
 
 				if (!focusedDocument) {
@@ -241,8 +237,7 @@ export function setupCommandListeners() {
 
 			if (!directClickWhenEditing) {
 				const { values } = await sendMessageToAllFrames(
-					"checkActiveElementIsEditable",
-					undefined
+					"checkActiveElementIsEditable"
 				);
 
 				if (values.includes(true)) return [{ name: "typeTargetCharacters" }];
