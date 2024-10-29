@@ -13,7 +13,6 @@ import {
 import { scrollToPosition, storeScrollPosition } from "./customScrollPositions";
 import { blur, focusFirstInput } from "./focus";
 import { unhoverAll } from "./hoverElement";
-import { navigateToNextPage, navigateToPreviousPage } from "./pagination";
 import {
 	removeReference,
 	saveReferenceForActiveElement,
@@ -21,11 +20,11 @@ import {
 } from "./references";
 import { refreshHints } from "./refreshHints";
 import { runActionOnReference } from "./runActionOnReference";
-import { scroll } from "./scroll";
 import {
 	executeActionOnTextMatchedElement,
 	matchElementByText,
 } from "./runActionOnTextMatchedElement";
+import { scroll } from "./scroll";
 
 export async function runRangoActionWithoutTarget(
 	request: RangoActionWithoutTarget
@@ -43,16 +42,6 @@ export async function runRangoActionWithoutTarget(
 
 		case "navigateToPageRoot": {
 			window.location.href = "/";
-			break;
-		}
-
-		case "navigateToNextPage": {
-			await navigateToNextPage();
-			break;
-		}
-
-		case "navigateToPreviousPage": {
-			await navigateToPreviousPage();
 			break;
 		}
 

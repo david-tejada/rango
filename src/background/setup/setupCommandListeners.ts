@@ -44,7 +44,11 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("navigateToNextPage", async () => {
-		// Todo
+		await sendMessage("navigateToNextPage");
+	});
+
+	onCommand("navigateToPreviousPage", async () => {
+		await sendMessage("navigateToPreviousPage");
 	});
 
 	onCommand("navigateToPageRoot", async () => {

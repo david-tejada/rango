@@ -6,6 +6,10 @@ import {
 	markHintsAsKeyboardReachable,
 	restoreKeyboardReachableHints,
 } from "../actions/keyboardClicking";
+import {
+	navigateToNextPage,
+	navigateToPreviousPage,
+} from "../actions/pagination";
 import { showTitleAndHref } from "../actions/showTitleAndHref";
 import { reclaimHintsFromCache } from "../hints/hintsCache";
 import { deleteHintsInFrame } from "../hints/hintsInFrame";
@@ -147,4 +151,8 @@ export function setupContentBoundMessageHandlers() {
 	onMessage("historyGoForward", () => {
 		window.history.forward();
 	});
+
+	onMessage("navigateToNextPage", navigateToNextPage);
+
+	onMessage("navigateToPreviousPage", navigateToPreviousPage);
 }
