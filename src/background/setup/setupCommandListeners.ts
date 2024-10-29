@@ -12,6 +12,7 @@ import {
 	sendMessageToAllFrames,
 	UnreachableContentScriptError,
 } from "../messaging/backgroundMessageBroker";
+import { getCurrentTabId } from "../utils/getCurrentTab";
 import { notify } from "../utils/notify";
 import { discardNextResponse } from "../utils/requestAndResponse";
 
@@ -61,9 +62,11 @@ export function setupCommandListeners() {
 	onCommand("activateTab", async ({ target }) => {
 		await activateTab(target);
 	});
+
 	onCommand("cloneCurrentTab", async () => {
-		// Todo
+		await browser.tabs.duplicate(await getCurrentTabId());
 	});
+
 	onCommand("closeNextTabsInWindow", async () => {
 		// Todo
 	});
