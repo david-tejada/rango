@@ -6,7 +6,6 @@ import { type TalonAction } from "../../typings/RequestFromTalon";
 import { activateTab } from "../actions/activateTab";
 import { closeTab } from "../actions/closeTab";
 import { closeTabsInWindow } from "../actions/closeTabsInWindow";
-import { copyLocationProperty, getBareTitle } from "../actions/copyTabInfo";
 import { focusOrCreateTabByUrl } from "../actions/focusOrCreateTabByUrl";
 import { focusPreviousTab } from "../actions/focusPreviousTab";
 import {
@@ -219,23 +218,6 @@ export async function runBackgroundCommand(
 
 		case "unmuteAllMutedTabs": {
 			await unmuteAllMutedTabs();
-			break;
-		}
-
-		case "copyLocationProperty": {
-			if (currentTab) {
-				return copyLocationProperty(currentTab, command.arg);
-			}
-
-			break;
-		}
-
-		case "getBareTitle": {
-			if (currentTab) {
-				const title = await getBareTitle(currentTab);
-				return [{ name: "responseValue", value: title }];
-			}
-
 			break;
 		}
 

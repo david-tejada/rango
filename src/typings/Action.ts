@@ -5,7 +5,7 @@ export type ToggleLevel =
 	| "host"
 	| "page"
 	| "now";
-type LocationProperty =
+export type LocationProperty =
 	| "href"
 	| "hostname"
 	| "host"

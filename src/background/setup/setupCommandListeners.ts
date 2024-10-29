@@ -5,7 +5,7 @@ import { type TalonAction } from "../../typings/RequestFromTalon";
 import { activateTab } from "../actions/activateTab";
 import { closeTab } from "../actions/closeTab";
 import { closeTabsInWindow } from "../actions/closeTabsInWindow";
-import { getBareTitle } from "../actions/copyTabInfo";
+import { getBareTitle } from "../actions/getBareTitle";
 import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { onCommand } from "../commands/commandBroker";
 import {
@@ -112,8 +112,16 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("copyLocationProperty", async ({ arg }) => {
-		// Todo
+		const tab = await getCurrentTab();
+		const url = new URL(tab.url!);
+
+		await notify(`Property "${arg}" copied to the clipboard.`, {
+			type: "success",
+		});
+
+		return [{ name: "copyToClipboard", textToCopy: url[arg] }];
 	});
+
 	onCommand("cycleTabsByText", async () => {
 		// Todo
 	});
