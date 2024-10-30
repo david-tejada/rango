@@ -23,6 +23,7 @@ import {
 	unmuteNextMutedTab,
 } from "../actions/muteTabs";
 import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
+import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
 import { toggleTabMarkers } from "../actions/toggleTabMarkers";
 import { onCommand } from "../commands/commandBroker";
 import {
@@ -228,9 +229,7 @@ export function setupCommandListeners() {
 	// ===========================================================================
 	// KEYBOARD CLICKING
 	// ===========================================================================
-	onCommand("toggleKeyboardClicking", async () => {
-		// Todo
-	});
+	onCommand("toggleKeyboardClicking", toggleKeyboardClicking);
 
 	// ===========================================================================
 	// ELEMENTS
