@@ -3,15 +3,15 @@ import { isValidMessage } from "../../common/messaging/isValidMessage";
 import type {
 	BackgroundBoundMessageMap,
 	ContentBoundMessageMap,
-	GetDataType,
-	GetReturnType,
+	MessageData,
+	MessageReturn,
 } from "../../typings/ProtocolMap";
 
 const messageHandlers = new Map<keyof ContentBoundMessageMap, unknown>();
 
 type OnMessageCallback<K extends keyof ContentBoundMessageMap> = (
-	data: GetDataType<K>
-) => GetReturnType<K> | Promise<GetReturnType<K>>;
+	data: MessageData<K>
+) => MessageReturn<K> | Promise<MessageReturn<K>>;
 
 export function onMessage<K extends keyof ContentBoundMessageMap>(
 	messageId: K,
@@ -32,7 +32,10 @@ export async function handleIncomingMessage<
 		throw new Error("Invalid message coming from background script");
 	}
 
-	const { messageId, data } = message as { messageId: K; data: GetDataType<K> };
+	const { messageId, data } = message as {
+		messageId: K;
+		data: MessageData<K>;
+	};
 
 	const handler = messageHandlers.get(messageId) as OnMessageCallback<K>;
 	if (!handler) {
@@ -44,8 +47,8 @@ export async function handleIncomingMessage<
 
 export async function sendMessage<K extends keyof BackgroundBoundMessageMap>(
 	messageId: K,
-	...args: GetDataType<K> extends undefined ? [] : [data: GetDataType<K>]
-): Promise<GetReturnType<K>> {
+	...args: MessageData<K> extends undefined ? [] : [data: MessageData<K>]
+): Promise<MessageReturn<K>> {
 	const data = args[0];
 	return browser.runtime.sendMessage({ messageId, data });
 }

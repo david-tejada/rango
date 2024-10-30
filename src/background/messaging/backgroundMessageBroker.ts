@@ -3,8 +3,8 @@ import { isValidMessage } from "../../common/messaging/isValidMessage";
 import type {
 	BackgroundBoundMessageMap,
 	ContentBoundMessageMap,
-	GetDataType,
-	GetReturnType,
+	MessageData,
+	MessageReturn,
 } from "../../typings/ProtocolMap";
 import { getCurrentTabId } from "../utils/getCurrentTab";
 import { splitHintsByFrame } from "../utils/splitHintsByFrame";
@@ -13,9 +13,9 @@ type Destination = { tabId?: number; frameId?: number };
 type Sender = { tab: Tabs.Tab; tabId: number; frameId: number };
 
 type OnMessageCallback<K extends keyof BackgroundBoundMessageMap> = (
-	data: GetDataType<K>,
+	data: MessageData<K>,
 	sender: Sender
-) => GetReturnType<K> | Promise<GetReturnType<K>>;
+) => MessageReturn<K> | Promise<MessageReturn<K>>;
 
 const messageHandlers = new Map<keyof BackgroundBoundMessageMap, unknown>();
 
@@ -38,7 +38,10 @@ export async function handleIncomingMessage<
 		throw new Error("Invalid message coming from content script.");
 	}
 
-	const { messageId, data } = message as { messageId: K; data: GetDataType<K> };
+	const { messageId, data } = message as {
+		messageId: K;
+		data: MessageData<K>;
+	};
 
 	const handler = messageHandlers.get(messageId) as OnMessageCallback<K>;
 	if (!handler) {
@@ -79,7 +82,7 @@ export async function pingContentScript(tabId: number) {
 }
 
 type MessageWithoutTarget = {
-	[K in keyof ContentBoundMessageMap]: GetDataType<K> extends {
+	[K in keyof ContentBoundMessageMap]: MessageData<K> extends {
 		target: string[];
 	}
 		? never
@@ -87,14 +90,14 @@ type MessageWithoutTarget = {
 }[keyof ContentBoundMessageMap];
 
 type HasRequiredData<K extends MessageWithoutTarget> =
-	GetDataType<K> extends undefined ? false : true;
+	MessageData<K> extends undefined ? false : true;
 
 export async function sendMessage<K extends MessageWithoutTarget>(
 	messageId: K,
 	...args: HasRequiredData<K> extends true
-		? [data: GetDataType<K>, destination?: Destination]
-		: [data?: GetDataType<K>, destination?: Destination]
-): Promise<GetReturnType<K>> {
+		? [data: MessageData<K>, destination?: Destination]
+		: [data?: MessageData<K>, destination?: Destination]
+): Promise<MessageReturn<K>> {
 	const [data, destination] = args;
 	const currentTabId = await getCurrentTabId();
 	const tabId = destination?.tabId ?? currentTabId;
@@ -110,8 +113,8 @@ export async function sendMessage<K extends MessageWithoutTarget>(
 export async function sendMessageToAllFrames<K extends MessageWithoutTarget>(
 	messageId: K,
 	...args: HasRequiredData<K> extends true
-		? [data: GetDataType<K>, tabId?: number]
-		: [data?: GetDataType<K>, tabId?: number]
+		? [data: MessageData<K>, tabId?: number]
+		: [data?: MessageData<K>, tabId?: number]
 ) {
 	const [data, tabId] = args;
 	const destinationTabId = tabId ?? (await getCurrentTabId());
@@ -134,7 +137,7 @@ export async function sendMessageToAllFrames<K extends MessageWithoutTarget>(
 				destinationTabId,
 				{ messageId, data },
 				{ frameId }
-			) as Promise<GetReturnType<K>>
+			) as Promise<MessageReturn<K>>
 		).then((value) => ({
 			frameId,
 			value,
@@ -146,7 +149,7 @@ export async function sendMessageToAllFrames<K extends MessageWithoutTarget>(
 }
 
 type MessageWithTarget = {
-	[K in keyof ContentBoundMessageMap]: GetDataType<K> extends {
+	[K in keyof ContentBoundMessageMap]: MessageData<K> extends {
 		target: string[];
 	}
 		? K
@@ -162,7 +165,7 @@ type MessageWithTarget = {
  */
 export async function sendMessagesToTargetFrames<K extends MessageWithTarget>(
 	messageId: K,
-	data: NonNullable<GetDataType<K>>,
+	data: NonNullable<MessageData<K>>,
 	tabId?: number
 ) {
 	const destinationTabId = tabId ?? (await getCurrentTabId());
@@ -180,7 +183,7 @@ export async function sendMessagesToTargetFrames<K extends MessageWithTarget>(
 				destinationTabId,
 				{ messageId, data: frameData },
 				{ frameId }
-			) as Promise<GetReturnType<K>>
+			) as Promise<MessageReturn<K>>
 		).then((value) => ({
 			frameId,
 			value,

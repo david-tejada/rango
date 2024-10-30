@@ -2,12 +2,14 @@ import { type ToastOptions } from "react-toastify";
 import { type Tabs } from "webextension-polyfill";
 import { type CustomSelector, type HintStack } from "./StorageSchema";
 
-export type GetDataType<K extends keyof ProtocolMap> =
-	Parameters<ProtocolMap[K]> extends { length: 0 }
-		? undefined
-		: Parameters<ProtocolMap[K]>[0];
+type FirstParameter<T> = T extends (...args: infer P) => any ? P[0] : never;
 
-export type GetReturnType<K extends keyof ProtocolMap> = ReturnType<
+export type MessageData<K extends keyof ProtocolMap> =
+	FirstParameter<ProtocolMap[K]> extends never
+		? undefined
+		: FirstParameter<ProtocolMap[K]>;
+
+export type MessageReturn<K extends keyof ProtocolMap> = ReturnType<
 	ProtocolMap[K]
 >;
 
