@@ -4,7 +4,6 @@ import { letterHints, numberHints } from "../../common/allHints";
 import { getKeysToExclude } from "../../common/getKeysToExclude";
 import { retrieve, store } from "../../common/storage";
 import { type HintStack } from "../../typings/StorageSchema";
-import { sendMessage } from "../messaging/backgroundMessageBroker";
 import { navigationOccurred } from "./preloadTabs";
 
 export class HintStackError extends Error {
@@ -135,11 +134,12 @@ export async function reclaimHintsFromOtherFrames(
 		const reclaimed: string[] = [];
 
 		for (const frameId of otherFramesIds) {
+			// I'm not using our sendMessage to avoid dependency cycle.
 			// eslint-disable-next-line no-await-in-loop
-			const reclaimedFromFrame = await sendMessage(
-				"reclaimHints",
-				{ amount: amount - reclaimed.length },
-				{ tabId, frameId }
+			const reclaimedFromFrame: string[] = await browser.tabs.sendMessage(
+				tabId,
+				{ type: "reclaimHints", amount: amount - reclaimed.length },
+				{ frameId }
 			);
 
 			reclaimed.push(...reclaimedFromFrame);
