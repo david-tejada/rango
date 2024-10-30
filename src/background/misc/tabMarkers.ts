@@ -145,17 +145,14 @@ export async function refreshTabMarkers() {
 				tabId: tab.id,
 			});
 		} catch (error: unknown) {
+			if (!(error instanceof UnreachableContentScriptError)) throw error;
+
 			// We reload if the tab has been discarded and the content script isn't
 			// running any more. I could check the `discarded` property of the tab but
 			// I think I did that before and for whatever reason it didn't handle all
 			// cases. This will make that we also reload any tabs where the content
 			// script can't run. I think that's ok.
-			if (error instanceof UnreachableContentScriptError) {
-				await browser.tabs.reload(tab.id);
-				return;
-			}
-
-			throw error;
+			await browser.tabs.reload(tab.id);
 		}
 	});
 
