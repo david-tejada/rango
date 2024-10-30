@@ -1,19 +1,24 @@
 import { type ElementWrapper } from "../../typings/ElementWrapper";
-import { hasPropertyValue } from "../../typings/TypingUtils";
 import { showTooltip } from "../hints/showTooltip";
 
-export function copyElementTextContent(wrappers: ElementWrapper[]) {
+export function getElementTextContent(
+	wrappers: ElementWrapper[],
+	tooltip = true
+) {
 	const textContents: string[] = [];
 
 	for (const wrapper of wrappers) {
-		const textContent = hasPropertyValue(wrapper.element)
-			? wrapper.element.value
-			: wrapper.element.textContent;
+		const textContent =
+			"value" in wrapper.element
+				? typeof wrapper.element.value === "string"
+					? wrapper.element.value
+					: undefined
+				: wrapper.element.textContent;
 
 		if (textContent) {
 			textContents.push(textContent);
-			showTooltip(wrapper, "Copied!", 1500);
-		} else {
+			if (tooltip) showTooltip(wrapper, "Copied!", 1500);
+		} else if (tooltip) {
 			showTooltip(wrapper, "No text content to copy", 1500);
 		}
 	}

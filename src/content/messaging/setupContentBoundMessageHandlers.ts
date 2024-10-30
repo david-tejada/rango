@@ -1,7 +1,7 @@
 import { clickElement } from "../actions/clickElement";
-import { copyElementTextContent } from "../actions/copy";
+import { getElementTextContent } from "../actions/copy";
 import { focus } from "../actions/focus";
-import { getAnchorHrefs } from "../actions/getAnchorHrefs";
+import { getAnchorHref } from "../actions/getAnchorHref";
 import {
 	markHintsAsKeyboardReachable,
 	restoreKeyboardReachableHints,
@@ -32,7 +32,13 @@ import { getWrapper, reclaimHints } from "../wrappers/wrappers";
 import { onMessage } from "./contentMessageBroker";
 
 function getIntersectingWrappers(target: string[]) {
-	return getWrapper(target).filter((wrapper) => wrapper.isIntersectingViewport);
+	const intersecting = getWrapper(target).filter(
+		(wrapper) => wrapper.isIntersectingViewport
+	);
+
+	for (const wrapper of intersecting) wrapper.hint?.flash();
+
+	return intersecting;
 }
 
 export function setupContentBoundMessageHandlers() {
@@ -111,10 +117,13 @@ export function setupContentBoundMessageHandlers() {
 		return clickElement(wrappers);
 	});
 
-	onMessage("copyElementTextContent", async ({ target }) => {
-		const wrappers = getIntersectingWrappers(target);
-		return copyElementTextContent(wrappers);
-	});
+	onMessage(
+		"getElementTextContent",
+		async ({ target, copyTooltip: tooltip }) => {
+			const wrappers = getIntersectingWrappers(target);
+			return getElementTextContent(wrappers, tooltip);
+		}
+	);
 
 	onMessage("tryToFocusElementAndCheckIsEditable", async ({ target }) => {
 		const wrapper = getIntersectingWrappers(target)[0];
@@ -136,9 +145,9 @@ export function setupContentBoundMessageHandlers() {
 		showTitleAndHref(wrappers);
 	});
 
-	onMessage("getAnchorHrefs", async ({ target }) => {
+	onMessage("getAnchorHref", async ({ target, copyTooltip }) => {
 		const wrappers = getIntersectingWrappers(target);
-		return getAnchorHrefs(wrappers);
+		return getAnchorHref(wrappers, copyTooltip);
 	});
 
 	// =============================================================================

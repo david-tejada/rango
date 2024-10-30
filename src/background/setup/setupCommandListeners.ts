@@ -265,10 +265,13 @@ export function setupCommandListeners() {
 
 	onCommand("copyElementTextContent", async ({ target }) => {
 		const { values } = await sendMessagesToTargetFrames(
-			"copyElementTextContent",
-			{ target }
+			"getElementTextContent",
+			{
+				target,
+				copyTooltip: true,
+			}
 		);
-		if (values.length === 0) return;
+		if (values.flat().length === 0) return;
 
 		return {
 			name: "copyToClipboard",
@@ -277,8 +280,18 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("copyLink", async ({ target }) => {
-		// Todo
+		const { values } = await sendMessagesToTargetFrames("getAnchorHref", {
+			target,
+			copyTooltip: true,
+		});
+		if (values.flat().length === 0) return;
+
+		return {
+			name: "copyToClipboard",
+			textToCopy: values.flat().join("\n"),
+		};
 	});
+
 	onCommand("copyMarkdownLink", async ({ target }) => {
 		// Todo
 	});
@@ -367,7 +380,7 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("openInNewTab", async ({ target }) => {
-		const { values } = await sendMessagesToTargetFrames("getAnchorHrefs", {
+		const { values } = await sendMessagesToTargetFrames("getAnchorHref", {
 			target,
 		});
 

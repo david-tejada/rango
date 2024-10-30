@@ -2,8 +2,6 @@ import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { sendMessage } from "../messaging/contentMessageBroker";
 
 export async function clickElement(wrappers: ElementWrapper[]) {
-	for (const wrapper of wrappers) wrapper.hint?.flash();
-
 	const anchorWrappers = wrappers.filter(
 		(wrapper) => wrapper.element instanceof HTMLAnchorElement
 	);
