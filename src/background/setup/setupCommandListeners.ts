@@ -7,8 +7,21 @@ import { closeTab } from "../actions/closeTab";
 import { closeTabsInWindow } from "../actions/closeTabsInWindow";
 import { focusOrCreateTabByUrl } from "../actions/focusOrCreateTabByUrl";
 import { focusPreviousTab } from "../actions/focusPreviousTab";
+import {
+	focusNextAudibleTab,
+	focusNextMutedTab,
+	focusNextTabWithSound,
+	focusTabLastSounded,
+} from "../actions/focusTabBySound";
 import { cycleTabsByText, focusTabByText } from "../actions/focusTabByText";
 import { getBareTitle } from "../actions/getBareTitle";
+import {
+	muteAllTabsWithSound,
+	muteNextTabWithSound,
+	muteTab,
+	unmuteAllMutedTabs,
+	unmuteNextMutedTab,
+} from "../actions/muteTabs";
 import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { onCommand } from "../commands/commandBroker";
 import {
@@ -156,48 +169,57 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("focusNextAudibleTab", async () => {
-		// Todo
+		await focusNextAudibleTab();
 	});
+
 	onCommand("focusNextMutedTab", async () => {
-		// Todo
+		await focusNextMutedTab();
 	});
+
 	onCommand("focusNextTabWithSound", async () => {
-		// Todo
+		await focusNextTabWithSound();
 	});
 
 	onCommand("focusTabLastSounded", async () => {
-		// Todo
+		await focusTabLastSounded();
+	});
+
+	onCommand("muteTab", async ({ target }) => {
+		await muteTab(target);
+	});
+
+	onCommand("unmuteTab", async ({ target }) => {
+		await muteTab(target, false);
+	});
+
+	onCommand("muteCurrentTab", async () => {
+		await muteTab();
+	});
+
+	onCommand("unmuteCurrentTab", async () => {
+		await muteTab(undefined, false);
+	});
+
+	onCommand("muteNextTabWithSound", async () => {
+		await muteNextTabWithSound();
+	});
+
+	onCommand("unmuteNextMutedTab", async () => {
+		await unmuteNextMutedTab();
 	});
 
 	onCommand("muteAllTabsWithSound", async () => {
-		// Todo
+		await muteAllTabsWithSound();
 	});
-	onCommand("muteCurrentTab", async () => {
-		// Todo
-	});
-	onCommand("muteNextTabWithSound", async () => {
-		// Todo
-	});
-	onCommand("muteTab", async () => {
-		// Todo
+
+	onCommand("unmuteAllMutedTabs", async () => {
+		await unmuteAllMutedTabs();
 	});
 
 	onCommand("refreshTabMarkers", async () => {
 		// Todo
 	});
 	onCommand("toggleTabMarkers", async () => {
-		// Todo
-	});
-	onCommand("unmuteAllMutedTabs", async () => {
-		// Todo
-	});
-	onCommand("unmuteCurrentTab", async () => {
-		// Todo
-	});
-	onCommand("unmuteNextMutedTab", async () => {
-		// Todo
-	});
-	onCommand("unmuteTab", async () => {
 		// Todo
 	});
 
