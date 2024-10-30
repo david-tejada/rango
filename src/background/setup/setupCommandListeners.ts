@@ -23,6 +23,7 @@ import {
 	unmuteNextMutedTab,
 } from "../actions/muteTabs";
 import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
+import { toggleTabMarkers } from "../actions/toggleTabMarkers";
 import { onCommand } from "../commands/commandBroker";
 import {
 	sendMessage,
@@ -30,6 +31,7 @@ import {
 	sendMessageToAllFrames,
 	UnreachableContentScriptError,
 } from "../messaging/backgroundMessageBroker";
+import { refreshTabMarkers } from "../misc/tabMarkers";
 import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
 import { notify } from "../utils/notify";
 import { discardNextResponse } from "../utils/requestAndResponse";
@@ -217,10 +219,10 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("refreshTabMarkers", async () => {
-		// Todo
+		await refreshTabMarkers();
 	});
 	onCommand("toggleTabMarkers", async () => {
-		// Todo
+		await toggleTabMarkers();
 	});
 
 	// ===========================================================================
