@@ -4,6 +4,7 @@ import { letterHints, numberHints } from "../../common/allHints";
 import { getKeysToExclude } from "../../common/getKeysToExclude";
 import { retrieve, store } from "../../common/storage";
 import { type HintStack } from "../../typings/StorageSchema";
+import { sendMessage } from "../messaging/backgroundMessageBroker";
 import { navigationOccurred } from "./preloadTabs";
 
 export class HintStackError extends Error {
@@ -133,15 +134,12 @@ export async function reclaimHintsFromOtherFrames(
 
 		const reclaimed: string[] = [];
 
-		for (const id of otherFramesIds) {
+		for (const frameId of otherFramesIds) {
 			// eslint-disable-next-line no-await-in-loop
-			const reclaimedFromFrame: string[] = await browser.tabs.sendMessage(
-				tabId,
-				{
-					type: "reclaimHints",
-					amount: amount - reclaimed.length,
-				},
-				{ frameId: id }
+			const reclaimedFromFrame = await sendMessage(
+				"reclaimHints",
+				{ amount: amount - reclaimed.length },
+				{ tabId, frameId }
 			);
 
 			reclaimed.push(...reclaimedFromFrame);
