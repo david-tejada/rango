@@ -72,6 +72,7 @@ export type ContentBoundMessageMap = {
 		target: string[];
 		showCopyTooltip?: boolean;
 	}) => string[];
+	focusFirstInput: () => void;
 
 	// Hints
 	reclaimHints: (data: { amount: number }) => string[];

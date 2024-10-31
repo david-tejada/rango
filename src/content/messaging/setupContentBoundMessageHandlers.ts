@@ -1,6 +1,6 @@
 import { clickElement } from "../actions/clickElement";
 import { getElementTextContent } from "../actions/copy";
-import { focus } from "../actions/focus";
+import { focus, focusFirstInput } from "../actions/focus";
 import { getAnchorHref } from "../actions/getAnchorHref";
 import {
 	markHintsAsKeyboardReachable,
@@ -165,4 +165,6 @@ export function setupContentBoundMessageHandlers() {
 	onMessage("navigateToPageRoot", () => {
 		window.location.href = "/";
 	});
+
+	onMessage("focusFirstInput", focusFirstInput);
 }

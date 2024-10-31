@@ -368,8 +368,9 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("focusFirstInput", async () => {
-		// Todo
+		await sendMessage("focusFirstInput");
 	});
+
 	onCommand("hoverElement", async ({ target }) => {
 		// Todo
 	});
