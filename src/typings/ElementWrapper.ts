@@ -14,7 +14,6 @@ export type ElementWrapper = {
 	isIntersecting?: boolean;
 	observingIntersection?: boolean;
 	isIntersectingViewport?: boolean;
-	isActiveEditable: boolean;
 	isHintable: boolean;
 	shouldBeHinted?: boolean;
 

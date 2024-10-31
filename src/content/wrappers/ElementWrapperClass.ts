@@ -16,7 +16,6 @@ import {
 	dispatchHover,
 	dispatchUnhover,
 } from "../utils/dispatchEvents";
-import { isEditable } from "../utils/domUtils";
 import { getPointerTarget } from "../utils/getPointerTarget";
 import { getUserScrollableContainer } from "../utils/getUserScrollableContainer";
 import { isDisabled } from "../utils/isDisabled";
@@ -332,7 +331,6 @@ class ElementWrapperClass implements ElementWrapper {
 	isIntersecting?: boolean;
 	observingIntersection?: boolean;
 	isIntersectingViewport?: boolean;
-	isActiveEditable: boolean;
 	isHintable!: boolean;
 	shouldBeHinted?: boolean;
 
@@ -346,9 +344,6 @@ class ElementWrapperClass implements ElementWrapper {
 		public element: Element,
 		active = true
 	) {
-		this.isActiveEditable =
-			this.element === document.activeElement && isEditable(this.element);
-
 		if (active) {
 			this.updateIsHintable();
 		}
@@ -357,20 +352,7 @@ class ElementWrapperClass implements ElementWrapper {
 	updateIsHintable() {
 		this.isHintable = isHintable(this.element);
 
-		if (this.isHintable) {
-			if (isEditable(this.element)) {
-				this.element.addEventListener("focus", () => {
-					this.isActiveEditable = true;
-					this.updateShouldBeHinted();
-				});
-				this.element.addEventListener("blur", () => {
-					this.isActiveEditable = false;
-					this.updateShouldBeHinted();
-				});
-			}
-
-			hintablesResizeObserver.observe(this.element);
-		}
+		if (this.isHintable) hintablesResizeObserver.observe(this.element);
 
 		this.updateShouldBeHinted();
 	}
@@ -378,7 +360,6 @@ class ElementWrapperClass implements ElementWrapper {
 	updateShouldBeHinted() {
 		const newShouldBeHinted =
 			this.isHintable &&
-			!this.isActiveEditable &&
 			(isVisible(this.element) ||
 				(matchesCustomInclude(this.element) &&
 					!matchesCustomExclude(this.element)) ||
