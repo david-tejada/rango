@@ -266,10 +266,7 @@ export function setupCommandListeners() {
 	onCommand("copyElementTextContent", async ({ target }) => {
 		const { values } = await sendMessagesToTargetFrames(
 			"getElementTextContent",
-			{
-				target,
-				copyTooltip: true,
-			}
+			{ target }
 		);
 		if (values.flat().length === 0) return;
 
@@ -282,7 +279,7 @@ export function setupCommandListeners() {
 	onCommand("copyLink", async ({ target }) => {
 		const { values } = await sendMessagesToTargetFrames("getAnchorHref", {
 			target,
-			copyTooltip: true,
+			showCopyTooltip: true,
 		});
 		if (values.flat().length === 0) return;
 

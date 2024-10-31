@@ -1,10 +1,7 @@
 import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { showTooltip } from "../hints/showTooltip";
 
-export function getElementTextContent(
-	wrappers: ElementWrapper[],
-	tooltip = true
-) {
+export function getElementTextContent(wrappers: ElementWrapper[]) {
 	const textContents: string[] = [];
 
 	for (const wrapper of wrappers) {
@@ -17,8 +14,8 @@ export function getElementTextContent(
 
 		if (textContent) {
 			textContents.push(textContent);
-			if (tooltip) showTooltip(wrapper, "Copied!", 1500);
-		} else if (tooltip) {
+			showTooltip(wrapper, "Copied!", 1500);
+		} else {
 			showTooltip(wrapper, "No text content to copy", 1500);
 		}
 	}

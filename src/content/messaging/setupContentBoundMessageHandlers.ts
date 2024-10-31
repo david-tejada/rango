@@ -117,13 +117,10 @@ export function setupContentBoundMessageHandlers() {
 		return clickElement(wrappers);
 	});
 
-	onMessage(
-		"getElementTextContent",
-		async ({ target, copyTooltip: tooltip }) => {
-			const wrappers = getIntersectingWrappers(target);
-			return getElementTextContent(wrappers, tooltip);
-		}
-	);
+	onMessage("getElementTextContent", async ({ target }) => {
+		const wrappers = getIntersectingWrappers(target);
+		return getElementTextContent(wrappers);
+	});
 
 	onMessage("tryToFocusElementAndCheckIsEditable", async ({ target }) => {
 		const wrapper = getIntersectingWrappers(target)[0];
@@ -145,9 +142,9 @@ export function setupContentBoundMessageHandlers() {
 		showTitleAndHref(wrappers);
 	});
 
-	onMessage("getAnchorHref", async ({ target, copyTooltip }) => {
+	onMessage("getAnchorHref", async ({ target, showCopyTooltip }) => {
 		const wrappers = getIntersectingWrappers(target);
-		return getAnchorHref(wrappers, copyTooltip);
+		return getAnchorHref(wrappers, showCopyTooltip);
 	});
 
 	// =============================================================================

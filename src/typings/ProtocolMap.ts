@@ -7,9 +7,7 @@ type FirstParameter<T> = T extends (...args: infer P) => any ? P[0] : never;
 export type MessageData<K extends keyof ProtocolMap> =
 	FirstParameter<ProtocolMap[K]> extends never
 		? undefined
-		: FirstParameter<ProtocolMap[K]> extends { target: string[] }
-			? FirstParameter<ProtocolMap[K]> & { copyTooltip?: boolean }
-			: FirstParameter<ProtocolMap[K]>;
+		: FirstParameter<ProtocolMap[K]>;
 
 export type MessageReturn<K extends keyof ProtocolMap> = ReturnType<
 	ProtocolMap[K]
@@ -70,7 +68,10 @@ export type ContentBoundMessageMap = {
 	tryToFocusElementAndCheckIsEditable: (data: { target: string[] }) => boolean;
 	focusElement: (data: { target: string[] }) => { focusPage?: boolean };
 	showLink: (data: { target: string[] }) => void;
-	getAnchorHref: (data: { target: string[] }) => string[];
+	getAnchorHref: (data: {
+		target: string[];
+		showCopyTooltip?: boolean;
+	}) => string[];
 
 	// Hints
 	reclaimHints: (data: { amount: number }) => string[];
