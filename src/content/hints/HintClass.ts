@@ -356,11 +356,7 @@ export class HintClass implements Hint {
 
 		// Hide the hint if it's the currently focused element.
 		if (isEditable(this.target)) {
-			if (
-				document.hasFocus() &&
-				this.target === document.activeElement &&
-				isEditable(this.target)
-			) {
+			if (document.hasFocus() && this.target === document.activeElement) {
 				setStyleProperties(this.outer, { visibility: "hidden" });
 			}
 
