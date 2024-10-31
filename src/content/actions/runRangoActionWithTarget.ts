@@ -7,8 +7,6 @@ import { setLastWrapper } from "../wrappers/lastWrapper";
 import { getWrapper, getWrapperForElement } from "../wrappers/wrappers";
 import { copyLinkToClipboard, copyMarkdownLinkToClipboard } from "./copy";
 import { markHintsForExclusion, markHintsForInclusion } from "./customHints";
-import { focusAndDeleteContents } from "./focusAndDeleteContents";
-import { getAnchorHrefs } from "./getAnchorHrefs";
 import { hoverElement } from "./hoverElement";
 import { insertToField } from "./insertToField";
 import { saveReference } from "./references";
@@ -89,12 +87,6 @@ export async function runRangoActionWithTarget(
 			// causes a navigation, as the current content script is stopped.
 			await setSelectionAfter(wrapper);
 			break;
-		}
-
-		// This is not used anymore. I leave it here for now for backwards
-		// compatibility - 2023-06-02
-		case "focusAndDeleteContents": {
-			return focusAndDeleteContents(wrapper);
 		}
 
 		case "scrollUpAtElement": {

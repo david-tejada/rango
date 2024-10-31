@@ -345,8 +345,11 @@ export function setupCommandListeners() {
 		}
 	});
 
-	onCommand("focusAndDeleteContents", async ({ target }) => {
-		// Todo
+	// This command was changed on 2023-06-02. Remove this after April 2025.
+	onCommand("focusAndDeleteContents", async () => {
+		await notify(
+			`Command "focusAndDeleteContents" has been removed. Update rango-talon.`
+		);
 	});
 
 	onCommand("focusElement", async ({ target }) => {

@@ -69,7 +69,7 @@ export type ActionMap = {
 	copyLink: { target: string[] };
 	copyMarkdownLink: { target: string[] };
 	directClickElement: { target: string[] };
-	focusAndDeleteContents: { target: string[] };
+	focusAndDeleteContents: {};
 	focusElement: { target: string[] };
 	focusFirstInput: {};
 	hoverElement: { target: string[] };
