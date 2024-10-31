@@ -19,49 +19,49 @@ export type LocationProperty =
  */
 export type ActionMap = {
 	// Navigation
-	historyGoBack: {};
-	historyGoForward: {};
-	navigateToNextPage: {};
-	navigateToPageRoot: {};
-	navigateToPreviousPage: {};
+	historyGoBack: void;
+	historyGoForward: void;
+	navigateToNextPage: void;
+	navigateToPageRoot: void;
+	navigateToPreviousPage: void;
 
 	// Tabs
 	activateTab: { target: string[] };
-	cloneCurrentTab: {};
+	cloneCurrentTab: void;
 	closeNextTabsInWindow: { arg: number };
-	closeOtherTabsInWindow: {};
+	closeOtherTabsInWindow: void;
 	closePreviousTabsInWindow: { arg: number };
 	closeTab: { target: string[] };
 	closeTabsLeftEndInWindow: { arg: number };
 	closeTabsRightEndInWindow: { arg: number };
-	closeTabsToTheLeftInWindow: {};
-	closeTabsToTheRightInWindow: {};
-	copyCurrentTabMarkdownUrl: {};
+	closeTabsToTheLeftInWindow: void;
+	closeTabsToTheRightInWindow: void;
+	copyCurrentTabMarkdownUrl: void;
 	copyLocationProperty: { arg: LocationProperty };
 	cycleTabsByText: { arg: number };
-	focusNextAudibleTab: {};
-	focusNextMutedTab: {};
-	focusNextTabWithSound: {};
+	focusNextAudibleTab: void;
+	focusNextMutedTab: void;
+	focusNextTabWithSound: void;
 	focusOrCreateTabByUrl: { arg: string };
-	focusPreviousTab: {};
+	focusPreviousTab: void;
 	focusTabByText: { arg: string };
-	focusTabLastSounded: {};
-	getBareTitle: {};
-	moveCurrentTabToNewWindow: {};
-	muteAllTabsWithSound: {};
-	muteCurrentTab: {};
-	muteNextTabWithSound: {};
+	focusTabLastSounded: void;
+	getBareTitle: void;
+	moveCurrentTabToNewWindow: void;
+	muteAllTabsWithSound: void;
+	muteCurrentTab: void;
+	muteNextTabWithSound: void;
 	muteTab: { target: string[] };
 	openPageInNewTab: { arg: string };
-	refreshTabMarkers: {};
-	toggleTabMarkers: {};
-	unmuteAllMutedTabs: {};
-	unmuteCurrentTab: {};
-	unmuteNextMutedTab: {};
+	refreshTabMarkers: void;
+	toggleTabMarkers: void;
+	unmuteAllMutedTabs: void;
+	unmuteCurrentTab: void;
+	unmuteNextMutedTab: void;
 	unmuteTab: { target: string[] };
 
 	// Keyboard Clicking
-	toggleKeyboardClicking: {};
+	toggleKeyboardClicking: void;
 
 	// Elements
 	clickElement: { target: string[] };
@@ -69,76 +69,76 @@ export type ActionMap = {
 	copyLink: { target: string[] };
 	copyMarkdownLink: { target: string[] };
 	directClickElement: { target: string[] };
-	focusAndDeleteContents: {};
+	focusAndDeleteContents: void;
 	focusElement: { target: string[] };
-	focusFirstInput: {};
+	focusFirstInput: void;
 	hoverElement: { target: string[] };
-	insertToField: {};
+	insertToField: void;
 	openInBackgroundTab: { target: string[] };
 	openInNewTab: { target: string[] };
 	setSelectionAfter: { target: string[] };
 	setSelectionBefore: { target: string[] };
 	showLink: { target: string[] };
 	tryToFocusElementAndCheckIsEditable: { target: string[] };
-	unhoverAll: {};
+	unhoverAll: void;
 
 	// Scroll
-	scrollDownAtElement: {};
+	scrollDownAtElement: void;
 	scrollDownLeftAside: { arg?: number };
 	scrollDownPage: { arg?: number };
 	scrollDownRightAside: { arg?: number };
 	scrollElementToBottom: { target: string[] };
 	scrollElementToCenter: { target: string[] };
 	scrollElementToTop: { target: string[] };
-	scrollLeftAtElement: {};
+	scrollLeftAtElement: void;
 	scrollLeftPage: { arg?: number };
-	scrollRightAtElement: {};
+	scrollRightAtElement: void;
 	scrollRightPage: { arg?: number };
 	scrollToPosition: { arg: string };
-	scrollUpAtElement: {};
+	scrollUpAtElement: void;
 	scrollUpLeftAside: { arg?: number };
 	scrollUpPage: { arg?: number };
 	scrollUpRightAside: { arg?: number };
 	storeScrollPosition: { arg: string };
 
 	// Custom Selectors
-	confirmSelectorsCustomization: {};
-	displayExcludedHints: {};
-	displayExtraHints: {};
-	displayLessHints: {};
-	excludeAllHints: {};
+	confirmSelectorsCustomization: void;
+	displayExcludedHints: void;
+	displayExtraHints: void;
+	displayLessHints: void;
+	excludeAllHints: void;
 	excludeExtraSelectors: { target: string[] };
 	includeExtraSelectors: { target: string[] };
-	includeOrExcludeLessSelectors: {};
-	includeOrExcludeMoreSelectors: {};
-	resetCustomSelectors: {};
+	includeOrExcludeLessSelectors: void;
+	includeOrExcludeMoreSelectors: void;
+	resetCustomSelectors: void;
 
 	// Toggle Hints
 	disableHints: { arg: ToggleLevel };
-	displayTogglesStatus: {};
+	displayTogglesStatus: void;
 	enableHints: { arg: ToggleLevel };
-	toggleHints: {};
+	toggleHints: void;
 	resetToggleLevel: { arg: ToggleLevel };
 
 	// Hints
 	hideHint: { target: string[] };
-	refreshHints: {};
+	refreshHints: void;
 
 	// Settings
-	decreaseHintSize: {};
-	increaseHintSize: {};
-	openSettingsPage: {};
+	decreaseHintSize: void;
+	increaseHintSize: void;
+	openSettingsPage: void;
 
 	// Helpers
-	checkActiveElementIsEditable: {};
-	requestTimedOut: {};
+	checkActiveElementIsEditable: void;
+	requestTimedOut: void;
 
 	// References
 	removeReference: { arg: string };
 	runActionOnReference: { arg: ActionWithElementTarget; arg2: string };
 	saveReference: { target: string[]; arg: string };
 	saveReferenceForActiveElement: { arg: string };
-	showReferences: {};
+	showReferences: void;
 
 	// Fuzzy Search Elements
 	executeActionOnTextMatchedElement: { actionType: ActionWithElementTarget };
@@ -150,10 +150,10 @@ export type ActionMap = {
 	};
 
 	// To Be Deleted
-	disableUrlInTitle: {};
-	enableUrlInTitle: {};
-	excludeSingleLetterHints: {};
-	includeSingleLetterHints: {};
+	disableUrlInTitle: void;
+	enableUrlInTitle: void;
+	excludeSingleLetterHints: void;
+	includeSingleLetterHints: void;
 };
 
 type ActionWithElementTarget = {
