@@ -372,8 +372,9 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("hoverElement", async ({ target }) => {
-		// Todo
+		await sendMessagesToTargetFrames("hoverElement", { target });
 	});
+
 	onCommand("insertToField", async ({ target, arg }) => {
 		// Todo
 	});

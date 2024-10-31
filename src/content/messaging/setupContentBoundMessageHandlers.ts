@@ -2,6 +2,7 @@ import { clickElement } from "../actions/clickElement";
 import { getElementTextContent } from "../actions/copy";
 import { focus, focusFirstInput } from "../actions/focus";
 import { getAnchorHref } from "../actions/getAnchorHref";
+import { hoverElement } from "../actions/hoverElement";
 import {
 	markHintsAsKeyboardReachable,
 	restoreKeyboardReachableHints,
@@ -135,6 +136,11 @@ export function setupContentBoundMessageHandlers() {
 		if (!wrapper) return { focusPage: false };
 		const focusWasPerformed = focus(wrapper);
 		return { focusPage: focusWasPerformed ? !document.hasFocus() : false };
+	});
+
+	onMessage("hoverElement", async ({ target }) => {
+		const wrappers = getIntersectingWrappers(target);
+		await hoverElement(wrappers);
 	});
 
 	onMessage("showLink", ({ target }) => {
