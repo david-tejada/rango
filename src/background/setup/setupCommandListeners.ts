@@ -384,7 +384,15 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("openInBackgroundTab", async ({ target }) => {
-		// Todo
+		const { values } = await sendMessagesToTargetFrames("getAnchorHref", {
+			target,
+		});
+
+		await Promise.all(
+			values
+				.flat()
+				.map(async (url) => browser.tabs.create({ url, active: false }))
+		);
 	});
 
 	onCommand("openInNewTab", async ({ target }) => {
@@ -396,9 +404,7 @@ export function setupCommandListeners() {
 		if (first) await browser.tabs.create({ url: first, active: true });
 
 		await Promise.all(
-			rest.map(async (href) =>
-				browser.tabs.create({ url: href, active: false })
-			)
+			rest.map(async (url) => browser.tabs.create({ url, active: false }))
 		);
 	});
 
