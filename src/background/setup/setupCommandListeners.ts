@@ -392,10 +392,13 @@ export function setupCommandListeners() {
 			target,
 		});
 
+		const [first, ...rest] = values.flat();
+		if (first) await browser.tabs.create({ url: first, active: true });
+
 		await Promise.all(
-			values
-				.flat()
-				.map(async (href) => browser.tabs.create({ url: href, active: false }))
+			rest.map(async (href) =>
+				browser.tabs.create({ url: href, active: false })
+			)
 		);
 	});
 
