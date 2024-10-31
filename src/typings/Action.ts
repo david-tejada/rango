@@ -73,7 +73,7 @@ export type ActionMap = {
 	focusElement: { target: string[] };
 	focusFirstInput: {};
 	hoverElement: { target: string[] };
-	insertToField: { target: string[]; arg: string };
+	insertToField: {};
 	openInBackgroundTab: { target: string[] };
 	openInNewTab: { target: string[] };
 	setSelectionAfter: { target: string[] };

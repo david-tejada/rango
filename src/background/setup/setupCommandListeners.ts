@@ -375,9 +375,14 @@ export function setupCommandListeners() {
 		await sendMessagesToTargetFrames("hoverElement", { target });
 	});
 
-	onCommand("insertToField", async ({ target, arg }) => {
-		// Todo
+	// This command was changed on 2023-06-02. Remove this after April 2025.
+	onCommand("insertToField", async () => {
+		const message = `Command "insertToField" has been removed. Update rango-talon.`;
+		await notify(message, { type: "error" });
+
+		return { name: "printError", message };
 	});
+
 	onCommand("openInBackgroundTab", async ({ target }) => {
 		// Todo
 	});

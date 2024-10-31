@@ -8,7 +8,6 @@ import { getWrapper, getWrapperForElement } from "../wrappers/wrappers";
 import { copyLinkToClipboard, copyMarkdownLinkToClipboard } from "./copy";
 import { markHintsForExclusion, markHintsForInclusion } from "./customHints";
 import { hoverElement } from "./hoverElement";
-import { insertToField } from "./insertToField";
 import { saveReference } from "./references";
 import { scroll, snapScroll } from "./scroll";
 import { setSelectionAfter, setSelectionBefore } from "./setSelection";
@@ -66,13 +65,6 @@ export async function runRangoActionWithTarget(
 
 		case "copyMarkdownLink": {
 			return copyMarkdownLinkToClipboard(wrappers);
-		}
-
-		// This is not used anymore. I leave it here for now for backwards
-		// compatibility - 2023-06-02
-		case "insertToField": {
-			await insertToField(wrappers, request.arg);
-			break;
 		}
 
 		case "setSelectionBefore": {
