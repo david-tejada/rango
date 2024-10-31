@@ -347,9 +347,10 @@ export function setupCommandListeners() {
 
 	// This command was changed on 2023-06-02. Remove this after April 2025.
 	onCommand("focusAndDeleteContents", async () => {
-		await notify(
-			`Command "focusAndDeleteContents" has been removed. Update rango-talon.`
-		);
+		const message = `Command "focusAndDeleteContents" has been removed. Update rango-talon.`;
+		await notify(message, { type: "error" });
+
+		return { name: "printError", message };
 	});
 
 	onCommand("focusElement", async ({ target }) => {
