@@ -59,11 +59,6 @@ export type ContentBoundMessageMap = {
 		isSelect?: boolean;
 		focusPage?: boolean;
 	} | void;
-	directClickElement: (data: { target: string[] }) => {
-		isSelect?: boolean;
-		focusPage?: boolean;
-		noHintFound?: boolean;
-	} | void;
 	getElementTextContent: (data: { target: string[] }) => string[];
 	tryToFocusElementAndCheckIsEditable: (data: { target: string[] }) => boolean;
 	focusElement: (data: { target: string[] }) => { focusPage?: boolean };

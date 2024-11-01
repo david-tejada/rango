@@ -1,5 +1,6 @@
 import browser from "webextension-polyfill";
 import { retrieve } from "../../common/storage";
+import { isTargetError } from "../../common/target/TargetError";
 import { promiseWrap } from "../../lib/promiseWrap";
 import { type TalonAction } from "../../typings/RequestFromTalon";
 import { activateTab } from "../actions/activateTab";
@@ -243,8 +244,10 @@ export function setupCommandListeners() {
 	// ===========================================================================
 	// ELEMENTS
 	// ===========================================================================
-	function handleClickResults<T extends "clickElement" | "directClickElement">(
-		values: Awaited<ReturnType<typeof sendMessagesToTargetFrames<T>>>["values"]
+	function handleClickResults(
+		values: Awaited<
+			ReturnType<typeof sendMessagesToTargetFrames<"clickElement">>
+		>["values"]
 	) {
 		const focusPage = values.find((value) => value?.focusPage);
 
@@ -332,20 +335,15 @@ export function setupCommandListeners() {
 		}
 
 		try {
-			const { values } = await sendMessagesToTargetFrames(
-				"directClickElement",
-				{ target }
-			);
-
-			if (target.length === 1 && values[0]?.noHintFound) {
-				return { name: "typeTargetCharacters" };
-			}
+			const { values } = await sendMessagesToTargetFrames("clickElement", {
+				target,
+			});
 
 			return handleClickResults(values);
 		} catch (error: unknown) {
 			if (
 				target.length === 1 &&
-				error instanceof UnreachableContentScriptError
+				(error instanceof UnreachableContentScriptError || isTargetError(error))
 			) {
 				return { name: "typeTargetCharacters" };
 			}

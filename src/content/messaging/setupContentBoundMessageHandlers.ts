@@ -1,3 +1,4 @@
+import { TargetError } from "../../common/target/TargetError";
 import { clickElement } from "../actions/clickElement";
 import { getElementTextContent } from "../actions/copy";
 import { focus, focusFirstInput } from "../actions/focus";
@@ -33,13 +34,22 @@ import { getWrapper, reclaimHints } from "../wrappers/wrappers";
 import { onMessage } from "./contentMessageBroker";
 
 function getIntersectingWrappers(target: string[]) {
-	const intersecting = getWrapper(target).filter(
-		(wrapper) => wrapper.isIntersectingViewport
-	);
+	const wrappers = target.map((hint) => {
+		const wrapper = getWrapper(hint);
+		if (!wrapper?.isIntersectingViewport) {
+			throw new TargetError(`Couldn't find mark "${hint}" in viewport.`);
+		}
 
-	for (const wrapper of intersecting) wrapper.hint?.flash();
+		return wrapper;
+	});
 
-	return intersecting;
+	for (const wrapper of wrappers) wrapper.hint?.flash();
+
+	return wrappers;
+}
+
+function getFirstWrapper(target: string[]) {
+	return getIntersectingWrappers(target)[0]!;
 }
 
 export function setupContentBoundMessageHandlers() {
@@ -109,31 +119,21 @@ export function setupContentBoundMessageHandlers() {
 		return clickElement(wrappers);
 	});
 
-	onMessage("directClickElement", async ({ target }) => {
-		const wrappers = getIntersectingWrappers(target);
-		if (wrappers.length === 0) {
-			return { noHintFound: true };
-		}
-
-		return clickElement(wrappers);
-	});
-
 	onMessage("getElementTextContent", async ({ target }) => {
 		const wrappers = getIntersectingWrappers(target);
 		return getElementTextContent(wrappers);
 	});
 
 	onMessage("tryToFocusElementAndCheckIsEditable", async ({ target }) => {
-		const wrapper = getIntersectingWrappers(target)[0];
-		if (!wrapper) return false;
+		const wrapper = getFirstWrapper(target);
 
 		const activeEditable = await activateEditable(wrapper);
 		return Boolean(activeEditable);
 	});
 
 	onMessage("focusElement", ({ target }) => {
-		const wrapper = getIntersectingWrappers(target)[0];
-		if (!wrapper) return { focusPage: false };
+		const wrapper = getFirstWrapper(target);
+
 		const focusWasPerformed = focus(wrapper);
 		return { focusPage: focusWasPerformed ? !document.hasFocus() : false };
 	});
