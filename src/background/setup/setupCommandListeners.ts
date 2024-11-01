@@ -276,36 +276,6 @@ export function setupCommandListeners() {
 		return handleClickResults(values);
 	});
 
-	onCommand("copyElementTextContent", async ({ target }) => {
-		const { values } = await sendMessagesToTargetFrames(
-			"getElementTextContent",
-			{ target }
-		);
-		if (values.flat().length === 0) return;
-
-		return {
-			name: "copyToClipboard",
-			textToCopy: values.flat().join("\n"),
-		};
-	});
-
-	onCommand("copyLink", async ({ target }) => {
-		const { values } = await sendMessagesToTargetFrames("getAnchorHref", {
-			target,
-			showCopyTooltip: true,
-		});
-		if (values.flat().length === 0) return;
-
-		return {
-			name: "copyToClipboard",
-			textToCopy: values.flat().join("\n"),
-		};
-	});
-
-	onCommand("copyMarkdownLink", async ({ target }) => {
-		// Todo
-	});
-
 	onCommand("directClickElement", async ({ target }) => {
 		// Handle the possibility that the user might have intended to type those
 		// characters.
@@ -351,6 +321,36 @@ export function setupCommandListeners() {
 
 			throw error;
 		}
+	});
+
+	onCommand("copyElementTextContent", async ({ target }) => {
+		const { values } = await sendMessagesToTargetFrames(
+			"getElementTextContent",
+			{ target }
+		);
+		if (values.flat().length === 0) return;
+
+		return {
+			name: "copyToClipboard",
+			textToCopy: values.flat().join("\n"),
+		};
+	});
+
+	onCommand("copyLink", async ({ target }) => {
+		const { values } = await sendMessagesToTargetFrames("getAnchorHref", {
+			target,
+			showCopyTooltip: true,
+		});
+		if (values.flat().length === 0) return;
+
+		return {
+			name: "copyToClipboard",
+			textToCopy: values.flat().join("\n"),
+		};
+	});
+
+	onCommand("copyMarkdownLink", async ({ target }) => {
+		// Todo
 	});
 
 	// This command was changed on 2023-06-02. Remove this after April 2025.
