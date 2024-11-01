@@ -12,6 +12,7 @@ import {
 	navigateToNextPage,
 	navigateToPreviousPage,
 } from "../actions/pagination";
+import { setSelectionAfter, setSelectionBefore } from "../actions/setSelection";
 import { showTitleAndHref } from "../actions/showTitleAndHref";
 import { reclaimHintsFromCache } from "../hints/hintsCache";
 import { deleteHintsInFrame } from "../hints/hintsInFrame";
@@ -151,6 +152,18 @@ export function setupContentBoundMessageHandlers() {
 	onMessage("getAnchorHref", async ({ target, showCopyTooltip }) => {
 		const wrappers = getIntersectingWrappers(target);
 		return getAnchorHref(wrappers, showCopyTooltip);
+	});
+
+	onMessage("setSelectionBefore", async ({ target }) => {
+		const wrapper = getFirstWrapper(target);
+
+		await setSelectionBefore(wrapper);
+	});
+
+	onMessage("setSelectionAfter", async ({ target }) => {
+		const wrapper = getFirstWrapper(target);
+
+		await setSelectionAfter(wrapper);
 	});
 
 	// =============================================================================

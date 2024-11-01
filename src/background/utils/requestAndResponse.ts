@@ -67,10 +67,28 @@ export async function writeResponse(
 
 	const actions = Array.isArray(talonActions) ? talonActions : [talonActions];
 
+	const isFocusPageAndResendResponse = actions.some(
+		(action) => action.name === "focusPageAndResend"
+	);
+	if (isFocusPageAndResendResponse) assertFirstFocusPageAndResend();
+
 	const jsonResponse = JSON.stringify({ type: "response", actions });
 	await writeClipboard(jsonResponse);
 }
 
 export function discardNextResponse() {
 	shouldDiscardNextResponse = true;
+}
+
+// This avoids creating an infinite loop if Talon isn't able to focus the page.
+let hasTriedToFocusPage = false;
+function assertFirstFocusPageAndResend() {
+	if (hasTriedToFocusPage) {
+		throw new Error("Command execution failed. Unable to focus page.");
+	}
+
+	hasTriedToFocusPage = true;
+	setTimeout(() => {
+		hasTriedToFocusPage = false;
+	}, 1000);
 }

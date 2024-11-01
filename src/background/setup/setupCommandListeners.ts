@@ -37,6 +37,7 @@ import { refreshTabMarkers } from "../misc/tabMarkers";
 import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
 import { notify } from "../utils/notify";
 import { discardNextResponse } from "../utils/requestAndResponse";
+import { tryToFocusDocument } from "../utils/tryToFocusDocument";
 
 /**
  * Assert we are passing a single target. `target` must be an array of length 1.
@@ -411,16 +412,35 @@ export function setupCommandListeners() {
 		);
 	});
 
-	onCommand("setSelectionAfter", async ({ target }) => {
-		// Todo
-	});
 	onCommand("setSelectionBefore", async ({ target }) => {
-		// Todo
+		assertSingleTarget(target);
+
+		const documentHasFocus = await tryToFocusDocument();
+		if (!documentHasFocus) return { name: "focusPageAndResend" };
+
+		await sendMessagesToTargetFrames("setSelectionBefore", {
+			target,
+		});
+		return undefined;
 	});
-	onCommand("showLink", async ({ target }) => {
-		await sendMessagesToTargetFrames("showLink", { target });
+
+	onCommand("setSelectionAfter", async ({ target }) => {
+		assertSingleTarget(target);
+
+		const documentHasFocus = await tryToFocusDocument();
+		if (!documentHasFocus) return { name: "focusPageAndResend" };
+
+		await sendMessagesToTargetFrames("setSelectionAfter", {
+			target,
+		});
+		return undefined;
 	});
+
 	onCommand("tryToFocusElementAndCheckIsEditable", async ({ target }) => {
+		assertSingleTarget(target);
+		const documentHasFocus = await tryToFocusDocument();
+		if (!documentHasFocus) return { name: "focusPageAndResend" };
+
 		const { values } = await sendMessagesToTargetFrames(
 			"tryToFocusElementAndCheckIsEditable",
 			{ target }
@@ -428,6 +448,11 @@ export function setupCommandListeners() {
 
 		return { name: "responseValue", value: values[0]! };
 	});
+
+	onCommand("showLink", async ({ target }) => {
+		await sendMessagesToTargetFrames("showLink", { target });
+	});
+
 	onCommand("unhoverAll", async () => {
 		// Todo
 	});

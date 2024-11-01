@@ -69,6 +69,8 @@ export type ContentBoundMessageMap = {
 	}) => string[];
 	focusFirstInput: () => void;
 	hoverElement: (data: { target: string[] }) => void;
+	setSelectionBefore: (data: { target: string[] }) => void;
+	setSelectionAfter: (data: { target: string[] }) => void;
 
 	// Hints
 	reclaimHints: (data: { amount: number }) => string[];
