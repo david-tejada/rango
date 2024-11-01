@@ -27,6 +27,7 @@ import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
 import { toggleTabMarkers } from "../actions/toggleTabMarkers";
 import { onCommand } from "../commands/commandBroker";
+import { getFrameIdForHint } from "../hints/hintsAllocator";
 import {
 	sendMessage,
 	sendMessagesToTargetFrames,
@@ -469,57 +470,79 @@ export function setupCommandListeners() {
 	// ===========================================================================
 	// SCROLL
 	// ===========================================================================
-	onCommand("scrollDownAtElement", async () => {
-		// Todo
-	});
-	onCommand("scrollDownLeftAside", async ({ arg }) => {
-		// Todo
-	});
-	onCommand("scrollDownPage", async ({ arg }) => {
-		// Todo
-	});
-	onCommand("scrollDownRightAside", async ({ arg }) => {
-		// Todo
-	});
-	onCommand("scrollElementToBottom", async ({ target }) => {
-		// Todo
-	});
-	onCommand("scrollElementToCenter", async ({ target }) => {
-		// Todo
-	});
-	onCommand("scrollElementToTop", async ({ target }) => {
-		// Todo
-	});
-	onCommand("scrollLeftAtElement", async () => {
-		// Todo
-	});
-	onCommand("scrollLeftPage", async ({ arg }) => {
-		// Todo
-	});
-	onCommand("scrollRightAtElement", async () => {
-		// Todo
-	});
-	onCommand("scrollRightPage", async ({ arg }) => {
-		// Todo
-	});
-	onCommand("scrollToPosition", async ({ arg }) => {
-		// Todo
-	});
-	onCommand("scrollUpAtElement", async () => {
-		// Todo
-	});
-	onCommand("scrollUpLeftAside", async ({ arg }) => {
-		// Todo
-	});
-	onCommand("scrollUpPage", async ({ arg }) => {
-		// Todo
-	});
-	onCommand("scrollUpRightAside", async ({ arg }) => {
-		// Todo
-	});
-	onCommand("storeScrollPosition", async ({ arg }) => {
-		// Todo
-	});
+
+	const scrollAtElementCommands = [
+		"scrollDownAtElement",
+		"scrollLeftAtElement",
+		"scrollRightAtElement",
+		"scrollUpAtElement",
+	] as const;
+
+	// We need to store the frame id to use it for scrolling at the same element.
+	// We can't use a simple let variable because is not safe when creating
+	// functions within loops:  https://eslint.org/docs/latest/rules/no-loop-func
+	const lastFrameId = {
+		value: 0,
+		set(value: number) {
+			this.value = value;
+		},
+	};
+
+	for (const command of scrollAtElementCommands) {
+		onCommand(command, async ({ target, arg }) => {
+			if (target) {
+				assertSingleTarget(target);
+				const frameId = await getFrameIdForHint(target[0]);
+				lastFrameId.set(frameId);
+				await sendMessage(command, { target, arg }, { frameId });
+				return;
+			}
+
+			await sendMessage(command, { target }, { frameId: lastFrameId.value });
+		});
+	}
+
+	const snapScrollCommands = [
+		"scrollElementToBottom",
+		"scrollElementToCenter",
+		"scrollElementToTop",
+	] as const;
+
+	for (const command of snapScrollCommands) {
+		onCommand(command, async ({ target }) => {
+			assertSingleTarget(target);
+			await sendMessagesToTargetFrames(command, { target });
+		});
+	}
+
+	const scrollWithoutTargetCommands = [
+		"scrollDownLeftAside",
+		"scrollDownPage",
+		"scrollDownRightAside",
+		"scrollLeftPage",
+		"scrollRightPage",
+		"scrollUpLeftAside",
+		"scrollUpPage",
+		"scrollUpRightAside",
+	] as const;
+
+	for (const command of scrollWithoutTargetCommands) {
+		onCommand(command, async ({ arg }) => {
+			await sendMessage(command, { arg });
+		});
+	}
+
+	// These needs to be separate as the previous ones because arg is a string.
+	const scrollPositionCommands = [
+		"storeScrollPosition",
+		"scrollToPosition",
+	] as const;
+
+	for (const command of scrollPositionCommands) {
+		onCommand(command, async ({ arg }) => {
+			await sendMessage(command, { arg });
+		});
+	}
 
 	// ===========================================================================
 	// CUSTOM SELECTORS

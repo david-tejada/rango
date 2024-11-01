@@ -4,6 +4,7 @@ import { letterHints, numberHints } from "../../common/allHints";
 import { getKeysToExclude } from "../../common/getKeysToExclude";
 import { retrieve, store } from "../../common/storage";
 import { type HintStack } from "../../typings/StorageSchema";
+import { getCurrentTabId } from "../utils/getCurrentTab";
 import { navigationOccurred } from "./preloadTabs";
 
 export class HintStackError extends Error {
@@ -70,14 +71,26 @@ async function _saveStack(tabId: number, stack: HintStack) {
 	await store("hintStacks", stacks);
 }
 
-export async function getStack(tabId: number) {
-	const stack = await _getStack(tabId);
+export async function getStack(tabId?: number) {
+	const tabId_ = tabId ?? (await getCurrentTabId());
+	const stack = await _getStack(tabId_);
 
 	if (!stack) {
 		throw new HintStackError(`No hint stack found for tab with id ${tabId}`);
 	}
 
 	return stack;
+}
+
+export async function getFrameIdForHint(hint: string, tabId?: number) {
+	const stack = await getStack(tabId);
+	const frameId = stack.assigned.get(hint);
+
+	if (frameId === undefined) {
+		throw new HintStackError(`No hint found for tab with id ${tabId}`);
+	}
+
+	return frameId;
 }
 
 const mutex = new Mutex();

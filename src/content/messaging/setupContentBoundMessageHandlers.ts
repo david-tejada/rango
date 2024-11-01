@@ -2,6 +2,10 @@ import { toast } from "react-toastify";
 import { TargetError } from "../../common/target/TargetError";
 import { clickElement } from "../actions/clickElement";
 import { getElementTextContent, getMarkdownLink } from "../actions/copy";
+import {
+	scrollToPosition,
+	storeScrollPosition,
+} from "../actions/customScrollPositions";
 import { blur, focus, focusFirstInput } from "../actions/focus";
 import { getAnchorHref } from "../actions/getAnchorHref";
 import { hoverElement, unhoverAll } from "../actions/hoverElement";
@@ -13,6 +17,7 @@ import {
 	navigateToNextPage,
 	navigateToPreviousPage,
 } from "../actions/pagination";
+import { scroll, snapScroll } from "../actions/scroll";
 import { setSelectionAfter, setSelectionBefore } from "../actions/setSelection";
 import { showTitleAndHref } from "../actions/showTitleAndHref";
 import { reclaimHintsFromCache } from "../hints/hintsCache";
@@ -172,6 +177,41 @@ export function setupContentBoundMessageHandlers() {
 		await setSelectionAfter(wrapper);
 	});
 
+	onMessage("scrollUpAtElement", async ({ target, arg }) => {
+		const scrollTarget = target ? getFirstWrapper(target) : "repeatLast";
+		scroll({ dir: "up", target: scrollTarget, factor: arg });
+	});
+
+	onMessage("scrollDownAtElement", async ({ target, arg }) => {
+		const scrollTarget = target ? getFirstWrapper(target) : "repeatLast";
+		scroll({ dir: "down", target: scrollTarget, factor: arg });
+	});
+
+	onMessage("scrollLeftAtElement", async ({ target, arg }) => {
+		const scrollTarget = target ? getFirstWrapper(target) : "repeatLast";
+		scroll({ dir: "left", target: scrollTarget, factor: arg });
+	});
+
+	onMessage("scrollRightAtElement", async ({ target, arg }) => {
+		const scrollTarget = target ? getFirstWrapper(target) : "repeatLast";
+		scroll({ dir: "right", target: scrollTarget, factor: arg });
+	});
+
+	onMessage("scrollElementToTop", async ({ target }) => {
+		const wrapper = getFirstWrapper(target);
+		snapScroll("top", wrapper);
+	});
+
+	onMessage("scrollElementToBottom", async ({ target }) => {
+		const wrapper = getFirstWrapper(target);
+		snapScroll("bottom", wrapper);
+	});
+
+	onMessage("scrollElementToCenter", async ({ target }) => {
+		const wrapper = getFirstWrapper(target);
+		snapScroll("center", wrapper);
+	});
+
 	// =============================================================================
 	// COMMANDS WITHOUT TARGET
 	// =============================================================================
@@ -197,5 +237,45 @@ export function setupContentBoundMessageHandlers() {
 		blur();
 		unhoverAll();
 		toast.dismiss();
+	});
+
+	onMessage("scrollUpPage", ({ arg }) => {
+		scroll({ dir: "up", target: "page", factor: arg });
+	});
+
+	onMessage("scrollDownPage", ({ arg }) => {
+		scroll({ dir: "down", target: "page", factor: arg });
+	});
+
+	onMessage("scrollUpLeftAside", ({ arg }) => {
+		scroll({ dir: "up", target: "leftAside", factor: arg });
+	});
+
+	onMessage("scrollDownLeftAside", ({ arg }) => {
+		scroll({ dir: "down", target: "leftAside", factor: arg });
+	});
+
+	onMessage("scrollUpRightAside", ({ arg }) => {
+		scroll({ dir: "up", target: "rightAside", factor: arg });
+	});
+
+	onMessage("scrollDownRightAside", ({ arg }) => {
+		scroll({ dir: "down", target: "rightAside", factor: arg });
+	});
+
+	onMessage("scrollLeftPage", ({ arg }) => {
+		scroll({ dir: "left", target: "page", factor: arg });
+	});
+
+	onMessage("scrollRightPage", ({ arg }) => {
+		scroll({ dir: "right", target: "page", factor: arg });
+	});
+
+	onMessage("storeScrollPosition", async ({ arg }) => {
+		await storeScrollPosition(arg);
+	});
+
+	onMessage("scrollToPosition", async ({ arg }) => {
+		await scrollToPosition(arg);
 	});
 }

@@ -83,23 +83,23 @@ export type ActionMap = {
 	unhoverAll: void;
 
 	// Scroll
-	scrollDownAtElement: void;
+	scrollDownAtElement: { target?: string[]; arg?: number };
 	scrollDownLeftAside: { arg?: number };
 	scrollDownPage: { arg?: number };
 	scrollDownRightAside: { arg?: number };
 	scrollElementToBottom: { target: string[] };
 	scrollElementToCenter: { target: string[] };
 	scrollElementToTop: { target: string[] };
-	scrollLeftAtElement: void;
+	scrollLeftAtElement: { target?: string[]; arg?: number };
 	scrollLeftPage: { arg?: number };
-	scrollRightAtElement: void;
+	scrollRightAtElement: { target?: string[]; arg?: number };
 	scrollRightPage: { arg?: number };
-	scrollToPosition: { arg: string };
-	scrollUpAtElement: void;
+	scrollUpAtElement: { target?: string[]; arg?: number };
 	scrollUpLeftAside: { arg?: number };
 	scrollUpPage: { arg?: number };
 	scrollUpRightAside: { arg?: number };
 	storeScrollPosition: { arg: string };
+	scrollToPosition: { arg: string };
 
 	// Custom Selectors
 	confirmSelectorsCustomization: void;

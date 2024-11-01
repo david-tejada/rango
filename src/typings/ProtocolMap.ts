@@ -1,5 +1,6 @@
 import { type ToastOptions } from "react-toastify";
 import { type Tabs } from "webextension-polyfill";
+import { type ActionMap } from "./Action";
 import { type CustomSelector, type HintStack } from "./StorageSchema";
 
 type FirstParameter<T> = T extends (...args: infer P) => any ? P[0] : never;
@@ -53,7 +54,13 @@ export type BackgroundBoundMessageMap = {
 	restoreKeyboardReachableHints: () => void;
 };
 
-export type ContentBoundMessageMap = {
+type ScrollMessageMap = {
+	[Key in keyof ActionMap as Key extends `${string}${"scroll" | "Scroll"}${string}`
+		? Key
+		: never]: (data: ActionMap[Key]) => void;
+};
+
+export type ContentBoundMessageMap = ScrollMessageMap & {
 	// Elements
 	clickElement: (data: { target: string[] }) => {
 		isSelect?: boolean;
