@@ -37,6 +37,15 @@ import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
 import { notify } from "../utils/notify";
 import { discardNextResponse } from "../utils/requestAndResponse";
 
+/**
+ * Assert we are passing a single target. `target` must be an array of length 1.
+ */
+function assertSingleTarget(target: string[]): asserts target is [string] {
+	if (target.length !== 1) {
+		throw new Error("This command only accepts a single target.");
+	}
+}
+
 export function setupCommandListeners() {
 	// ===========================================================================
 	// NAVIGATION
@@ -354,14 +363,10 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("focusElement", async ({ target }) => {
-		if (target.length > 1) {
-			await notify("Only one element can be focused.", { type: "warning" });
-		}
-
-		const filteredTarget = target[0] ? [target[0]] : [];
+		assertSingleTarget(target);
 
 		const { values } = await sendMessagesToTargetFrames("focusElement", {
-			target: filteredTarget,
+			target,
 		});
 
 		return values[0]?.focusPage ? { name: "focusPage" } : undefined;
