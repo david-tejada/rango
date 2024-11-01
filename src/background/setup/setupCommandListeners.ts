@@ -350,7 +350,16 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("copyMarkdownLink", async ({ target }) => {
-		// Todo
+		const { values } = await sendMessagesToTargetFrames(
+			"getElementMarkdownLink",
+			{ target }
+		);
+		if (values.flat().length === 0) return;
+
+		return {
+			name: "copyToClipboard",
+			textToCopy: values.flat().join("\n"),
+		};
 	});
 
 	// This command was changed on 2023-06-02. Remove this after April 2025.

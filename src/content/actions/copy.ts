@@ -43,9 +43,7 @@ export function copyLinkToClipboard(
 	return hrefs.length > 0 ? hrefs.join("\n") : undefined;
 }
 
-export function copyMarkdownLinkToClipboard(
-	wrappers: ElementWrapper[]
-): string | undefined {
+export function getMarkdownLink(wrappers: ElementWrapper[]) {
 	const markdownLinks: string[] = [];
 
 	for (const wrapper of wrappers) {
@@ -63,5 +61,5 @@ export function copyMarkdownLinkToClipboard(
 		showTooltip(wrapper, message, 1500);
 	}
 
-	return markdownLinks.length > 0 ? markdownLinks.join("\n") : undefined;
+	return markdownLinks;
 }

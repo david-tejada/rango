@@ -1,6 +1,6 @@
 import { TargetError } from "../../common/target/TargetError";
 import { clickElement } from "../actions/clickElement";
-import { getElementTextContent } from "../actions/copy";
+import { getElementTextContent, getMarkdownLink } from "../actions/copy";
 import { focus, focusFirstInput } from "../actions/focus";
 import { getAnchorHref } from "../actions/getAnchorHref";
 import { hoverElement } from "../actions/hoverElement";
@@ -123,6 +123,11 @@ export function setupContentBoundMessageHandlers() {
 	onMessage("getElementTextContent", async ({ target }) => {
 		const wrappers = getIntersectingWrappers(target);
 		return getElementTextContent(wrappers);
+	});
+
+	onMessage("getElementMarkdownLink", async ({ target }) => {
+		const wrappers = getIntersectingWrappers(target);
+		return getMarkdownLink(wrappers);
 	});
 
 	onMessage("tryToFocusElementAndCheckIsEditable", async ({ target }) => {

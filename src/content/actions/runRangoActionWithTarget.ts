@@ -5,7 +5,7 @@ import { assertDefined } from "../../typings/TypingUtils";
 import { notify } from "../notify/notify";
 import { setLastWrapper } from "../wrappers/lastWrapper";
 import { getWrapper, getWrapperForElement } from "../wrappers/wrappers";
-import { copyLinkToClipboard, copyMarkdownLinkToClipboard } from "./copy";
+import { copyLinkToClipboard } from "./copy";
 import { markHintsForExclusion, markHintsForInclusion } from "./customHints";
 import { hoverElement } from "./hoverElement";
 import { saveReference } from "./references";
@@ -61,10 +61,6 @@ export async function runRangoActionWithTarget(
 
 		case "copyLink": {
 			return copyLinkToClipboard(wrappers);
-		}
-
-		case "copyMarkdownLink": {
-			return copyMarkdownLinkToClipboard(wrappers);
 		}
 
 		case "setSelectionBefore": {
