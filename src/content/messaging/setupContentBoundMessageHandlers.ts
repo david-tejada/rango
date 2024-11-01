@@ -1,9 +1,10 @@
+import { toast } from "react-toastify";
 import { TargetError } from "../../common/target/TargetError";
 import { clickElement } from "../actions/clickElement";
 import { getElementTextContent, getMarkdownLink } from "../actions/copy";
-import { focus, focusFirstInput } from "../actions/focus";
+import { blur, focus, focusFirstInput } from "../actions/focus";
 import { getAnchorHref } from "../actions/getAnchorHref";
-import { hoverElement } from "../actions/hoverElement";
+import { hoverElement, unhoverAll } from "../actions/hoverElement";
 import {
 	markHintsAsKeyboardReachable,
 	restoreKeyboardReachableHints,
@@ -191,4 +192,10 @@ export function setupContentBoundMessageHandlers() {
 	});
 
 	onMessage("focusFirstInput", focusFirstInput);
+
+	onMessage("unhoverAll", () => {
+		blur();
+		unhoverAll();
+		toast.dismiss();
+	});
 }

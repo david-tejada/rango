@@ -388,6 +388,10 @@ export function setupCommandListeners() {
 		await sendMessagesToTargetFrames("hoverElement", { target });
 	});
 
+	onCommand("unhoverAll", async () => {
+		await sendMessage("unhoverAll");
+	});
+
 	// This command was changed on 2023-06-02. Remove this after April 2025.
 	onCommand("insertToField", async () => {
 		const message = `Command "insertToField" has been removed. Update rango-talon.`;
@@ -460,10 +464,6 @@ export function setupCommandListeners() {
 
 	onCommand("showLink", async ({ target }) => {
 		await sendMessagesToTargetFrames("showLink", { target });
-	});
-
-	onCommand("unhoverAll", async () => {
-		// Todo
 	});
 
 	// ===========================================================================
