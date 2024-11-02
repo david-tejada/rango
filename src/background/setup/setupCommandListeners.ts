@@ -471,78 +471,154 @@ export function setupCommandListeners() {
 	// SCROLL
 	// ===========================================================================
 
-	const scrollAtElementCommands = [
-		"scrollDownAtElement",
-		"scrollLeftAtElement",
-		"scrollRightAtElement",
-		"scrollUpAtElement",
-	] as const;
+	let lastFrameId = 0;
 
-	// We need to store the frame id to use it for scrolling at the same element.
-	// We can't use a simple let variable because is not safe when creating
-	// functions within loops:  https://eslint.org/docs/latest/rules/no-loop-func
-	const lastFrameId = {
-		value: 0,
-		set(value: number) {
-			this.value = value;
-		},
-	};
+	async function parseScrollTarget(target?: string[]) {
+		const frameId = lastFrameId;
 
-	for (const command of scrollAtElementCommands) {
-		onCommand(command, async ({ target, arg }) => {
-			if (target) {
-				assertSingleTarget(target);
-				const frameId = await getFrameIdForHint(target[0]);
-				lastFrameId.set(frameId);
-				await sendMessage(command, { target, arg }, { frameId });
-				return;
-			}
-
-			await sendMessage(command, { target }, { frameId: lastFrameId.value });
-		});
-	}
-
-	const snapScrollCommands = [
-		"scrollElementToBottom",
-		"scrollElementToCenter",
-		"scrollElementToTop",
-	] as const;
-
-	for (const command of snapScrollCommands) {
-		onCommand(command, async ({ target }) => {
+		if (target) {
 			assertSingleTarget(target);
-			await sendMessagesToTargetFrames(command, { target });
-		});
+			const frameId = await getFrameIdForHint(target[0]);
+			lastFrameId = frameId;
+		}
+
+		return { frameId, reference: target ? target[0] : "repeatLast" };
 	}
 
-	const scrollWithoutTargetCommands = [
-		"scrollDownLeftAside",
-		"scrollDownPage",
-		"scrollDownRightAside",
-		"scrollLeftPage",
-		"scrollRightPage",
-		"scrollUpLeftAside",
-		"scrollUpPage",
-		"scrollUpRightAside",
-	] as const;
+	// Scroll with target
+	onCommand("scrollUpAtElement", async ({ target, arg }) => {
+		const { frameId, reference } = await parseScrollTarget(target);
+		await sendMessage(
+			"scroll",
+			{ dir: "up", reference, factor: arg },
+			{ frameId }
+		);
+	});
 
-	for (const command of scrollWithoutTargetCommands) {
-		onCommand(command, async ({ arg }) => {
-			await sendMessage(command, { arg });
+	onCommand("scrollDownAtElement", async ({ target, arg }) => {
+		const { frameId, reference } = await parseScrollTarget(target);
+		await sendMessage(
+			"scroll",
+			{ dir: "down", reference, factor: arg },
+			{ frameId }
+		);
+	});
+
+	onCommand("scrollLeftAtElement", async ({ target, arg }) => {
+		const { frameId, reference } = await parseScrollTarget(target);
+		await sendMessage(
+			"scroll",
+			{ dir: "left", reference, factor: arg },
+			{ frameId }
+		);
+	});
+
+	onCommand("scrollRightAtElement", async ({ target, arg }) => {
+		const { frameId, reference } = await parseScrollTarget(target);
+		await sendMessage(
+			"scroll",
+			{ dir: "right", reference, factor: arg },
+			{ frameId }
+		);
+	});
+
+	// Snap Scroll
+	onCommand("scrollElementToTop", async ({ target }) => {
+		assertSingleTarget(target);
+		await sendMessagesToTargetFrames("snapScroll", {
+			position: "top",
+			target,
 		});
-	}
+	});
 
-	// These needs to be separate as the previous ones because arg is a string.
-	const scrollPositionCommands = [
-		"storeScrollPosition",
-		"scrollToPosition",
-	] as const;
-
-	for (const command of scrollPositionCommands) {
-		onCommand(command, async ({ arg }) => {
-			await sendMessage(command, { arg });
+	onCommand("scrollElementToCenter", async ({ target }) => {
+		assertSingleTarget(target);
+		await sendMessagesToTargetFrames("snapScroll", {
+			position: "center",
+			target,
 		});
-	}
+	});
+
+	onCommand("scrollElementToBottom", async ({ target }) => {
+		assertSingleTarget(target);
+		await sendMessagesToTargetFrames("snapScroll", {
+			position: "bottom",
+			target,
+		});
+	});
+
+	// Scroll without target
+	onCommand("scrollUpLeftAside", async ({ arg }) => {
+		await sendMessage("scroll", {
+			dir: "up",
+			reference: "leftAside",
+			factor: arg,
+		});
+	});
+
+	onCommand("scrollDownLeftAside", async ({ arg }) => {
+		await sendMessage("scroll", {
+			dir: "down",
+			reference: "leftAside",
+			factor: arg,
+		});
+	});
+
+	onCommand("scrollUpRightAside", async ({ arg }) => {
+		await sendMessage("scroll", {
+			dir: "up",
+			reference: "rightAside",
+			factor: arg,
+		});
+	});
+
+	onCommand("scrollDownRightAside", async ({ arg }) => {
+		await sendMessage("scroll", {
+			dir: "down",
+			reference: "rightAside",
+			factor: arg,
+		});
+	});
+
+	onCommand("scrollUpPage", async ({ arg }) => {
+		await sendMessage("scroll", {
+			dir: "up",
+			reference: "page",
+			factor: arg,
+		});
+	});
+
+	onCommand("scrollDownPage", async ({ arg }) => {
+		await sendMessage("scroll", {
+			dir: "down",
+			reference: "page",
+			factor: arg,
+		});
+	});
+
+	onCommand("scrollLeftPage", async ({ arg }) => {
+		await sendMessage("scroll", {
+			dir: "left",
+			reference: "page",
+			factor: arg,
+		});
+	});
+
+	onCommand("scrollRightPage", async ({ arg }) => {
+		await sendMessage("scroll", {
+			dir: "right",
+			reference: "page",
+			factor: arg,
+		});
+	});
+
+	onCommand("storeScrollPosition", async ({ arg }) => {
+		await sendMessage("storeScrollPosition", { name: arg });
+	});
+
+	onCommand("scrollToPosition", async ({ arg }) => {
+		await sendMessage("scrollToPosition", { name: arg });
+	});
 
 	// ===========================================================================
 	// CUSTOM SELECTORS

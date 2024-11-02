@@ -177,39 +177,21 @@ export function setupContentBoundMessageHandlers() {
 		await setSelectionAfter(wrapper);
 	});
 
-	onMessage("scrollUpAtElement", async ({ target, arg }) => {
-		const scrollTarget = target ? getFirstWrapper(target) : "repeatLast";
-		scroll({ dir: "up", target: scrollTarget, factor: arg });
+	onMessage("scroll", ({ dir, reference, factor }) => {
+		const target =
+			reference === "page" ||
+			reference === "leftAside" ||
+			reference === "rightAside" ||
+			reference === "repeatLast"
+				? reference
+				: getFirstWrapper([reference]);
+
+		scroll({ dir, target, factor });
 	});
 
-	onMessage("scrollDownAtElement", async ({ target, arg }) => {
-		const scrollTarget = target ? getFirstWrapper(target) : "repeatLast";
-		scroll({ dir: "down", target: scrollTarget, factor: arg });
-	});
-
-	onMessage("scrollLeftAtElement", async ({ target, arg }) => {
-		const scrollTarget = target ? getFirstWrapper(target) : "repeatLast";
-		scroll({ dir: "left", target: scrollTarget, factor: arg });
-	});
-
-	onMessage("scrollRightAtElement", async ({ target, arg }) => {
-		const scrollTarget = target ? getFirstWrapper(target) : "repeatLast";
-		scroll({ dir: "right", target: scrollTarget, factor: arg });
-	});
-
-	onMessage("scrollElementToTop", async ({ target }) => {
+	onMessage("snapScroll", ({ position, target }) => {
 		const wrapper = getFirstWrapper(target);
-		snapScroll("top", wrapper);
-	});
-
-	onMessage("scrollElementToBottom", async ({ target }) => {
-		const wrapper = getFirstWrapper(target);
-		snapScroll("bottom", wrapper);
-	});
-
-	onMessage("scrollElementToCenter", async ({ target }) => {
-		const wrapper = getFirstWrapper(target);
-		snapScroll("center", wrapper);
+		snapScroll(position, wrapper);
 	});
 
 	// =============================================================================
@@ -239,43 +221,11 @@ export function setupContentBoundMessageHandlers() {
 		toast.dismiss();
 	});
 
-	onMessage("scrollUpPage", ({ arg }) => {
-		scroll({ dir: "up", target: "page", factor: arg });
+	onMessage("storeScrollPosition", async ({ name }) => {
+		await storeScrollPosition(name);
 	});
 
-	onMessage("scrollDownPage", ({ arg }) => {
-		scroll({ dir: "down", target: "page", factor: arg });
-	});
-
-	onMessage("scrollUpLeftAside", ({ arg }) => {
-		scroll({ dir: "up", target: "leftAside", factor: arg });
-	});
-
-	onMessage("scrollDownLeftAside", ({ arg }) => {
-		scroll({ dir: "down", target: "leftAside", factor: arg });
-	});
-
-	onMessage("scrollUpRightAside", ({ arg }) => {
-		scroll({ dir: "up", target: "rightAside", factor: arg });
-	});
-
-	onMessage("scrollDownRightAside", ({ arg }) => {
-		scroll({ dir: "down", target: "rightAside", factor: arg });
-	});
-
-	onMessage("scrollLeftPage", ({ arg }) => {
-		scroll({ dir: "left", target: "page", factor: arg });
-	});
-
-	onMessage("scrollRightPage", ({ arg }) => {
-		scroll({ dir: "right", target: "page", factor: arg });
-	});
-
-	onMessage("storeScrollPosition", async ({ arg }) => {
-		await storeScrollPosition(arg);
-	});
-
-	onMessage("scrollToPosition", async ({ arg }) => {
-		await scrollToPosition(arg);
+	onMessage("scrollToPosition", async ({ name }) => {
+		await scrollToPosition(name);
 	});
 }

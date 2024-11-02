@@ -1,6 +1,6 @@
 import { type ToastOptions } from "react-toastify";
 import { type Tabs } from "webextension-polyfill";
-import { type ActionMap } from "./Action";
+import { type Direction } from "./Direction";
 import { type CustomSelector, type HintStack } from "./StorageSchema";
 
 type FirstParameter<T> = T extends (...args: infer P) => any ? P[0] : never;
@@ -54,13 +54,7 @@ export type BackgroundBoundMessageMap = {
 	restoreKeyboardReachableHints: () => void;
 };
 
-type ScrollMessageMap = {
-	[Key in keyof ActionMap as Key extends `${string}${"scroll" | "Scroll"}${string}`
-		? Key
-		: never]: (data: ActionMap[Key]) => void;
-};
-
-export type ContentBoundMessageMap = ScrollMessageMap & {
+export type ContentBoundMessageMap = {
 	// Elements
 	clickElement: (data: { target: string[] }) => {
 		isSelect?: boolean;
@@ -80,6 +74,19 @@ export type ContentBoundMessageMap = ScrollMessageMap & {
 	unhoverAll: () => void;
 	setSelectionBefore: (data: { target: string[] }) => void;
 	setSelectionAfter: (data: { target: string[] }) => void;
+
+	// Scroll
+	scroll: (data: {
+		dir: Direction;
+		reference: string | "page" | "leftAside" | "rightAside" | "repeatLast";
+		factor?: number;
+	}) => void;
+	snapScroll: (data: {
+		position: "top" | "center" | "bottom";
+		target: [string];
+	}) => void;
+	storeScrollPosition: (data: { name: string }) => void;
+	scrollToPosition: (data: { name: string }) => void;
 
 	// Hints
 	reclaimHints: (data: { amount: number }) => string[];
