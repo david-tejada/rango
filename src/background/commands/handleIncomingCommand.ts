@@ -26,17 +26,4 @@ export async function handleIncomingCommand() {
 
 		throw error;
 	}
-
-	// // For these three actions we need to make sure that the document is focused
-	// // or they might fail
-	// if (
-	// 	(request.action.type === "setSelectionAfter" ||
-	// 		request.action.type === "setSelectionBefore" ||
-	// 		request.action.type === "tryToFocusElementAndCheckIsEditable") &&
-	// 	(await shouldTryToFocusDocument())
-	// ) {
-	// 	const response = constructTalonResponse([{ name: "focusPageAndResend" }]);
-	// 	await writeResponse(response);
-	// 	return;
-	// }
 }
