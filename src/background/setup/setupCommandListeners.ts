@@ -697,7 +697,7 @@ export function setupCommandListeners() {
 	// HINTS
 	// ===========================================================================
 	onCommand("hideHint", async ({ target }) => {
-		// Todo
+		await sendMessagesToTargetFrames("hideHint", { target });
 	});
 	onCommand("refreshHints", async () => {
 		// Todo

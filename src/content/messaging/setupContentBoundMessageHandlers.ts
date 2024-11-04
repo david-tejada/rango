@@ -247,4 +247,10 @@ export function setupContentBoundMessageHandlers() {
 	onMessage("customHintsConfirm", customHintsConfirm);
 
 	onMessage("customHintsReset", customHintsReset);
+
+	onMessage("hideHint", async ({ target }) => {
+		const wrappers = getIntersectingWrappers(target);
+
+		for (const wrapper of wrappers) wrapper.hint?.hide();
+	});
 }
