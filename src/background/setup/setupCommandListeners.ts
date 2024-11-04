@@ -723,9 +723,16 @@ export function setupCommandListeners() {
 	// ===========================================================================
 	// HELPERS
 	// ===========================================================================
+	// This command was removed at some point. Remove this after April 2025. Note
+	// that only the command and not the message has to be removed. The latter is
+	// still in use.
 	onCommand("checkActiveElementIsEditable", async () => {
-		// Todo
+		const message = `Command "checkActiveElementIsEditable" has been removed. Update rango-talon.`;
+		await notify(message, { type: "error" });
+
+		return { name: "printError", message };
 	});
+
 	onCommand("requestTimedOut", async () => {
 		discardNextResponse();
 		return "noResponse";
