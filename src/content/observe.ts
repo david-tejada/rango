@@ -1,15 +1,14 @@
-import { notifyTogglesStatus } from "./notify/notify";
 import { getSetting, onSettingChange } from "./settings/settingsManager";
 import { getToggles } from "./settings/toggles";
 import {
 	addWrappersFrom,
-	mutationObserver,
 	disconnectObservers,
+	mutationObserver,
 } from "./wrappers/ElementWrapperClass";
 import {
-	showHintsAll,
 	clearWrappersAll,
 	hideHintsAll,
+	showHintsAll,
 } from "./wrappers/wrappers";
 
 let enabled = false;
@@ -71,13 +70,7 @@ onSettingChange(
 		"hintsToggleHosts",
 		"hintsTogglePaths",
 		"hintsToggleTabs",
+		"alwaysComputeHintables",
 	],
-	async () => {
-		await updateHintsEnabled();
-		await notifyTogglesStatus();
-	}
+	updateHintsEnabled
 );
-
-onSettingChange("alwaysComputeHintables", async () => {
-	await updateHintsEnabled();
-});

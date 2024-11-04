@@ -33,11 +33,7 @@ import { showTitleAndHref } from "../actions/showTitleAndHref";
 import { reclaimHintsFromCache } from "../hints/hintsCache";
 import { deleteHintsInFrame } from "../hints/hintsInFrame";
 import { synchronizeHints } from "../hints/hintsRequests";
-import {
-	allowToastNotification,
-	notify,
-	notifyTogglesStatus,
-} from "../notify/notify";
+import { notify, notifyTogglesStatus } from "../notify/notify";
 import { updateHintsEnabled } from "../observe";
 import { setNavigationToggle } from "../settings/toggles";
 import { activateEditable } from "../utils/activateEditable";
@@ -80,7 +76,7 @@ export function setupContentBoundMessageHandlers() {
 		await notify(text, options);
 	});
 
-	onMessage("allowToastNotification", allowToastNotification);
+	onMessage("displayTogglesStatus", notifyTogglesStatus);
 
 	onMessage("reclaimHints", async ({ amount }) => {
 		const reclaimed = reclaimHintsFromCache(amount);

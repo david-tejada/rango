@@ -41,7 +41,7 @@ export async function runRangoActionWithoutTarget(
 		}
 
 		case "displayTogglesStatus": {
-			await notifyTogglesStatus(true);
+			await notifyTogglesStatus();
 			break;
 		}
 

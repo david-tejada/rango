@@ -2,10 +2,7 @@ import browser from "webextension-polyfill";
 import { toggleHintsGlobal, updateHintsToggle } from "./actions/toggleHints";
 import { toggleKeyboardClicking } from "./actions/toggleKeyboardClicking";
 import { handleIncomingCommand } from "./commands/handleIncomingCommand";
-import {
-	handleIncomingMessage,
-	sendMessage,
-} from "./messaging/backgroundMessageBroker";
+import { handleIncomingMessage } from "./messaging/backgroundMessageBroker";
 import { contextMenusOnClicked } from "./misc/createContextMenus";
 import { initBackgroundScript } from "./setup/initBackgroundScript";
 import { browserAction } from "./utils/browserAction";
@@ -43,12 +40,6 @@ browserAction.onClicked.addListener(async () => {
 });
 
 browser.commands.onCommand.addListener(async (internalCommand: string) => {
-	try {
-		await sendMessage("allowToastNotification");
-	} catch {
-		// No content script. We do nothing.
-	}
-
 	try {
 		if (
 			internalCommand === "get-talon-request" ||

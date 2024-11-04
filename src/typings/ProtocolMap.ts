@@ -111,7 +111,7 @@ export type ContentBoundMessageMap = {
 		text: string;
 		options?: ToastOptions;
 	}) => void;
-	allowToastNotification: () => void;
+	displayTogglesStatus: () => void;
 
 	// Keyboard Clicking
 	markHintsAsKeyboardReachable: (data: { letter: string }) => void;
@@ -131,7 +131,7 @@ export type ContentBoundMessageMap = {
 	checkActiveElementIsEditable: () => boolean;
 
 	// Hint Toggles
-	updateNavigationToggle: (data: { enable: boolean }) => void;
+	updateNavigationToggle: (data: { enable?: boolean }) => void;
 
 	// Utils
 	pingContentScript: () => true;

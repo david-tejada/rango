@@ -1,7 +1,7 @@
 import { retrieve, store } from "../../common/storage";
 import { type ToggleLevel } from "../../typings/Action";
 import { assertDefined } from "../../typings/TypingUtils";
-import { sendRequestToContent } from "../messaging/sendRequestToContent";
+import { sendMessage } from "../messaging/backgroundMessageBroker";
 import { getCurrentTab } from "../utils/getCurrentTab";
 
 export async function toggleHintsGlobal() {
@@ -23,8 +23,7 @@ export async function updateHintsToggle(level: ToggleLevel, enable?: boolean) {
 				await store("hintsToggleTabs", new Map());
 				await store("hintsToggleHosts", new Map());
 				await store("hintsTogglePaths", new Map());
-				await sendRequestToContent({
-					type: "updateNavigationToggle",
+				await sendMessage("updateNavigationToggle", {
 					enable,
 				});
 			}
@@ -33,8 +32,7 @@ export async function updateHintsToggle(level: ToggleLevel, enable?: boolean) {
 		}
 
 		case "now": {
-			await sendRequestToContent({
-				type: "updateNavigationToggle",
+			await sendMessage("updateNavigationToggle", {
 				enable,
 			});
 			break;

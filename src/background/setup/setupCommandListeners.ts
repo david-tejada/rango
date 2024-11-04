@@ -671,18 +671,26 @@ export function setupCommandListeners() {
 	// ===========================================================================
 	onCommand("disableHints", async ({ arg }) => {
 		await updateHintsToggle(arg, false);
+		await sendMessage("displayTogglesStatus");
 	});
+
 	onCommand("displayTogglesStatus", async () => {
-		// Todo
+		await sendMessage("displayTogglesStatus");
 	});
+
 	onCommand("enableHints", async ({ arg }) => {
 		await updateHintsToggle(arg, true);
+		await sendMessage("displayTogglesStatus");
 	});
+
 	onCommand("toggleHints", async () => {
 		await toggleHintsGlobal();
+		await sendMessage("displayTogglesStatus");
 	});
+
 	onCommand("resetToggleLevel", async ({ arg }) => {
 		await updateHintsToggle(arg);
+		await sendMessage("displayTogglesStatus");
 	});
 
 	// ===========================================================================
