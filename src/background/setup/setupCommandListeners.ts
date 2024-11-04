@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { retrieve } from "../../common/storage";
+import { retrieve, store } from "../../common/storage";
 import { isTargetError } from "../../common/target/TargetError";
 import { promiseWrap } from "../../lib/promiseWrap";
 import { type TalonAction } from "../../typings/RequestFromTalon";
@@ -707,10 +707,13 @@ export function setupCommandListeners() {
 	// SETTINGS
 	// ===========================================================================
 	onCommand("decreaseHintSize", async () => {
-		// Todo
+		const hintFontSize = await retrieve("hintFontSize");
+		await store("hintFontSize", hintFontSize - 1);
 	});
+
 	onCommand("increaseHintSize", async () => {
-		// Todo
+		const hintFontSize = await retrieve("hintFontSize");
+		await store("hintFontSize", hintFontSize + 1);
 	});
 
 	onCommand("openSettingsPage", async () => {
