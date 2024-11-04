@@ -39,7 +39,7 @@ export async function readRequest() {
 
 		const command = result.data as Command;
 
-		// Log the Command to the backgrounds script console.
+		// Log the Command to the background script console.
 		console.log(JSON.stringify(command, null, 2));
 
 		return command;
