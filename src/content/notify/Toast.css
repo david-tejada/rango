@@ -52,7 +52,7 @@
 #rango-toast .Toastify__toast-body h2 {
 	border: 0 !important;
 	font-weight: bold !important;
-	color: var(--toastify-text-color-light) !important;
+	color: var(--toastify-color-dark) !important;
 }
 
 #rango-toast .Toastify__toast-body p {
@@ -69,7 +69,7 @@
 	padding: 0.2em 0.4em !important;
 	border-radius: 0.3em !important;
 	background-color: #e5e5e5 !important;
-	color: var(--toastify-text-color-light) !important;
+	color: var(--toastify-color-dark) !important;
 	text-shadow: unset !important;
 	font-size: inherit;
 }
