@@ -700,7 +700,7 @@ export function setupCommandListeners() {
 		await sendMessagesToTargetFrames("hideHint", { target });
 	});
 	onCommand("refreshHints", async () => {
-		// Todo
+		await sendMessage("refreshHints");
 	});
 
 	// ===========================================================================

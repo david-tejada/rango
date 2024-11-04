@@ -27,6 +27,7 @@ import {
 	navigateToNextPage,
 	navigateToPreviousPage,
 } from "../actions/pagination";
+import { refreshHints } from "../actions/refreshHints";
 import { scroll, snapScroll } from "../actions/scroll";
 import { setSelectionAfter, setSelectionBefore } from "../actions/setSelection";
 import { showTitleAndHref } from "../actions/showTitleAndHref";
@@ -253,4 +254,6 @@ export function setupContentBoundMessageHandlers() {
 
 		for (const wrapper of wrappers) wrapper.hint?.hide();
 	});
+
+	onMessage("refreshHints", refreshHints);
 }

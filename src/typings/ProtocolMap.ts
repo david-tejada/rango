@@ -102,6 +102,7 @@ export type ContentBoundMessageMap = {
 	customHintsConfirm: () => void;
 	customHintsReset: () => void;
 	hideHint: (data: { target: string[] }) => void;
+	refreshHints: () => void;
 
 	// Tabs
 	getTitleBeforeDecoration: () => string;
