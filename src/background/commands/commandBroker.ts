@@ -3,7 +3,9 @@ import type { TalonAction } from "../../typings/RequestFromTalon";
 
 const commandHandlers = new Map<
 	keyof ActionMap,
-	(args: ActionArguments) => Promise<void | TalonAction[] | "noResponse">
+	(
+		args: ActionArguments
+	) => Promise<void | TalonAction | TalonAction[] | "noResponse">
 >();
 
 export function onCommand<Name extends keyof ActionMap>(
@@ -20,7 +22,7 @@ export function onCommand<Name extends keyof ActionMap>(
 		name,
 		handler as (
 			args: ActionArguments
-		) => Promise<void | TalonAction[] | "noResponse">
+		) => Promise<void | TalonAction | TalonAction[] | "noResponse">
 	);
 }
 
