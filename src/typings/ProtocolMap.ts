@@ -90,6 +90,17 @@ export type ContentBoundMessageMap = {
 
 	// Hints
 	reclaimHints: (data: { amount: number }) => string[];
+	displayMoreOrLessHints: (data: {
+		extra?: boolean;
+		excluded?: boolean;
+	}) => void;
+	markHintsForInclusion: (data: { target: string[] }) => void;
+	markHintsForExclusion: (data: { target: string[] }) => void;
+	markAllHintsForExclusion: () => void;
+	markHintsWithBroaderSelector: () => void;
+	markHintsWithNarrowerSelector: () => void;
+	customHintsConfirm: () => void;
+	customHintsReset: () => void;
 
 	// Tabs
 	getTitleBeforeDecoration: () => string;

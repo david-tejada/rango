@@ -3,6 +3,16 @@ import { TargetError } from "../../common/target/TargetError";
 import { clickElement } from "../actions/clickElement";
 import { getElementTextContent, getMarkdownLink } from "../actions/copy";
 import {
+	customHintsConfirm,
+	customHintsReset,
+	displayMoreOrLessHints,
+	markAllHintsForExclusion,
+	markHintsForExclusion,
+	markHintsForInclusion,
+	markHintsWithBroaderSelector,
+	markHintsWithNarrowerSelector,
+} from "../actions/customHints";
+import {
 	scrollToPosition,
 	storeScrollPosition,
 } from "../actions/customScrollPositions";
@@ -60,9 +70,6 @@ function getFirstWrapper(target: string[]) {
 }
 
 export function setupContentBoundMessageHandlers() {
-	// =============================================================================
-	// OPERATIONAL
-	// =============================================================================
 	onMessage("pingContentScript", () => true);
 
 	onMessage("onCompleted", async () => {
@@ -118,9 +125,6 @@ export function setupContentBoundMessageHandlers() {
 		);
 	});
 
-	// =============================================================================
-	// COMMANDS WITH TARGET
-	// =============================================================================
 	onMessage("clickElement", async ({ target }) => {
 		const wrappers = getIntersectingWrappers(target);
 		return clickElement(wrappers);
@@ -194,9 +198,14 @@ export function setupContentBoundMessageHandlers() {
 		snapScroll(position, wrapper);
 	});
 
-	// =============================================================================
-	// COMMANDS WITHOUT TARGET
-	// =============================================================================
+	onMessage("storeScrollPosition", async ({ name }) => {
+		await storeScrollPosition(name);
+	});
+
+	onMessage("scrollToPosition", async ({ name }) => {
+		await scrollToPosition(name);
+	});
+
 	onMessage("historyGoBack", () => {
 		window.history.back();
 	});
@@ -221,11 +230,25 @@ export function setupContentBoundMessageHandlers() {
 		toast.dismiss();
 	});
 
-	onMessage("storeScrollPosition", async ({ name }) => {
-		await storeScrollPosition(name);
+	onMessage("markHintsForInclusion", async ({ target }) => {
+		const wrappers = getIntersectingWrappers(target);
+		await markHintsForInclusion(wrappers);
 	});
 
-	onMessage("scrollToPosition", async ({ name }) => {
-		await scrollToPosition(name);
+	onMessage("markHintsForExclusion", async ({ target }) => {
+		const wrappers = getIntersectingWrappers(target);
+		await markHintsForExclusion(wrappers);
 	});
+
+	onMessage("displayMoreOrLessHints", displayMoreOrLessHints);
+
+	onMessage("markAllHintsForExclusion", markAllHintsForExclusion);
+
+	onMessage("markHintsWithBroaderSelector", markHintsWithBroaderSelector);
+
+	onMessage("markHintsWithNarrowerSelector", markHintsWithNarrowerSelector);
+
+	onMessage("customHintsConfirm", customHintsConfirm);
+
+	onMessage("customHintsReset", customHintsReset);
 }

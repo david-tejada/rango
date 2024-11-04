@@ -624,34 +624,46 @@ export function setupCommandListeners() {
 	// CUSTOM SELECTORS
 	// ===========================================================================
 	onCommand("confirmSelectorsCustomization", async () => {
-		// Todo
+		await sendMessage("customHintsConfirm");
 	});
+
 	onCommand("displayExcludedHints", async () => {
-		// Todo
+		await sendMessage("displayMoreOrLessHints", { excluded: true });
 	});
+
 	onCommand("displayExtraHints", async () => {
-		// Todo
+		await sendMessage("displayMoreOrLessHints", { extra: true });
 	});
+
 	onCommand("displayLessHints", async () => {
-		// Todo
+		await sendMessage("displayMoreOrLessHints", {
+			extra: false,
+			excluded: false,
+		});
 	});
+
 	onCommand("excludeAllHints", async () => {
-		// Todo
+		await sendMessage("markAllHintsForExclusion");
 	});
+
 	onCommand("excludeExtraSelectors", async ({ target }) => {
-		// Todo
+		await sendMessagesToTargetFrames("markHintsForExclusion", { target });
 	});
+
 	onCommand("includeExtraSelectors", async ({ target }) => {
-		// Todo
+		await sendMessagesToTargetFrames("markHintsForInclusion", { target });
 	});
+
 	onCommand("includeOrExcludeLessSelectors", async () => {
-		// Todo
+		await sendMessage("markHintsWithNarrowerSelector");
 	});
+
 	onCommand("includeOrExcludeMoreSelectors", async () => {
-		// Todo
+		await sendMessage("markHintsWithBroaderSelector");
 	});
+
 	onCommand("resetCustomSelectors", async () => {
-		// Todo
+		await sendMessage("customHintsReset");
 	});
 
 	// ===========================================================================

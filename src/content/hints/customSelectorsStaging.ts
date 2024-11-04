@@ -1,8 +1,8 @@
-import browser from "webextension-polyfill";
 import { getHostPattern } from "../../common/utils";
 import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { type SelectorAlternative } from "../../typings/SelectorAlternative";
 import { type CustomSelector } from "../../typings/StorageSchema";
+import { sendMessage } from "../messaging/contentMessageBroker";
 import { getSelectorAlternatives } from "./computeCustomSelectors";
 import { updateCustomSelectors } from "./selectors";
 
@@ -113,8 +113,7 @@ export async function saveCustomSelectors() {
 
 	// Even if both include and exclude are empty arrays we need to send the
 	// message to the background script to handle notifications
-	await browser.runtime.sendMessage({
-		type: "storeCustomSelectors",
+	await sendMessage("storeCustomSelectors", {
 		url: window.location.href,
 		selectors: newCustomSelectors,
 	});

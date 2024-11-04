@@ -1,10 +1,9 @@
-import browser from "webextension-polyfill";
 import { type ElementWrapper } from "../../typings/ElementWrapper";
 import {
+	pickSelectorAlternative,
+	resetStagedSelectors,
 	saveCustomSelectors,
 	stageCustomSelectors,
-	resetStagedSelectors,
-	pickSelectorAlternative,
 	stageExcludeUniversalSelector,
 } from "../hints/customSelectorsStaging";
 import {
@@ -12,6 +11,7 @@ import {
 	getExcludeSelectorAll,
 	updateCustomSelectors,
 } from "../hints/selectors";
+import { sendMessage } from "../messaging/contentMessageBroker";
 import { refresh } from "../wrappers/refresh";
 
 let showExtraHints = false;
@@ -118,8 +118,7 @@ export async function customHintsReset() {
 	showExtraHints = false;
 	showExcludedHints = false;
 
-	await browser.runtime.sendMessage({
-		type: "resetCustomSelectors",
+	await sendMessage("resetCustomSelectors", {
 		url: window.location.href,
 	});
 
