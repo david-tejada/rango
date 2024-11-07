@@ -1,3 +1,4 @@
+import { type SimplifyDeep } from "type-fest";
 import browser from "webextension-polyfill";
 import { isValidMessage } from "../../common/messaging/isValidMessage";
 import type {
@@ -9,9 +10,9 @@ import type {
 
 const messageHandlers = new Map<keyof ContentBoundMessageMap, unknown>();
 
-type OnMessageCallback<K extends keyof ContentBoundMessageMap> = (
-	data: MessageData<K>
-) => MessageReturn<K> | Promise<MessageReturn<K>>;
+type OnMessageCallback<K extends keyof ContentBoundMessageMap> = SimplifyDeep<
+	(data: MessageData<K>) => MessageReturn<K> | Promise<MessageReturn<K>>
+>;
 
 export function onMessage<K extends keyof ContentBoundMessageMap>(
 	messageId: K,

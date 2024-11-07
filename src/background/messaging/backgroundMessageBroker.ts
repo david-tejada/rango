@@ -1,3 +1,4 @@
+import { type SimplifyDeep } from "type-fest";
 import browser, { type Runtime, type Tabs } from "webextension-polyfill";
 import { isValidMessage } from "../../common/messaging/isValidMessage";
 import type {
@@ -13,10 +14,13 @@ import { splitTargetByFrame } from "../utils/splitTargetByFrame";
 type Destination = { tabId?: number; frameId?: number };
 type Sender = { tab: Tabs.Tab; tabId: number; frameId: number };
 
-type OnMessageCallback<K extends keyof BackgroundBoundMessageMap> = (
-	data: MessageData<K>,
-	sender: Sender
-) => MessageReturn<K> | Promise<MessageReturn<K>>;
+type OnMessageCallback<K extends keyof BackgroundBoundMessageMap> =
+	SimplifyDeep<
+		(
+			data: MessageData<K>,
+			sender: Sender
+		) => MessageReturn<K> | Promise<MessageReturn<K>>
+	>;
 
 const messageHandlers = new Map<keyof BackgroundBoundMessageMap, unknown>();
 
@@ -211,4 +215,77 @@ export async function sendMessagesToTargetFrames<K extends MessageWithTarget>(
 	const results = await Promise.all(sending);
 
 	return { results, values: results.map((result) => result.value) };
+}
+
+async function splitTargetByFrame(
+	tabId: number,
+	target: Target<ElementMark>
+): Promise<Map<number | undefined, Target<ElementMark>>> {
+	const { type, values } = extractTargetTypeAndValues(target);
+
+	switch (type) {
+		case "elementHint": {
+			const stack = await getStack(tabId);
+			const hintsByFrame = new Map<number, string[]>();
+
+			for (const hint of values) {
+				const frameId = stack.assigned.get(hint);
+				if (frameId === undefined) {
+					throw new TargetError(`Couldn't find mark "${hint}".`);
+				}
+
+				hintsByFrame.set(frameId, [...(hintsByFrame.get(frameId) ?? []), hint]);
+			}
+
+			const targetByFrame = new Map<number | undefined, Target<ElementMark>>();
+
+			for (const [frameId, hints] of hintsByFrame) {
+				targetByFrame.set(frameId, getTargetFromHints(hints));
+			}
+
+			return targetByFrame;
+		}
+
+		case "elementReference": {
+			const allFrames = await browser.webNavigation.getAllFrames({ tabId });
+			if (!allFrames?.length) {
+				throw new Error("Couldn't find any frames for tab.");
+			}
+
+			// Const frameId = await Promise.any(
+			// 	allFrames.map(async ({ frameId }) => {
+			// 		await sendMessage(
+			// 			"hasActiveReference",
+			// 			{ referenceName: values[0]! },
+			// 			{ frameId }
+			// 		);
+
+			// 		return frameId;
+			// 	})
+			// );
+
+			const { results } = await sendMessageToAllFrames("hasActiveReference", {
+				referenceName: values[0]!,
+			});
+
+			console.log("results", results);
+
+			// Console.log("frameId:", results);
+
+			const targetByFrame = new Map<
+				number | undefined,
+				Target<ElementReferenceMark>
+			>();
+
+			if (values.length > 0) {
+				targetByFrame.set(undefined, getTargetFromReferences(values));
+			}
+
+			return targetByFrame;
+		}
+
+		case "fuzzyText": {
+			throw new Error("Not implemented");
+		}
+	}
 }
