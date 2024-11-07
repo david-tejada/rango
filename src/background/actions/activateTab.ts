@@ -1,7 +1,7 @@
 /* eslint-disable no-await-in-loop */
 import browser from "webextension-polyfill";
 import { type TabMark, type Target } from "../../typings/Target/Target";
-import { getTabIds } from "../tabs/tabs";
+import { getTabIdsFromTarget } from "../tabs/target";
 
 async function getFirstTabByWindow(tabIds: number[]) {
 	const result = new Map<number, browser.Tabs.Tab>();
@@ -22,7 +22,7 @@ async function getFirstTabByWindow(tabIds: number[]) {
  * It will focus the window of the first tab provided.
  */
 export async function activateTab(target: Target<TabMark>) {
-	const tabIds = await getTabIds(target);
+	const tabIds = await getTabIdsFromTarget(target);
 	const splitTabs = await getFirstTabByWindow(tabIds);
 
 	for (const [index, tab] of splitTabs.entries()) {

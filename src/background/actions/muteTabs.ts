@@ -1,14 +1,17 @@
 import browser from "webextension-polyfill";
 import { type TabMark, type Target } from "../../typings/Target/Target";
-import { getTabIds } from "../tabs/tabs";
+import { getTabIdsFromTarget } from "../tabs/target";
+import { getCurrentTabId } from "../utils/getCurrentTab";
 import { notify } from "../utils/notify";
 import { getNextTabByIndex } from "../utils/tabUtils";
 
 export async function muteTab(target?: Target<TabMark>, mute = true) {
-	const tabsToMute = await getTabIds(target);
+	const tabIds = target
+		? await getTabIdsFromTarget(target)
+		: [await getCurrentTabId()];
 
 	return Promise.all(
-		tabsToMute.map(async (tabId) => browser.tabs.update(tabId, { muted: mute }))
+		tabIds.map(async (tabId) => browser.tabs.update(tabId, { muted: mute }))
 	);
 }
 
