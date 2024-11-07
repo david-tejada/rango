@@ -30,3 +30,15 @@ export function hasPropertyDisabled(
 export function isHtmlElement(element: Element): element is HTMLElement {
 	return element instanceof HTMLElement;
 }
+
+/**
+ * Merges the union of objects into a single object. All the properties are set
+ * to optional.
+ * @example
+ * type Test = MergeUnion<{a: string} | {b?: number}> // {a?: string, b?: number}
+ */
+export type MergeUnion<T> = {
+	[K in T extends unknown ? keyof T : never]?: T extends { [P in K]?: infer V }
+		? V
+		: never;
+};

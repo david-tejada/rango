@@ -1,11 +1,17 @@
 import { UnreachableContentScriptError } from "../messaging/backgroundMessageBroker";
 import { readRequest, writeResponse } from "../utils/requestAndResponse";
 import { handleCommand } from "./commandBroker";
+import { upgradeCommand } from "./upgradeCommand";
 
 export async function handleIncomingCommand() {
 	try {
-		const command = await readRequest();
-		const { type: name, ...args } = command.action;
+		const commandV1V2 = await readRequest();
+		const command = upgradeCommand(commandV1V2);
+
+		// Log the Command to the background script console.
+		console.log(JSON.stringify(command, null, 2));
+
+		const { name, ...args } = command.action;
 
 		const commandResult = await handleCommand(name, args);
 		if (commandResult !== "noResponse") {

@@ -1,15 +1,15 @@
 import browser from "webextension-polyfill";
-import { type RequestFromBackground } from "../../typings/RequestFromBackground";
-import { type TalonAction } from "../../typings/RequestFromTalon";
-import { isPromiseFulfilledResult } from "../../typings/TypingUtils";
-import { getCurrentTabId } from "../utils/getCurrentTab";
-import { splitHintsByFrame } from "../utils/splitHintsByFrame";
 import {
 	type RangoActionRemoveReference,
 	type RangoActionRunActionOnReference,
 	type RangoActionWithTargets,
 } from "../../typings/RangoAction";
+import { type RequestFromBackground } from "../../typings/RequestFromBackground";
+import { type TalonAction } from "../../typings/RequestFromTalon";
+import { isPromiseFulfilledResult } from "../../typings/TypingUtils";
+import { getCurrentTabId } from "../utils/getCurrentTab";
 import { notify } from "../utils/notify";
+import { splitTargetByFrame } from "../utils/splitTargetByFrame";
 
 let lastScrollFrameId = 0;
 
@@ -124,7 +124,7 @@ export async function sendRequestToContent(
 
 	if ("target" in request) {
 		// We need to take into account that the targets could be in different frames
-		const requestsByFrame = await splitHintsByFrame(targetTabId, request);
+		const requestsByFrame = await splitTargetByFrame(targetTabId, request);
 
 		if (
 			request.type === "directClickElement" &&

@@ -1,5 +1,4 @@
 import { toast } from "react-toastify";
-import { TargetError } from "../../common/target/TargetError";
 import { clickElement } from "../actions/clickElement";
 import { getElementTextContent, getMarkdownLink } from "../actions/copy";
 import {
@@ -44,27 +43,9 @@ import {
 	removeDecorations,
 } from "../utils/decorateTitle";
 import { isEditable } from "../utils/domUtils";
-import { getWrapper, reclaimHints } from "../wrappers/wrappers";
+import { getFirstWrapper, getTargetedWrappers } from "../wrappers/target";
+import { reclaimHints } from "../wrappers/wrappers";
 import { onMessage } from "./contentMessageBroker";
-
-function getIntersectingWrappers(target: string[]) {
-	const wrappers = target.map((hint) => {
-		const wrapper = getWrapper(hint);
-		if (!wrapper?.isIntersectingViewport) {
-			throw new TargetError(`Couldn't find mark "${hint}" in viewport.`);
-		}
-
-		return wrapper;
-	});
-
-	for (const wrapper of wrappers) wrapper.hint?.flash();
-
-	return wrappers;
-}
-
-function getFirstWrapper(target: string[]) {
-	return getIntersectingWrappers(target)[0]!;
-}
 
 export function setupContentBoundMessageHandlers() {
 	onMessage("pingContentScript", () => true);
@@ -123,75 +104,72 @@ export function setupContentBoundMessageHandlers() {
 	});
 
 	onMessage("clickElement", async ({ target }) => {
-		const wrappers = getIntersectingWrappers(target);
+		const wrappers = await getTargetedWrappers(target);
 		return clickElement(wrappers);
 	});
 
 	onMessage("getElementTextContent", async ({ target }) => {
-		const wrappers = getIntersectingWrappers(target);
+		const wrappers = await getTargetedWrappers(target);
 		return getElementTextContent(wrappers);
 	});
 
 	onMessage("getElementMarkdownLink", async ({ target }) => {
-		const wrappers = getIntersectingWrappers(target);
+		const wrappers = await getTargetedWrappers(target);
 		return getMarkdownLink(wrappers);
 	});
 
 	onMessage("tryToFocusElementAndCheckIsEditable", async ({ target }) => {
-		const wrapper = getFirstWrapper(target);
+		const wrapper = await getFirstWrapper(target);
 
 		const activeEditable = await activateEditable(wrapper);
 		return Boolean(activeEditable);
 	});
 
-	onMessage("focusElement", ({ target }) => {
-		const wrapper = getFirstWrapper(target);
+	onMessage("focusElement", async ({ target }) => {
+		const wrapper = await getFirstWrapper(target);
 
 		const focusWasPerformed = focus(wrapper);
 		return { focusPage: focusWasPerformed ? !document.hasFocus() : false };
 	});
 
 	onMessage("hoverElement", async ({ target }) => {
-		const wrappers = getIntersectingWrappers(target);
+		const wrappers = await getTargetedWrappers(target);
 		await hoverElement(wrappers);
 	});
 
-	onMessage("showLink", ({ target }) => {
-		const wrappers = getIntersectingWrappers(target);
+	onMessage("showLink", async ({ target }) => {
+		const wrappers = await getTargetedWrappers(target);
 		showTitleAndHref(wrappers);
 	});
 
 	onMessage("getAnchorHref", async ({ target, showCopyTooltip }) => {
-		const wrappers = getIntersectingWrappers(target);
+		const wrappers = await getTargetedWrappers(target);
 		return getAnchorHref(wrappers, showCopyTooltip);
 	});
 
 	onMessage("setSelectionBefore", async ({ target }) => {
-		const wrapper = getFirstWrapper(target);
+		const wrapper = await getFirstWrapper(target);
 
 		await setSelectionBefore(wrapper);
 	});
 
 	onMessage("setSelectionAfter", async ({ target }) => {
-		const wrapper = getFirstWrapper(target);
+		const wrapper = await getFirstWrapper(target);
 
 		await setSelectionAfter(wrapper);
 	});
 
-	onMessage("scroll", ({ dir, reference, factor }) => {
+	onMessage("scroll", async ({ dir, reference, factor }) => {
 		const target =
-			reference === "page" ||
-			reference === "leftAside" ||
-			reference === "rightAside" ||
-			reference === "repeatLast"
+			typeof reference === "string"
 				? reference
-				: getFirstWrapper([reference]);
+				: await getFirstWrapper(reference);
 
 		scroll({ dir, target, factor });
 	});
 
-	onMessage("snapScroll", ({ position, target }) => {
-		const wrapper = getFirstWrapper(target);
+	onMessage("snapScroll", async ({ position, target }) => {
+		const wrapper = await getFirstWrapper(target);
 		snapScroll(position, wrapper);
 	});
 
@@ -228,12 +206,12 @@ export function setupContentBoundMessageHandlers() {
 	});
 
 	onMessage("markHintsForInclusion", async ({ target }) => {
-		const wrappers = getIntersectingWrappers(target);
+		const wrappers = await getTargetedWrappers(target);
 		await markHintsForInclusion(wrappers);
 	});
 
 	onMessage("markHintsForExclusion", async ({ target }) => {
-		const wrappers = getIntersectingWrappers(target);
+		const wrappers = await getTargetedWrappers(target);
 		await markHintsForExclusion(wrappers);
 	});
 
@@ -250,7 +228,7 @@ export function setupContentBoundMessageHandlers() {
 	onMessage("customHintsReset", customHintsReset);
 
 	onMessage("hideHint", async ({ target }) => {
-		const wrappers = getIntersectingWrappers(target);
+		const wrappers = await getTargetedWrappers(target);
 
 		for (const wrapper of wrappers) wrapper.hint?.hide();
 	});

@@ -1,3 +1,11 @@
+import { type Simplify } from "type-fest";
+import {
+	type ElementMark,
+	type TabHintMark,
+	type Target,
+} from "./Target/Target";
+import { type MergeUnion } from "./TypingUtils";
+
 export type ToggleLevel =
 	| "everywhere"
 	| "global"
@@ -26,80 +34,83 @@ export type ActionMap = {
 	navigateToPreviousPage: void;
 
 	// Tabs
-	activateTab: { target: string[] };
+	activateTab: { target: Target<TabHintMark> };
 	cloneCurrentTab: void;
-	closeNextTabsInWindow: { arg: number };
+	closeNextTabsInWindow: { amount: number };
 	closeOtherTabsInWindow: void;
-	closePreviousTabsInWindow: { arg: number };
-	closeTab: { target: string[] };
-	closeTabsLeftEndInWindow: { arg: number };
-	closeTabsRightEndInWindow: { arg: number };
+	closePreviousTabsInWindow: { amount: number };
+	closeTab: { target: Target<TabHintMark> };
+	closeTabsLeftEndInWindow: { amount: number };
+	closeTabsRightEndInWindow: { amount: number };
 	closeTabsToTheLeftInWindow: void;
 	closeTabsToTheRightInWindow: void;
 	copyCurrentTabMarkdownUrl: void;
-	copyLocationProperty: { arg: LocationProperty };
-	cycleTabsByText: { arg: number };
+	copyLocationProperty: { property: LocationProperty };
+	cycleTabsByText: { step: number };
 	focusNextAudibleTab: void;
 	focusNextMutedTab: void;
 	focusNextTabWithSound: void;
-	focusOrCreateTabByUrl: { arg: string };
+	focusOrCreateTabByUrl: { url: string };
 	focusPreviousTab: void;
-	focusTabByText: { arg: string };
+	focusTabByText: { text: string };
 	focusTabLastSounded: void;
 	getBareTitle: void;
 	moveCurrentTabToNewWindow: void;
 	muteAllTabsWithSound: void;
 	muteCurrentTab: void;
 	muteNextTabWithSound: void;
-	muteTab: { target: string[] };
-	openPageInNewTab: { arg: string };
+	muteTab: { target: Target<TabHintMark> };
+	openPageInNewTab: { url: string };
 	refreshTabMarkers: void;
 	toggleTabMarkers: void;
 	unmuteAllMutedTabs: void;
 	unmuteCurrentTab: void;
 	unmuteNextMutedTab: void;
-	unmuteTab: { target: string[] };
+	unmuteTab: { target: Target<TabHintMark> };
 
 	// Keyboard Clicking
 	toggleKeyboardClicking: void;
 
 	// Elements
-	clickElement: { target: string[] };
-	copyElementTextContent: { target: string[] };
-	copyLink: { target: string[] };
-	copyMarkdownLink: { target: string[] };
-	directClickElement: { target: string[] };
+	clickElement: { target: Target<ElementMark> };
+	copyElementTextContent: { target: Target<ElementMark> };
+	copyLink: { target: Target<ElementMark> };
+	copyMarkdownLink: { target: Target<ElementMark> };
+	directClickElement: { target: Target<ElementMark> };
 	focusAndDeleteContents: void;
-	focusElement: { target: string[] };
+	focusElement: { target: Target<ElementMark> };
 	focusFirstInput: void;
-	hoverElement: { target: string[] };
+	hoverElement: { target: Target<ElementMark> };
 	insertToField: void;
-	openInBackgroundTab: { target: string[] };
-	openInNewTab: { target: string[] };
-	setSelectionAfter: { target: string[] };
-	setSelectionBefore: { target: string[] };
-	showLink: { target: string[] };
-	tryToFocusElementAndCheckIsEditable: { target: string[] };
+	openInBackgroundTab: { target: Target<ElementMark> };
+	openInNewTab: { target: Target<ElementMark> };
+	setSelectionAfter: { target: Target<ElementMark> };
+	setSelectionBefore: { target: Target<ElementMark> };
+	showLink: { target: Target<ElementMark> };
+	tryToFocusElementAndCheckIsEditable: { target: Target<ElementMark> };
 	unhoverAll: void;
 
 	// Scroll
-	scrollDownAtElement: { target?: string[]; arg?: number };
-	scrollDownLeftAside: { arg?: number };
-	scrollDownPage: { arg?: number };
-	scrollDownRightAside: { arg?: number };
-	scrollElementToBottom: { target: string[] };
-	scrollElementToCenter: { target: string[] };
-	scrollElementToTop: { target: string[] };
-	scrollLeftAtElement: { target?: string[]; arg?: number };
-	scrollLeftPage: { arg?: number };
-	scrollRightAtElement: { target?: string[]; arg?: number };
-	scrollRightPage: { arg?: number };
-	scrollUpAtElement: { target?: string[]; arg?: number };
-	scrollUpLeftAside: { arg?: number };
-	scrollUpPage: { arg?: number };
-	scrollUpRightAside: { arg?: number };
-	storeScrollPosition: { arg: string };
-	scrollToPosition: { arg: string };
+	scrollDownAtElement: { target?: Target<ElementMark>; factor?: number };
+	scrollDownLeftAside: { factor?: number };
+	scrollDownPage: { factor?: number };
+	scrollDownRightAside: { factor?: number };
+	scrollElementToBottom: { target: Target<ElementMark> };
+	scrollElementToCenter: { target: Target<ElementMark> };
+	scrollElementToTop: { target: Target<ElementMark> };
+	scrollLeftAtElement: { target?: Target<ElementMark>; factor?: number };
+	scrollLeftPage: { factor?: number };
+	scrollRightAtElement: {
+		target?: Target<ElementMark>;
+		factor?: number;
+	};
+	scrollRightPage: { factor?: number };
+	scrollUpAtElement: { target?: Target<ElementMark>; factor?: number };
+	scrollUpLeftAside: { factor?: number };
+	scrollUpPage: { factor?: number };
+	scrollUpRightAside: { factor?: number };
+	storeScrollPosition: { positionName: string };
+	scrollToPosition: { positionName: string };
 
 	// Custom Selectors
 	confirmSelectorsCustomization: void;
@@ -107,21 +118,21 @@ export type ActionMap = {
 	displayExtraHints: void;
 	displayLessHints: void;
 	excludeAllHints: void;
-	excludeExtraSelectors: { target: string[] };
-	includeExtraSelectors: { target: string[] };
+	excludeExtraSelectors: { target: Target<ElementMark> };
+	includeExtraSelectors: { target: Target<ElementMark> };
 	includeOrExcludeLessSelectors: void;
 	includeOrExcludeMoreSelectors: void;
 	resetCustomSelectors: void;
 
 	// Toggle Hints
-	disableHints: { arg: ToggleLevel };
+	disableHints: { level: ToggleLevel };
 	displayTogglesStatus: void;
-	enableHints: { arg: ToggleLevel };
+	enableHints: { level: ToggleLevel };
 	toggleHints: void;
-	resetToggleLevel: { arg: ToggleLevel };
+	resetToggleLevel: { level: ToggleLevel };
 
 	// Hints
-	hideHint: { target: string[] };
+	hideHint: { target: Target<ElementMark> };
 	refreshHints: void;
 
 	// Settings
@@ -134,19 +145,22 @@ export type ActionMap = {
 	requestTimedOut: void;
 
 	// References
-	removeReference: { arg: string };
-	runActionOnReference: { arg: ActionWithElementTarget; arg2: string };
-	saveReference: { target: string[]; arg: string };
-	saveReferenceForActiveElement: { arg: string };
+	removeReference: { referenceName: string };
+	runActionOnReference: {
+		actionName: ActionWithElementTarget;
+		referenceName: string;
+	};
+	saveReference: { target: Target<ElementMark>; referenceName: string };
+	saveReferenceForActiveElement: { referenceName: string };
 	showReferences: void;
 
 	// Fuzzy Search Elements
 	executeActionOnTextMatchedElement: { actionType: ActionWithElementTarget };
 	matchElementByText: { text: string; prioritizeViewport: boolean };
 	runActionOnTextMatchedElement: {
-		arg: ActionWithElementTarget;
-		arg2: string;
-		arg3: boolean;
+		actionName: ActionWithElementTarget;
+		text: string;
+		prioritizeViewport: boolean;
 	};
 
 	// To Be Deleted
@@ -156,9 +170,9 @@ export type ActionMap = {
 	includeSingleLetterHints: void;
 };
 
-type ActionWithElementTarget = {
+export type ActionWithElementTarget = {
 	[K in keyof ActionMap]: ActionMap[K] extends {
-		target: string[];
+		target: Target<ElementMark>;
 	}
 		? K extends `${string}Tab${string | ""}`
 			? never
@@ -166,7 +180,7 @@ type ActionWithElementTarget = {
 		: never;
 }[keyof ActionMap];
 
-export type Action = {
+export type ActionV1 = {
 	type: keyof ActionMap;
 	target?: string[];
 	arg?: number | string | ActionWithElementTarget | LocationProperty;
@@ -176,4 +190,12 @@ export type Action = {
 	prioritizeViewport?: boolean;
 };
 
-export type ActionArguments = Omit<Action, "type">;
+export type ActionV2 = Simplify<
+	{
+		name: keyof ActionMap;
+	} & MergeUnion<ActionMap[keyof ActionMap]>
+>;
+
+export type Action = ActionV1 | ActionV2;
+
+export type ActionArguments = Omit<ActionV2, "name">;

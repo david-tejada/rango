@@ -1,7 +1,15 @@
-import type { Action } from "./Action";
+import type { ActionV1, ActionV2 } from "./Action";
 
-export type Command = {
+export type CommandV1 = {
 	version: 1;
 	type: "request";
-	action: Action;
+	action: ActionV1;
 };
+
+export type CommandV2 = {
+	version: 2;
+	type: "request";
+	action: ActionV2;
+};
+
+export type Command = CommandV1 | CommandV2;

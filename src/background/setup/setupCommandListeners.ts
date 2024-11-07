@@ -1,8 +1,14 @@
 import browser from "webextension-polyfill";
 import { retrieve, store } from "../../common/storage";
+import { getTargetMarkType } from "../../common/target/targetConversion";
 import { isTargetError } from "../../common/target/TargetError";
 import { promiseWrap } from "../../lib/promiseWrap";
 import { type TalonAction } from "../../typings/RequestFromTalon";
+import {
+	assertPrimitiveTarget,
+	type ElementMark,
+	type Target,
+} from "../../typings/Target/Target";
 import { activateTab } from "../actions/activateTab";
 import { closeTab } from "../actions/closeTab";
 import { closeTabsInWindow } from "../actions/closeTabsInWindow";
@@ -39,15 +45,6 @@ import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
 import { notify } from "../utils/notify";
 import { discardNextResponse } from "../utils/requestAndResponse";
 import { tryToFocusDocument } from "../utils/tryToFocusDocument";
-
-/**
- * Assert we are passing a single target. `target` must be an array of length 1.
- */
-function assertSingleTarget(target: string[]): asserts target is [string] {
-	if (target.length !== 1) {
-		throw new Error("This command only accepts a single target.");
-	}
-}
 
 export function setupCommandListeners() {
 	// ===========================================================================
@@ -104,24 +101,24 @@ export function setupCommandListeners() {
 		await browser.tabs.duplicate(await getCurrentTabId());
 	});
 
-	onCommand("closeNextTabsInWindow", async ({ arg }) => {
-		await closeTabsInWindow("next", arg);
+	onCommand("closeNextTabsInWindow", async ({ amount }) => {
+		await closeTabsInWindow("next", amount);
 	});
 
 	onCommand("closeOtherTabsInWindow", async () => {
 		await closeTabsInWindow("other");
 	});
 
-	onCommand("closePreviousTabsInWindow", async ({ arg }) => {
-		await closeTabsInWindow("previous", arg);
+	onCommand("closePreviousTabsInWindow", async ({ amount }) => {
+		await closeTabsInWindow("previous", amount);
 	});
 
-	onCommand("closeTabsLeftEndInWindow", async ({ arg }) => {
-		await closeTabsInWindow("leftEnd", arg);
+	onCommand("closeTabsLeftEndInWindow", async ({ amount }) => {
+		await closeTabsInWindow("leftEnd", amount);
 	});
 
-	onCommand("closeTabsRightEndInWindow", async ({ arg }) => {
-		await closeTabsInWindow("rightEnd", arg);
+	onCommand("closeTabsRightEndInWindow", async ({ amount }) => {
+		await closeTabsInWindow("rightEnd", amount);
 	});
 
 	onCommand("closeTabsToTheLeftInWindow", async () => {
@@ -142,15 +139,15 @@ export function setupCommandListeners() {
 		return { name: "copyToClipboard", textToCopy: markdownUrl };
 	});
 
-	onCommand("copyLocationProperty", async ({ arg }) => {
+	onCommand("copyLocationProperty", async ({ property }) => {
 		const tab = await getCurrentTab();
 		const url = new URL(tab.url!);
 
-		await notify(`Property "${arg}" copied to the clipboard.`, {
+		await notify(`Property "${property}" copied to the clipboard.`, {
 			type: "success",
 		});
 
-		return { name: "copyToClipboard", textToCopy: url[arg] };
+		return { name: "copyToClipboard", textToCopy: url[property] };
 	});
 
 	onCommand("getBareTitle", async () => {
@@ -162,12 +159,12 @@ export function setupCommandListeners() {
 		await focusPreviousTab();
 	});
 
-	onCommand("focusTabByText", async ({ arg }) => {
-		await focusTabByText(arg);
+	onCommand("focusTabByText", async ({ text }) => {
+		await focusTabByText(text);
 	});
 
-	onCommand("cycleTabsByText", async ({ arg }) => {
-		await cycleTabsByText(arg);
+	onCommand("cycleTabsByText", async ({ step }) => {
+		await cycleTabsByText(step);
 	});
 
 	onCommand("moveCurrentTabToNewWindow", async () => {
@@ -175,12 +172,12 @@ export function setupCommandListeners() {
 		await browser.windows.create({ tabId });
 	});
 
-	onCommand("openPageInNewTab", async ({ arg }) => {
-		await browser.tabs.create({ url: arg });
+	onCommand("openPageInNewTab", async ({ url }) => {
+		await browser.tabs.create({ url });
 	});
 
-	onCommand("focusOrCreateTabByUrl", async ({ arg }) => {
-		await focusOrCreateTabByUrl(arg);
+	onCommand("focusOrCreateTabByUrl", async ({ url }) => {
+		await focusOrCreateTabByUrl(url);
 	});
 
 	onCommand("focusNextAudibleTab", async () => {
@@ -280,7 +277,7 @@ export function setupCommandListeners() {
 	onCommand("directClickElement", async ({ target }) => {
 		// Handle the possibility that the user might have intended to type those
 		// characters.
-		if (target.length === 1) {
+		if (target.type === "primitive") {
 			const directClickWithNoFocusedDocument = await retrieve(
 				"directClickWithNoFocusedDocument"
 			);
@@ -314,7 +311,7 @@ export function setupCommandListeners() {
 			return handleClickResults(values);
 		} catch (error: unknown) {
 			if (
-				target.length === 1 &&
+				target.type === "primitive" &&
 				(error instanceof UnreachableContentScriptError || isTargetError(error))
 			) {
 				return { name: "typeTargetCharacters" };
@@ -372,7 +369,7 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("focusElement", async ({ target }) => {
-		assertSingleTarget(target);
+		assertPrimitiveTarget(target);
 
 		const { values } = await sendMessagesToTargetFrames("focusElement", {
 			target,
@@ -427,7 +424,7 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("setSelectionBefore", async ({ target }) => {
-		assertSingleTarget(target);
+		assertPrimitiveTarget(target);
 
 		const documentHasFocus = await tryToFocusDocument();
 		if (!documentHasFocus) return { name: "focusPageAndResend" };
@@ -439,7 +436,7 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("setSelectionAfter", async ({ target }) => {
-		assertSingleTarget(target);
+		assertPrimitiveTarget(target);
 
 		const documentHasFocus = await tryToFocusDocument();
 		if (!documentHasFocus) return { name: "focusPageAndResend" };
@@ -451,7 +448,7 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("tryToFocusElementAndCheckIsEditable", async ({ target }) => {
-		assertSingleTarget(target);
+		assertPrimitiveTarget(target);
 		const documentHasFocus = await tryToFocusDocument();
 		if (!documentHasFocus) return { name: "focusPageAndResend" };
 
@@ -473,58 +470,61 @@ export function setupCommandListeners() {
 
 	let lastFrameId = 0;
 
-	async function parseScrollTarget(target?: string[]) {
-		const frameId = lastFrameId;
-
-		if (target) {
-			assertSingleTarget(target);
-			const frameId = await getFrameIdForHint(target[0]);
-			lastFrameId = frameId;
+	async function parseScrollTarget(target?: Target<ElementMark>) {
+		if (!target) {
+			return {
+				frameId: lastFrameId,
+				reference: "repeatLast" as const,
+			};
 		}
 
-		return { frameId, reference: target ? target[0] : "repeatLast" };
+		assertPrimitiveTarget(target);
+		if (getTargetMarkType(target) !== "elementHint") {
+			throw new Error("Expected element hint");
+		}
+
+		const frameId = await getFrameIdForHint(target.mark.value);
+		lastFrameId = frameId;
+
+		return { frameId, reference: target };
 	}
 
 	// Scroll with target
-	onCommand("scrollUpAtElement", async ({ target, arg }) => {
+	onCommand("scrollUpAtElement", async ({ target, factor }) => {
+		const { frameId, reference } = await parseScrollTarget(target);
+		await sendMessage("scroll", { dir: "up", reference, factor }, { frameId });
+	});
+
+	onCommand("scrollDownAtElement", async ({ target, factor }) => {
 		const { frameId, reference } = await parseScrollTarget(target);
 		await sendMessage(
 			"scroll",
-			{ dir: "up", reference, factor: arg },
+			{ dir: "down", reference, factor },
 			{ frameId }
 		);
 	});
 
-	onCommand("scrollDownAtElement", async ({ target, arg }) => {
+	onCommand("scrollLeftAtElement", async ({ target, factor }) => {
 		const { frameId, reference } = await parseScrollTarget(target);
 		await sendMessage(
 			"scroll",
-			{ dir: "down", reference, factor: arg },
+			{ dir: "left", reference, factor },
 			{ frameId }
 		);
 	});
 
-	onCommand("scrollLeftAtElement", async ({ target, arg }) => {
+	onCommand("scrollRightAtElement", async ({ target, factor }) => {
 		const { frameId, reference } = await parseScrollTarget(target);
 		await sendMessage(
 			"scroll",
-			{ dir: "left", reference, factor: arg },
-			{ frameId }
-		);
-	});
-
-	onCommand("scrollRightAtElement", async ({ target, arg }) => {
-		const { frameId, reference } = await parseScrollTarget(target);
-		await sendMessage(
-			"scroll",
-			{ dir: "right", reference, factor: arg },
+			{ dir: "right", reference, factor },
 			{ frameId }
 		);
 	});
 
 	// Snap Scroll
 	onCommand("scrollElementToTop", async ({ target }) => {
-		assertSingleTarget(target);
+		assertPrimitiveTarget(target);
 		await sendMessagesToTargetFrames("snapScroll", {
 			position: "top",
 			target,
@@ -532,7 +532,7 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("scrollElementToCenter", async ({ target }) => {
-		assertSingleTarget(target);
+		assertPrimitiveTarget(target);
 		await sendMessagesToTargetFrames("snapScroll", {
 			position: "center",
 			target,
@@ -540,7 +540,7 @@ export function setupCommandListeners() {
 	});
 
 	onCommand("scrollElementToBottom", async ({ target }) => {
-		assertSingleTarget(target);
+		assertPrimitiveTarget(target);
 		await sendMessagesToTargetFrames("snapScroll", {
 			position: "bottom",
 			target,
@@ -548,76 +548,76 @@ export function setupCommandListeners() {
 	});
 
 	// Scroll without target
-	onCommand("scrollUpLeftAside", async ({ arg }) => {
+	onCommand("scrollUpLeftAside", async ({ factor }) => {
 		await sendMessage("scroll", {
 			dir: "up",
 			reference: "leftAside",
-			factor: arg,
+			factor,
 		});
 	});
 
-	onCommand("scrollDownLeftAside", async ({ arg }) => {
+	onCommand("scrollDownLeftAside", async ({ factor }) => {
 		await sendMessage("scroll", {
 			dir: "down",
 			reference: "leftAside",
-			factor: arg,
+			factor,
 		});
 	});
 
-	onCommand("scrollUpRightAside", async ({ arg }) => {
+	onCommand("scrollUpRightAside", async ({ factor }) => {
 		await sendMessage("scroll", {
 			dir: "up",
 			reference: "rightAside",
-			factor: arg,
+			factor,
 		});
 	});
 
-	onCommand("scrollDownRightAside", async ({ arg }) => {
+	onCommand("scrollDownRightAside", async ({ factor }) => {
 		await sendMessage("scroll", {
 			dir: "down",
 			reference: "rightAside",
-			factor: arg,
+			factor,
 		});
 	});
 
-	onCommand("scrollUpPage", async ({ arg }) => {
+	onCommand("scrollUpPage", async ({ factor }) => {
 		await sendMessage("scroll", {
 			dir: "up",
 			reference: "page",
-			factor: arg,
+			factor,
 		});
 	});
 
-	onCommand("scrollDownPage", async ({ arg }) => {
+	onCommand("scrollDownPage", async ({ factor }) => {
 		await sendMessage("scroll", {
 			dir: "down",
 			reference: "page",
-			factor: arg,
+			factor,
 		});
 	});
 
-	onCommand("scrollLeftPage", async ({ arg }) => {
+	onCommand("scrollLeftPage", async ({ factor }) => {
 		await sendMessage("scroll", {
 			dir: "left",
 			reference: "page",
-			factor: arg,
+			factor,
 		});
 	});
 
-	onCommand("scrollRightPage", async ({ arg }) => {
+	onCommand("scrollRightPage", async ({ factor }) => {
 		await sendMessage("scroll", {
 			dir: "right",
 			reference: "page",
-			factor: arg,
+			factor,
 		});
 	});
 
-	onCommand("storeScrollPosition", async ({ arg }) => {
-		await sendMessage("storeScrollPosition", { name: arg });
+	onCommand("storeScrollPosition", async ({ positionName }) => {
+		await sendMessage("storeScrollPosition", { name: positionName });
 	});
 
-	onCommand("scrollToPosition", async ({ arg }) => {
-		await sendMessage("scrollToPosition", { name: arg });
+	onCommand("scrollToPosition", async ({ positionName }) => {
+		await sendMessage("scrollToPosition", { name: positionName });
 	});
 
 	// ===========================================================================
@@ -669,8 +669,8 @@ export function setupCommandListeners() {
 	// ===========================================================================
 	// TOGGLE HINTS
 	// ===========================================================================
-	onCommand("disableHints", async ({ arg }) => {
-		await updateHintsToggle(arg, false);
+	onCommand("disableHints", async ({ level }) => {
+		await updateHintsToggle(level, false);
 		await sendMessage("displayTogglesStatus");
 	});
 
@@ -678,8 +678,8 @@ export function setupCommandListeners() {
 		await sendMessage("displayTogglesStatus");
 	});
 
-	onCommand("enableHints", async ({ arg }) => {
-		await updateHintsToggle(arg, true);
+	onCommand("enableHints", async ({ level }) => {
+		await updateHintsToggle(level, true);
 		await sendMessage("displayTogglesStatus");
 	});
 
@@ -688,8 +688,8 @@ export function setupCommandListeners() {
 		await sendMessage("displayTogglesStatus");
 	});
 
-	onCommand("resetToggleLevel", async ({ arg }) => {
-		await updateHintsToggle(arg);
+	onCommand("resetToggleLevel", async ({ level }) => {
+		await updateHintsToggle(level);
 		await sendMessage("displayTogglesStatus");
 	});
 
@@ -741,16 +741,16 @@ export function setupCommandListeners() {
 	// ===========================================================================
 	// REFERENCES
 	// ===========================================================================
-	onCommand("removeReference", async ({ arg }) => {
+	onCommand("removeReference", async ({ name }) => {
 		// Todo
 	});
-	onCommand("runActionOnReference", async ({ arg, arg2 }) => {
+	onCommand("runActionOnReference", async ({ name, actionType }) => {
 		// Todo
 	});
-	onCommand("saveReference", async ({ target, arg }) => {
+	onCommand("saveReference", async ({ target, name }) => {
 		// Todo
 	});
-	onCommand("saveReferenceForActiveElement", async ({ arg }) => {
+	onCommand("saveReferenceForActiveElement", async ({ name }) => {
 		// Todo
 	});
 	onCommand("showReferences", async ({}) => {
@@ -766,7 +766,10 @@ export function setupCommandListeners() {
 	onCommand("matchElementByText", async ({ text, prioritizeViewport }) => {
 		// Todo
 	});
-	onCommand("runActionOnTextMatchedElement", async ({ arg, arg2, arg3 }) => {
-		// Todo
-	});
+	onCommand(
+		"runActionOnTextMatchedElement",
+		async ({ name, actionType, prioritizeViewport }) => {
+			// Todo
+		}
+	);
 }

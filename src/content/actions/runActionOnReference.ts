@@ -33,7 +33,10 @@ function findClosestElement(
 	return closestElement;
 }
 
-async function getElementFromSelector(selector: string, maxWait: number) {
+export async function getElementFromSelector(
+	selector: string,
+	maxWait: number
+) {
 	return new Promise((resolve: (element: Element) => void, reject) => {
 		const elements = document.querySelectorAll(selector);
 

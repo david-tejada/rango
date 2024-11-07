@@ -7,7 +7,7 @@ let shouldDiscardNextResponse = false;
 
 const zRequest = z
 	.object({
-		version: z.literal(1),
+		version: z.number(),
 		type: z.literal("request"),
 		action: z.object({ type: z.any() }).passthrough(),
 	})
@@ -38,9 +38,6 @@ export async function readRequest() {
 		}
 
 		const command = result.data as Command;
-
-		// Log the Command to the background script console.
-		console.log(JSON.stringify(command, null, 2));
 
 		return command;
 	} catch (error: unknown) {

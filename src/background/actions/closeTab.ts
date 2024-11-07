@@ -1,10 +1,9 @@
 import browser from "webextension-polyfill";
-import { getTabIdForMarker } from "../misc/tabMarkers";
+import { type TabMark, type Target } from "../../typings/Target/Target";
+import { getTabIds } from "../tabs/tabs";
 
-export async function closeTab(markers: string[]) {
-	const tabsToClose = await Promise.all(
-		markers.map(async (marker) => getTabIdForMarker(marker))
-	);
+export async function closeTab(target: Target<TabMark>) {
+	const tabsToClose = await getTabIds(target);
 
 	await browser.tabs.remove(tabsToClose);
 }

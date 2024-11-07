@@ -6,8 +6,9 @@ import type {
 	MessageData,
 	MessageReturn,
 } from "../../typings/ProtocolMap";
+import { type ElementMark, type Target } from "../../typings/Target/Target";
 import { getCurrentTabId } from "../utils/getCurrentTab";
-import { splitHintsByFrame } from "../utils/splitHintsByFrame";
+import { splitTargetByFrame } from "../utils/splitTargetByFrame";
 
 type Destination = { tabId?: number; frameId?: number };
 type Sender = { tab: Tabs.Tab; tabId: number; frameId: number };
@@ -83,7 +84,7 @@ export async function pingContentScript(tabId: number) {
 
 type MessageWithoutTarget = {
 	[K in keyof ContentBoundMessageMap]: MessageData<K> extends {
-		target: string[];
+		target: Target<ElementMark>;
 	}
 		? never
 		: K;
@@ -150,7 +151,7 @@ export async function sendMessageToAllFrames<K extends MessageWithoutTarget>(
 
 type MessageWithTarget = {
 	[K in keyof ContentBoundMessageMap]: MessageData<K> extends {
-		target: string[];
+		target: Target<ElementMark>;
 	}
 		? K
 		: never;
@@ -171,13 +172,13 @@ export async function sendMessagesToTargetFrames<K extends MessageWithTarget>(
 	const destinationTabId = tabId ?? (await getCurrentTabId());
 	await pingContentScript(destinationTabId);
 
-	const hintsByFrameMap = await splitHintsByFrame(
+	const targetByFrameMap = await splitTargetByFrame(
 		destinationTabId,
 		data.target
 	);
 
-	const sending = [...hintsByFrameMap].map(async ([frameId, hints]) => {
-		const frameData = { ...data, target: hints };
+	const sending = [...targetByFrameMap].map(async ([frameId, frameTarget]) => {
+		const frameData = { ...data, target: frameTarget };
 		return (
 			browser.tabs.sendMessage(
 				destinationTabId,

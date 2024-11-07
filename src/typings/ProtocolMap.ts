@@ -2,6 +2,7 @@ import { type ToastOptions } from "react-toastify";
 import { type Tabs } from "webextension-polyfill";
 import { type Direction } from "./Direction";
 import { type CustomSelector, type HintStack } from "./StorageSchema";
+import { type ElementMark, type Target } from "./Target/Target";
 
 type FirstParameter<T> = T extends (...args: infer P) => any ? P[0] : never;
 
@@ -56,34 +57,43 @@ export type BackgroundBoundMessageMap = {
 
 export type ContentBoundMessageMap = {
 	// Elements
-	clickElement: (data: { target: string[] }) => {
+	clickElement: (data: { target: Target<ElementMark> }) => {
 		isSelect?: boolean;
 		focusPage?: boolean;
 	} | void;
-	getElementTextContent: (data: { target: string[] }) => string[];
-	getElementMarkdownLink: (data: { target: string[] }) => string[];
-	tryToFocusElementAndCheckIsEditable: (data: { target: string[] }) => boolean;
-	focusElement: (data: { target: string[] }) => { focusPage?: boolean };
-	showLink: (data: { target: string[] }) => void;
+	getElementTextContent: (data: { target: Target<ElementMark> }) => string[];
+	getElementMarkdownLink: (data: { target: Target<ElementMark> }) => string[];
+	tryToFocusElementAndCheckIsEditable: (data: {
+		target: Target<ElementMark>;
+	}) => boolean;
+	focusElement: (data: { target: Target<ElementMark> }) => {
+		focusPage?: boolean;
+	};
+	showLink: (data: { target: Target<ElementMark> }) => void;
 	getAnchorHref: (data: {
-		target: string[];
+		target: Target<ElementMark>;
 		showCopyTooltip?: boolean;
 	}) => string[];
 	focusFirstInput: () => void;
-	hoverElement: (data: { target: string[] }) => void;
+	hoverElement: (data: { target: Target<ElementMark> }) => void;
 	unhoverAll: () => void;
-	setSelectionBefore: (data: { target: string[] }) => void;
-	setSelectionAfter: (data: { target: string[] }) => void;
+	setSelectionBefore: (data: { target: Target<ElementMark> }) => void;
+	setSelectionAfter: (data: { target: Target<ElementMark> }) => void;
 
 	// Scroll
 	scroll: (data: {
 		dir: Direction;
-		reference: string | "page" | "leftAside" | "rightAside" | "repeatLast";
+		reference:
+			| Target<ElementMark>
+			| "page"
+			| "leftAside"
+			| "rightAside"
+			| "repeatLast";
 		factor?: number;
 	}) => void;
 	snapScroll: (data: {
 		position: "top" | "center" | "bottom";
-		target: [string];
+		target: Target<ElementMark>;
 	}) => void;
 	storeScrollPosition: (data: { name: string }) => void;
 	scrollToPosition: (data: { name: string }) => void;
@@ -94,14 +104,14 @@ export type ContentBoundMessageMap = {
 		extra?: boolean;
 		excluded?: boolean;
 	}) => void;
-	markHintsForInclusion: (data: { target: string[] }) => void;
-	markHintsForExclusion: (data: { target: string[] }) => void;
+	markHintsForInclusion: (data: { target: Target<ElementMark> }) => void;
+	markHintsForExclusion: (data: { target: Target<ElementMark> }) => void;
 	markAllHintsForExclusion: () => void;
 	markHintsWithBroaderSelector: () => void;
 	markHintsWithNarrowerSelector: () => void;
 	customHintsConfirm: () => void;
 	customHintsReset: () => void;
-	hideHint: (data: { target: string[] }) => void;
+	hideHint: (data: { target: Target<ElementMark> }) => void;
 	refreshHints: () => void;
 
 	// Tabs
