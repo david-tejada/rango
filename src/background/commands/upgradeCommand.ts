@@ -3,15 +3,16 @@ import {
 	toTabTarget,
 } from "../../common/target/targetConversion";
 import {
+	type ActionMap,
 	type ActionV1,
 	type ActionV2,
 	type ActionWithElementTarget,
 	type LocationProperty,
 	type ToggleLevel,
 } from "../../typings/Action";
-import { type CommandV1, type CommandV2 } from "../../typings/Command";
+import { type Command, type CommandV2 } from "../../typings/Command";
 
-function upgradeAction(action: ActionV1): ActionV2 {
+function upgradeAction(action: ActionV1): ActionV2<keyof ActionMap> {
 	const { type: name, target, ...rest } = action;
 
 	const { arg, arg2, prioritizeViewport } = rest;
@@ -131,7 +132,7 @@ function upgradeAction(action: ActionV1): ActionV2 {
 	}
 }
 
-export function upgradeCommand(command: CommandV1 | CommandV2): CommandV2 {
+export function upgradeCommand(command: Command): CommandV2<keyof ActionMap> {
 	if (command.version === 2) return command;
 
 	if (command.version === 1) {

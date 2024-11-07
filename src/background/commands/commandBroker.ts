@@ -1,17 +1,17 @@
-import type { ActionArguments, ActionMap } from "../../typings/Action";
+import type { ActionMap } from "../../typings/Action";
 import type { TalonAction } from "../../typings/RequestFromTalon";
 
 const commandHandlers = new Map<
 	keyof ActionMap,
 	(
-		args: ActionArguments
+		args: ActionMap[keyof ActionMap]
 	) => Promise<void | TalonAction | TalonAction[] | "noResponse">
 >();
 
-export function onCommand<Name extends keyof ActionMap>(
-	name: Name,
+export function onCommand<T extends keyof ActionMap>(
+	name: T,
 	handler: (
-		args: ActionMap[Name]
+		args: ActionMap[T]
 	) => Promise<void | TalonAction | TalonAction[] | "noResponse">
 ) {
 	if (commandHandlers.has(name)) {
@@ -21,14 +21,14 @@ export function onCommand<Name extends keyof ActionMap>(
 	commandHandlers.set(
 		name,
 		handler as (
-			args: ActionArguments
+			args: ActionMap[keyof ActionMap]
 		) => Promise<void | TalonAction | TalonAction[] | "noResponse">
 	);
 }
 
 export async function handleCommand<Name extends keyof ActionMap>(
 	name: Name,
-	args: ActionArguments
+	args: ActionMap[keyof ActionMap]
 ) {
 	const commandHandler = commandHandlers.get(name);
 	if (!commandHandler) throw new Error(`Command "${name}" doesn't exist.`);

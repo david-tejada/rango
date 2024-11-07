@@ -1,10 +1,8 @@
-import { type Simplify } from "type-fest";
 import {
 	type ElementMark,
 	type TabHintMark,
 	type Target,
 } from "./Target/Target";
-import { type MergeUnion } from "./TypingUtils";
 
 export type ToggleLevel =
 	| "everywhere"
@@ -190,12 +188,8 @@ export type ActionV1 = {
 	prioritizeViewport?: boolean;
 };
 
-export type ActionV2 = Simplify<
-	{
-		name: keyof ActionMap;
-	} & MergeUnion<ActionMap[keyof ActionMap]>
->;
+export type ActionV2<T extends keyof ActionMap> = {
+	name: keyof ActionMap;
+} & ActionMap[T];
 
-export type Action = ActionV1 | ActionV2;
-
-export type ActionArguments = Omit<ActionV2, "name">;
+export type ActionArguments = ActionMap[keyof ActionMap];

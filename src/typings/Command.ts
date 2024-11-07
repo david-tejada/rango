@@ -1,4 +1,4 @@
-import type { ActionV1, ActionV2 } from "./Action";
+import type { ActionMap, ActionV1, ActionV2 } from "./Action";
 
 export type CommandV1 = {
 	version: 1;
@@ -6,10 +6,10 @@ export type CommandV1 = {
 	action: ActionV1;
 };
 
-export type CommandV2 = {
+export type CommandV2<T extends keyof ActionMap> = {
 	version: 2;
 	type: "request";
-	action: ActionV2;
+	action: ActionV2<T>;
 };
 
-export type Command = CommandV1 | CommandV2;
+export type Command = CommandV1 | CommandV2<keyof ActionMap>;
