@@ -111,6 +111,12 @@ export async function sendMessage<K extends MessageWithoutTarget>(
 	);
 }
 
+/**
+ * Send a message to all frames of the tab. It will return an object in the
+ * shape `{ results, values }`. The `values` property is just the values within
+ * `results` unwrapped. They are provided like this for better ergonomics. The
+ * results only include fulfilled results.
+ */
 export async function sendMessageToAllFrames<K extends MessageWithoutTarget>(
 	messageId: K,
 	...args: HasRequiredData<K> extends true
@@ -119,20 +125,20 @@ export async function sendMessageToAllFrames<K extends MessageWithoutTarget>(
 ) {
 	const [data, tabId] = args;
 	const destinationTabId = tabId ?? (await getCurrentTabId());
-	await pingContentScript(destinationTabId);
+
 	const frames = await browser.webNavigation.getAllFrames({
 		tabId: destinationTabId,
 	});
 
+	// This should never happen. `getAllFrames` only returns null if the tab is
+	// discarded and we're usually sending messages to the active tab.
 	if (!frames) {
 		throw new Error(
 			`Error finding frames for tab with id "${destinationTabId}".`
 		);
 	}
 
-	const frameIds = frames.map((frame) => frame.frameId);
-
-	const sending = frameIds.map(async (frameId) => {
+	const sending = frames.map(async ({ frameId }) => {
 		return (
 			browser.tabs.sendMessage(
 				destinationTabId,
@@ -145,8 +151,19 @@ export async function sendMessageToAllFrames<K extends MessageWithoutTarget>(
 		}));
 	});
 
-	const results = await Promise.all(sending);
-	return { results, values: results.map((result) => result.value) };
+	// Even if there is a content script running in the main frame, sending
+	// messages to other frames might be unsuccessful. For example, the URL of a
+	// frame might be `about:blank`, where content scripts are not allowed. For
+	// this reason we use `allSettled` and then filter fulfill results.
+	const results = await Promise.allSettled(sending);
+	const fulfilledResults = results.filter((result) =>
+		isPromiseFulfilledResult(result)
+	);
+
+	return {
+		results: fulfilledResults,
+		values: fulfilledResults.map((result) => result.value.value),
+	};
 }
 
 type MessageWithTarget = {
