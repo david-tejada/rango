@@ -2,7 +2,6 @@ import {
 	type ElementHintMark,
 	type ElementReferenceMark,
 	type Mark,
-	type TabHintMark,
 	type Target,
 } from "../../typings/Target/Target";
 
@@ -62,14 +61,10 @@ export function extractTargetTypeAndValues<T extends Mark>(
 	return { type, values: target.items.map((item) => item.mark.value) };
 }
 
-export function toElementHintTarget(target: string[]) {
-	return arrayToTarget<ElementHintMark>(target, "elementHint");
+export function getTargetFromHints(hints: string[]) {
+	return arrayToTarget<ElementHintMark>(hints, "elementHint");
 }
 
-export function toElementReferenceTarget(target: string[]) {
-	return arrayToTarget<ElementReferenceMark>(target, "elementReference");
-}
-
-export function toTabTarget(target: string[]) {
-	return arrayToTarget<TabHintMark>(target, "tabHint");
+export function getTargetFromReferences(references: string[]) {
+	return arrayToTarget<ElementReferenceMark>(references, "elementReference");
 }

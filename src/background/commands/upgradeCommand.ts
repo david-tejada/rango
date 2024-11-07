@@ -1,7 +1,4 @@
-import {
-	toElementHintTarget,
-	toTabTarget,
-} from "../../common/target/targetConversion";
+import { getTargetFromHints } from "../../common/target/targetConversion";
 import {
 	type ActionMap,
 	type ActionV1,
@@ -11,6 +8,7 @@ import {
 	type ToggleLevel,
 } from "../../typings/Action";
 import { type Command, type CommandV2 } from "../../typings/Command";
+import { getTargetFromTabHints } from "../tabs/target";
 
 function upgradeAction(action: ActionV1): ActionV2<keyof ActionMap> {
 	const { type: name, target, ...rest } = action;
@@ -42,7 +40,10 @@ function upgradeAction(action: ActionV1): ActionV2<keyof ActionMap> {
 		case "closeTab":
 		case "muteTab":
 		case "unmuteTab": {
-			return { name, target: target ? toTabTarget(target) : undefined };
+			return {
+				name,
+				target: target ? getTargetFromTabHints(target) : undefined,
+			};
 		}
 
 		case "copyLocationProperty": {
@@ -84,7 +85,7 @@ function upgradeAction(action: ActionV1): ActionV2<keyof ActionMap> {
 		case "scrollUpRightAside": {
 			return {
 				name,
-				target: target ? toElementHintTarget(target) : undefined,
+				target: target ? getTargetFromHints(target) : undefined,
 				factor: arg as number,
 			};
 		}
@@ -109,7 +110,7 @@ function upgradeAction(action: ActionV1): ActionV2<keyof ActionMap> {
 		case "saveReference": {
 			return {
 				name,
-				target: target ? toElementHintTarget(target) : undefined,
+				target: target ? getTargetFromHints(target) : undefined,
 				referenceName: arg as string,
 			};
 		}
@@ -125,7 +126,7 @@ function upgradeAction(action: ActionV1): ActionV2<keyof ActionMap> {
 		default: {
 			return {
 				name,
-				target: target ? toElementHintTarget(target) : undefined,
+				target: target ? getTargetFromHints(target) : undefined,
 				...rest,
 			};
 		}

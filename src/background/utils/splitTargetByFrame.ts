@@ -1,7 +1,7 @@
 import {
 	extractTargetTypeAndValues,
-	toElementHintTarget,
-	toElementReferenceTarget,
+	getTargetFromHints,
+	getTargetFromReferences,
 } from "../../common/target/targetConversion";
 import { TargetError } from "../../common/target/TargetError";
 import {
@@ -34,7 +34,7 @@ export async function splitTargetByFrame(
 			const targetByFrame = new Map<number | undefined, Target<ElementMark>>();
 
 			for (const [frameId, hints] of hintsByFrame) {
-				targetByFrame.set(frameId, toElementHintTarget(hints));
+				targetByFrame.set(frameId, getTargetFromHints(hints));
 			}
 
 			return targetByFrame;
@@ -47,7 +47,7 @@ export async function splitTargetByFrame(
 			>();
 
 			if (values.length > 0) {
-				targetByFrame.set(undefined, toElementReferenceTarget(values));
+				targetByFrame.set(undefined, getTargetFromReferences(values));
 			}
 
 			return targetByFrame;
