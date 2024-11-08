@@ -4,18 +4,18 @@ import { urls } from "../../common/urls";
 import { setTabLastSounded } from "../actions/focusTabBySound";
 import { watchNavigation } from "../hints/watchNavigation";
 import { sendMessage } from "../messaging/backgroundMessageBroker";
-import { setupBackgroundBoundMessageHandlers } from "../messaging/setupBackgroundBoundMessageHandlers";
+import { addMessageListeners } from "../messaging/messageListeners";
 import { createContextMenus } from "../misc/createContextMenus";
 import { initTabMarkers } from "../misc/tabMarkers";
 import { setBrowserActionIcon } from "../utils/browserAction";
 import { getCurrentTab } from "../utils/getCurrentTab";
 import { isSafari } from "../utils/isSafari";
-import { setupCommandListeners } from "./setupCommandListeners";
+import { addCommandListeners } from "./commandListeners";
 import { trackRecentTabs } from "./trackRecentTabs";
 
 export async function initBackgroundScript() {
-	setupBackgroundBoundMessageHandlers();
-	setupCommandListeners();
+	addMessageListeners();
+	addCommandListeners();
 	await trackRecentTabs();
 	watchNavigation();
 }

@@ -21,7 +21,7 @@ import {
 	sendMessageToAllFrames,
 } from "./backgroundMessageBroker";
 
-export function setupBackgroundBoundMessageHandlers() {
+export function addMessageListeners() {
 	onMessage("initStack", async (_, { tabId, frameId }) => {
 		// Only the main frame (frameId 0) should be able to initialize the stack.
 		// This is to be safe as we already make sure we are only sending this

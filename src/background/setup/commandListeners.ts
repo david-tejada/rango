@@ -50,7 +50,7 @@ import { discardNextResponse } from "../utils/requestAndResponse";
 import { tryToFocusDocument } from "../utils/tryToFocusDocument";
 import { withLockedStorageAccess } from "../utils/withLockedStorageValue";
 
-export function setupCommandListeners() {
+export function addCommandListeners() {
 	// ===========================================================================
 	// NAVIGATION
 	// ===========================================================================

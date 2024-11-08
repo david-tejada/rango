@@ -54,7 +54,7 @@ import { getFirstWrapper, getTargetedWrappers } from "../wrappers/target";
 import { reclaimHints } from "../wrappers/wrappers";
 import { onMessage } from "./contentMessageBroker";
 
-export function setupContentBoundMessageHandlers() {
+export function addMessageListeners() {
 	onMessage("pingContentScript", () => true);
 
 	onMessage("onCompleted", async () => {
