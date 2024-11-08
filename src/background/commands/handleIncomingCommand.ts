@@ -22,12 +22,12 @@ export async function handleIncomingCommand() {
 			// Rethrow the error with a more descriptive message.
 			const message =
 				"Unable to run command. This command can't run on browser system pages (settings, new tabs, extensions, or other privileged pages).";
-			await writeResponse([{ name: "printError", message }]);
+			await writeResponse({ name: "printError", message });
 			throw new UnreachableContentScriptError(message);
 		}
 
 		if (error instanceof Error) {
-			await writeResponse([{ name: "printError", message: error.message }]);
+			await writeResponse({ name: "printError", message: error.message });
 		}
 
 		throw error;
