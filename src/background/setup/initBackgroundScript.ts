@@ -3,7 +3,7 @@ import { retrieve, store } from "../../common/storage";
 import { urls } from "../../common/urls";
 import { setTabLastSounded } from "../actions/focusTabBySound";
 import { watchNavigation } from "../hints/watchNavigation";
-import { sendRequestToContent } from "../messaging/sendRequestToContent";
+import { sendMessage } from "../messaging/backgroundMessageBroker";
 import { setupBackgroundBoundMessageHandlers } from "../messaging/setupBackgroundBoundMessageHandlers";
 import { createContextMenus } from "../misc/createContextMenus";
 import { initTabMarkers } from "../misc/tabMarkers";
@@ -94,9 +94,9 @@ async function resetBookmarkTitle(
 
 	if (includeTabMarkers || urlInTitle) {
 		try {
-			const titleBeforeDecorations = (await sendRequestToContent({
-				type: "getTitleBeforeDecoration",
-			})) as string | undefined;
+			const titleBeforeDecorations = await sendMessage(
+				"getTitleBeforeDecoration"
+			);
 
 			if (titleBeforeDecorations) {
 				// We remove the event listener temporarily so it doesn't trigger when
