@@ -1,12 +1,11 @@
 import type { ActionMap } from "../../typings/Action";
 import type { TalonAction } from "../../typings/RequestFromTalon";
 
-const commandHandlers = new Map<
-	keyof ActionMap,
-	(
-		args: ActionMap[keyof ActionMap]
-	) => Promise<void | TalonAction | TalonAction[] | "noResponse">
->();
+type CommandHandler = (
+	args: ActionMap[keyof ActionMap]
+) => Promise<undefined | TalonAction | TalonAction[] | "noResponse">;
+
+const commandHandlers = new Map<keyof ActionMap, CommandHandler>();
 
 export function onCommand<T extends keyof ActionMap>(
 	name: T,
@@ -18,12 +17,7 @@ export function onCommand<T extends keyof ActionMap>(
 		throw new Error("Only one command handler per command can be registered.");
 	}
 
-	commandHandlers.set(
-		name,
-		handler as (
-			args: ActionMap[keyof ActionMap]
-		) => Promise<void | TalonAction | TalonAction[] | "noResponse">
-	);
+	commandHandlers.set(name, handler as CommandHandler);
 }
 
 export async function handleCommand<Name extends keyof ActionMap>(
