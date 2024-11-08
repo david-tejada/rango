@@ -8,7 +8,7 @@
 // or the real tab depending on how fast the user hits enter. For this reason we
 // can't trust the tabId information in the navigation event and we always need
 // to retrieve the current tab id.
-import browser from "webextension-polyfill";
+import { getAllFrames } from "../frames/frames";
 import { getCurrentTabId } from "../utils/getCurrentTab";
 
 const preloadTabs = new Map<number, { url: string; completed: boolean }>();
@@ -33,7 +33,7 @@ export async function navigationOccurred(tabId: number) {
 
 	// I should be using browser.webNavigation.getFrame here but for whatever
 	// reason it's not working in Safari, although it is supposed to be supported.
-	const allFrames = (await browser.webNavigation.getAllFrames({ tabId })) ?? [];
+	const allFrames = await getAllFrames(tabId);
 	const currentMainFrame = allFrames.find((frame) => frame.frameId === 0);
 
 	// We need to check that the current URL and the URL of the navigation event

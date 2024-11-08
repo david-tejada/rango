@@ -4,6 +4,7 @@ import { letterHints, numberHints } from "../../common/allHints";
 import { getKeysToExclude } from "../../common/getKeysToExclude";
 import { retrieve, store } from "../../common/storage";
 import { type HintStack } from "../../typings/StorageSchema";
+import { getAllFrames } from "../frames/frames";
 import { getCurrentTabId } from "../utils/getCurrentTab";
 import { navigationOccurred } from "./preloadTabs";
 
@@ -139,7 +140,7 @@ export async function reclaimHintsFromOtherFrames(
 	amount: number
 ) {
 	return withStack(tabId, async (stack) => {
-		const frames = (await browser.webNavigation.getAllFrames({ tabId })) ?? [];
+		const frames = await getAllFrames(tabId);
 		const otherFramesIds = frames
 			.map((frame) => frame.frameId)
 			.filter((id) => id !== frameId);
