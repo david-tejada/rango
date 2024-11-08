@@ -1,15 +1,30 @@
 import { type SimplifyDeep } from "type-fest";
 import browser, { type Runtime, type Tabs } from "webextension-polyfill";
 import { isValidMessage } from "../../common/messaging/isValidMessage";
-import type {
-	BackgroundBoundMessageMap,
-	ContentBoundMessageMap,
-	MessageData,
-	MessageReturn,
+import {
+	getTargetFromHints,
+	getTargetFromReferences,
+	getTargetMarkType,
+	getTargetValues,
+} from "../../common/target/targetConversion";
+import { promiseAllSettledFulfilledValues } from "../../lib/promise";
+import {
+	type BackgroundBoundMessageMap,
+	type ContentBoundMessageMap,
+	type MessageData,
+	type MessageReturn,
 } from "../../typings/ProtocolMap";
-import { type ElementMark, type Target } from "../../typings/Target/Target";
+import {
+	type ElementHintMark,
+	type ElementMark,
+	type ElementReferenceMark,
+	type Target,
+} from "../../typings/Target/Target";
+import { assertDefined } from "../../typings/TypingUtils";
+import { getAllFrames } from "../frames/frames";
+import { getStack } from "../hints/hintsAllocator";
+import { assertReferencesInCurrentTab } from "../references/references";
 import { getCurrentTabId } from "../utils/getCurrentTab";
-import { splitTargetByFrame } from "../utils/splitTargetByFrame";
 
 type Destination = { tabId?: number; frameId?: number };
 type Sender = { tab: Tabs.Tab; tabId: number; frameId: number };
@@ -104,8 +119,7 @@ export async function sendMessage<K extends MessageWithoutTarget>(
 		: [data?: MessageData<K>, destination?: Destination]
 ): Promise<MessageReturn<K>> {
 	const [data, destination] = args;
-	const currentTabId = await getCurrentTabId();
-	const tabId = destination?.tabId ?? currentTabId;
+	const tabId = destination?.tabId ?? (await getCurrentTabId());
 	await pingContentScript(tabId);
 
 	return browser.tabs.sendMessage(
@@ -117,9 +131,10 @@ export async function sendMessage<K extends MessageWithoutTarget>(
 
 /**
  * Send a message to all frames of the tab. It will return an object in the
- * shape `{ results, values }`. The `values` property is just the values within
- * `results` unwrapped. They are provided like this for better ergonomics. The
- * results only include fulfilled results.
+ * shape `{ results, values }`. The `results` property is an array of objects
+ * with the shape `{ frameId, value }`. The `values` property is just the
+ * values within `results` unwrapped. They are provided like this for better
+ * ergonomics. The results only include fulfilled results.
  */
 export async function sendMessageToAllFrames<K extends MessageWithoutTarget>(
 	messageId: K,
@@ -128,24 +143,14 @@ export async function sendMessageToAllFrames<K extends MessageWithoutTarget>(
 		: [data?: MessageData<K>, tabId?: number]
 ) {
 	const [data, tabId] = args;
-	const destinationTabId = tabId ?? (await getCurrentTabId());
+	const tabId_ = tabId ?? (await getCurrentTabId());
 
-	const frames = await browser.webNavigation.getAllFrames({
-		tabId: destinationTabId,
-	});
-
-	// This should never happen. `getAllFrames` only returns null if the tab is
-	// discarded and we're usually sending messages to the active tab.
-	if (!frames) {
-		throw new Error(
-			`Error finding frames for tab with id "${destinationTabId}".`
-		);
-	}
+	const frames = await getAllFrames(tabId_);
 
 	const sending = frames.map(async ({ frameId }) => {
 		return (
 			browser.tabs.sendMessage(
-				destinationTabId,
+				tabId_,
 				{ messageId, data },
 				{ frameId }
 			) as Promise<MessageReturn<K>>
@@ -159,14 +164,11 @@ export async function sendMessageToAllFrames<K extends MessageWithoutTarget>(
 	// messages to other frames might be unsuccessful. For example, the URL of a
 	// frame might be `about:blank`, where content scripts are not allowed. For
 	// this reason we use `allSettled` and then filter fulfill results.
-	const results = await Promise.allSettled(sending);
-	const fulfilledResults = results.filter((result) =>
-		isPromiseFulfilledResult(result)
-	);
+	const results = await promiseAllSettledFulfilledValues(sending);
 
 	return {
-		results: fulfilledResults,
-		values: fulfilledResults.map((result) => result.value.value),
+		results,
+		values: results.map((result) => result.value),
 	};
 }
 
@@ -180,8 +182,9 @@ type MessageWithTarget = {
 
 /**
  * Send a message to the frames who own the hints in `target`. It will group the
- * hints in `target` by their `frameId`. It will then send a message to each
- * frame and return an object in the shape `{ results, values }`. The `values`
+ * targets by their `frameId`. It will then send a message to each frame and
+ * return an object in the shape `{ results, values }`. The `results` property
+ * is an array of objects with the shape `{ frameId, value }`. The `values`
  * property is just the values within `results` unwrapped. They are provided
  * like this for better ergonomics.
  */
@@ -220,72 +223,103 @@ export async function sendMessagesToTargetFrames<K extends MessageWithTarget>(
 async function splitTargetByFrame(
 	tabId: number,
 	target: Target<ElementMark>
-): Promise<Map<number | undefined, Target<ElementMark>>> {
-	const { type, values } = extractTargetTypeAndValues(target);
+): Promise<Map<number, Target<ElementMark>>> {
+	const type = getTargetMarkType(target);
 
 	switch (type) {
 		case "elementHint": {
-			const stack = await getStack(tabId);
-			const hintsByFrame = new Map<number, string[]>();
-
-			for (const hint of values) {
-				const frameId = stack.assigned.get(hint);
-				if (frameId === undefined) {
-					throw new TargetError(`Couldn't find mark "${hint}".`);
-				}
-
-				hintsByFrame.set(frameId, [...(hintsByFrame.get(frameId) ?? []), hint]);
-			}
-
-			const targetByFrame = new Map<number | undefined, Target<ElementMark>>();
-
-			for (const [frameId, hints] of hintsByFrame) {
-				targetByFrame.set(frameId, getTargetFromHints(hints));
-			}
-
-			return targetByFrame;
+			return splitElementHintTargetByFrame(
+				tabId,
+				target as Target<ElementHintMark>
+			);
 		}
 
 		case "elementReference": {
-			const allFrames = await browser.webNavigation.getAllFrames({ tabId });
-			if (!allFrames?.length) {
-				throw new Error("Couldn't find any frames for tab.");
-			}
-
-			// Const frameId = await Promise.any(
-			// 	allFrames.map(async ({ frameId }) => {
-			// 		await sendMessage(
-			// 			"hasActiveReference",
-			// 			{ referenceName: values[0]! },
-			// 			{ frameId }
-			// 		);
-
-			// 		return frameId;
-			// 	})
-			// );
-
-			const { results } = await sendMessageToAllFrames("hasActiveReference", {
-				referenceName: values[0]!,
-			});
-
-			console.log("results", results);
-
-			// Console.log("frameId:", results);
-
-			const targetByFrame = new Map<
-				number | undefined,
-				Target<ElementReferenceMark>
-			>();
-
-			if (values.length > 0) {
-				targetByFrame.set(undefined, getTargetFromReferences(values));
-			}
-
-			return targetByFrame;
+			return splitElementReferenceTargetByFrame(
+				tabId,
+				target as Target<ElementReferenceMark>
+			);
 		}
 
 		case "fuzzyText": {
 			throw new Error("Not implemented");
 		}
 	}
+}
+
+async function splitElementHintTargetByFrame(
+	tabId: number,
+	target: Target<ElementHintMark>
+) {
+	const hints = getTargetValues(target);
+	const stack = await getStack(tabId);
+	const hintsByFrame = new Map<number, string[]>();
+
+	for (const hint of hints) {
+		const frameId = stack.assigned.get(hint);
+		assertDefined(frameId, `Couldn't find mark "${hint}".`);
+
+		hintsByFrame.set(frameId, [...(hintsByFrame.get(frameId) ?? []), hint]);
+	}
+
+	return mapMapValues(hintsByFrame, getTargetFromHints);
+}
+
+async function splitElementReferenceTargetByFrame(
+	tabId: number,
+	target: Target<ElementReferenceMark>
+) {
+	const referenceNames = getTargetValues(target);
+	await assertReferencesInCurrentTab(referenceNames);
+
+	const frames = await getAllFrames(tabId);
+
+	// We use `Promise.any` to return the first frame that successfully asserts it
+	// has an active reference. We do this so that we make sure we only perform an
+	// action on a single element, in case the reference is active in multiple
+	// frames. Having this here also allows us to throw an appropriate error if no
+	// frame has an active reference for the reference name.
+	const sending = referenceNames.map(async (referenceName) => {
+		return Promise.any(
+			frames.map(async ({ frameId }) => {
+				return sendMessage(
+					"assertActiveReferenceInFrame",
+					{ referenceName },
+					{ frameId }
+				).then(() => ({
+					frameId,
+					referenceName,
+				}));
+			})
+		);
+	});
+
+	const results = await promiseAllSettledFulfilledValues(sending);
+
+	if (results.length === 0) {
+		throw new Error("Unable to find elements for selected references.");
+	}
+
+	const referencesByFrame = new Map<number, string[]>();
+	for (const { frameId, referenceName } of results) {
+		referencesByFrame.set(frameId, [
+			...(referencesByFrame.get(frameId) ?? []),
+			referenceName,
+		]);
+	}
+
+	return mapMapValues(referencesByFrame, getTargetFromReferences);
+}
+
+/**
+ * Return a new `Map` with the same keys as the original but with its values
+ * being the result of executing the callback on the original values.
+ */
+function mapMapValues<K, V, R>(
+	map: Map<K, V>,
+	callback: (value: V) => R
+): Map<K, R> {
+	return new Map(
+		Array.from(map.entries(), ([key, value]) => [key, callback(value)])
+	);
 }

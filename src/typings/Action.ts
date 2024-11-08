@@ -144,10 +144,7 @@ export type ActionMap = {
 
 	// References
 	removeReference: { referenceName: string };
-	runActionOnReference: {
-		actionName: ActionWithElementTarget;
-		referenceName: string;
-	};
+	runActionOnReference: void; // Not used anymore. Only necessary for command upgrading.
 	saveReference: { target: Target<ElementMark>; referenceName: string };
 	saveReferenceForActiveElement: { referenceName: string };
 	showReferences: void;

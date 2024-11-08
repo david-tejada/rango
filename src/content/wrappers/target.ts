@@ -1,20 +1,24 @@
 import {
-	extractTargetTypeAndValues,
 	getTargetMarkType,
+	getTargetValues,
 } from "../../common/target/targetConversion";
 import { TargetError } from "../../common/target/TargetError";
 import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { type ElementMark, type Target } from "../../typings/Target/Target";
 import { getReferences } from "../actions/references";
-import { getElementFromSelector } from "../actions/runActionOnReference";
+import { getElementFromSelector } from "../selectors/getElementFromSelector";
 import { assertWrappersIntersectViewport } from "./assertIntersectingWrappers";
 import { getOrCreateWrapper } from "./ElementWrapperClass";
+import { setLastTargetedWrapper } from "./lastTargetedWrapper";
 import { getWrapper } from "./wrappers";
 
 export async function getTargetedWrappers(target: Target<ElementMark>) {
 	const type = getTargetMarkType(target);
 
 	const wrappers = await getWrappersForTarget(target);
+
+	const lastWrapper = wrappers.at(-1);
+	if (lastWrapper) setLastTargetedWrapper(lastWrapper);
 
 	if (type === "elementHint") assertWrappersIntersectViewport(wrappers);
 
@@ -29,8 +33,9 @@ export async function getFirstWrapper(target: Target<ElementMark>) {
 	return wrappers[0]!;
 }
 
-export async function getWrappersForTarget(target: Target<ElementMark>) {
-	const { type, values } = extractTargetTypeAndValues(target);
+async function getWrappersForTarget(target: Target<ElementMark>) {
+	const values = getTargetValues(target);
+	const type = getTargetMarkType(target);
 
 	if (type === "elementHint") {
 		return values.map((hint) => {
@@ -50,18 +55,14 @@ export async function getWrappersForTarget(target: Target<ElementMark>) {
 				const selector = hostReferences.get(name);
 				if (!selector) return;
 
-				const element = await getElementFromSelector(selector, 1000);
-				return getOrCreateWrapper(element, false);
+				const element = await getElementFromSelector(selector);
+				return element ? getOrCreateWrapper(element, false) : undefined;
 			})
 		);
 
-		const nonNullWrappers = wrappers.filter(
+		return wrappers.filter(
 			(wrapper): wrapper is ElementWrapper => wrapper !== undefined
 		);
-
-		for (const wrapper of nonNullWrappers) wrapper.hint?.flash();
-
-		return nonNullWrappers;
 	}
 
 	// TODO: Add support for fuzzy text target

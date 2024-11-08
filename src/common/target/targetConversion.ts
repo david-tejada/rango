@@ -49,16 +49,12 @@ export function getTargetMarkType<T extends Mark>(
 	return firstItem.mark.type;
 }
 
-export function extractTargetTypeAndValues<T extends Mark>(
-	target: Target<T>
-): { type: T["type"]; values: string[] } {
-	const type = getTargetMarkType(target);
-
+export function getTargetValues<T extends Mark>(target: Target<T>) {
 	if (target.type === "primitive") {
-		return { type, values: [target.mark.value] };
+		return [target.mark.value];
 	}
 
-	return { type, values: target.items.map((item) => item.mark.value) };
+	return target.items.map((item) => item.mark.value);
 }
 
 export function getTargetFromHints(hints: string[]) {

@@ -26,6 +26,12 @@ import {
 	navigateToNextPage,
 	navigateToPreviousPage,
 } from "../actions/pagination";
+import {
+	getReferences,
+	saveReference,
+	saveReferenceForActiveElement,
+	showReferences,
+} from "../actions/references";
 import { refreshHints } from "../actions/refreshHints";
 import { scroll, snapScroll } from "../actions/scroll";
 import { setSelectionAfter, setSelectionBefore } from "../actions/setSelection";
@@ -35,6 +41,7 @@ import { deleteHintsInFrame } from "../hints/hintsInFrame";
 import { synchronizeHints } from "../hints/hintsRequests";
 import { notify, notifyTogglesStatus } from "../notify/notify";
 import { updateHintsEnabled } from "../observe";
+import { getElementFromSelector } from "../selectors/getElementFromSelector";
 import { setNavigationToggle } from "../settings/toggles";
 import { activateEditable } from "../utils/activateEditable";
 import {
@@ -234,4 +241,24 @@ export function setupContentBoundMessageHandlers() {
 	});
 
 	onMessage("refreshHints", refreshHints);
+
+	onMessage("saveReference", async ({ target, referenceName }) => {
+		const wrapper = await getFirstWrapper(target);
+		await saveReference(wrapper, referenceName);
+	});
+
+	onMessage("saveReferenceForActiveElement", async ({ referenceName }) => {
+		await saveReferenceForActiveElement(referenceName);
+	});
+
+	onMessage("showReferences", showReferences);
+
+	onMessage("assertActiveReferenceInFrame", async ({ referenceName }) => {
+		const { hostReferences } = await getReferences();
+		const selector = hostReferences.get(referenceName);
+		if (!selector) throw new Error("No selector found");
+
+		const element = await getElementFromSelector(selector);
+		if (!element) throw new Error("No element found");
+	});
 }

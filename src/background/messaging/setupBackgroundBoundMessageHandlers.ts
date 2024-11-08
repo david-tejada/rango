@@ -1,4 +1,5 @@
 import browser from "webextension-polyfill";
+import { getTargetFromHints } from "../../common/target/targetConversion";
 import {
 	claimHints,
 	getStack,
@@ -10,7 +11,6 @@ import {
 } from "../hints/hintsAllocator";
 import { getTabMarker } from "../misc/tabMarkers";
 import { getCurrentTabId } from "../utils/getCurrentTab";
-import { removeReference } from "../utils/removeReference";
 import {
 	resetCustomSelectors,
 	storeCustomSelectors,
@@ -69,7 +69,11 @@ export function setupBackgroundBoundMessageHandlers() {
 	});
 
 	onMessage("clickHintInFrame", async ({ hint }, { tabId }) => {
-		await sendMessagesToTargetFrames("clickElement", { target: [hint] }, tabId);
+		await sendMessagesToTargetFrames(
+			"clickElement",
+			{ target: getTargetFromHints([hint]) },
+			tabId
+		);
 	});
 
 	onMessage("markHintsAsKeyboardReachable", async ({ letter }, { tabId }) => {
@@ -112,9 +116,5 @@ export function setupBackgroundBoundMessageHandlers() {
 
 	onMessage("resetCustomSelectors", async ({ url }) => {
 		return resetCustomSelectors(url);
-	});
-
-	onMessage("removeReference", async ({ hostPattern, name }) => {
-		return removeReference(hostPattern, name);
 	});
 }

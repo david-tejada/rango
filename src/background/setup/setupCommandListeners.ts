@@ -2,6 +2,7 @@ import browser from "webextension-polyfill";
 import { retrieve, store } from "../../common/storage";
 import { getTargetMarkType } from "../../common/target/targetConversion";
 import { isTargetError } from "../../common/target/TargetError";
+import { getHostPattern } from "../../common/utils";
 import { promiseWrap } from "../../lib/promiseWrap";
 import { type TalonAction } from "../../typings/RequestFromTalon";
 import {
@@ -33,6 +34,7 @@ import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
 import { toggleTabMarkers } from "../actions/toggleTabMarkers";
 import { onCommand } from "../commands/commandBroker";
+import { getAllFrames } from "../frames/frames";
 import { getFrameIdForHint } from "../hints/hintsAllocator";
 import {
 	sendMessage,
@@ -41,10 +43,12 @@ import {
 	UnreachableContentScriptError,
 } from "../messaging/backgroundMessageBroker";
 import { refreshTabMarkers } from "../misc/tabMarkers";
+import { assertReferenceInCurrentTab } from "../references/references";
 import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
 import { notify } from "../utils/notify";
 import { discardNextResponse } from "../utils/requestAndResponse";
 import { tryToFocusDocument } from "../utils/tryToFocusDocument";
+import { withLockedStorageAccess } from "../utils/withLockedStorageValue";
 
 export function setupCommandListeners() {
 	// ===========================================================================
@@ -741,20 +745,34 @@ export function setupCommandListeners() {
 	// ===========================================================================
 	// REFERENCES
 	// ===========================================================================
-	onCommand("removeReference", async ({ name }) => {
-		// Todo
+	onCommand("saveReference", async ({ target, referenceName }) => {
+		assertPrimitiveTarget(target);
+		await sendMessagesToTargetFrames("saveReference", {
+			target,
+			referenceName,
+		});
 	});
-	onCommand("runActionOnReference", async ({ name, actionType }) => {
-		// Todo
+
+	onCommand("removeReference", async ({ referenceName }) => {
+		await assertReferenceInCurrentTab(referenceName);
+		const allFrames = await getAllFrames();
+		const hostPatterns = allFrames.map((frame) => getHostPattern(frame.url));
+
+		await withLockedStorageAccess("references", async (references) => {
+			for (const hostPattern of hostPatterns) {
+				references.get(hostPattern)?.delete(referenceName);
+			}
+		});
+
+		await notify(`Removed reference "${referenceName}"`, { type: "success" });
 	});
-	onCommand("saveReference", async ({ target, name }) => {
-		// Todo
+
+	onCommand("showReferences", async () => {
+		await sendMessage("showReferences");
 	});
-	onCommand("saveReferenceForActiveElement", async ({ name }) => {
-		// Todo
-	});
-	onCommand("showReferences", async ({}) => {
-		// Todo
+
+	onCommand("saveReferenceForActiveElement", async ({ referenceName }) => {
+		await sendMessage("saveReferenceForActiveElement", { referenceName });
 	});
 
 	// ===========================================================================

@@ -114,6 +114,14 @@ export type ContentBoundMessageMap = {
 	hideHint: (data: { target: Target<ElementMark> }) => void;
 	refreshHints: () => void;
 
+	// References
+	saveReference: (data: {
+		target: Target<ElementMark>;
+		referenceName: string;
+	}) => void;
+	showReferences: () => void;
+	assertActiveReferenceInFrame: (data: { referenceName: string }) => void;
+	saveReferenceForActiveElement: (data: { referenceName: string }) => void;
 	// Tabs
 	getTitleBeforeDecoration: () => string;
 	refreshTitleDecorations: () => void;

@@ -1,11 +1,9 @@
 export function assertDefined<T>(
 	value: T | null | undefined,
-	message?: string
+	message = "Value is null or undefined"
 ): asserts value is T {
 	if (value === null || value === undefined) {
-		throw new Error(
-			message ?? `Fatal error: value must not be null/undefined.`
-		);
+		throw new Error(message);
 	}
 }
 
