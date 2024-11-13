@@ -181,7 +181,12 @@ export function addCommandListeners() {
 	});
 
 	onCommand("focusOrCreateTabByUrl", async ({ url }) => {
-		await focusOrCreateTabByUrl(url);
+		try {
+			await focusOrCreateTabByUrl(url);
+			return undefined;
+		} catch {
+			return { name: "openInNewTab", url };
+		}
 	});
 
 	onCommand("focusNextAudibleTab", async () => {
