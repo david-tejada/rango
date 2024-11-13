@@ -2,6 +2,8 @@ import { type SimplifyDeep } from "type-fest";
 import browser, { type Runtime, type Tabs } from "webextension-polyfill";
 import { isValidMessage } from "../../common/messaging/isValidMessage";
 import {
+	getPrioritizeViewportValue,
+	getTargetFromFuzzyTexts,
 	getTargetFromHints,
 	getTargetFromReferences,
 	getTargetMarkType,
@@ -18,12 +20,13 @@ import {
 	type ElementHintMark,
 	type ElementMark,
 	type ElementReferenceMark,
+	type FuzzyTextElementMark,
 	type Target,
 } from "../../typings/Target/Target";
 import { assertDefined } from "../../typings/TypingUtils";
 import { getAllFrames } from "../frames/frames";
 import { getStack } from "../hints/hintsAllocator";
-import { assertReferencesInCurrentTab } from "../references/references";
+import { assertReferencesInCurrentTab } from "../target/references";
 import { getCurrentTabId } from "../utils/getCurrentTab";
 
 type Destination = { tabId?: number; frameId?: number };
@@ -242,7 +245,10 @@ async function splitTargetByFrame(
 		}
 
 		case "fuzzyText": {
-			throw new Error("Not implemented");
+			return splitFuzzyTextTargetByFrame(
+				tabId,
+				target as Target<FuzzyTextElementMark>
+			);
 		}
 	}
 }
@@ -309,6 +315,79 @@ async function splitElementReferenceTargetByFrame(
 	}
 
 	return mapMapValues(referencesByFrame, getTargetFromReferences);
+}
+
+async function splitFuzzyTextTargetByFrame(
+	tabId: number,
+	target: Target<FuzzyTextElementMark>
+) {
+	const texts = getTargetValues(target);
+	const prioritizeViewport = getPrioritizeViewportValue(target);
+	const frames = await getAllFrames(tabId);
+
+	const sending = texts.map(async (text) => {
+		return promiseAllSettledFulfilledValues(
+			frames.map(async ({ frameId }) => {
+				return sendMessage(
+					"matchElementByText",
+					{
+						text,
+						prioritizeViewport,
+					},
+					{ frameId }
+				).then((score) => ({
+					frameId,
+					text,
+					score,
+				}));
+			})
+		);
+	});
+
+	const promiseResults = await promiseAllSettledFulfilledValues(sending);
+	const allResults = promiseResults.flat();
+
+	type ResultType = { frameId: number; text: string; score: number };
+
+	// Build an array of the best result for each text
+	const bestResults = texts.map((text) => {
+		const textResults = allResults.filter(
+			(r): r is ResultType => r.text === text && typeof r.score === "number"
+		);
+
+		if (textResults.length === 0) {
+			throw new Error(`No matching element found for text: "${text}"`);
+		}
+
+		const minScore = Math.min(...textResults.map((r) => r.score));
+
+		// Get all results with the minimum score
+		const bestResults = textResults.filter((r) => r.score === minScore);
+
+		// If there's only one best result, return it
+		if (bestResults.length === 1) {
+			return bestResults[0]!;
+		}
+
+		// If multiple results have the same score, prefer the main frame (frameId: 0)
+		const mainFrameResult = bestResults.find((r) => r.frameId === 0);
+		if (mainFrameResult) {
+			return mainFrameResult;
+		}
+
+		// If no main frame result, return the first one
+		return bestResults[0]!;
+	});
+
+	const fuzzyTextsByFrame = new Map<number, string[]>();
+	for (const { frameId, text } of bestResults) {
+		fuzzyTextsByFrame.set(frameId, [
+			...(fuzzyTextsByFrame.get(frameId) ?? []),
+			text,
+		]);
+	}
+
+	return mapMapValues(fuzzyTextsByFrame, getTargetFromFuzzyTexts);
 }
 
 /**

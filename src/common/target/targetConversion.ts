@@ -1,6 +1,7 @@
 import {
 	type ElementHintMark,
 	type ElementReferenceMark,
+	type FuzzyTextElementMark,
 	type Mark,
 	type Target,
 } from "../../typings/Target/Target";
@@ -57,10 +58,33 @@ export function getTargetValues<T extends Mark>(target: Target<T>) {
 	return target.items.map((item) => item.mark.value);
 }
 
+/**
+ * Returns the `prioritizeViewport` value of the target.
+ *
+ * In theory each primitive target could have a different value for
+ * prioritizeViewport. However, we can assume it's always the same for all
+ * primitives in the target. We could have `prioritizeViewport` be another
+ * argument and not part of the mark but we would have to have that argument for
+ * all commands with target.
+ */
+export function getPrioritizeViewportValue<T extends FuzzyTextElementMark>(
+	target: Target<T>
+) {
+	if (target.type === "primitive") {
+		return target.mark.prioritizeViewport;
+	}
+
+	return target.items[0]!.mark.prioritizeViewport;
+}
+
 export function getTargetFromHints(hints: string[]) {
 	return arrayToTarget<ElementHintMark>(hints, "elementHint");
 }
 
 export function getTargetFromReferences(references: string[]) {
 	return arrayToTarget<ElementReferenceMark>(references, "elementReference");
+}
+
+export function getTargetFromFuzzyTexts(texts: string[]) {
+	return arrayToTarget<FuzzyTextElementMark>(texts, "fuzzyText");
 }

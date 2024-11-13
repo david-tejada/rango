@@ -779,20 +779,4 @@ export function addCommandListeners() {
 	onCommand("saveReferenceForActiveElement", async ({ referenceName }) => {
 		await sendMessage("saveReferenceForActiveElement", { referenceName });
 	});
-
-	// ===========================================================================
-	// FUZZY SEARCH ELEMENTS
-	// ===========================================================================
-	onCommand("executeActionOnTextMatchedElement", async ({ actionType }) => {
-		// Todo
-	});
-	onCommand("matchElementByText", async ({ text, prioritizeViewport }) => {
-		// Todo
-	});
-	onCommand(
-		"runActionOnTextMatchedElement",
-		async ({ name, actionType, prioritizeViewport }) => {
-			// Todo
-		}
-	);
 }

@@ -8,9 +8,10 @@ export type ElementReferenceMark = {
 	value: string;
 };
 
-type FuzzyTextElementMark = {
+export type FuzzyTextElementMark = {
 	type: "fuzzyText";
 	value: string;
+	prioritizeViewport: boolean;
 };
 
 export type TabHintMark = {

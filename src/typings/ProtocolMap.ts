@@ -122,6 +122,13 @@ export type ContentBoundMessageMap = {
 	showReferences: () => void;
 	assertActiveReferenceInFrame: (data: { referenceName: string }) => void;
 	saveReferenceForActiveElement: (data: { referenceName: string }) => void;
+
+	// Fuzzy Text
+	matchElementByText: (data: {
+		text: string;
+		prioritizeViewport: boolean;
+	}) => number | undefined;
+
 	// Tabs
 	getTitleBeforeDecoration: () => string;
 	refreshTitleDecorations: () => void;

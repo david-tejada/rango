@@ -5,6 +5,7 @@ import {
 import { TargetError } from "../../common/target/TargetError";
 import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { type ElementMark, type Target } from "../../typings/Target/Target";
+import { getTextMatchedElement } from "../actions/matchElementByText";
 import { getReferences } from "../actions/references";
 import { getElementFromSelector } from "../selectors/getElementFromSelector";
 import { assertWrappersIntersectViewport } from "./assertIntersectingWrappers";
@@ -37,34 +38,43 @@ async function getWrappersForTarget(target: Target<ElementMark>) {
 	const values = getTargetValues(target);
 	const type = getTargetMarkType(target);
 
-	if (type === "elementHint") {
-		return values.map((hint) => {
-			const wrapper = getWrapper(hint);
-			if (!wrapper) {
-				throw new TargetError(`Couldn't find mark "${hint}".`);
-			}
+	switch (type) {
+		case "elementHint": {
+			return values.map((hint) => {
+				const wrapper = getWrapper(hint);
+				if (!wrapper) {
+					throw new TargetError(`Couldn't find mark "${hint}".`);
+				}
 
-			return wrapper;
-		});
+				return wrapper;
+			});
+		}
+
+		case "elementReference": {
+			const wrappers = await Promise.all(
+				values.map(async (name) => {
+					const { hostReferences } = await getReferences();
+					const selector = hostReferences.get(name);
+					if (!selector) return;
+
+					const element = await getElementFromSelector(selector);
+					return element ? getOrCreateWrapper(element, false) : undefined;
+				})
+			);
+			return wrappers.filter(
+				(wrapper): wrapper is ElementWrapper => wrapper !== undefined
+			);
+		}
+
+		case "fuzzyText": {
+			return values
+				.map((text) => {
+					const element = getTextMatchedElement(text);
+					if (!element) return undefined;
+
+					return getOrCreateWrapper(element, false);
+				})
+				.filter((wrapper): wrapper is ElementWrapper => wrapper !== undefined);
+		}
 	}
-
-	if (type === "elementReference") {
-		const wrappers = await Promise.all(
-			values.map(async (name) => {
-				const { hostReferences } = await getReferences();
-				const selector = hostReferences.get(name);
-				if (!selector) return;
-
-				const element = await getElementFromSelector(selector);
-				return element ? getOrCreateWrapper(element, false) : undefined;
-			})
-		);
-
-		return wrappers.filter(
-			(wrapper): wrapper is ElementWrapper => wrapper !== undefined
-		);
-	}
-
-	// TODO: Add support for fuzzy text target
-	throw new Error("Unsupported target type.");
 }

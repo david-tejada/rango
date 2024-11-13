@@ -10,13 +10,13 @@ import { setStyleProperties } from "../hints/setStyleProperties";
 import { sendMessage } from "../messaging/contentMessageBroker";
 import { getSetting } from "../settings/settingsManager";
 import { BoundedIntersectionObserver } from "../utils/BoundedIntersectionObserver";
+import { getElementCenter } from "../utils/cssomUtils";
 import { deepGetElements } from "../utils/deepGetElements";
 import {
 	dispatchClick,
 	dispatchHover,
 	dispatchUnhover,
 } from "../utils/dispatchEvents";
-import { getPointerTarget } from "../utils/getPointerTarget";
 import { getUserScrollableContainer } from "../utils/getUserScrollableContainer";
 import { isDisabled } from "../utils/isDisabled";
 import { isHintable } from "../utils/isHintable";
@@ -448,7 +448,8 @@ class ElementWrapperClass implements ElementWrapper {
 	}
 
 	async click(): Promise<boolean> {
-		const pointerTarget = getPointerTarget(this.element);
+		const pointerTarget = this.getPointerTarget();
+
 		if (this.hint?.inner.isConnected) {
 			this.hint.flash();
 		} else {
@@ -513,13 +514,13 @@ class ElementWrapperClass implements ElementWrapper {
 	}
 
 	hover() {
-		const pointerTarget = getPointerTarget(this.element);
+		const pointerTarget = this.getPointerTarget();
 		this.hint?.flash();
 		dispatchHover(pointerTarget);
 	}
 
 	unhover() {
-		const pointerTarget = getPointerTarget(this.element);
+		const pointerTarget = this.getPointerTarget();
 		dispatchUnhover(pointerTarget);
 	}
 
@@ -531,5 +532,67 @@ class ElementWrapperClass implements ElementWrapper {
 		this.isIntersectingViewport = undefined;
 
 		this.hint?.release();
+	}
+
+	private getPointerTarget(): Element {
+		// Under some circumstances the element might be outside of the viewport, for
+		// example, when using fuzzy search. In those case we need to scroll the
+		// element into view in order to get the topmost element, which is the one we
+		// need to act on.
+		let isIntersectingViewport = this.isIntersectingViewport;
+
+		// If the element wrapper was just created, the intersect method might not
+		// have been called yet.
+		if (isIntersectingViewport === undefined) {
+			const rect = this.element.getBoundingClientRect();
+			const viewportHeight = window.innerHeight;
+			const viewportWidth = window.innerWidth;
+
+			// This is not as exact as the intersection observer, but it is enough
+			// for our purposes.
+			isIntersectingViewport = !(
+				rect.bottom < 0 ||
+				rect.top > viewportHeight ||
+				rect.right < 0 ||
+				rect.left > viewportWidth
+			);
+		}
+
+		if (!isIntersectingViewport) {
+			this.element.scrollIntoView({
+				behavior: "instant",
+				block: "center",
+				inline: "center",
+			});
+		}
+
+		const element = this.element;
+		const { x, y } = getElementCenter(this.element);
+		const elementsAtPoint = document.elementsFromPoint(x, y);
+
+		for (const elementAt of elementsAtPoint) {
+			if (element.contains(elementAt)) {
+				let current: Element | null = elementAt;
+				let differentWrapper = false;
+
+				while (current && current !== element) {
+					const wrapper = getWrapperForElement(current);
+					if (
+						wrapper?.isHintable &&
+						wrapper !== getWrapperForElement(elementAt)
+					) {
+						differentWrapper = true;
+					}
+
+					current = current.parentElement;
+				}
+
+				if (!differentWrapper) {
+					return elementAt;
+				}
+			}
+		}
+
+		return element;
 	}
 }

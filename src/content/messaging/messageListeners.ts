@@ -22,6 +22,7 @@ import {
 	markHintsAsKeyboardReachable,
 	restoreKeyboardReachableHints,
 } from "../actions/keyboardClicking";
+import { matchElementByText } from "../actions/matchElementByText";
 import {
 	navigateToNextPage,
 	navigateToPreviousPage,
@@ -260,5 +261,9 @@ export function addMessageListeners() {
 
 		const element = await getElementFromSelector(selector);
 		if (!element) throw new Error("No element found");
+	});
+
+	onMessage("matchElementByText", async ({ text, prioritizeViewport }) => {
+		return matchElementByText(text, prioritizeViewport);
 	});
 }

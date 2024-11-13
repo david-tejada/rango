@@ -150,13 +150,7 @@ export type ActionMap = {
 	showReferences: void;
 
 	// Fuzzy Search Elements
-	executeActionOnTextMatchedElement: { actionType: ActionWithElementTarget };
-	matchElementByText: { text: string; prioritizeViewport: boolean };
-	runActionOnTextMatchedElement: {
-		actionName: ActionWithElementTarget;
-		text: string;
-		prioritizeViewport: boolean;
-	};
+	runActionOnTextMatchedElement: void; // Not used anymore. Only necessary for command upgrading.
 
 	// To Be Deleted
 	disableUrlInTitle: void;
@@ -181,8 +175,6 @@ export type ActionV1 = {
 	arg?: number | string | ActionWithElementTarget | LocationProperty;
 	arg2?: string;
 	arg3?: boolean;
-	actionType?: ActionWithElementTarget;
-	prioritizeViewport?: boolean;
 };
 
 export type ActionV2<T extends keyof ActionMap> = {

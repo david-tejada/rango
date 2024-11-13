@@ -13,7 +13,7 @@ import { getTargetFromTabHints } from "../tabs/target";
 function upgradeAction(action: ActionV1): ActionV2<keyof ActionMap> {
 	const { type: name, target, ...rest } = action;
 
-	const { arg, arg2, prioritizeViewport } = rest;
+	const { arg, arg2, arg3 } = rest;
 
 	switch (name) {
 		case "closeNextTabsInWindow":
@@ -65,9 +65,13 @@ function upgradeAction(action: ActionV1): ActionV2<keyof ActionMap> {
 				name: arg as ActionWithElementTarget,
 				target: {
 					type: "primitive",
-					mark: { type: "fuzzyText", value: arg2! },
+					mark: {
+						type: "fuzzyText",
+						value: arg2!,
+						// There was a bug in rango-talon where this was not set if it was false
+						prioritizeViewport: arg3 ?? false,
+					},
 				},
-				prioritizeViewport,
 			};
 		}
 
