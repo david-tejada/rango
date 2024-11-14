@@ -1,5 +1,6 @@
 import browser from "webextension-polyfill";
 import { assertDefined } from "../../typings/TypingUtils";
+import { sendMessageToAllFrames } from "../messaging/backgroundMessageBroker";
 import { getCurrentTabId } from "../utils/getCurrentTab";
 
 /**
@@ -16,4 +17,15 @@ export async function getAllFrames(tabId?: number) {
 	assertDefined(frames, `Error getting frames for tabId "${tabId_}".`);
 
 	return frames;
+}
+
+export async function getActiveEditableElementFrameId() {
+	const { results } = await sendMessageToAllFrames("hasActiveEditableElement");
+
+	const frameId = results.find(({ value }) => value)?.frameId;
+	if (frameId === undefined) {
+		throw new Error("No active editable element found");
+	}
+
+	return frameId;
 }

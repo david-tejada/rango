@@ -34,7 +34,10 @@ import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
 import { toggleTabMarkers } from "../actions/toggleTabMarkers";
 import { onCommand } from "../commands/commandBroker";
-import { getAllFrames } from "../frames/frames";
+import {
+	getActiveEditableElementFrameId,
+	getAllFrames,
+} from "../frames/frames";
 import { getFrameIdForHint } from "../hints/hintsAllocator";
 import {
 	sendMessage,
@@ -778,6 +781,12 @@ export function addCommandListeners() {
 	});
 
 	onCommand("saveReferenceForActiveElement", async ({ referenceName }) => {
-		await sendMessage("saveReferenceForActiveElement", { referenceName });
+		const frameId = await getActiveEditableElementFrameId();
+
+		await sendMessage(
+			"saveReferenceForActiveElement",
+			{ referenceName },
+			{ frameId }
+		);
 	});
 }

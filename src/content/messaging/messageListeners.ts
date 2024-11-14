@@ -266,4 +266,10 @@ export function addMessageListeners() {
 	onMessage("matchElementByText", async ({ text, prioritizeViewport }) => {
 		return matchElementByText(text, prioritizeViewport);
 	});
+
+	onMessage("hasActiveEditableElement", () => {
+		return Boolean(
+			document.activeElement && isEditable(document.activeElement)
+		);
+	});
 }

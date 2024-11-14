@@ -162,4 +162,5 @@ export type ContentBoundMessageMap = {
 
 	// Utils
 	pingContentScript: () => true;
+	hasActiveEditableElement: () => boolean;
 };
