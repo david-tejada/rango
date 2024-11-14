@@ -396,7 +396,7 @@ export function addCommandListeners() {
 	});
 
 	onCommand("unhoverAll", async () => {
-		await sendMessage("unhoverAll");
+		await sendMessageToAllFrames("unhoverAll");
 	});
 
 	// This command was changed on 2023-06-02. Remove this after April 2025.
@@ -710,7 +710,7 @@ export function addCommandListeners() {
 		await sendMessageToTargetFrames("hideHint", { target });
 	});
 	onCommand("refreshHints", async () => {
-		await sendMessage("refreshHints");
+		await sendMessageToAllFrames("refreshHints");
 	});
 
 	// ===========================================================================
@@ -774,7 +774,7 @@ export function addCommandListeners() {
 	});
 
 	onCommand("showReferences", async () => {
-		await sendMessage("showReferences");
+		await sendMessageToAllFrames("showReferences");
 	});
 
 	onCommand("saveReferenceForActiveElement", async ({ referenceName }) => {
