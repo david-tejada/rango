@@ -520,8 +520,12 @@ class ElementWrapperClass implements ElementWrapper {
 	}
 
 	unhover() {
-		const pointerTarget = this.getPointerTarget();
-		dispatchUnhover(pointerTarget);
+		// Avoid unhovering if the element is not intersecting the viewport since
+		// calling `getPointerTarget` will scroll the element into view.
+		if (this.isIntersectingViewport) {
+			const pointerTarget = this.getPointerTarget();
+			dispatchUnhover(pointerTarget);
+		}
 	}
 
 	suspend() {
@@ -534,6 +538,10 @@ class ElementWrapperClass implements ElementWrapper {
 		this.hint?.release();
 	}
 
+	/**
+	 * Returns the topmost element for this wrapper. If the element is not
+	 * intersecting the viewport we scroll it into view.
+	 */
 	private getPointerTarget(): Element {
 		// Under some circumstances the element might be outside of the viewport, for
 		// example, when using fuzzy search. In those case we need to scroll the
