@@ -1,5 +1,5 @@
 /* eslint-disable no-await-in-loop */
-import { storageClipboard, runTestRequest } from "./serviceWorker";
+import { runTestRequest, storageClipboard } from "./serviceWorker";
 import { sleep } from "./testHelpers";
 
 async function waitResponseReady() {
@@ -17,6 +17,9 @@ async function waitResponseReady() {
 		await sleep(10);
 	}
 }
+
+// We leave these commands with version 1 for now, that way we are also testing
+// the conversion from version 1 to version 2.
 
 export async function rangoCommandWithTarget(
 	actionType: string,
