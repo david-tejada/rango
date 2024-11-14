@@ -8,7 +8,7 @@ import { getAllFrames } from "../frames/frames";
 import { getCurrentTabId } from "../utils/getCurrentTab";
 import { navigationOccurred } from "./preloadTabs";
 
-export class HintStackError extends Error {
+class HintStackError extends Error {
 	constructor(message: string) {
 		super(message);
 		this.name = "HintStackError";

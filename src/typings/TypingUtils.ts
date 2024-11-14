@@ -13,12 +13,6 @@ export function isPromiseFulfilledResult<T>(
 	return result.status === "fulfilled";
 }
 
-export function hasPropertyValue(
-	element: Element
-): element is Element & { value: string } {
-	return "value" in element;
-}
-
 export function hasPropertyDisabled(
 	element: Element
 ): element is Element & { disabled: boolean } {

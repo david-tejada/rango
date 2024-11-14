@@ -1,11 +1,3 @@
-import { type RangoAction } from "./RangoAction";
-
-export type RequestFromTalon = {
-	version?: number;
-	type: "request";
-	action: RangoAction;
-};
-
 type TalonActionCopyToClipboard = {
 	name: "copyToClipboard";
 	textToCopy: string;
@@ -54,7 +46,7 @@ type TalonActionPrintError = {
 	message: string;
 };
 
-export type TalonAction = { main?: true } & (
+export type TalonAction =
 	| TalonActionCopyToClipboard
 	| TalonActionTypeTargetCharacters
 	| TalonActionKey
@@ -64,23 +56,4 @@ export type TalonAction = { main?: true } & (
 	| TalonActionFocusPageAndResend
 	| TalonActionResponseValue
 	| TalonActionOpenInNewTab
-	| TalonActionPrintError
-);
-
-export type ResponseToTalon = {
-	type: "response";
-	action: TalonActionLegacy;
-	actions: TalonAction[];
-};
-
-export type TalonActionLegacy = {
-	type:
-		| "noAction"
-		| "copyToClipboard"
-		| "key"
-		| "noHintFound"
-		| "editDelete"
-		| "editDeleteAfterDelay";
-	textToCopy?: string;
-	key?: string;
-};
+	| TalonActionPrintError;

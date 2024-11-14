@@ -180,5 +180,3 @@ export type ActionV1 = {
 export type ActionV2<T extends keyof ActionMap> = {
 	name: keyof ActionMap;
 } & ActionMap[T];
-
-export type ActionArguments = ActionMap[keyof ActionMap];

@@ -270,7 +270,6 @@ export function addCommandListeners() {
 			actions.push({
 				name: "key",
 				key: "alt-down",
-				main: true,
 			});
 
 		return actions;

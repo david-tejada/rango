@@ -23,26 +23,6 @@ export function getElementTextContent(wrappers: ElementWrapper[]) {
 	return textContents;
 }
 
-export function copyLinkToClipboard(
-	wrappers: ElementWrapper[]
-): string | undefined {
-	const hrefs: string[] = [];
-
-	for (const wrapper of wrappers) {
-		let href;
-
-		if (wrapper.element instanceof HTMLAnchorElement) {
-			href = wrapper.element.href;
-			hrefs.push(href);
-			showTooltip(wrapper, "Copied!", 1500);
-		} else {
-			showTooltip(wrapper, "Not a link", 1500);
-		}
-	}
-
-	return hrefs.length > 0 ? hrefs.join("\n") : undefined;
-}
-
 export function getMarkdownLink(wrappers: ElementWrapper[]) {
 	const markdownLinks: string[] = [];
 

@@ -1,4 +1,4 @@
-import { type ResponseToTalon } from "../src/typings/RequestFromTalon";
+import { type TalonAction } from "../src/typings/RequestFromTalon";
 import {
 	rangoCommandWithTarget,
 	rangoCommandWithoutTarget,
@@ -15,7 +15,10 @@ describe("Direct clicking", () => {
 		await rangoCommandWithTarget("directClickElement", ["a"]);
 		await sleep(300);
 		const clip = await storageClipboard.readText();
-		const response = JSON.parse(clip) as ResponseToTalon;
+		const response = JSON.parse(clip) as {
+			type: "response";
+			actions: TalonAction[];
+		};
 		const found = response.actions.find(
 			(action) => action.name === "typeTargetCharacters"
 		);
@@ -28,7 +31,10 @@ describe("Background commands", () => {
 	test("Commands that don't need the content script are still able to run", async () => {
 		await rangoCommandWithoutTarget("copyLocationProperty", "href");
 		const clip = await storageClipboard.readText();
-		const response = JSON.parse(clip) as ResponseToTalon;
+		const response = JSON.parse(clip) as {
+			type: "response";
+			actions: TalonAction[];
+		};
 		const action = response.actions[0]!;
 
 		expect(action).toBeDefined();

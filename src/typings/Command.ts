@@ -1,6 +1,6 @@
 import type { ActionMap, ActionV1, ActionV2 } from "./Action";
 
-export type CommandV1 = {
+type CommandV1 = {
 	version: 1;
 	type: "request";
 	action: ActionV1;

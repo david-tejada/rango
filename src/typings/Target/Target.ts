@@ -40,9 +40,6 @@ type ListTarget<T extends Mark> = {
 
 export type Target<T extends Mark> = ListTarget<T> | PrimitiveTarget<T>;
 
-export type ElementTarget = Target<ElementMark>;
-export type TabTarget = Target<TabMark>;
-
 export function assertPrimitiveTarget<T extends Mark>(
 	target: Target<T>
 ): asserts target is PrimitiveTarget<T> {

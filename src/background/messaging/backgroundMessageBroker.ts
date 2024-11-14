@@ -88,7 +88,7 @@ export class UnreachableContentScriptError extends Error {
 	}
 }
 
-export async function pingContentScript(tabId: number) {
+async function pingContentScript(tabId: number) {
 	try {
 		const contentScriptReached = await browser.tabs.sendMessage(
 			tabId,
