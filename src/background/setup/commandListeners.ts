@@ -4,7 +4,7 @@ import { getTargetMarkType } from "../../common/target/targetConversion";
 import { isTargetError } from "../../common/target/TargetError";
 import { getHostPattern } from "../../common/utils";
 import { promiseWrap } from "../../lib/promiseWrap";
-import { type TalonAction } from "../../typings/RequestFromTalon";
+import { type TalonAction } from "../../typings/TalonAction";
 import {
 	assertPrimitiveTarget,
 	type ElementMark,

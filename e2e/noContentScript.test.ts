@@ -1,4 +1,4 @@
-import { type TalonAction } from "../src/typings/RequestFromTalon";
+import { type TalonAction } from "../src/typings/TalonAction";
 import {
 	rangoCommandWithTarget,
 	rangoCommandWithoutTarget,

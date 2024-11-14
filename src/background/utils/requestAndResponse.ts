@@ -1,6 +1,6 @@
 import { z } from "zod";
 import type { Command } from "../../typings/Command";
-import type { TalonAction } from "../../typings/RequestFromTalon";
+import type { TalonAction } from "../../typings/TalonAction";
 import { readClipboard, writeClipboard } from "./clipboard";
 
 let shouldDiscardNextResponse = false;

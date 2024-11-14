@@ -1,5 +1,5 @@
 import type { ActionMap } from "../../typings/Action";
-import type { TalonAction } from "../../typings/RequestFromTalon";
+import type { TalonAction } from "../../typings/TalonAction";
 
 type CommandHandler = (
 	args: ActionMap[keyof ActionMap]
