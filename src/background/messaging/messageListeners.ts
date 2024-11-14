@@ -18,8 +18,8 @@ import {
 } from "../utils/storeCustomSelectors";
 import {
 	onMessage,
-	sendMessagesToTargetFrames,
 	sendMessageToAllFrames,
+	sendMessageToTargetFrames,
 } from "./backgroundMessageBroker";
 
 export function addMessageListeners() {
@@ -70,7 +70,7 @@ export function addMessageListeners() {
 	});
 
 	onMessage("clickHintInFrame", async ({ hint }, { tabId }) => {
-		await sendMessagesToTargetFrames(
+		await sendMessageToTargetFrames(
 			"clickElement",
 			{ target: getTargetFromHints([hint]) },
 			tabId

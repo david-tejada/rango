@@ -191,7 +191,7 @@ type MessageWithTarget = {
  * property is just the values within `results` unwrapped. They are provided
  * like this for better ergonomics.
  */
-export async function sendMessagesToTargetFrames<K extends MessageWithTarget>(
+export async function sendMessageToTargetFrames<K extends MessageWithTarget>(
 	messageId: K,
 	data: NonNullable<MessageData<K>>,
 	tabId?: number

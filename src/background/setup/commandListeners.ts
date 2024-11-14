@@ -38,8 +38,8 @@ import { getAllFrames } from "../frames/frames";
 import { getFrameIdForHint } from "../hints/hintsAllocator";
 import {
 	sendMessage,
-	sendMessagesToTargetFrames,
 	sendMessageToAllFrames,
+	sendMessageToTargetFrames,
 	UnreachableContentScriptError,
 } from "../messaging/backgroundMessageBroker";
 import { refreshTabMarkers } from "../misc/tabMarkers";
@@ -255,7 +255,7 @@ export function addCommandListeners() {
 	// ===========================================================================
 	function handleClickResults(
 		values: Awaited<
-			ReturnType<typeof sendMessagesToTargetFrames<"clickElement">>
+			ReturnType<typeof sendMessageToTargetFrames<"clickElement">>
 		>["values"]
 	) {
 		const focusPage = values.find((value) => value?.focusPage);
@@ -276,7 +276,7 @@ export function addCommandListeners() {
 	}
 
 	onCommand("clickElement", async ({ target }) => {
-		const { values } = await sendMessagesToTargetFrames("clickElement", {
+		const { values } = await sendMessageToTargetFrames("clickElement", {
 			target,
 		});
 
@@ -313,7 +313,7 @@ export function addCommandListeners() {
 		}
 
 		try {
-			const { values } = await sendMessagesToTargetFrames("clickElement", {
+			const { values } = await sendMessageToTargetFrames("clickElement", {
 				target,
 			});
 
@@ -331,7 +331,7 @@ export function addCommandListeners() {
 	});
 
 	onCommand("copyElementTextContent", async ({ target }) => {
-		const { values } = await sendMessagesToTargetFrames(
+		const { values } = await sendMessageToTargetFrames(
 			"getElementTextContent",
 			{ target }
 		);
@@ -344,7 +344,7 @@ export function addCommandListeners() {
 	});
 
 	onCommand("copyLink", async ({ target }) => {
-		const { values } = await sendMessagesToTargetFrames("getAnchorHref", {
+		const { values } = await sendMessageToTargetFrames("getAnchorHref", {
 			target,
 			showCopyTooltip: true,
 		});
@@ -357,7 +357,7 @@ export function addCommandListeners() {
 	});
 
 	onCommand("copyMarkdownLink", async ({ target }) => {
-		const { values } = await sendMessagesToTargetFrames(
+		const { values } = await sendMessageToTargetFrames(
 			"getElementMarkdownLink",
 			{ target }
 		);
@@ -380,7 +380,7 @@ export function addCommandListeners() {
 	onCommand("focusElement", async ({ target }) => {
 		assertPrimitiveTarget(target);
 
-		const { values } = await sendMessagesToTargetFrames("focusElement", {
+		const { values } = await sendMessageToTargetFrames("focusElement", {
 			target,
 		});
 
@@ -392,7 +392,7 @@ export function addCommandListeners() {
 	});
 
 	onCommand("hoverElement", async ({ target }) => {
-		await sendMessagesToTargetFrames("hoverElement", { target });
+		await sendMessageToTargetFrames("hoverElement", { target });
 	});
 
 	onCommand("unhoverAll", async () => {
@@ -408,7 +408,7 @@ export function addCommandListeners() {
 	});
 
 	onCommand("openInBackgroundTab", async ({ target }) => {
-		const { values } = await sendMessagesToTargetFrames("getAnchorHref", {
+		const { values } = await sendMessageToTargetFrames("getAnchorHref", {
 			target,
 		});
 		if (values.flat().length === 0) {
@@ -421,7 +421,7 @@ export function addCommandListeners() {
 	});
 
 	onCommand("openInNewTab", async ({ target }) => {
-		const { values } = await sendMessagesToTargetFrames("getAnchorHref", {
+		const { values } = await sendMessageToTargetFrames("getAnchorHref", {
 			target,
 		});
 		const [first, ...rest] = values.flat();
@@ -439,7 +439,7 @@ export function addCommandListeners() {
 		const documentHasFocus = await tryToFocusDocument();
 		if (!documentHasFocus) return { name: "focusPageAndResend" };
 
-		await sendMessagesToTargetFrames("setSelectionBefore", {
+		await sendMessageToTargetFrames("setSelectionBefore", {
 			target,
 		});
 		return undefined;
@@ -451,7 +451,7 @@ export function addCommandListeners() {
 		const documentHasFocus = await tryToFocusDocument();
 		if (!documentHasFocus) return { name: "focusPageAndResend" };
 
-		await sendMessagesToTargetFrames("setSelectionAfter", {
+		await sendMessageToTargetFrames("setSelectionAfter", {
 			target,
 		});
 		return undefined;
@@ -462,7 +462,7 @@ export function addCommandListeners() {
 		const documentHasFocus = await tryToFocusDocument();
 		if (!documentHasFocus) return { name: "focusPageAndResend" };
 
-		const { values } = await sendMessagesToTargetFrames(
+		const { values } = await sendMessageToTargetFrames(
 			"tryToFocusElementAndCheckIsEditable",
 			{ target }
 		);
@@ -471,7 +471,7 @@ export function addCommandListeners() {
 	});
 
 	onCommand("showLink", async ({ target }) => {
-		await sendMessagesToTargetFrames("showLink", { target });
+		await sendMessageToTargetFrames("showLink", { target });
 	});
 
 	// ===========================================================================
@@ -535,7 +535,7 @@ export function addCommandListeners() {
 	// Snap Scroll
 	onCommand("scrollElementToTop", async ({ target }) => {
 		assertPrimitiveTarget(target);
-		await sendMessagesToTargetFrames("snapScroll", {
+		await sendMessageToTargetFrames("snapScroll", {
 			position: "top",
 			target,
 		});
@@ -543,7 +543,7 @@ export function addCommandListeners() {
 
 	onCommand("scrollElementToCenter", async ({ target }) => {
 		assertPrimitiveTarget(target);
-		await sendMessagesToTargetFrames("snapScroll", {
+		await sendMessageToTargetFrames("snapScroll", {
 			position: "center",
 			target,
 		});
@@ -551,7 +551,7 @@ export function addCommandListeners() {
 
 	onCommand("scrollElementToBottom", async ({ target }) => {
 		assertPrimitiveTarget(target);
-		await sendMessagesToTargetFrames("snapScroll", {
+		await sendMessageToTargetFrames("snapScroll", {
 			position: "bottom",
 			target,
 		});
@@ -657,11 +657,11 @@ export function addCommandListeners() {
 	});
 
 	onCommand("excludeExtraSelectors", async ({ target }) => {
-		await sendMessagesToTargetFrames("markHintsForExclusion", { target });
+		await sendMessageToTargetFrames("markHintsForExclusion", { target });
 	});
 
 	onCommand("includeExtraSelectors", async ({ target }) => {
-		await sendMessagesToTargetFrames("markHintsForInclusion", { target });
+		await sendMessageToTargetFrames("markHintsForInclusion", { target });
 	});
 
 	onCommand("includeOrExcludeLessSelectors", async () => {
@@ -707,7 +707,7 @@ export function addCommandListeners() {
 	// HINTS
 	// ===========================================================================
 	onCommand("hideHint", async ({ target }) => {
-		await sendMessagesToTargetFrames("hideHint", { target });
+		await sendMessageToTargetFrames("hideHint", { target });
 	});
 	onCommand("refreshHints", async () => {
 		await sendMessage("refreshHints");
@@ -753,7 +753,7 @@ export function addCommandListeners() {
 	// ===========================================================================
 	onCommand("saveReference", async ({ target, referenceName }) => {
 		assertPrimitiveTarget(target);
-		await sendMessagesToTargetFrames("saveReference", {
+		await sendMessageToTargetFrames("saveReference", {
 			target,
 			referenceName,
 		});
