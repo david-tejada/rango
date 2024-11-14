@@ -10,6 +10,7 @@ import {
 	withStack,
 } from "../hints/hintsAllocator";
 import { getTabMarker } from "../misc/tabMarkers";
+import { createRelatedTabs } from "../tabs/createRelatedTabs";
 import { getCurrentTabId } from "../utils/getCurrentTab";
 import {
 	resetCustomSelectors,
@@ -99,11 +100,7 @@ export function addMessageListeners() {
 	});
 
 	onMessage("createTabs", async ({ createPropertiesArray }) => {
-		await Promise.all(
-			createPropertiesArray.map(async (createProperties) =>
-				browser.tabs.create(createProperties)
-			)
-		);
+		await createRelatedTabs(createPropertiesArray);
 	});
 
 	onMessage("getTabMarker", async (_, { tabId }) => {

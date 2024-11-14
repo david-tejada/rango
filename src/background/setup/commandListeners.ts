@@ -43,6 +43,7 @@ import {
 	UnreachableContentScriptError,
 } from "../messaging/backgroundMessageBroker";
 import { refreshTabMarkers } from "../misc/tabMarkers";
+import { createRelatedTabs } from "../tabs/createRelatedTabs";
 import { assertReferenceInCurrentTab } from "../target/references";
 import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
 import { notify } from "../utils/notify";
@@ -411,11 +412,12 @@ export function addCommandListeners() {
 		const { values } = await sendMessagesToTargetFrames("getAnchorHref", {
 			target,
 		});
+		if (values.flat().length === 0) {
+			throw new Error("No URL to open in new tab");
+		}
 
-		await Promise.all(
-			values
-				.flat()
-				.map(async (url) => browser.tabs.create({ url, active: false }))
+		await createRelatedTabs(
+			values.flat().map((url) => ({ url, active: false }))
 		);
 	});
 
@@ -423,13 +425,13 @@ export function addCommandListeners() {
 		const { values } = await sendMessagesToTargetFrames("getAnchorHref", {
 			target,
 		});
-
 		const [first, ...rest] = values.flat();
-		if (first) await browser.tabs.create({ url: first, active: true });
+		if (!first) throw new Error("No URL to open in new tab");
 
-		await Promise.all(
-			rest.map(async (url) => browser.tabs.create({ url, active: false }))
-		);
+		await createRelatedTabs([{ url: first, active: true }]);
+
+		const createProperties = rest.map((url) => ({ url, active: false }));
+		await createRelatedTabs(createProperties);
 	});
 
 	onCommand("setSelectionBefore", async ({ target }) => {
