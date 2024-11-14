@@ -635,26 +635,26 @@ export function addCommandListeners() {
 	// CUSTOM SELECTORS
 	// ===========================================================================
 	onCommand("confirmSelectorsCustomization", async () => {
-		await sendMessage("customHintsConfirm");
+		await sendMessageToAllFrames("customHintsConfirm");
 	});
 
 	onCommand("displayExcludedHints", async () => {
-		await sendMessage("displayMoreOrLessHints", { excluded: true });
+		await sendMessageToAllFrames("displayMoreOrLessHints", { excluded: true });
 	});
 
 	onCommand("displayExtraHints", async () => {
-		await sendMessage("displayMoreOrLessHints", { extra: true });
+		await sendMessageToAllFrames("displayMoreOrLessHints", { extra: true });
 	});
 
 	onCommand("displayLessHints", async () => {
-		await sendMessage("displayMoreOrLessHints", {
+		await sendMessageToAllFrames("displayMoreOrLessHints", {
 			extra: false,
 			excluded: false,
 		});
 	});
 
 	onCommand("excludeAllHints", async () => {
-		await sendMessage("markAllHintsForExclusion");
+		await sendMessageToAllFrames("markAllHintsForExclusion");
 	});
 
 	onCommand("excludeExtraSelectors", async ({ target }) => {
@@ -666,15 +666,15 @@ export function addCommandListeners() {
 	});
 
 	onCommand("includeOrExcludeLessSelectors", async () => {
-		await sendMessage("markHintsWithNarrowerSelector");
+		await sendMessageToAllFrames("markHintsWithNarrowerSelector");
 	});
 
 	onCommand("includeOrExcludeMoreSelectors", async () => {
-		await sendMessage("markHintsWithBroaderSelector");
+		await sendMessageToAllFrames("markHintsWithBroaderSelector");
 	});
 
 	onCommand("resetCustomSelectors", async () => {
-		await sendMessage("customHintsReset");
+		await sendMessageToAllFrames("customHintsReset");
 	});
 
 	// ===========================================================================
