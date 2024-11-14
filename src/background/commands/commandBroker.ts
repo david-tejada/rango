@@ -3,7 +3,7 @@ import type { TalonAction } from "../../typings/TalonAction";
 
 type CommandHandler<T extends keyof ActionMap> = (
 	args: ActionMap[T]
-) => Promise<undefined | TalonAction | TalonAction[] | "noResponse">;
+) => Promise<void | TalonAction | TalonAction[] | "noResponse">;
 
 const commandHandlers = new Map<
 	keyof ActionMap,
