@@ -34,10 +34,7 @@ import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
 import { toggleTabMarkers } from "../actions/toggleTabMarkers";
 import { onCommand } from "../commands/commandBroker";
-import {
-	getActiveEditableElementFrameId,
-	getAllFrames,
-} from "../frames/frames";
+import { getAllFrames } from "../frames/frames";
 import { getFrameIdForHint } from "../hints/hintsAllocator";
 import {
 	sendMessage,
@@ -781,7 +778,14 @@ export function addCommandListeners() {
 	});
 
 	onCommand("saveReferenceForActiveElement", async ({ referenceName }) => {
-		const frameId = await getActiveEditableElementFrameId();
+		const { results } = await sendMessageToAllFrames(
+			"hasActiveEditableElement"
+		);
+
+		const frameId = results.find(({ value }) => value)?.frameId;
+		if (frameId === undefined) {
+			throw new Error("No active editable element found");
+		}
 
 		await sendMessage(
 			"saveReferenceForActiveElement",
