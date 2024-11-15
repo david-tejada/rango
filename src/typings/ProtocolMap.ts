@@ -155,12 +155,11 @@ export type ContentBoundMessageMap = {
 	// Document
 	checkIfDocumentHasFocus: () => boolean;
 	tryToFocusPage: () => void;
-	checkActiveElementIsEditable: () => boolean;
+	hasActiveEditableElement: () => boolean;
 
 	// Hint Toggles
 	updateNavigationToggle: (data: { enable?: boolean }) => void;
 
 	// Utils
 	pingContentScript: () => true;
-	hasActiveEditableElement: () => boolean;
 };

@@ -139,7 +139,7 @@ export type ActionMap = {
 	openSettingsPage: void;
 
 	// Helpers
-	checkActiveElementIsEditable: void;
+	checkActiveElementIsEditable: void; // Not used anymore. Only necessary for warning user.
 	requestTimedOut: void;
 
 	// References

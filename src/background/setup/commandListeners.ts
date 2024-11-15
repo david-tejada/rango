@@ -305,7 +305,7 @@ export function addCommandListeners() {
 
 			if (!directClickWhenEditing) {
 				const { values } = await sendMessageToAllFrames(
-					"checkActiveElementIsEditable"
+					"hasActiveEditableElement"
 				);
 
 				if (values.includes(true)) return { name: "typeTargetCharacters" };

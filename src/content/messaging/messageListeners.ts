@@ -70,12 +70,6 @@ export function addMessageListeners() {
 
 	onMessage("hasActiveEditableElement", () => {
 		return Boolean(
-			document.activeElement && isEditable(document.activeElement)
-		);
-	});
-
-	onMessage("checkActiveElementIsEditable", () => {
-		return Boolean(
 			document.hasFocus() &&
 				document.activeElement &&
 				isEditable(document.activeElement)
