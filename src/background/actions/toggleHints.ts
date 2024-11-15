@@ -86,9 +86,5 @@ export async function updateHintsToggle(level: ToggleLevel, enable?: boolean) {
 
 			break;
 		}
-
-		default: {
-			break;
-		}
 	}
 }

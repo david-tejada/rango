@@ -12,7 +12,6 @@
 		"jestPuppeteer": true
 	},
 	"rules": {
-		"@typescript-eslint/switch-exhaustiveness-check": "off",
 		"n/prefer-global/process": "off",
 		"unicorn/prefer-top-level-await": "off",
 		"n/file-extension-in-import": "off",
