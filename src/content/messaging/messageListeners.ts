@@ -62,11 +62,39 @@ export function addMessageListeners() {
 		await synchronizeHints();
 	});
 
+	onMessage("checkIfDocumentHasFocus", () => document.hasFocus());
+
+	onMessage("tryToFocusPage", () => {
+		window.focus();
+	});
+
+	onMessage("hasActiveEditableElement", () => {
+		return Boolean(
+			document.activeElement && isEditable(document.activeElement)
+		);
+	});
+
+	onMessage("checkActiveElementIsEditable", () => {
+		return Boolean(
+			document.hasFocus() &&
+				document.activeElement &&
+				isEditable(document.activeElement)
+		);
+	});
+
 	onMessage("displayToastNotification", async ({ text, options }) => {
 		await notify(text, options);
 	});
 
 	onMessage("displayTogglesStatus", notifyTogglesStatus);
+
+	onMessage("updateNavigationToggle", async ({ enable }) => {
+		setNavigationToggle(enable);
+		await updateHintsEnabled();
+		await notifyTogglesStatus();
+	});
+
+	onMessage("refreshHints", refreshHints);
 
 	onMessage("reclaimHints", async ({ amount }) => {
 		const reclaimed = reclaimHintsFromCache(amount);
@@ -78,37 +106,23 @@ export function addMessageListeners() {
 		return reclaimed;
 	});
 
+	onMessage("hideHint", async ({ target }) => {
+		const wrappers = await getTargetedWrappers(target);
+
+		for (const wrapper of wrappers) wrapper.hint?.hide();
+	});
+
 	onMessage("markHintsAsKeyboardReachable", async ({ letter }) => {
 		markHintsAsKeyboardReachable(letter);
 	});
 
 	onMessage("restoreKeyboardReachableHints", restoreKeyboardReachableHints);
 
-	onMessage("checkIfDocumentHasFocus", () => document.hasFocus());
-
-	onMessage("updateNavigationToggle", async ({ enable }) => {
-		setNavigationToggle(enable);
-		await updateHintsEnabled();
-		await notifyTogglesStatus();
-	});
-
-	onMessage("tryToFocusPage", () => {
-		window.focus();
-	});
-
 	onMessage("getTitleBeforeDecoration", getTitleBeforeDecoration);
 
 	onMessage("refreshTitleDecorations", async () => {
 		removeDecorations();
 		await initTitleDecoration();
-	});
-
-	onMessage("checkActiveElementIsEditable", () => {
-		return Boolean(
-			document.hasFocus() &&
-				document.activeElement &&
-				isEditable(document.activeElement)
-		);
 	});
 
 	onMessage("clickElement", async ({ target }) => {
@@ -126,13 +140,6 @@ export function addMessageListeners() {
 		return getMarkdownLink(wrappers);
 	});
 
-	onMessage("tryToFocusElementAndCheckIsEditable", async ({ target }) => {
-		const wrapper = await getFirstWrapper(target);
-
-		const activeEditable = await activateEditable(wrapper);
-		return Boolean(activeEditable);
-	});
-
 	onMessage("focusElement", async ({ target }) => {
 		const wrapper = await getFirstWrapper(target);
 
@@ -140,9 +147,24 @@ export function addMessageListeners() {
 		return { focusPage: focusWasPerformed ? !document.hasFocus() : false };
 	});
 
+	onMessage("tryToFocusElementAndCheckIsEditable", async ({ target }) => {
+		const wrapper = await getFirstWrapper(target);
+
+		const activeEditable = await activateEditable(wrapper);
+		return Boolean(activeEditable);
+	});
+
+	onMessage("focusFirstInput", focusFirstInput);
+
 	onMessage("hoverElement", async ({ target }) => {
 		const wrappers = await getTargetedWrappers(target);
 		await hoverElement(wrappers);
+	});
+
+	onMessage("unhoverAll", () => {
+		blur();
+		unhoverAll();
+		toast.dismiss();
 	});
 
 	onMessage("showLink", async ({ target }) => {
@@ -205,14 +227,6 @@ export function addMessageListeners() {
 		window.location.href = "/";
 	});
 
-	onMessage("focusFirstInput", focusFirstInput);
-
-	onMessage("unhoverAll", () => {
-		blur();
-		unhoverAll();
-		toast.dismiss();
-	});
-
 	onMessage("markHintsForInclusion", async ({ target }) => {
 		const wrappers = await getTargetedWrappers(target);
 		await markHintsForInclusion(wrappers);
@@ -234,14 +248,6 @@ export function addMessageListeners() {
 	onMessage("customHintsConfirm", customHintsConfirm);
 
 	onMessage("customHintsReset", customHintsReset);
-
-	onMessage("hideHint", async ({ target }) => {
-		const wrappers = await getTargetedWrappers(target);
-
-		for (const wrapper of wrappers) wrapper.hint?.hide();
-	});
-
-	onMessage("refreshHints", refreshHints);
 
 	onMessage("saveReference", async ({ target, referenceName }) => {
 		const wrapper = await getFirstWrapper(target);
@@ -265,11 +271,5 @@ export function addMessageListeners() {
 
 	onMessage("matchElementByText", async ({ text, prioritizeViewport }) => {
 		return matchElementByText(text, prioritizeViewport);
-	});
-
-	onMessage("hasActiveEditableElement", () => {
-		return Boolean(
-			document.activeElement && isEditable(document.activeElement)
-		);
 	});
 }
