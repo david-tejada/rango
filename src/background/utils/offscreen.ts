@@ -31,10 +31,6 @@ chrome.runtime.onMessage.addListener(
 				sendResponse(textarea.value);
 				return true;
 			}
-
-			default: {
-				break;
-			}
 		}
 
 		return false;

@@ -7,19 +7,6 @@ import { ToastIcon } from "./ToastIcon";
 import { ToastMessage } from "./ToastMessage";
 import { TogglesStatusMessage } from "./ToastTogglesMessage";
 
-let notificationAllowed = false;
-
-// This is to avoid the notification showing up if the user hasn't issued any
-// command. For example, we reset hintsToggleTabs every time the extension
-// starts
-export function allowToastNotification() {
-	notificationAllowed = true;
-
-	setTimeout(() => {
-		notificationAllowed = false;
-	}, 1500);
-}
-
 function renderToast() {
 	let toastContainer = document.querySelector("#rango-toast");
 
@@ -34,7 +21,6 @@ function renderToast() {
 
 async function shouldNotify() {
 	if (
-		!notificationAllowed ||
 		document.visibilityState !== "visible" ||
 		!getSetting("enableNotifications") ||
 		!isMainFrame() ||
@@ -86,11 +72,8 @@ export async function notify(text: string, options?: ToastOptions) {
 	}
 }
 
-export async function notifyTogglesStatus(force = false) {
-	if (
-		!(await shouldNotify()) ||
-		(!force && !getSetting("notifyWhenTogglingHints"))
-	) {
+export async function notifyTogglesStatus() {
+	if (!((await shouldNotify()) && getSetting("notifyWhenTogglingHints"))) {
 		return;
 	}
 

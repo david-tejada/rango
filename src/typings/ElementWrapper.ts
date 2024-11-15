@@ -14,7 +14,6 @@ export type ElementWrapper = {
 	isIntersecting?: boolean;
 	observingIntersection?: boolean;
 	isIntersectingViewport?: boolean;
-	isActiveEditable: boolean;
 	isHintable: boolean;
 	shouldBeHinted?: boolean;
 
@@ -31,7 +30,7 @@ export type ElementWrapper = {
 	unobserveIntersection(): void;
 	intersect(isIntersecting: boolean): void;
 	intersectViewport(isIntersecting: boolean): void;
-	click(): boolean;
+	click(): Promise<boolean>;
 	flashElement(): void;
 	hover(): void;
 	unhover(): void;

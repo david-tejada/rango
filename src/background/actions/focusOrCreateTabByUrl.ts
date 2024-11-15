@@ -33,11 +33,7 @@ export async function focusOrCreateTabByUrl(url: string) {
 		await browser.windows.update(target.windowId!, { focused: true });
 		await browser.tabs.update(target.id, { active: true });
 	} else {
-		try {
-			await browser.tabs.create({ url, active: true });
-		} catch {
-			return [{ name: "openInNewTab", url } as const];
-		}
+		return browser.tabs.create({ url, active: true });
 	}
 
 	return undefined;

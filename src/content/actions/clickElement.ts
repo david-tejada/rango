@@ -1,45 +1,39 @@
 import { type ElementWrapper } from "../../typings/ElementWrapper";
-import { type TalonAction } from "../../typings/RequestFromTalon";
-import { openInBackgroundTab } from "./openInNewTab";
+import { sendMessage } from "../messaging/contentMessageBroker";
 
-export async function clickElement(
-	wrappers: ElementWrapper[]
-): Promise<TalonAction[] | undefined> {
-	let performPageFocus = false;
+export async function clickElement(wrappers: ElementWrapper[]) {
+	const anchorWrappers = wrappers.filter(
+		(wrapper) => wrapper.element instanceof HTMLAnchorElement
+	);
+	const nonAnchorWrappers = wrappers.filter(
+		(wrapper) => !(wrapper.element instanceof HTMLAnchorElement)
+	);
+
 	// If there are multiple targets and some of them are anchor elements we open
-	// those in a new background tab
-	if (wrappers.length > 1) {
-		const anchorWrappers = wrappers.filter(
-			(hintable) => hintable.element instanceof HTMLAnchorElement
-		);
-		wrappers = wrappers.filter(
-			(hintable) => !(hintable.element instanceof HTMLAnchorElement)
-		);
-		await openInBackgroundTab(anchorWrappers);
+	// those in a new inactive tab.
+	if (wrappers.length > 1 && anchorWrappers.length > 0) {
+		await sendMessage("createTabs", {
+			createPropertiesArray: anchorWrappers.map((anchorWrapper) => ({
+				url: (anchorWrapper.element as HTMLAnchorElement).href,
+				active: false,
+			})),
+		});
+	} else {
+		// If not we simply click the only anchor element in case there is one.
+		await anchorWrappers[0]?.click();
 	}
 
-	for (const wrapper of wrappers) {
-		const shouldFocusPage = wrapper.click();
-		if (shouldFocusPage) performPageFocus = true;
-	}
+	const shouldFocusPageArray = await Promise.all(
+		nonAnchorWrappers.map(async (wrapper) => wrapper.click())
+	);
+	const focusPage = shouldFocusPageArray.includes(true);
 
 	if (
 		wrappers.length === 1 &&
 		wrappers[0]!.element instanceof HTMLSelectElement
 	) {
-		return [
-			{ name: "focusPage" },
-			{
-				name: "key",
-				key: "alt-down",
-				main: true,
-			},
-		];
+		return { focusPage, isSelect: true };
 	}
 
-	if (performPageFocus) {
-		return [{ name: "focusPage" }];
-	}
-
-	return undefined;
+	return { focusPage };
 }

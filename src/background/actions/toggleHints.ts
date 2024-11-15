@@ -1,8 +1,8 @@
-import { assertDefined } from "../../typings/TypingUtils";
-import { sendRequestToContent } from "../messaging/sendRequestToContent";
-import { getCurrentTab } from "../utils/getCurrentTab";
 import { retrieve, store } from "../../common/storage";
-import { type RangoActionUpdateToggles } from "../../typings/RangoAction";
+import { type ToggleLevel } from "../../typings/Action";
+import { assertDefined } from "../../typings/TypingUtils";
+import { sendMessage } from "../messaging/backgroundMessageBroker";
+import { getCurrentTab } from "../utils/getCurrentTab";
 
 export async function toggleHintsGlobal() {
 	const hintsToggleGlobal = await retrieve("hintsToggleGlobal");
@@ -11,10 +11,7 @@ export async function toggleHintsGlobal() {
 	return newStatus;
 }
 
-export async function updateHintsToggle(
-	level: RangoActionUpdateToggles["arg"],
-	enable?: boolean
-) {
+export async function updateHintsToggle(level: ToggleLevel, enable?: boolean) {
 	const currentTab = await getCurrentTab();
 	assertDefined(currentTab.url);
 	const { host, origin, pathname } = new URL(currentTab.url);
@@ -26,8 +23,7 @@ export async function updateHintsToggle(
 				await store("hintsToggleTabs", new Map());
 				await store("hintsToggleHosts", new Map());
 				await store("hintsTogglePaths", new Map());
-				await sendRequestToContent({
-					type: "updateNavigationToggle",
+				await sendMessage("updateNavigationToggle", {
 					enable,
 				});
 			}
@@ -36,8 +32,7 @@ export async function updateHintsToggle(
 		}
 
 		case "now": {
-			await sendRequestToContent({
-				type: "updateNavigationToggle",
+			await sendMessage("updateNavigationToggle", {
 				enable,
 			});
 			break;
@@ -89,10 +84,6 @@ export async function updateHintsToggle(
 
 			await store("hintsTogglePaths", hintsTogglePaths);
 
-			break;
-		}
-
-		default: {
 			break;
 		}
 	}

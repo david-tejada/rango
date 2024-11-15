@@ -1,9 +1,12 @@
-import browser from "webextension-polyfill";
 import { Mutex } from "async-mutex";
+import browser from "webextension-polyfill";
+import { letterHints } from "../../common/allHints";
 import { retrieve, store } from "../../common/storage";
 import { type TabMarkers } from "../../typings/StorageSchema";
-import { letterHints } from "../../common/allHints";
-import { sendRequestToContent } from "../messaging/sendRequestToContent";
+import {
+	sendMessage,
+	UnreachableContentScriptError,
+} from "../messaging/backgroundMessageBroker";
 
 const mutex = new Mutex();
 
@@ -138,11 +141,20 @@ export async function refreshTabMarkers() {
 
 	const refreshing = tabs.map(async (tab) => {
 		try {
-			await sendRequestToContent({ type: "refreshTitleDecorations" }, tab.id);
-		} catch {
-			return browser.tabs.reload(tab.id);
+			await sendMessage("refreshTitleDecorations", undefined, {
+				tabId: tab.id,
+			});
+		} catch (error: unknown) {
+			if (!(error instanceof UnreachableContentScriptError)) throw error;
+
+			// We reload if the tab has been discarded and the content script isn't
+			// running any more. I could check the `discarded` property of the tab but
+			// I think I did that before and for whatever reason it didn't handle all
+			// cases. This will make that we also reload any tabs where the content
+			// script can't run. I think that's ok.
+			await browser.tabs.reload(tab.id);
 		}
 	});
 
-	await Promise.allSettled(refreshing);
+	await Promise.all(refreshing);
 }

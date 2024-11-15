@@ -1,11 +1,11 @@
 /* eslint-disable no-await-in-loop */
 import browser from "webextension-polyfill";
-import { getTabIdForMarker } from "../misc/tabMarkers";
+import { type TabMark, type Target } from "../../typings/Target/Target";
+import { getTabIdsFromTarget } from "../tabs/target";
 
-async function getFirstTabByWindow(markers: string[]) {
+async function getFirstTabByWindow(tabIds: number[]) {
 	const result = new Map<number, browser.Tabs.Tab>();
-	for (const marker of markers) {
-		const tabId = await getTabIdForMarker(marker);
+	for (const tabId of tabIds) {
 		const tab = await browser.tabs.get(tabId);
 
 		if (tab.windowId && !result.has(tab.windowId)) {
@@ -21,8 +21,9 @@ async function getFirstTabByWindow(markers: string[]) {
  * it will activate the given tabs as long as they belong to different windows.
  * It will focus the window of the first tab provided.
  */
-export async function activateTab(markers: string[]) {
-	const splitTabs = await getFirstTabByWindow(markers);
+export async function activateTab(target: Target<TabMark>) {
+	const tabIds = await getTabIdsFromTarget(target);
+	const splitTabs = await getFirstTabByWindow(tabIds);
 
 	for (const [index, tab] of splitTabs.entries()) {
 		await browser.tabs.update(tab.id, { active: true });

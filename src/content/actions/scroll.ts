@@ -1,7 +1,8 @@
-import { isHtmlElement } from "../../typings/TypingUtils";
-import { getUserScrollableContainer } from "../utils/getUserScrollableContainer";
+import { type Direction } from "../../typings/Direction";
 import { type ElementWrapper } from "../../typings/ElementWrapper";
+import { isHtmlElement } from "../../typings/TypingUtils";
 import { getSetting } from "../settings/settingsManager";
+import { getUserScrollableContainer } from "../utils/getUserScrollableContainer";
 
 const defaultScrollFactor = 0.66;
 
@@ -9,7 +10,7 @@ let lastScrollContainer: Element | undefined;
 let lastScrollFactor: number;
 
 type ScrollOptions = {
-	dir: "up" | "down" | "left" | "right";
+	dir: Direction;
 	target: ElementWrapper | "page" | "leftAside" | "rightAside" | "repeatLast";
 	factor?: number;
 };

@@ -5,6 +5,7 @@ import { type Hint } from "../../typings/Hint";
 import { getAllSettings, getSetting } from "../settings/settingsManager";
 import { getToggles } from "../settings/toggles";
 import { createsStackingContext } from "../utils/createsStackingContext";
+import { isEditable } from "../utils/domUtils";
 import { getEffectiveBackgroundColor } from "../utils/getEffectiveBackgroundColor";
 import { getFirstTextNodeDescendant } from "../utils/nodeUtils";
 import { refresh } from "../wrappers/refresh";
@@ -352,6 +353,20 @@ export class HintClass implements Hint {
 
 		this.outer.append(this.inner);
 		shadow.append(this.outer);
+
+		// Hide the hint if it's the currently focused element.
+		if (isEditable(this.target)) {
+			if (document.hasFocus() && this.target === document.activeElement) {
+				setStyleProperties(this.outer, { visibility: "hidden" });
+			}
+
+			this.target.addEventListener("focus", () => {
+				setStyleProperties(this.outer, { visibility: "hidden" });
+			});
+			this.target.addEventListener("blur", () => {
+				setStyleProperties(this.outer, { visibility: "visible" });
+			});
+		}
 
 		this.positioned = false;
 		this.toBeReattached = false;

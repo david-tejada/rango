@@ -2,22 +2,21 @@ import { debounce } from "lodash";
 import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { type Hint } from "../../typings/Hint";
 import { getExtraHintsToggle } from "../actions/customHints";
-import { openInNewTab } from "../actions/openInNewTab";
 import { HintClass } from "../hints/HintClass";
 import { cacheHints } from "../hints/hintsCache";
 import { cacheLayout, clearLayoutCache } from "../hints/layoutCache";
 import { matchesCustomExclude, matchesCustomInclude } from "../hints/selectors";
 import { setStyleProperties } from "../hints/setStyleProperties";
+import { sendMessage } from "../messaging/contentMessageBroker";
 import { getSetting } from "../settings/settingsManager";
 import { BoundedIntersectionObserver } from "../utils/BoundedIntersectionObserver";
+import { getElementCenter } from "../utils/cssomUtils";
 import { deepGetElements } from "../utils/deepGetElements";
 import {
 	dispatchClick,
 	dispatchHover,
 	dispatchUnhover,
 } from "../utils/dispatchEvents";
-import { isEditable } from "../utils/domUtils";
-import { getPointerTarget } from "../utils/getPointerTarget";
 import { getUserScrollableContainer } from "../utils/getUserScrollableContainer";
 import { isDisabled } from "../utils/isDisabled";
 import { isHintable } from "../utils/isHintable";
@@ -332,7 +331,6 @@ class ElementWrapperClass implements ElementWrapper {
 	isIntersecting?: boolean;
 	observingIntersection?: boolean;
 	isIntersectingViewport?: boolean;
-	isActiveEditable: boolean;
 	isHintable!: boolean;
 	shouldBeHinted?: boolean;
 
@@ -346,9 +344,6 @@ class ElementWrapperClass implements ElementWrapper {
 		public element: Element,
 		active = true
 	) {
-		this.isActiveEditable =
-			this.element === document.activeElement && isEditable(this.element);
-
 		if (active) {
 			this.updateIsHintable();
 		}
@@ -357,20 +352,7 @@ class ElementWrapperClass implements ElementWrapper {
 	updateIsHintable() {
 		this.isHintable = isHintable(this.element);
 
-		if (this.isHintable) {
-			if (isEditable(this.element)) {
-				this.element.addEventListener("focus", () => {
-					this.isActiveEditable = true;
-					this.updateShouldBeHinted();
-				});
-				this.element.addEventListener("blur", () => {
-					this.isActiveEditable = false;
-					this.updateShouldBeHinted();
-				});
-			}
-
-			hintablesResizeObserver.observe(this.element);
-		}
+		if (this.isHintable) hintablesResizeObserver.observe(this.element);
 
 		this.updateShouldBeHinted();
 	}
@@ -378,7 +360,6 @@ class ElementWrapperClass implements ElementWrapper {
 	updateShouldBeHinted() {
 		const newShouldBeHinted =
 			this.isHintable &&
-			!this.isActiveEditable &&
 			(isVisible(this.element) ||
 				(matchesCustomInclude(this.element) &&
 					!matchesCustomExclude(this.element)) ||
@@ -466,8 +447,9 @@ class ElementWrapperClass implements ElementWrapper {
 		}
 	}
 
-	click(): boolean {
-		const pointerTarget = getPointerTarget(this.element);
+	async click(): Promise<boolean> {
+		const pointerTarget = this.getPointerTarget();
+
 		if (this.hint?.inner.isConnected) {
 			this.hint.flash();
 		} else {
@@ -498,7 +480,12 @@ class ElementWrapperClass implements ElementWrapper {
 				// javascript. For example Slack has this for opening a thread in the
 				// side panel. So here we make sure that there is an href attribute
 				// before we open the link in a new tab.
-				void openInNewTab([this]);
+				await sendMessage("createTabs", {
+					createPropertiesArray: [this].map((wrapper) => ({
+						url: (wrapper.element as HTMLAnchorElement).href,
+						active: true,
+					})),
+				});
 				return false;
 			}
 		}
@@ -527,14 +514,18 @@ class ElementWrapperClass implements ElementWrapper {
 	}
 
 	hover() {
-		const pointerTarget = getPointerTarget(this.element);
+		const pointerTarget = this.getPointerTarget();
 		this.hint?.flash();
 		dispatchHover(pointerTarget);
 	}
 
 	unhover() {
-		const pointerTarget = getPointerTarget(this.element);
-		dispatchUnhover(pointerTarget);
+		// Avoid unhovering if the element is not intersecting the viewport since
+		// calling `getPointerTarget` will scroll the element into view.
+		if (this.isIntersectingViewport) {
+			const pointerTarget = this.getPointerTarget();
+			dispatchUnhover(pointerTarget);
+		}
 	}
 
 	suspend() {
@@ -545,5 +536,71 @@ class ElementWrapperClass implements ElementWrapper {
 		this.isIntersectingViewport = undefined;
 
 		this.hint?.release();
+	}
+
+	/**
+	 * Returns the topmost element for this wrapper. If the element is not
+	 * intersecting the viewport we scroll it into view.
+	 */
+	private getPointerTarget(): Element {
+		// Under some circumstances the element might be outside of the viewport, for
+		// example, when using fuzzy search. In those case we need to scroll the
+		// element into view in order to get the topmost element, which is the one we
+		// need to act on.
+		let isIntersectingViewport = this.isIntersectingViewport;
+
+		// If the element wrapper was just created, the intersect method might not
+		// have been called yet.
+		if (isIntersectingViewport === undefined) {
+			const rect = this.element.getBoundingClientRect();
+			const viewportHeight = window.innerHeight;
+			const viewportWidth = window.innerWidth;
+
+			// This is not as exact as the intersection observer, but it is enough
+			// for our purposes.
+			isIntersectingViewport = !(
+				rect.bottom < 0 ||
+				rect.top > viewportHeight ||
+				rect.right < 0 ||
+				rect.left > viewportWidth
+			);
+		}
+
+		if (!isIntersectingViewport) {
+			this.element.scrollIntoView({
+				behavior: "instant",
+				block: "center",
+				inline: "center",
+			});
+		}
+
+		const element = this.element;
+		const { x, y } = getElementCenter(this.element);
+		const elementsAtPoint = document.elementsFromPoint(x, y);
+
+		for (const elementAt of elementsAtPoint) {
+			if (element.contains(elementAt)) {
+				let current: Element | null = elementAt;
+				let differentWrapper = false;
+
+				while (current && current !== element) {
+					const wrapper = getWrapperForElement(current);
+					if (
+						wrapper?.isHintable &&
+						wrapper !== getWrapperForElement(elementAt)
+					) {
+						differentWrapper = true;
+					}
+
+					current = current.parentElement;
+				}
+
+				if (!differentWrapper) {
+					return elementAt;
+				}
+			}
+		}
+
+		return element;
 	}
 }

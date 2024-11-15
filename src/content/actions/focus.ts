@@ -1,31 +1,28 @@
-import { type TalonAction } from "../../typings/RequestFromTalon";
+import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { notify } from "../notify/notify";
 import { dispatchKeyDown, dispatchKeyUp } from "../utils/dispatchEvents";
 import { editableElementSelector, getFocusable } from "../utils/domUtils";
-import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { getOrCreateWrapper } from "../wrappers/ElementWrapperClass";
 
-export function focus(wrappers: ElementWrapper[]): TalonAction[] | undefined {
+/**
+ * Focus an element. Returns a boolean indicating if a focus was performed.
+ */
+export function focus(wrapper: ElementWrapper) {
 	window.focus();
 
-	for (const wrapper of wrappers) {
-		if (document.activeElement) {
-			dispatchKeyDown(document.activeElement, "Tab");
-		}
-
-		const focusable = getFocusable(wrapper.element);
-
-		if (focusable instanceof HTMLElement) {
-			focusable.focus({ focusVisible: true });
-			dispatchKeyUp(focusable, "Tab");
-		}
+	if (document.activeElement) {
+		dispatchKeyDown(document.activeElement, "Tab");
 	}
 
-	if (!document.hasFocus()) {
-		return [{ name: "focusPage" }];
+	const focusable = getFocusable(wrapper.element);
+
+	if (focusable instanceof HTMLElement) {
+		focusable.focus({ focusVisible: true });
+		dispatchKeyUp(focusable, "Tab");
+		return true;
 	}
 
-	return undefined;
+	return false;
 }
 
 export async function focusFirstInput() {
@@ -36,7 +33,7 @@ export async function focusFirstInput() {
 		return;
 	}
 
-	focus([getOrCreateWrapper(firstInput)]);
+	focus(getOrCreateWrapper(firstInput));
 }
 
 export function blur() {

@@ -1,10 +1,9 @@
-import browser from "webextension-polyfill";
-import { getHintsInTab } from "../utils/getHintsInTab";
-import { getHintedWrappers } from "../wrappers/wrappers";
-import { isEditable, getActiveElement } from "../utils/domUtils";
-import { onSettingChange } from "../settings/settingsManager";
+import { sendMessage } from "../messaging/contentMessageBroker";
 import { notify } from "../notify/notify";
+import { onSettingChange } from "../settings/settingsManager";
+import { getActiveElement, isEditable } from "../utils/domUtils";
 import { refresh } from "../wrappers/refresh";
+import { getHintedWrappers } from "../wrappers/wrappers";
 
 let keysPressedBuffer = "";
 let timeoutId: ReturnType<typeof setTimeout>;
@@ -39,16 +38,16 @@ async function keydownHandler(event: KeyboardEvent) {
 	// Escape or any non alphabetic key to restart the buffer
 	if (keysPressedBuffer.length === 1 && !/^[A-Za-z]$/.test(event.key)) {
 		keysPressedBuffer = "";
-		await browser.runtime.sendMessage({
-			type: "restoreKeyboardReachableHints",
-		});
+		await sendMessage("restoreKeyboardReachableHints");
 		return;
 	}
+
+	const hintsInTab = await sendMessage("getHintsInTab");
 
 	// After typing the first character we need to check if any of the hints start
 	// with that letter
 	const firstCharactersInHints = new Set(
-		getHintsInTab().map((hint) => hint.slice(0, 1))
+		hintsInTab.map((hint) => hint.slice(0, 1))
 	);
 
 	const hintIsReachable =
@@ -68,28 +67,22 @@ async function keydownHandler(event: KeyboardEvent) {
 		keysPressedBuffer += event.key;
 
 		if (keysPressedBuffer.length === 2) {
-			await browser.runtime.sendMessage({
-				type: "restoreKeyboardReachableHints",
-			});
+			await sendMessage("restoreKeyboardReachableHints");
 
-			if (getHintsInTab().includes(keysPressedBuffer)) {
-				await browser.runtime.sendMessage({
-					type: "clickHintInFrame",
+			if (hintsInTab.includes(keysPressedBuffer)) {
+				await sendMessage("clickHintInFrame", {
 					hint: keysPressedBuffer,
 				});
 			}
 
 			keysPressedBuffer = "";
 		} else {
-			await browser.runtime.sendMessage({
-				type: "markHintsAsKeyboardReachable",
+			await sendMessage("markHintsAsKeyboardReachable", {
 				letter: event.key,
 			});
 
 			timeoutId = setTimeout(async () => {
-				await browser.runtime.sendMessage({
-					type: "restoreKeyboardReachableHints",
-				});
+				await sendMessage("restoreKeyboardReachableHints");
 				keysPressedBuffer = "";
 			}, 3000);
 		}

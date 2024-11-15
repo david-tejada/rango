@@ -1,16 +1,16 @@
 import { type ElementWrapper } from "../../typings/ElementWrapper";
-import { hasPropertyValue } from "../../typings/TypingUtils";
 import { showTooltip } from "../hints/showTooltip";
 
-export function copyElementTextContentToClipboard(
-	wrappers: ElementWrapper[]
-): string | undefined {
+export function getElementTextContent(wrappers: ElementWrapper[]) {
 	const textContents: string[] = [];
 
 	for (const wrapper of wrappers) {
-		const textContent = hasPropertyValue(wrapper.element)
-			? wrapper.element.value
-			: wrapper.element.textContent;
+		const textContent =
+			"value" in wrapper.element
+				? typeof wrapper.element.value === "string"
+					? wrapper.element.value
+					: undefined
+				: wrapper.element.textContent;
 
 		if (textContent) {
 			textContents.push(textContent);
@@ -20,32 +20,10 @@ export function copyElementTextContentToClipboard(
 		}
 	}
 
-	return textContents.length > 0 ? textContents.join("\n") : undefined;
+	return textContents;
 }
 
-export function copyLinkToClipboard(
-	wrappers: ElementWrapper[]
-): string | undefined {
-	const hrefs: string[] = [];
-
-	for (const wrapper of wrappers) {
-		let href;
-
-		if (wrapper.element instanceof HTMLAnchorElement) {
-			href = wrapper.element.href;
-			hrefs.push(href);
-			showTooltip(wrapper, "Copied!", 1500);
-		} else {
-			showTooltip(wrapper, "Not a link", 1500);
-		}
-	}
-
-	return hrefs.length > 0 ? hrefs.join("\n") : undefined;
-}
-
-export function copyMarkdownLinkToClipboard(
-	wrappers: ElementWrapper[]
-): string | undefined {
+export function getMarkdownLink(wrappers: ElementWrapper[]) {
 	const markdownLinks: string[] = [];
 
 	for (const wrapper of wrappers) {
@@ -63,5 +41,5 @@ export function copyMarkdownLinkToClipboard(
 		showTooltip(wrapper, message, 1500);
 	}
 
-	return markdownLinks.length > 0 ? markdownLinks.join("\n") : undefined;
+	return markdownLinks;
 }

@@ -1,10 +1,8 @@
 import browser from "webextension-polyfill";
-import type { RequestFromContent } from "../typings/RequestFromContent";
 import { toggleHintsGlobal, updateHintsToggle } from "./actions/toggleHints";
 import { toggleKeyboardClicking } from "./actions/toggleKeyboardClicking";
-import { handleRequestFromContent } from "./messaging/handleRequestFromContent";
-import { handleRequestFromTalon } from "./messaging/handleRequestFromTalon";
-import { sendRequestToContent } from "./messaging/sendRequestToContent";
+import { handleIncomingCommand } from "./commands/handleIncomingCommand";
+import { handleIncomingMessage } from "./messaging/backgroundMessageBroker";
 import { contextMenusOnClicked } from "./misc/createContextMenus";
 import { initBackgroundScript } from "./setup/initBackgroundScript";
 import { browserAction } from "./utils/browserAction";
@@ -23,12 +21,12 @@ browser.contextMenus.onClicked.addListener(contextMenusOnClicked);
 })();
 
 if (process.env["NODE_ENV"] === "test") {
-	addEventListener("handle-test-request", handleRequestFromTalon);
+	addEventListener("handle-test-request", handleIncomingCommand);
 }
 
-browser.runtime.onMessage.addListener(async (message, sender) => {
-	return handleRequestFromContent(message as RequestFromContent, sender);
-});
+browser.runtime.onMessage.addListener(async (message, sender) =>
+	handleIncomingMessage(message, sender)
+);
 
 browserAction.onClicked.addListener(async () => {
 	try {
@@ -43,17 +41,11 @@ browserAction.onClicked.addListener(async () => {
 
 browser.commands.onCommand.addListener(async (internalCommand: string) => {
 	try {
-		await sendRequestToContent({ type: "allowToastNotification" });
-	} catch {
-		// No content script. We do nothing.
-	}
-
-	try {
 		if (
 			internalCommand === "get-talon-request" ||
 			internalCommand === "get-talon-request-alternative"
 		) {
-			await handleRequestFromTalon();
+			await handleIncomingCommand();
 		}
 
 		if (internalCommand === "toggle-hints") {

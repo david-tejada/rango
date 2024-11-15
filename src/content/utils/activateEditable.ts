@@ -44,7 +44,7 @@ export async function activateEditable(wrapper: ElementWrapper) {
 		return undefined;
 	}
 
-	wrapper.click();
+	await wrapper.click();
 
 	// We need to add a sleep here so that the focus has had time to move to the
 	// clicked element. If we call waitActiveElementIsEditable too early we might

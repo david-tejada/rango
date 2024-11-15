@@ -26,10 +26,6 @@ export function showTitleAndHref(wrappers: ElementWrapper[]) {
 			result = title;
 		}
 
-		if (result) {
-			showTooltip(wrapper, result, 5000);
-		} else {
-			wrapper.hint?.flash();
-		}
+		if (result) showTooltip(wrapper, result, 5000);
 	}
 }

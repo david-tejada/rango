@@ -1,5 +1,8 @@
 import browser from "webextension-polyfill";
-import { sendRequestToContent } from "../messaging/sendRequestToContent";
+import {
+	UnreachableContentScriptError,
+	sendMessage,
+} from "../messaging/backgroundMessageBroker";
 import { initStack } from "./hintsAllocator";
 import { preloadTabCommitted, preloadTabCompleted } from "./preloadTabs";
 
@@ -46,13 +49,16 @@ export function watchNavigation() {
 		const isPreloadTab = !(await browser.tabs.get(tabId));
 		if (isPreloadTab) return;
 
-		// We also send the frame id in the request as Safari is buggy sending
-		// messages to a specific frame and also sends them to other frames. This
-		// way we can check in the content script.
-		await sendRequestToContent(
-			{ type: "onCompleted", frameId },
-			tabId,
-			frameId
-		);
+		try {
+			await sendMessage("onCompleted", undefined, { tabId, frameId });
+		} catch (error: unknown) {
+			// At this point the content script might not have yet loaded. This is ok
+			// and expected. This command is only used for synchronizing hints when
+			// navigating back and forward in history and the content script being
+			// restored.
+			if (!(error instanceof UnreachableContentScriptError)) {
+				throw error;
+			}
+		}
 	});
 }

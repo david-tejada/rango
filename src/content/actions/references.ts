@@ -1,29 +1,12 @@
-import browser from "webextension-polyfill";
 import { getCssSelector } from "css-selector-generator";
 import { store } from "../../common/storage";
-import { type ElementWrapper } from "../../typings/ElementWrapper";
-import { showTooltip } from "../hints/showTooltip";
-import { getOrCreateWrapper } from "../wrappers/ElementWrapperClass";
 import { getHostPattern } from "../../common/utils";
-import { getActiveElement } from "../utils/domUtils";
-import { getWrapperForElement } from "../wrappers/wrappers";
+import type { ElementWrapper } from "../../typings/ElementWrapper";
+import { showTooltip } from "../hints/showTooltip";
 import { getSetting } from "../settings/settingsManager";
-
-function getWrapperFromUniqueSelector(selector: string) {
-	const element = document.querySelector(selector);
-	if (!element) return;
-
-	return getOrCreateWrapper(element, false);
-}
-
-export async function getReferences() {
-	const hostPattern = getHostPattern(window.location.href);
-	const references = getSetting("references");
-	const hostReferences =
-		references.get(hostPattern) ?? new Map<string, string>();
-
-	return { hostPattern, references, hostReferences };
-}
+import { getActiveElement } from "../utils/domUtils";
+import { getOrCreateWrapper } from "../wrappers/ElementWrapperClass";
+import { getWrapperForElement } from "../wrappers/wrappers";
 
 export async function saveReference(wrapper: ElementWrapper, name: string) {
 	const uniqueSelector = getCssSelector(wrapper.element, {
@@ -46,7 +29,25 @@ export async function saveReferenceForActiveElement(name: string) {
 	const activeElement = getActiveElement();
 	if (activeElement) {
 		const wrapper = getWrapperForElement(activeElement);
-		if (wrapper) await saveReference(wrapper, name);
+
+		if (wrapper) {
+			// Sometimes focused elements have additional attributes that they do not
+			// have when they are not focused. We need to blur the element so that
+			// those classes don't affect the selector.
+			if (wrapper.element instanceof HTMLElement) {
+				wrapper.element.blur();
+			}
+
+			// We give it a little time to ensure that the element attributes have
+			// been updated.
+			setTimeout(async () => {
+				await saveReference(wrapper, name);
+
+				if (wrapper.element instanceof HTMLElement) {
+					wrapper.element.focus();
+				}
+			}, 100);
+		}
 	}
 }
 
@@ -62,20 +63,18 @@ export async function showReferences() {
 	}
 }
 
-export async function removeReference(name: string) {
-	const { hostPattern, hostReferences } = await getReferences();
-	const selector = hostReferences.get(name);
+export async function getReferences() {
+	const hostPattern = getHostPattern(window.location.href);
+	const references = getSetting("references");
+	const hostReferences =
+		references.get(hostPattern) ?? new Map<string, string>();
 
-	if (!selector) return false;
+	return { hostPattern, references, hostReferences };
+}
 
-	await browser.runtime.sendMessage({
-		type: "removeReference",
-		hostPattern,
-		name,
-	});
+function getWrapperFromUniqueSelector(selector: string) {
+	const element = document.querySelector(selector);
+	if (!element) return;
 
-	const wrapper = getWrapperFromUniqueSelector(selector);
-	if (wrapper) showTooltip(wrapper, `❌ ${name}`);
-
-	return true;
+	return getOrCreateWrapper(element, false);
 }

@@ -1,8 +1,17 @@
-import type {
-	RequestFromTalon,
-	ResponseToTalon,
-} from "../../typings/RequestFromTalon";
+import { z } from "zod";
+import type { Command } from "../../typings/Command";
+import type { TalonAction } from "../../typings/TalonAction";
 import { readClipboard, writeClipboard } from "./clipboard";
+
+let shouldDiscardNextResponse = false;
+
+const zRequest = z
+	.object({
+		version: z.number(),
+		type: z.literal("request"),
+		action: z.object({ type: z.any() }).passthrough(),
+	})
+	.passthrough();
 
 /**
  * Reads and parses the request from the clipboard.
@@ -21,13 +30,16 @@ export async function readRequest() {
 	}
 
 	try {
-		const request = JSON.parse(clipText) as RequestFromTalon;
+		const parsedJson = JSON.parse(clipText) as unknown;
+		const result = zRequest.safeParse(parsedJson);
 
-		if (request.type !== "request") {
+		if (result.error) {
 			throw new Error("Clipboard content is not a valid request.");
 		}
 
-		return request;
+		const command = result.data as Command;
+
+		return command;
 	} catch (error: unknown) {
 		// We already check that we are sending valid json in rango-talon, but
 		// just to be extra sure
@@ -42,7 +54,38 @@ export async function readRequest() {
 /**
  * Stringifies and writes the response to the clipboard.
  */
-export async function writeResponse(response: ResponseToTalon) {
-	const jsonResponse = JSON.stringify(response);
+export async function writeResponse(
+	talonActions: TalonAction | TalonAction[] = []
+) {
+	if (shouldDiscardNextResponse) {
+		shouldDiscardNextResponse = false;
+		return;
+	}
+
+	const actions = Array.isArray(talonActions) ? talonActions : [talonActions];
+
+	const isFocusPageAndResendResponse = actions.some(
+		(action) => action.name === "focusPageAndResend"
+	);
+	if (isFocusPageAndResendResponse) assertFirstFocusPageAndResend();
+
+	const jsonResponse = JSON.stringify({ type: "response", actions });
 	await writeClipboard(jsonResponse);
+}
+
+export function discardNextResponse() {
+	shouldDiscardNextResponse = true;
+}
+
+// This avoids creating an infinite loop if Talon isn't able to focus the page.
+let hasTriedToFocusPage = false;
+function assertFirstFocusPageAndResend() {
+	if (hasTriedToFocusPage) {
+		throw new Error("Command execution failed. Unable to focus page.");
+	}
+
+	hasTriedToFocusPage = true;
+	setTimeout(() => {
+		hasTriedToFocusPage = false;
+	}, 1000);
 }

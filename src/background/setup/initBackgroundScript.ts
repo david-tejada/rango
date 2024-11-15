@@ -3,15 +3,19 @@ import { retrieve, store } from "../../common/storage";
 import { urls } from "../../common/urls";
 import { setTabLastSounded } from "../actions/focusTabBySound";
 import { watchNavigation } from "../hints/watchNavigation";
-import { sendRequestToContent } from "../messaging/sendRequestToContent";
+import { sendMessage } from "../messaging/backgroundMessageBroker";
+import { addMessageListeners } from "../messaging/messageListeners";
 import { createContextMenus } from "../misc/createContextMenus";
 import { initTabMarkers } from "../misc/tabMarkers";
 import { setBrowserActionIcon } from "../utils/browserAction";
 import { getCurrentTab } from "../utils/getCurrentTab";
 import { isSafari } from "../utils/isSafari";
+import { addCommandListeners } from "./commandListeners";
 import { trackRecentTabs } from "./trackRecentTabs";
 
 export async function initBackgroundScript() {
+	addMessageListeners();
+	addCommandListeners();
 	await trackRecentTabs();
 	watchNavigation();
 }
@@ -49,8 +53,8 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 	}
 
 	// If this is an update the content scrips either reload (Firefox) or stop
-	// completely (Chrome), either way we need to reset the hints stacks
-	await store("hintsStacks", new Map());
+	// completely (Chrome), either way we need to reset the hint stacks
+	await store("hintStacks", new Map());
 
 	if (reason === "install") {
 		await initTabMarkers();
@@ -60,7 +64,7 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 browser.runtime.onStartup.addListener(async () => {
 	await initTabMarkers();
 	await setBrowserActionIcon();
-	await store("hintsStacks", new Map());
+	await store("hintStacks", new Map());
 	await store("hintsToggleTabs", new Map());
 	await store("tabsByRecency", new Map());
 	// In Safari we need to create the menus every time the browser starts.
@@ -90,9 +94,9 @@ async function resetBookmarkTitle(
 
 	if (includeTabMarkers || urlInTitle) {
 		try {
-			const titleBeforeDecorations = (await sendRequestToContent({
-				type: "getTitleBeforeDecoration",
-			})) as string | undefined;
+			const titleBeforeDecorations = await sendMessage(
+				"getTitleBeforeDecoration"
+			);
 
 			if (titleBeforeDecorations) {
 				// We remove the event listener temporarily so it doesn't trigger when

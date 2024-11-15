@@ -63,10 +63,6 @@ export async function closeTabsInWindow(
 				tab.index > currentTab.index && tab.index <= currentTab.index + amount;
 			break;
 		}
-
-		default: {
-			break;
-		}
 	}
 
 	const tabsIdsToRemove = allTabsInWindow
