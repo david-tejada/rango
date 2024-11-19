@@ -1,5 +1,6 @@
 import { resetStagedSelectors } from "../hints/customSelectorsStaging";
 import { cacheHints, clearHintsCache } from "../hints/hintsCache";
+import { refresh } from "../wrappers/refresh";
 import { getHintedWrappers } from "../wrappers/wrappers";
 import { resetExtraHintsToggles } from "./customHints";
 
@@ -8,6 +9,7 @@ export async function refreshHints() {
 	resetExtraHintsToggles();
 
 	await refreshHintsCharacters();
+	await refresh({ hintsStyle: true, isHintable: true });
 }
 
 /**
