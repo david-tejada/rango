@@ -2,7 +2,6 @@ import { sendMessage } from "../messaging/contentMessageBroker";
 import { notify } from "../notify/notify";
 import { onSettingChange } from "../settings/settingsManager";
 import { getActiveElement, isEditable } from "../utils/domUtils";
-import { refresh } from "../wrappers/refresh";
 import { getHintedWrappers } from "../wrappers/wrappers";
 
 let keysPressedBuffer = "";
@@ -112,6 +111,4 @@ onSettingChange("keyboardClicking", async (keyboardClicking) => {
 		icon: status,
 		toastId: "keyboardToggle",
 	});
-
-	await refresh({ hintsCharacters: true });
 });

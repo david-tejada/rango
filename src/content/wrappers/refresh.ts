@@ -1,5 +1,4 @@
 import { debounce } from "lodash";
-import { cacheHints, clearHintsCache } from "../hints/hintsCache";
 import { onSettingChange } from "../settings/settingsManager";
 import { getAllWrappers, getHintedWrappers } from "./wrappers";
 
@@ -8,7 +7,6 @@ type Options = {
 	hintsStyle?: boolean;
 	hintsColors?: boolean;
 	hintsPosition?: boolean;
-	hintsCharacters?: boolean;
 
 	// Affect all ElementWrappers
 	isHintable?: boolean;
@@ -78,11 +76,7 @@ function combineOptions(existingOptions: Options, newOptions: Options) {
  * @returns An array of ElementWrappers that need to be updated.
  */
 function getElementWrappersToUpdate(options: Options) {
-	const {
-		hintsCharacters = false,
-		isHintable = false,
-		shouldBeHinted = false,
-	} = options;
+	const { isHintable = false, shouldBeHinted = false } = options;
 
 	const wrappersToUpdate =
 		isHintable || shouldBeHinted ? getAllWrappers() : getHintedWrappers();
@@ -94,57 +88,16 @@ function getElementWrappersToUpdate(options: Options) {
 		return wrappersToUpdate;
 	}
 
-	return wrappersToUpdate.filter(
-		(wrapper) =>
-			wrapper.element.matches(includeSelectors.join(", ")) ||
-			// With `hintsCharacters: true` we must refresh all wrappers that have a
-			// hint since all the hints must be refreshed.
-			(hintsCharacters && wrapper.hint?.string)
+	return wrappersToUpdate.filter((wrapper) =>
+		wrapper.element.matches(includeSelectors.join(", "))
 	);
 }
 
-// I am a bit unsure about this. It seems to work fine but what would happen if
-// while this function is executing an element intersects and claims a hint? We
-// would probably get a repeated hint or a single or double letter hint that
-// doesn't belong. I will leave it like this for the moment. This function will
-// not be called often anyway, just when the user manually refreshes the hints
-// or changes some settings like `keyboardClicking` or
-// `includeSingleLetterHints`.
-async function refreshHintsCharacters() {
-	const wrappersToRefresh = getHintedWrappers();
-	for (const wrapper of wrappersToRefresh) {
-		wrapper.hint?.release();
-	}
-
-	const hintsNecessary = wrappersToRefresh.filter(
-		(wrapper) => wrapper.isIntersectingViewport
-	).length;
-	const hintsAdditional = wrappersToRefresh.filter(
-		(wrapper) => wrapper.isIntersecting && !wrapper.isIntersectingViewport
-	).length;
-
-	await clearHintsCache();
-	await cacheHints(hintsNecessary, hintsAdditional);
-
-	for (const wrapper of wrappersToRefresh) {
-		wrapper.hint?.claim();
-	}
-}
-
 const debouncedRefresh = debounce(async () => {
-	const {
-		hintsStyle,
-		hintsColors,
-		hintsPosition,
-		hintsCharacters,
-		isHintable,
-		shouldBeHinted,
-	} = combinedOptions;
+	const { hintsStyle, hintsColors, hintsPosition, isHintable, shouldBeHinted } =
+		combinedOptions;
 
 	const wrappersToUpdate = getElementWrappersToUpdate(combinedOptions);
-
-	// We need to update all the hints characters at once
-	if (hintsCharacters) await refreshHintsCharacters();
 
 	for (const wrapper of wrappersToUpdate) {
 		if (isHintable) {
@@ -160,7 +113,7 @@ const debouncedRefresh = debounce(async () => {
 
 		// Whenever we call Hint.claim() the hint gets positioned, so here we
 		// prevent Hint.position() to be called twice.
-		if (hintsPosition && !hintsCharacters) {
+		if (hintsPosition) {
 			wrapper.hint?.position();
 		}
 	}
@@ -177,7 +130,6 @@ const debouncedRefresh = debounce(async () => {
  * @param options What Hint features or ElementWrapper properties to refresh:
  * @param {boolean} [options.hintsColors] Refresh colors for active Hints.
  * @param {boolean} [options.hintsPosition] Refresh position for active Hints.
- * @param {boolean} [options.hintsCharacters] Refresh characters for active Hints.
  * @param {boolean} [options.isHintable] Recompute isHintable for ElementWrappers.
  * @param {boolean} [options.shouldBeHinted] Recompute shouldBeHinted for ElementWrappers.
  * @param {string[]} [options.filterIn] Filter in only ElementWrappers matching this selectors.
@@ -198,18 +150,6 @@ export async function refresh(options?: Options) {
 
 	await debouncedRefresh();
 }
-
-onSettingChange(
-	[
-		"includeSingleLetterHints",
-		"useNumberHints",
-		"hintsToExclude",
-		"keysToExclude",
-	],
-	async () => {
-		await refresh({ hintsCharacters: true });
-	}
-);
 
 onSettingChange(
 	[

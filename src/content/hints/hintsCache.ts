@@ -143,6 +143,9 @@ export async function replaceHintsInCache(newHints: string[]) {
 	console.log(returnedHints);
 }
 
+/**
+ * Clears the hints cache and resets the stack if it's the main frame.
+ */
 export async function clearHintsCache() {
 	mainCache.length = 0;
 	additionalCache.length = 0;

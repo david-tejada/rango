@@ -36,6 +36,7 @@ import { toggleTabMarkers } from "../actions/toggleTabMarkers";
 import { onCommand } from "../commands/commandBroker";
 import { getAllFrames } from "../frames/frames";
 import { getFrameIdForHint } from "../hints/hintsAllocator";
+import { refreshHints } from "../hints/refreshHints";
 import {
 	sendMessage,
 	sendMessageToAllFrames,
@@ -709,9 +710,8 @@ export function addCommandListeners() {
 	onCommand("hideHint", async ({ target }) => {
 		await sendMessageToTargetFrames("hideHint", { target });
 	});
-	onCommand("refreshHints", async () => {
-		await sendMessageToAllFrames("refreshHints");
-	});
+
+	onCommand("refreshHints", refreshHints);
 
 	// ===========================================================================
 	// SETTINGS
