@@ -96,7 +96,7 @@ export function pushHint(hint: string) {
  * @param hints - The hints to save.
  * @param toMain - The number of hints that should be saved to the main cache.
  */
-export function saveHintsToCache(hints: string[], toMain = 0) {
+function saveHintsToCache(hints: string[], toMain = 0) {
 	const hintsSorted = [...hints].sort(
 		(a, b) => b.length - a.length || b.localeCompare(a)
 	);
@@ -123,24 +123,6 @@ function sortCache() {
 
 export function reclaimHintsFromCache(amount: number) {
 	return additionalCache.splice(-amount, amount);
-}
-
-export async function replaceHintsInCache(newHints: string[]) {
-	const mainCacheCount = mainCache.length;
-	const additionalCacheCount = additionalCache.length;
-	const returnHintsCount = returnedHints.length;
-
-	console.log(returnedHints);
-
-	console.log({ mainCacheCount, additionalCacheCount, returnHintsCount });
-
-	await clearHintsCache();
-
-	mainCache.push(...newHints.splice(0, mainCacheCount));
-	additionalCache.push(...newHints.splice(0, additionalCacheCount));
-	returnedHints.push(...newHints.splice(0, returnHintsCount));
-
-	console.log(returnedHints);
 }
 
 /**
