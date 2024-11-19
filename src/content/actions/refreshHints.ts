@@ -8,8 +8,8 @@ export async function refreshHints() {
 	await resetStagedSelectors();
 	resetExtraHintsToggles();
 
-	await refreshHintsCharacters();
 	await refresh({ hintsStyle: true, isHintable: true });
+	await refreshHintsCharacters();
 }
 
 /**
