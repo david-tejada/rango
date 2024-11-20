@@ -1,4 +1,4 @@
-import { type ElementWrapper } from "../../typings/ElementWrapper";
+import { type ElementWrapper } from "../wrappers/ElementWrapper";
 
 const boundingClientRects = new Map<Element, DOMRect>();
 const offsetParents = new Map<Element, Element | null>();

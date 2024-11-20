@@ -1,5 +1,4 @@
 import { debounce } from "lodash";
-import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { getExtraHintsToggle } from "../actions/customHints";
 import { Hint } from "../hints/Hint";
 import { cacheLabels } from "../hints/labelCache";
@@ -41,12 +40,12 @@ import {
  * @param active Set to false to avoid displaying a hint for the created
  * ElementWrapper. Useful for when we only need a temporary wrapper to use with
  * references while the hints are off.
- * @returns  The ElementWrapper for the element
+ * @returns The ElementWrapper for the element
  */
 export function getOrCreateWrapper(element: Element, active = true) {
 	let wrapper = getWrapperForElement(element);
 	if (!wrapper) {
-		wrapper = new ElementWrapperClass(element, active);
+		wrapper = new ElementWrapper(element, active);
 		if (active) {
 			addWrapper(wrapper);
 		}
@@ -56,7 +55,7 @@ export function getOrCreateWrapper(element: Element, active = true) {
 }
 
 function addWrapperOrShadow(element: Element) {
-	addWrapper(new ElementWrapperClass(element));
+	addWrapper(new ElementWrapper(element));
 	if (element.shadowRoot) {
 		mutationObserver.observe(element.shadowRoot, mutationObserverConfig);
 	} else if (element.tagName.includes("-")) {
@@ -68,7 +67,7 @@ function addWrapperOrShadow(element: Element) {
 				const shadowElements = deepGetElements(element);
 				mutationObserver.observe(element.shadowRoot, mutationObserverConfig);
 				for (const element of shadowElements) {
-					addWrapper(new ElementWrapperClass(element));
+					addWrapper(new ElementWrapper(element));
 				}
 			}
 		}, 1000);
@@ -326,7 +325,7 @@ document.addEventListener("focusout", debouncedHandleFocusChange);
 /**
  * A wrapper for a DOM Element.
  */
-class ElementWrapperClass implements ElementWrapper {
+export class ElementWrapper {
 	isIntersecting?: boolean;
 	observingIntersection?: boolean;
 	isIntersectingViewport?: boolean;

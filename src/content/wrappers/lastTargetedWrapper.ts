@@ -1,4 +1,4 @@
-import { type ElementWrapper } from "../../typings/ElementWrapper";
+import { type ElementWrapper } from "./ElementWrapper";
 
 let lastWrapper: ElementWrapper | undefined;
 

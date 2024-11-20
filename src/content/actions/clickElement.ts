@@ -1,5 +1,5 @@
-import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { sendMessage } from "../messaging/contentMessageBroker";
+import { type ElementWrapper } from "../wrappers/ElementWrapper";
 
 export async function clickElement(wrappers: ElementWrapper[]) {
 	const anchorWrappers = wrappers.filter(

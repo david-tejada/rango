@@ -1,7 +1,7 @@
-import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { assertDefined } from "../../typings/TypingUtils";
-import { findFirstTextNode, findLastTextNode } from "../utils/nodeUtils";
 import { activateEditable } from "../utils/activateEditable";
+import { findFirstTextNode, findLastTextNode } from "../utils/nodeUtils";
+import { type ElementWrapper } from "../wrappers/ElementWrapper";
 
 export function setSelectionAtEdge(target: Element, atStart: boolean) {
 	if (

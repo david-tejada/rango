@@ -1,8 +1,8 @@
 import { type Direction } from "../../typings/Direction";
-import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { isHtmlElement } from "../../typings/TypingUtils";
 import { getSetting } from "../settings/settingsManager";
 import { getUserScrollableContainer } from "../utils/getUserScrollableContainer";
+import { type ElementWrapper } from "../wrappers/ElementWrapper";
 
 const defaultScrollFactor = 0.66;
 

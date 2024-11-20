@@ -3,13 +3,12 @@ import {
 	getTargetValues,
 } from "../../common/target/targetConversion";
 import { TargetError } from "../../common/target/TargetError";
-import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { type ElementMark, type Target } from "../../typings/Target/Target";
 import { getTextMatchedElement } from "../actions/matchElementByText";
 import { getReferences } from "../actions/references";
 import { getElementFromSelector } from "../selectors/getElementFromSelector";
 import { assertWrappersIntersectViewport } from "./assertIntersectingWrappers";
-import { getOrCreateWrapper } from "./ElementWrapperClass";
+import { type ElementWrapper, getOrCreateWrapper } from "./ElementWrapper";
 import { setLastTargetedWrapper } from "./lastTargetedWrapper";
 import { getWrapper } from "./wrappers";
 

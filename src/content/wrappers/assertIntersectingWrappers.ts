@@ -1,5 +1,5 @@
 import { TargetError } from "../../common/target/TargetError";
-import { type ElementWrapper } from "../../typings/ElementWrapper";
+import { type ElementWrapper } from "./ElementWrapper";
 
 export function assertWrappersIntersectViewport(wrappers: ElementWrapper[]) {
 	for (const wrapper of wrappers) {

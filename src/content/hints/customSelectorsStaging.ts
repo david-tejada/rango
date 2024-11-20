@@ -1,8 +1,8 @@
 import { getHostPattern } from "../../common/utils";
-import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { type SelectorAlternative } from "../../typings/SelectorAlternative";
 import { type CustomSelector } from "../../typings/StorageSchema";
 import { sendMessage } from "../messaging/contentMessageBroker";
+import { type ElementWrapper } from "../wrappers/ElementWrapper";
 import { getSelectorAlternatives } from "./computeCustomSelectors";
 import { updateCustomSelectors } from "./selectors";
 
