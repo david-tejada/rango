@@ -68,23 +68,23 @@ export function getWrappersWithin(element: Element): ElementWrapper[] {
 	return result;
 }
 
-export function setHintedWrapper(hint: string, element: Element) {
+export function setHintedWrapper(label: string, element: Element) {
 	const wrapper = getWrapper(element);
-	if (wrapper) wrappersHinted.set(hint, wrapper);
+	if (wrapper) wrappersHinted.set(label, wrapper);
 }
 
-export function clearHintedWrapper(hint: string) {
-	wrappersHinted.delete(hint);
+export function clearHintedWrapper(label: string) {
+	wrappersHinted.delete(label);
 }
 
-export function reclaimHints(amount?: number) {
+export function reclaimLabels(amount?: number) {
 	const reclaimed = [];
 
-	for (const [hintString, wrapper] of wrappersHinted.entries()) {
+	for (const [label, wrapper] of wrappersHinted.entries()) {
 		if (!wrapper.isIntersectingViewport) {
 			wrapper.unobserveIntersection();
 			wrapper.hint?.release(false);
-			reclaimed.push(hintString);
+			reclaimed.push(label);
 			if (amount && reclaimed.length >= amount) return reclaimed;
 		}
 	}
@@ -97,7 +97,7 @@ export function deleteWrapper(target: Element) {
 	for (const element of elements) {
 		const wrapper = wrappersAll.get(element);
 
-		if (wrapper?.hint?.string) wrappersHinted.delete(wrapper.hint.string);
+		if (wrapper?.hint?.label) wrappersHinted.delete(wrapper.hint.label);
 
 		wrapper?.suspend();
 

@@ -35,7 +35,7 @@ import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
 import { toggleTabMarkers } from "../actions/toggleTabMarkers";
 import { onCommand } from "../commands/commandBroker";
 import { getAllFrames } from "../frames/frames";
-import { getFrameIdForHint } from "../hints/hintsAllocator";
+import { getFrameIdForHint } from "../hints/labelAllocator";
 import { refreshHints } from "../hints/refreshHints";
 import {
 	sendMessage,

@@ -8,12 +8,12 @@ const zCustomSelector = z.object({
 
 export type CustomSelector = z.infer<typeof zCustomSelector>;
 
-const zHintStack = z.object({
+const zLabelStack = z.object({
 	free: z.array(z.string()),
 	assigned: z.map(z.string(), z.number()),
 });
 
-export type HintStack = z.infer<typeof zHintStack>;
+export type LabelStack = z.infer<typeof zLabelStack>;
 
 const zTabMarkers = z.object({
 	free: z.array(z.string()),
@@ -88,7 +88,7 @@ export const zStorageSchema = z.object({
 
 	// Other data
 	tabsByRecency: z.map(z.number(), z.array(z.number())),
-	hintStacks: z.map(z.number(), zHintStack),
+	labelStacks: z.map(z.number(), zLabelStack),
 	tabMarkers: zTabMarkers,
 });
 

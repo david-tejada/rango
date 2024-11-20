@@ -1,6 +1,6 @@
 import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
-import { letterHints } from "../../common/allHints";
+import { letterLabels } from "../../common/labels";
 import { retrieve, store } from "../../common/storage";
 import { type TabMarkers } from "../../typings/StorageSchema";
 import {
@@ -92,7 +92,7 @@ browser.tabs.onReplaced.addListener(async (addedTabId, removedTabId) => {
 
 async function resetTabMarkers() {
 	await withTabMarkers((tabMarkers) => {
-		tabMarkers.free = [...letterHints];
+		tabMarkers.free = [...letterLabels];
 		tabMarkers.tabIdsToMarkers = new Map();
 		tabMarkers.markersToTabIds = new Map();
 

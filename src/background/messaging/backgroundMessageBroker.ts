@@ -4,7 +4,7 @@ import { isValidMessage } from "../../common/messaging/isValidMessage";
 import {
 	getPrioritizeViewportValue,
 	getTargetFromFuzzyTexts,
-	getTargetFromHints,
+	getTargetFromLabels,
 	getTargetFromReferences,
 	getTargetMarkType,
 	getTargetValues,
@@ -25,7 +25,7 @@ import {
 } from "../../typings/Target/Target";
 import { assertDefined } from "../../typings/TypingUtils";
 import { getAllFrames } from "../frames/frames";
-import { getStack } from "../hints/hintsAllocator";
+import { getStack } from "../hints/labelAllocator";
 import { assertReferencesInCurrentTab } from "../target/references";
 import { getCurrentTabId } from "../utils/getCurrentTab";
 
@@ -268,7 +268,7 @@ async function splitElementHintTargetByFrame(
 		hintsByFrame.set(frameId, [...(hintsByFrame.get(frameId) ?? []), hint]);
 	}
 
-	return mapMapValues(hintsByFrame, getTargetFromHints);
+	return mapMapValues(hintsByFrame, getTargetFromLabels);
 }
 
 async function splitElementReferenceTargetByFrame(

@@ -1,14 +1,14 @@
 import browser from "webextension-polyfill";
-import { getTargetFromHints } from "../../common/target/targetConversion";
+import { getTargetFromLabels } from "../../common/target/targetConversion";
 import {
-	claimHints,
+	claimLabels,
 	getStack,
 	initStack,
-	reclaimHintsFromOtherFrames,
-	releaseHints,
-	storeHintsInFrame,
+	reclaimLabelsFromOtherFrames,
+	releaseLabels,
+	storeLabelsInFrame,
 	withStack,
-} from "../hints/hintsAllocator";
+} from "../hints/labelAllocator";
 import { getTabMarker } from "../misc/tabMarkers";
 import { createRelatedTabs } from "../tabs/createRelatedTabs";
 import { getCurrentTabId } from "../utils/getCurrentTab";
@@ -32,30 +32,30 @@ export function addMessageListeners() {
 		return initStack(tabId);
 	});
 
-	onMessage("claimHints", async ({ amount }, { tabId, frameId }) => {
-		return claimHints(tabId, frameId, amount);
+	onMessage("claimLabels", async ({ amount }, { tabId, frameId }) => {
+		return claimLabels(tabId, frameId, amount);
 	});
 
 	onMessage(
-		"reclaimHintsFromOtherFrames",
+		"reclaimLabelsFromOtherFrames",
 		async ({ amount }, { tabId, frameId }) => {
-			return reclaimHintsFromOtherFrames(tabId, frameId, amount);
+			return reclaimLabelsFromOtherFrames(tabId, frameId, amount);
 		}
 	);
 
-	onMessage("releaseHints", async ({ hints }, { tabId }) => {
-		return releaseHints(tabId, hints);
+	onMessage("releaseLabels", async ({ labels }, { tabId }) => {
+		return releaseLabels(tabId, labels);
 	});
 
-	onMessage("storeHintsInFrame", async ({ hints }, { tabId, frameId }) => {
-		return storeHintsInFrame(tabId, frameId, hints);
+	onMessage("storeLabelsInFrame", async ({ labels }, { tabId, frameId }) => {
+		return storeLabelsInFrame(tabId, frameId, labels);
 	});
 
-	onMessage("getHintStackForTab", async (_, { tabId }) => {
+	onMessage("getLabelStackForTab", async (_, { tabId }) => {
 		return withStack(tabId, async (stack) => stack);
 	});
 
-	onMessage("getHintsInTab", async (_, { tabId }) => {
+	onMessage("getLabelsInTab", async (_, { tabId }) => {
 		const stack = await getStack(tabId);
 		return [...stack.assigned.keys()];
 	});
@@ -72,7 +72,7 @@ export function addMessageListeners() {
 	onMessage("clickHintInFrame", async ({ hint }, { tabId }) => {
 		await sendMessageToTargetFrames(
 			"clickElement",
-			{ target: getTargetFromHints([hint]) },
+			{ target: getTargetFromLabels([hint]) },
 			tabId
 		);
 	});

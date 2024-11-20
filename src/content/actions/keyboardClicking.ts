@@ -9,7 +9,7 @@ let timeoutId: ReturnType<typeof setTimeout>;
 
 export function markHintsAsKeyboardReachable(letter: string) {
 	const wrappers = getHintedWrappers().filter((wrapper) =>
-		wrapper.hint?.string?.startsWith(letter)
+		wrapper.hint?.label?.startsWith(letter)
 	);
 	for (const wrapper of wrappers) {
 		wrapper?.hint?.keyHighlight();
@@ -41,12 +41,12 @@ async function keydownHandler(event: KeyboardEvent) {
 		return;
 	}
 
-	const hintsInTab = await sendMessage("getHintsInTab");
+	const labelsInTab = await sendMessage("getLabelsInTab");
 
 	// After typing the first character we need to check if any of the hints start
 	// with that letter
 	const firstCharactersInHints = new Set(
-		hintsInTab.map((hint) => hint.slice(0, 1))
+		labelsInTab.map((hint) => hint.slice(0, 1))
 	);
 
 	const hintIsReachable =
@@ -68,7 +68,7 @@ async function keydownHandler(event: KeyboardEvent) {
 		if (keysPressedBuffer.length === 2) {
 			await sendMessage("restoreKeyboardReachableHints");
 
-			if (hintsInTab.includes(keysPressedBuffer)) {
+			if (labelsInTab.includes(keysPressedBuffer)) {
 				await sendMessage("clickHintInFrame", {
 					hint: keysPressedBuffer,
 				});

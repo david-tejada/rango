@@ -26,7 +26,7 @@ export type Hint = {
 	keyEmphasis?: boolean;
 	freezeColors?: boolean;
 	firstTextNodeDescendant?: Text;
-	string?: string;
+	label?: string;
 
 	// Methods
 	setBackgroundColor(color?: string): void;

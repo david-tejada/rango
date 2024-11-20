@@ -1,7 +1,7 @@
 import { type ToastOptions } from "react-toastify";
 import { type Tabs } from "webextension-polyfill";
 import { type Direction } from "./Direction";
-import { type CustomSelector, type HintStack } from "./StorageSchema";
+import { type CustomSelector, type LabelStack } from "./StorageSchema";
 import { type ElementMark, type Target } from "./Target/Target";
 
 type FirstParameter<T> = T extends (...args: infer P) => any ? P[0] : never;
@@ -29,15 +29,15 @@ export type BackgroundBoundMessageMap = {
 
 	// Hints Allocator
 	initStack: () => void;
-	claimHints: (data: { amount: number }) => string[];
-	reclaimHintsFromOtherFrames: (data: { amount: number }) => string[];
-	releaseHints: (data: { hints: string[] }) => void;
-	storeHintsInFrame: (data: { hints: string[] }) => void;
-	getHintStackForTab: () => HintStack;
+	claimLabels: (data: { amount: number }) => string[];
+	reclaimLabelsFromOtherFrames: (data: { amount: number }) => string[];
+	releaseLabels: (data: { labels: string[] }) => void;
+	storeLabelsInFrame: (data: { labels: string[] }) => void;
+	getLabelStackForTab: () => LabelStack;
 	createTabs: (data: {
 		createPropertiesArray: Tabs.CreateCreatePropertiesType[];
 	}) => void;
-	getHintsInTab: () => string[];
+	getLabelsInTab: () => string[];
 
 	// References
 	removeReference: (data: { hostPattern: string; name: string }) => void;
@@ -99,7 +99,7 @@ export type ContentBoundMessageMap = {
 	scrollToPosition: (data: { name: string }) => void;
 
 	// Hints
-	reclaimHints: (data: { amount: number }) => string[];
+	reclaimLabels: (data: { amount: number }) => string[];
 	displayMoreOrLessHints: (data: {
 		extra?: boolean;
 		excluded?: boolean;

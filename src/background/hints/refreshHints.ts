@@ -35,7 +35,7 @@ async function refreshHintsInTab(tabId: number) {
 	await Promise.allSettled(sending);
 }
 
-const settingsAffectingHintCharacters = [
+const settingsAffectingLabels = [
 	"keyboardClicking",
 	"includeSingleLetterHints",
 	"useNumberHints",
@@ -44,7 +44,7 @@ const settingsAffectingHintCharacters = [
 ] as const;
 
 browser.storage.onChanged.addListener(async (changes) => {
-	if (settingsAffectingHintCharacters.some((setting) => setting in changes)) {
+	if (settingsAffectingLabels.some((setting) => setting in changes)) {
 		await refreshHints();
 	}
 });
