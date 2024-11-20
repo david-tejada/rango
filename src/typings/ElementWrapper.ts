@@ -1,5 +1,5 @@
+import { type Hint } from "../content/hints/Hint";
 import { type BoundedIntersectionObserver } from "../content/utils/BoundedIntersectionObserver";
-import { type Hint } from "./Hint";
 
 /**
  * A wrapper for a DOM Element.

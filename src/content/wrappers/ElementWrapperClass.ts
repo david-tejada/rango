@@ -1,8 +1,7 @@
 import { debounce } from "lodash";
 import { type ElementWrapper } from "../../typings/ElementWrapper";
-import { type Hint } from "../../typings/Hint";
 import { getExtraHintsToggle } from "../actions/customHints";
-import { HintClass } from "../hints/HintClass";
+import { Hint } from "../hints/Hint";
 import { cacheLabels } from "../hints/labelCache";
 import { cacheLayout, clearLayoutCache } from "../hints/layoutCache";
 import { matchesCustomExclude, matchesCustomInclude } from "../hints/selectors";
@@ -423,7 +422,7 @@ class ElementWrapperClass implements ElementWrapper {
 		this.isIntersecting = isIntersecting;
 
 		if (this.isIntersecting && this.shouldBeHinted) {
-			this.hint ??= new HintClass(this.element);
+			this.hint ??= new Hint(this.element);
 			this.hint.claim();
 		} else if (this.hint?.label) {
 			this.hint.release();
