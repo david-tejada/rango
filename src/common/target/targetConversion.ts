@@ -77,8 +77,8 @@ export function getPrioritizeViewportValue<T extends FuzzyTextElementMark>(
 	return target.items[0]!.mark.prioritizeViewport;
 }
 
-export function getTargetFromHints(hints: string[]) {
-	return arrayToTarget<ElementHintMark>(hints, "elementHint");
+export function getTargetFromLabels(labels: string[]) {
+	return arrayToTarget<ElementHintMark>(labels, "elementHint");
 }
 
 export function getTargetFromReferences(references: string[]) {

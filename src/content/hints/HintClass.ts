@@ -19,7 +19,7 @@ import { matchesStagedSelector } from "./customSelectorsStaging";
 import { getAptContainer, getContextForHint } from "./getContextForHint";
 import { getCustomNudge } from "./getCustomNudge";
 import { getElementToPositionHint } from "./getElementToPositionHint";
-import { popHint, pushHint } from "./hintsCache";
+import { popLabel, pushLabel } from "./labelCache";
 import {
 	cacheLayout,
 	clearLayoutCache,
@@ -52,7 +52,7 @@ const processHintQueue = debounce(() => {
 		if (hint.toBeReattached) hint.reattach();
 		// After trying to reattach, the hint might be released if there is not an
 		// apt container to place it.
-		if (!hint.string) queue.delete(hint);
+		if (!hint.label) queue.delete(hint);
 	}
 
 	cacheLayout(toComputeContext);
@@ -97,7 +97,7 @@ const processHintQueue = debounce(() => {
 
 	for (const hint of queue) {
 		hint.position();
-		hint.shadowHost.dataset["hint"] = hint.string;
+		hint.shadowHost.dataset["hint"] = hint.label;
 		hint.isActive = true;
 
 		// This is here for debugging and testing purposes
@@ -105,7 +105,7 @@ const processHintQueue = debounce(() => {
 			process.env["NODE_ENV"] !== "production" &&
 			hint.target instanceof HTMLElement
 		) {
-			hint.target.dataset["hint"] = hint.string;
+			hint.target.dataset["hint"] = hint.label;
 		}
 	}
 
@@ -125,7 +125,7 @@ const processHintQueue = debounce(() => {
 			// This is to make sure that we don't make visible a hint that was
 			// released and causing layouts to break. Since release could be called
 			// before this callback is called
-			if (hint.string) {
+			if (hint.label) {
 				setStyleProperties(hint.inner, {
 					display: "block",
 					opacity: "100%",
@@ -191,7 +191,7 @@ const containerMutationObserver = new MutationObserver((entries) => {
 					const wrapper = getWrapper(inner.textContent);
 
 					// eslint-disable-next-line max-depth
-					if (wrapper?.hint?.string) {
+					if (wrapper?.hint?.label) {
 						wrapper.hint.toBeReattached = true;
 						addToHintQueue(wrapper.hint);
 					}
@@ -294,7 +294,7 @@ export class HintClass implements Hint {
 	keyEmphasis?: boolean;
 	freezeColors?: boolean;
 	firstTextNodeDescendant?: Text;
-	string?: string;
+	label?: string;
 
 	constructor(public target: Element) {
 		this.isActive = false;
@@ -507,21 +507,21 @@ export class HintClass implements Hint {
 	}
 
 	claim() {
-		const string = popHint();
+		const string = popLabel();
 
 		if (!string) {
-			console.warn("No more hint strings available");
+			console.warn("No more labels available");
 			return;
 		}
 
 		this.inner.textContent = string;
-		this.string = string;
+		this.label = string;
 
 		// We need to set the hinted wrapper here and not when the hint is shown in
-		// processHintQueue. This way if the hint characters are updated this Hint
-		// will be taken into account and its string refreshed even if the hint is
-		// still not visible.
-		setHintedWrapper(this.string, this.target);
+		// processHintQueue. This way if the labels are updated this Hint will be
+		// taken into account and its label refreshed even if the hint is still not
+		// visible.
+		setHintedWrapper(this.label, this.target);
 
 		addToHintQueue(this);
 
@@ -688,9 +688,9 @@ export class HintClass implements Hint {
 
 		// Checking this.string is safer than check in this.inner.textContent as the
 		// latter could be removed by a page script
-		if (!this.string) return;
+		if (!this.label) return;
 
-		clearHintedWrapper(this.string);
+		clearHintedWrapper(this.label);
 
 		if (removeElement) {
 			setStyleProperties(this.inner, {
@@ -698,9 +698,9 @@ export class HintClass implements Hint {
 			});
 		}
 
-		if (returnToStack) pushHint(this.string);
+		if (returnToStack) pushLabel(this.label);
 		this.inner.textContent = "";
-		this.string = undefined;
+		this.label = undefined;
 
 		// We need to remove the hint from the dom once it's not needed. This
 		// minimizes the possibility of something weird happening. Like in the

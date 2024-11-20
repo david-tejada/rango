@@ -3,7 +3,7 @@ import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { type Hint } from "../../typings/Hint";
 import { getExtraHintsToggle } from "../actions/customHints";
 import { HintClass } from "../hints/HintClass";
-import { cacheHints } from "../hints/hintsCache";
+import { cacheLabels } from "../hints/labelCache";
 import { cacheLayout, clearLayoutCache } from "../hints/layoutCache";
 import { matchesCustomExclude, matchesCustomInclude } from "../hints/selectors";
 import { setStyleProperties } from "../hints/setStyleProperties";
@@ -163,7 +163,7 @@ async function intersectionCallback(entries: IntersectionObserverEntry[]) {
 		(entry) => !entry.isIntersecting
 	);
 
-	// We process first the entries not intersecting so the hints can be released.
+	// We process first the entries not intersecting so the labels can be released.
 	for (const entry of entriesNotIntersecting) {
 		getOrCreateWrapper(entry.target).intersect(entry.isIntersecting);
 	}
@@ -175,7 +175,7 @@ async function intersectionCallback(entries: IntersectionObserverEntry[]) {
 	).length;
 
 	if (amountIntersecting) {
-		await cacheHints(
+		await cacheLabels(
 			amountIntersecting - amountNotIntersectingViewport,
 			amountNotIntersectingViewport
 		);
@@ -370,11 +370,11 @@ class ElementWrapperClass implements ElementWrapper {
 			if (newShouldBeHinted) {
 				// We don't call this.observeIntersection() yet because when that
 				// intersection occurs we need to know if the element is intersecting
-				// the viewport for hint strings caching
+				// the viewport for label caching
 				viewportIntersectionObserver.observe(this.element);
 			} else {
-				if (this.hint?.string) {
-					clearHintedWrapper(this.hint.string);
+				if (this.hint?.label) {
+					clearHintedWrapper(this.hint.label);
 					this.hint.release();
 				}
 
@@ -425,7 +425,7 @@ class ElementWrapperClass implements ElementWrapper {
 		if (this.isIntersecting && this.shouldBeHinted) {
 			this.hint ??= new HintClass(this.element);
 			this.hint.claim();
-		} else if (this.hint?.string) {
+		} else if (this.hint?.label) {
 			this.hint.release();
 		}
 	}
@@ -436,11 +436,11 @@ class ElementWrapperClass implements ElementWrapper {
 		// Only after having stored isIntersectingViewport we can start observing
 		// the intersection for the element so when intersectionCallback is called
 		// we already know how many are intersecting the viewport to cache those
-		// hint strings as optional.
+		// labels as optional.
 		if (!this.intersectionObserver) this.observeIntersection();
 
 		if (this.isIntersectingViewport && !this.observingIntersection) {
-			// If it was previously unobserved because the hint was reclaimed, we will
+			// If it was previously unobserved because the label was reclaimed, we will
 			// get an intersection entry for intersectionObserver.
 			this.intersectionObserver?.observe(this.element);
 			this.observingIntersection = true;

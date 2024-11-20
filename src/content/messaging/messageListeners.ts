@@ -37,9 +37,9 @@ import { refreshHints } from "../actions/refreshHints";
 import { scroll, snapScroll } from "../actions/scroll";
 import { setSelectionAfter, setSelectionBefore } from "../actions/setSelection";
 import { showTitleAndHref } from "../actions/showTitleAndHref";
-import { reclaimHintsFromCache } from "../hints/hintsCache";
-import { deleteHintsInFrame } from "../hints/hintsInFrame";
-import { synchronizeHints } from "../hints/hintsRequests";
+import { synchronizeLabels } from "../hints/hintsRequests";
+import { reclaimLabelsFromCache } from "../hints/labelCache";
+import { deleteLabelsInFrame } from "../hints/labelsInFrame";
 import { notify, notifyTogglesStatus } from "../notify/notify";
 import { updateHintsEnabled } from "../observe";
 import { getElementFromSelector } from "../selectors/getElementFromSelector";
@@ -52,14 +52,14 @@ import {
 } from "../utils/decorateTitle";
 import { isEditable } from "../utils/domUtils";
 import { getFirstWrapper, getTargetedWrappers } from "../wrappers/target";
-import { reclaimHints } from "../wrappers/wrappers";
+import { reclaimLabels } from "../wrappers/wrappers";
 import { onMessage } from "./contentMessageBroker";
 
 export function addMessageListeners() {
 	onMessage("pingContentScript", () => true);
 
 	onMessage("onCompleted", async () => {
-		await synchronizeHints();
+		await synchronizeLabels();
 	});
 
 	onMessage("checkIfDocumentHasFocus", () => document.hasFocus());
@@ -90,13 +90,13 @@ export function addMessageListeners() {
 
 	onMessage("refreshHints", refreshHints);
 
-	onMessage("reclaimHints", async ({ amount }) => {
-		const reclaimed = reclaimHintsFromCache(amount);
+	onMessage("reclaimLabels", async ({ amount }) => {
+		const reclaimed = reclaimLabelsFromCache(amount);
 		if (reclaimed.length < amount) {
-			reclaimed.push(...reclaimHints(amount - reclaimed.length));
+			reclaimed.push(...reclaimLabels(amount - reclaimed.length));
 		}
 
-		deleteHintsInFrame(reclaimed);
+		deleteLabelsInFrame(reclaimed);
 		return reclaimed;
 	});
 

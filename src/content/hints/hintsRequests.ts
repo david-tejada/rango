@@ -1,58 +1,58 @@
 import { Mutex } from "async-mutex";
 import { sendMessage } from "../messaging/contentMessageBroker";
 import {
-	addHintsInFrame,
-	clearHintsInFrame,
-	deleteHintsInFrame,
-	getHintsInFrame,
-} from "./hintsInFrame";
+	addLabelsInFrame,
+	clearLabelsInFrame,
+	deleteLabelsInFrame,
+	getLabelsInFrame,
+} from "./labelsInFrame";
 
 const mutex = new Mutex();
 
 export async function initStack() {
 	return mutex.runExclusive(async () => {
-		clearHintsInFrame();
+		clearLabelsInFrame();
 		return sendMessage("initStack");
 	});
 }
 
-export async function synchronizeHints() {
+export async function synchronizeLabels() {
 	await mutex.runExclusive(async () => {
-		const hintsInFrame = getHintsInFrame();
-		if (hintsInFrame.length > 0) {
-			await sendMessage("storeHintsInFrame", { hints: hintsInFrame });
+		const labels = getLabelsInFrame();
+		if (labels.length > 0) {
+			await sendMessage("storeLabelsInFrame", { labels });
 		}
 	});
 }
 
-export async function claimHints(amount: number) {
+export async function claimLabels(amount: number) {
 	return mutex.runExclusive(async () => {
-		const claimed = await sendMessage("claimHints", { amount });
-		addHintsInFrame(claimed);
+		const claimed = await sendMessage("claimLabels", { amount });
+		addLabelsInFrame(claimed);
 
 		return claimed;
 	});
 }
 
-export async function reclaimHintsFromOtherFrames(amount: number) {
+export async function reclaimLabelsFromOtherFrames(amount: number) {
 	return mutex.runExclusive(async () => {
-		const reclaimed = await sendMessage("reclaimHintsFromOtherFrames", {
+		const reclaimed = await sendMessage("reclaimLabelsFromOtherFrames", {
 			amount,
 		});
 
-		addHintsInFrame(reclaimed);
+		addLabelsInFrame(reclaimed);
 
 		return reclaimed;
 	});
 }
 
-export async function releaseHints(hints: string[]) {
+export async function releaseLabels(labels: string[]) {
 	await mutex.runExclusive(async () => {
-		deleteHintsInFrame(hints);
-		await sendMessage("releaseHints", { hints });
+		deleteLabelsInFrame(labels);
+		await sendMessage("releaseLabels", { labels });
 	});
 }
 
-export async function getHintStackForTab() {
-	return sendMessage("getHintStackForTab");
+export async function getLabelStackForTab() {
+	return sendMessage("getLabelStackForTab");
 }

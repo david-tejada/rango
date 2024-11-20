@@ -2,7 +2,7 @@ import { sleep } from "../../lib/utils";
 import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { notify } from "../notify/notify";
 import { getWrapperForElement } from "../wrappers/wrappers";
-import { isEditable, getActiveElement } from "./domUtils";
+import { getActiveElement, isEditable } from "./domUtils";
 
 async function waitActiveEditable(): Promise<Element | undefined | null> {
 	return new Promise((resolve) => {
@@ -38,7 +38,7 @@ async function waitActiveEditable(): Promise<Element | undefined | null> {
 export async function activateEditable(wrapper: ElementWrapper) {
 	if (wrapper.element instanceof HTMLAnchorElement) {
 		await notify(
-			`The element with hint "${wrapper.hint!.string!}" is not editable`,
+			`The element with hint "${wrapper.hint!.label!}" is not editable`,
 			{ type: "error" }
 		);
 		return undefined;

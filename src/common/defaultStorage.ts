@@ -1,13 +1,13 @@
 import { type StorageSchema } from "../typings/StorageSchema";
-import { letterHints } from "./allHints";
+import { letterLabels } from "./labels";
 import { defaultSettings } from "./settings";
 
 export const defaultStorage: StorageSchema = {
 	...defaultSettings,
 	tabsByRecency: new Map(),
-	hintStacks: new Map(),
+	labelStacks: new Map(),
 	tabMarkers: {
-		free: letterHints,
+		free: letterLabels,
 		tabIdsToMarkers: new Map(),
 		markersToTabIds: new Map(),
 	},

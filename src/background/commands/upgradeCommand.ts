@@ -1,4 +1,4 @@
-import { getTargetFromHints } from "../../common/target/targetConversion";
+import { getTargetFromLabels } from "../../common/target/targetConversion";
 import {
 	type ActionMap,
 	type ActionV1,
@@ -89,7 +89,7 @@ function upgradeAction(action: ActionV1): ActionV2<keyof ActionMap> {
 		case "scrollUpRightAside": {
 			return {
 				name,
-				target: target ? getTargetFromHints(target) : undefined,
+				target: target ? getTargetFromLabels(target) : undefined,
 				factor: arg as number,
 			};
 		}
@@ -114,7 +114,7 @@ function upgradeAction(action: ActionV1): ActionV2<keyof ActionMap> {
 		case "saveReference": {
 			return {
 				name,
-				target: target ? getTargetFromHints(target) : undefined,
+				target: target ? getTargetFromLabels(target) : undefined,
 				referenceName: arg as string,
 			};
 		}
@@ -130,7 +130,7 @@ function upgradeAction(action: ActionV1): ActionV2<keyof ActionMap> {
 		default: {
 			return {
 				name,
-				target: target ? getTargetFromHints(target) : undefined,
+				target: target ? getTargetFromLabels(target) : undefined,
 				...rest,
 			};
 		}

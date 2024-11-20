@@ -1,75 +1,75 @@
 import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
-import { letterHints, numberHints } from "../../common/allHints";
 import { getKeysToExclude } from "../../common/getKeysToExclude";
+import { letterLabels, numberLabels } from "../../common/labels";
 import { retrieve, store } from "../../common/storage";
-import { type HintStack } from "../../typings/StorageSchema";
+import { type LabelStack } from "../../typings/StorageSchema";
 import { getAllFrames } from "../frames/frames";
 import { getCurrentTabId } from "../utils/getCurrentTab";
 import { navigationOccurred } from "./preloadTabs";
 
-class HintStackError extends Error {
+class LabelStackError extends Error {
 	constructor(message: string) {
 		super(message);
-		this.name = "HintStackError";
+		this.name = "LabelStackError";
 	}
 }
 
-async function getEmptyStack(tabId: number): Promise<HintStack> {
+async function getEmptyStack(tabId: number): Promise<LabelStack> {
 	const includeSingleLetterHints = await retrieve("includeSingleLetterHints");
 	const keyboardClicking = await retrieve("keyboardClicking");
 	const useNumberHints = await retrieve("useNumberHints");
 
 	// To make all hints reachable via keyboard clicking, we exclude single-letter
 	// hints when keyboard clicking is active.
-	const possibleHints =
+	const possibleLabels =
 		useNumberHints && !keyboardClicking
-			? [...numberHints]
+			? [...numberLabels]
 			: includeSingleLetterHints && !keyboardClicking
-				? [...letterHints]
-				: letterHints.slice(0, -26);
+				? [...letterLabels]
+				: letterLabels.slice(0, -26);
 
-	// We filter out any hint the user has excluded or any hint that starts with
+	// We filter out any label the user has excluded or any label that starts with
 	// an excluded key for the current url.
 	const tab = await browser.tabs.get(tabId);
 	const keysToExclude = tab.url
 		? await getKeysToExclude(tab.url)
 		: new Set<string>();
-	const hintsToExclude = await retrieve("hintsToExclude");
+	const labelsToExclude = await retrieve("hintsToExclude");
 
-	const filteredHints = possibleHints.filter(
-		(hint) =>
-			!keysToExclude.has(hint[0]!) &&
-			!hintsToExclude
+	const filteredLabels = possibleLabels.filter(
+		(label) =>
+			!keysToExclude.has(label[0]!) &&
+			!labelsToExclude
 				.toLowerCase()
 				.split(/[, ]/)
 				.filter(Boolean)
 				.map((string) => string.trim())
-				.includes(hint)
+				.includes(label)
 	);
 
 	return {
-		free: filteredHints,
+		free: filteredLabels,
 		assigned: new Map(),
 	};
 }
 
-async function resetStack(stack: HintStack, tabId: number) {
+async function resetStack(stack: LabelStack, tabId: number) {
 	const emptyStack = await getEmptyStack(tabId);
 	stack.free = emptyStack.free;
 	stack.assigned = emptyStack.assigned;
 }
 
 // These two functions should only be used by the withStack function
-async function _getStack(tabId: number): Promise<HintStack | undefined> {
-	const stacks = await retrieve("hintStacks");
+async function _getStack(tabId: number): Promise<LabelStack | undefined> {
+	const stacks = await retrieve("labelStacks");
 	return stacks.has(tabId) ? stacks.get(tabId) : undefined;
 }
 
-async function _saveStack(tabId: number, stack: HintStack) {
-	const stacks = await retrieve("hintStacks");
+async function _saveStack(tabId: number, stack: LabelStack) {
+	const stacks = await retrieve("labelStacks");
 	stacks.set(tabId, stack);
-	await store("hintStacks", stacks);
+	await store("labelStacks", stacks);
 }
 
 export async function getStack(tabId?: number) {
@@ -77,7 +77,7 @@ export async function getStack(tabId?: number) {
 	const stack = await _getStack(tabId_);
 
 	if (!stack) {
-		throw new HintStackError(`No hint stack found for tab with id ${tabId}`);
+		throw new LabelStackError(`No label stack found for tab with id ${tabId}`);
 	}
 
 	return stack;
@@ -88,7 +88,7 @@ export async function getFrameIdForHint(hint: string, tabId?: number) {
 	const frameId = stack.assigned.get(hint);
 
 	if (frameId === undefined) {
-		throw new HintStackError(`No hint found for tab with id ${tabId}`);
+		throw new LabelStackError(`No hint found for tab with id ${tabId}`);
 	}
 
 	return frameId;
@@ -98,7 +98,7 @@ const mutex = new Mutex();
 
 export async function withStack<T>(
 	tabId: number,
-	callback: (stack: HintStack) => Promise<T>
+	callback: (stack: LabelStack) => Promise<T>
 ): Promise<T> {
 	return mutex.runExclusive(async () => {
 		const stack = (await _getStack(tabId)) ?? (await getEmptyStack(tabId));
@@ -114,7 +114,7 @@ export async function initStack(tabId: number) {
 	});
 }
 
-export async function claimHints(
+export async function claimLabels(
 	tabId: number,
 	frameId: number,
 	amount: number
@@ -124,17 +124,17 @@ export async function claimHints(
 			await resetStack(stack, tabId);
 		}
 
-		const hintsClaimed = stack.free.splice(-amount, amount);
+		const labelsClaimed = stack.free.splice(-amount, amount);
 
-		for (const hint of hintsClaimed) {
-			stack.assigned.set(hint, frameId);
+		for (const label of labelsClaimed) {
+			stack.assigned.set(label, frameId);
 		}
 
-		return hintsClaimed;
+		return labelsClaimed;
 	});
 }
 
-export async function reclaimHintsFromOtherFrames(
+export async function reclaimLabelsFromOtherFrames(
 	tabId: number,
 	frameId: number,
 	amount: number
@@ -152,52 +152,52 @@ export async function reclaimHintsFromOtherFrames(
 			// eslint-disable-next-line no-await-in-loop
 			const reclaimedFromFrame: string[] = await browser.tabs.sendMessage(
 				tabId,
-				{ type: "reclaimHints", amount: amount - reclaimed.length },
+				{ type: "reclaimLabels", amount: amount - reclaimed.length },
 				{ frameId }
 			);
 
 			reclaimed.push(...reclaimedFromFrame);
 
-			// Once we have enough hints we don't need to continue sending messages to
+			// Once we have enough labels we don't need to continue sending messages to
 			// other frames
 			if (reclaimed.length === amount) break;
 		}
 
 		if (reclaimed.length === 0) return [];
 
-		for (const hint of reclaimed) {
-			stack.assigned.set(hint, frameId);
+		for (const label of reclaimed) {
+			stack.assigned.set(label, frameId);
 		}
 
 		return reclaimed;
 	});
 }
 
-// We store hints in use when the content script has been reloaded when the user
+// We store labels in use when the content script has been reloaded when the user
 // navigated back or forward in history
-export async function storeHintsInFrame(
+export async function storeLabelsInFrame(
 	tabId: number,
 	frameId: number,
-	hints: string[]
+	labels: string[]
 ) {
 	await withStack(tabId, async (stack) => {
-		stack.free = stack.free.filter((value) => !hints.includes(value));
+		stack.free = stack.free.filter((value) => !labels.includes(value));
 
-		for (const hint of hints) {
-			stack.assigned.set(hint, frameId);
+		for (const label of labels) {
+			stack.assigned.set(label, frameId);
 		}
 	});
 }
 
-export async function releaseHints(tabId: number, hints: string[]) {
+export async function releaseLabels(tabId: number, labels: string[]) {
 	await withStack(tabId, async (stack) => {
-		// We make sure the hints to release are actually assigned
-		const filteredHints = hints.filter((hint) => stack.assigned.has(hint));
-		stack.free.push(...filteredHints);
+		// We make sure the labels to release are actually assigned
+		const filteredLabels = labels.filter((label) => stack.assigned.has(label));
+		stack.free.push(...filteredLabels);
 		stack.free.sort((a, b) => b.length - a.length || b.localeCompare(a));
 
-		for (const hint of filteredHints) {
-			stack.assigned.delete(hint);
+		for (const label of filteredLabels) {
+			stack.assigned.delete(label);
 		}
 	});
 }

@@ -17,7 +17,7 @@ import {
 const useLocalStorage = new Set<keyof StorageSchema>([
 	"hintsToggleTabs",
 	"tabsByRecency",
-	"hintStacks",
+	"labelStacks",
 	"tabMarkers",
 ]);
 

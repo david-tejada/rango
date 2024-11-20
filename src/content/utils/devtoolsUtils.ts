@@ -1,5 +1,5 @@
-import { getHintsCache } from "../hints/hintsCache";
-import { getHintStackForTab } from "../hints/hintsRequests";
+import { getLabelStackForTab } from "../hints/hintsRequests";
+import { getLabelCache } from "../hints/labelCache";
 import {
 	getAllWrappers,
 	getHintedWrappers,
@@ -40,19 +40,19 @@ export function loadDevtoolsUtils() {
 
 		exportFunction(
 			async () => {
-				const stack = await getHintStackForTab();
+				const stack = await getLabelStackForTab();
 				console.log(stack);
 			},
 			window,
-			{ defineAs: "logHintStack" }
+			{ defineAs: "logLabelStack" }
 		);
 
 		exportFunction(
 			async () => {
-				console.log(getHintsCache());
+				console.log(getLabelCache());
 			},
 			window,
-			{ defineAs: "logHintsCache" }
+			{ defineAs: "logLabelCache" }
 		);
 	}
 }

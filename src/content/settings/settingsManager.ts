@@ -20,7 +20,7 @@ export async function initSettingsManager() {
 		// Most of the time this event fires because we are storing or retrieving
 		// hint stacks, so we can directly ignore it here to gain a bit of
 		// performance.
-		if (Object.keys(changes).includes("hintStacks")) return;
+		if (Object.keys(changes).includes("labelStacks")) return;
 
 		if (hasMatchingKeys(defaultSettings, changes)) {
 			if (document.visibilityState === "visible") {
