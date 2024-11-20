@@ -12,7 +12,6 @@ import {
 } from "../../typings/Target/Target";
 import { activateTab } from "../actions/activateTab";
 import { closeTab } from "../actions/closeTab";
-import { closeTabsInWindow } from "../actions/closeTabsInWindow";
 import { focusOrCreateTabByUrl } from "../actions/focusOrCreateTabByUrl";
 import { focusPreviousTab } from "../actions/focusPreviousTab";
 import {
@@ -44,6 +43,7 @@ import {
 	UnreachableContentScriptError,
 } from "../messaging/backgroundMessageBroker";
 import { refreshTabMarkers } from "../misc/tabMarkers";
+import { closeFilteredTabsInWindow } from "../tabs/closeMatchingTabsInWindow";
 import { createRelatedTabs } from "../tabs/createRelatedTabs";
 import { assertReferenceInCurrentTab } from "../target/references";
 import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
@@ -108,31 +108,45 @@ export function addCommandListeners() {
 	});
 
 	onCommand("closeNextTabsInWindow", async ({ amount }) => {
-		await closeTabsInWindow("next", amount);
+		await closeFilteredTabsInWindow(
+			(tab, currentTab) =>
+				tab.index > currentTab.index && tab.index <= currentTab.index + amount
+		);
 	});
 
 	onCommand("closeOtherTabsInWindow", async () => {
-		await closeTabsInWindow("other");
+		await closeFilteredTabsInWindow(
+			(tab, currentTab) => tab.id !== currentTab.id
+		);
 	});
 
 	onCommand("closePreviousTabsInWindow", async ({ amount }) => {
-		await closeTabsInWindow("previous", amount);
+		await closeFilteredTabsInWindow(
+			(tab, currentTab) =>
+				tab.index >= currentTab.index - amount && tab.index < currentTab.index
+		);
 	});
 
 	onCommand("closeTabsLeftEndInWindow", async ({ amount }) => {
-		await closeTabsInWindow("leftEnd", amount);
+		await closeFilteredTabsInWindow((tab) => tab.index < amount);
 	});
 
 	onCommand("closeTabsRightEndInWindow", async ({ amount }) => {
-		await closeTabsInWindow("rightEnd", amount);
+		await closeFilteredTabsInWindow(
+			(tab, _, totalTabs) => tab.index >= totalTabs - amount
+		);
 	});
 
 	onCommand("closeTabsToTheLeftInWindow", async () => {
-		await closeTabsInWindow("left");
+		await closeFilteredTabsInWindow(
+			(tab, currentTab) => tab.index < currentTab.index
+		);
 	});
 
 	onCommand("closeTabsToTheRightInWindow", async () => {
-		await closeTabsInWindow("right");
+		await closeFilteredTabsInWindow(
+			(tab, currentTab) => tab.index > currentTab.index
+		);
 	});
 
 	onCommand("copyCurrentTabMarkdownUrl", async () => {
