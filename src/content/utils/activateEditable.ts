@@ -1,6 +1,6 @@
 import { sleep } from "../../lib/utils";
-import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { notify } from "../notify/notify";
+import { type ElementWrapper } from "../wrappers/ElementWrapper";
 import { getWrapperForElement } from "../wrappers/wrappers";
 import { getActiveElement, isEditable } from "./domUtils";
 

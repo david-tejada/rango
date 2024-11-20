@@ -1,7 +1,6 @@
 import Color from "color";
 import { debounce } from "lodash";
 import { rgbaToRgb } from "../../lib/rgbaToRgb";
-import { type Hint } from "../../typings/Hint";
 import { getAllSettings, getSetting } from "../settings/settingsManager";
 import { getToggles } from "../settings/toggles";
 import { createsStackingContext } from "../utils/createsStackingContext";
@@ -31,9 +30,9 @@ import {
 } from "./layoutCache";
 import { setStyleProperties } from "./setStyleProperties";
 
-const hintQueue = new Set<HintClass>();
+const hintQueue = new Set<Hint>();
 
-function addToHintQueue(hint: HintClass) {
+function addToHintQueue(hint: Hint) {
 	hintQueue.add(hint);
 	processHintQueue();
 }
@@ -269,10 +268,9 @@ const shadowHostMutationObserver = new MutationObserver((entries) => {
 });
 
 // =============================================================================
-// HINT CLASS
+// HINT
 // =============================================================================
-
-export class HintClass implements Hint {
+export class Hint {
 	shadowHost: HTMLDivElement;
 	isActive: boolean;
 	outer: HTMLDivElement;

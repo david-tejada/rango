@@ -1,5 +1,5 @@
-import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { showTooltip } from "../hints/showTooltip";
+import { type ElementWrapper } from "../wrappers/ElementWrapper";
 
 export async function getAnchorHref(
 	wrappers: ElementWrapper[],

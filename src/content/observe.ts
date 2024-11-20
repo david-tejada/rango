@@ -4,7 +4,7 @@ import {
 	addWrappersFrom,
 	disconnectObservers,
 	mutationObserver,
-} from "./wrappers/ElementWrapperClass";
+} from "./wrappers/ElementWrapper";
 import {
 	clearWrappersAll,
 	hideHintsAll,

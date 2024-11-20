@@ -1,6 +1,6 @@
-import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { getToggles } from "../settings/toggles";
 import { deepGetElements } from "../utils/deepGetElements";
+import { type ElementWrapper } from "./ElementWrapper";
 
 const wrappersAll = new Map<Element, ElementWrapper>();
 const wrappersHinted = new Map<string, ElementWrapper>();

@@ -1,11 +1,13 @@
 import { getCssSelector } from "css-selector-generator";
 import { store } from "../../common/storage";
 import { getHostPattern } from "../../common/utils";
-import type { ElementWrapper } from "../../typings/ElementWrapper";
 import { showTooltip } from "../hints/showTooltip";
 import { getSetting } from "../settings/settingsManager";
 import { getActiveElement } from "../utils/domUtils";
-import { getOrCreateWrapper } from "../wrappers/ElementWrapperClass";
+import {
+	type ElementWrapper,
+	getOrCreateWrapper,
+} from "../wrappers/ElementWrapper";
 import { getWrapperForElement } from "../wrappers/wrappers";
 
 export async function saveReference(wrapper: ElementWrapper, name: string) {

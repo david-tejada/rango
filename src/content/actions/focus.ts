@@ -1,8 +1,10 @@
-import { type ElementWrapper } from "../../typings/ElementWrapper";
 import { notify } from "../notify/notify";
 import { dispatchKeyDown, dispatchKeyUp } from "../utils/dispatchEvents";
 import { editableElementSelector, getFocusable } from "../utils/domUtils";
-import { getOrCreateWrapper } from "../wrappers/ElementWrapperClass";
+import {
+	type ElementWrapper,
+	getOrCreateWrapper,
+} from "../wrappers/ElementWrapper";
 
 /**
  * Focus an element. Returns a boolean indicating if a focus was performed.

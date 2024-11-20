@@ -1,4 +1,3 @@
-import { type ElementWrapper } from "../../typings/ElementWrapper";
 import {
 	pickSelectorAlternative,
 	resetStagedSelectors,
@@ -12,6 +11,7 @@ import {
 	updateCustomSelectors,
 } from "../hints/selectors";
 import { sendMessage } from "../messaging/contentMessageBroker";
+import { type ElementWrapper } from "../wrappers/ElementWrapper";
 import { refresh } from "../wrappers/refresh";
 
 let showExtraHints = false;

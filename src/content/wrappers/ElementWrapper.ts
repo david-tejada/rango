@@ -1,8 +1,6 @@
 import { debounce } from "lodash";
-import { type ElementWrapper } from "../../typings/ElementWrapper";
-import { type Hint } from "../../typings/Hint";
 import { getExtraHintsToggle } from "../actions/customHints";
-import { HintClass } from "../hints/HintClass";
+import { Hint } from "../hints/Hint";
 import { cacheLabels } from "../hints/labelCache";
 import { cacheLayout, clearLayoutCache } from "../hints/layoutCache";
 import { matchesCustomExclude, matchesCustomInclude } from "../hints/selectors";
@@ -42,12 +40,12 @@ import {
  * @param active Set to false to avoid displaying a hint for the created
  * ElementWrapper. Useful for when we only need a temporary wrapper to use with
  * references while the hints are off.
- * @returns  The ElementWrapper for the element
+ * @returns The ElementWrapper for the element
  */
 export function getOrCreateWrapper(element: Element, active = true) {
 	let wrapper = getWrapperForElement(element);
 	if (!wrapper) {
-		wrapper = new ElementWrapperClass(element, active);
+		wrapper = new ElementWrapper(element, active);
 		if (active) {
 			addWrapper(wrapper);
 		}
@@ -57,7 +55,7 @@ export function getOrCreateWrapper(element: Element, active = true) {
 }
 
 function addWrapperOrShadow(element: Element) {
-	addWrapper(new ElementWrapperClass(element));
+	addWrapper(new ElementWrapper(element));
 	if (element.shadowRoot) {
 		mutationObserver.observe(element.shadowRoot, mutationObserverConfig);
 	} else if (element.tagName.includes("-")) {
@@ -69,7 +67,7 @@ function addWrapperOrShadow(element: Element) {
 				const shadowElements = deepGetElements(element);
 				mutationObserver.observe(element.shadowRoot, mutationObserverConfig);
 				for (const element of shadowElements) {
-					addWrapper(new ElementWrapperClass(element));
+					addWrapper(new ElementWrapper(element));
 				}
 			}
 		}, 1000);
@@ -327,7 +325,7 @@ document.addEventListener("focusout", debouncedHandleFocusChange);
 /**
  * A wrapper for a DOM Element.
  */
-class ElementWrapperClass implements ElementWrapper {
+export class ElementWrapper {
 	isIntersecting?: boolean;
 	observingIntersection?: boolean;
 	isIntersectingViewport?: boolean;
@@ -423,7 +421,7 @@ class ElementWrapperClass implements ElementWrapper {
 		this.isIntersecting = isIntersecting;
 
 		if (this.isIntersecting && this.shouldBeHinted) {
-			this.hint ??= new HintClass(this.element);
+			this.hint ??= new Hint(this.element);
 			this.hint.claim();
 		} else if (this.hint?.label) {
 			this.hint.release();
