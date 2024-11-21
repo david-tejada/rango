@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
 import { retrieve, store } from "../../common/storage";
-import { getTargetMarkType } from "../../common/target/targetConversion";
 import { isTargetError } from "../../common/target/TargetError";
+import { getTargetMarkType } from "../../common/target/targetConversion";
 import { getHostPattern } from "../../common/utils";
 import { promiseWrap } from "../../lib/promiseWrap";
 import { type TalonAction } from "../../typings/TalonAction";
@@ -34,13 +34,13 @@ import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
 import { toggleTabMarkers } from "../actions/toggleTabMarkers";
 import { onCommand } from "../commands/commandBroker";
 import { getAllFrames } from "../frames/frames";
-import { getFrameIdForHint } from "../hints/labelAllocator";
+import { getFrameIdForHint } from "../hints/labelStack";
 import { refreshHints } from "../hints/refreshHints";
 import {
+	UnreachableContentScriptError,
 	sendMessage,
 	sendMessageToAllFrames,
 	sendMessageToTargetFrames,
-	UnreachableContentScriptError,
 } from "../messaging/backgroundMessageBroker";
 import { refreshTabMarkers } from "../misc/tabMarkers";
 import { closeFilteredTabsInWindow } from "../tabs/closeMatchingTabsInWindow";
@@ -508,7 +508,8 @@ export function addCommandListeners() {
 			throw new Error("Expected element hint");
 		}
 
-		const frameId = await getFrameIdForHint(target.mark.value);
+		const tabId = await getCurrentTabId();
+		const frameId = await getFrameIdForHint(target.mark.value, tabId);
 		lastFrameId = frameId;
 
 		return { frameId, reference: target };

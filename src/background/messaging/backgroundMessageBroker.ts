@@ -25,7 +25,7 @@ import {
 } from "../../typings/Target/Target";
 import { assertDefined } from "../../typings/TypingUtils";
 import { getAllFrames } from "../frames/frames";
-import { getStack } from "../hints/labelAllocator";
+import { getRequiredStack } from "../hints/labelStack";
 import { assertReferencesInCurrentTab } from "../target/references";
 import { getCurrentTabId } from "../utils/getCurrentTab";
 
@@ -281,7 +281,7 @@ async function splitElementHintTargetByFrame(
 	target: Target<ElementHintMark>
 ) {
 	const hints = getTargetValues(target);
-	const stack = await getStack(tabId);
+	const stack = await getRequiredStack(tabId);
 	const hintsByFrame = new Map<number, string[]>();
 
 	for (const hint of hints) {

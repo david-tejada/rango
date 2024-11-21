@@ -2,13 +2,11 @@ import browser from "webextension-polyfill";
 import { getTargetFromLabels } from "../../common/target/targetConversion";
 import {
 	claimLabels,
-	getStack,
-	initStack,
 	reclaimLabelsFromOtherFrames,
 	releaseLabels,
 	storeLabelsInFrame,
-	withStack,
 } from "../hints/labelAllocator";
+import { getRequiredStack, initStack } from "../hints/labelStack";
 import { getTabMarker } from "../misc/tabMarkers";
 import { createRelatedTabs } from "../tabs/createRelatedTabs";
 import { getCurrentTabId } from "../utils/getCurrentTab";
@@ -52,11 +50,11 @@ export function addMessageListeners() {
 	});
 
 	onMessage("getLabelStackForTab", async (_, { tabId }) => {
-		return withStack(tabId, async (stack) => stack);
+		return getRequiredStack(tabId);
 	});
 
 	onMessage("getLabelsInTab", async (_, { tabId }) => {
-		const stack = await getStack(tabId);
+		const stack = await getRequiredStack(tabId);
 		return [...stack.assigned.keys()];
 	});
 
