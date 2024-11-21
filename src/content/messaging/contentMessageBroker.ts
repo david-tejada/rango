@@ -51,5 +51,13 @@ export async function sendMessage<K extends keyof BackgroundBoundMessageMap>(
 	...args: MessageData<K> extends undefined ? [] : [data: MessageData<K>]
 ): Promise<MessageReturn<K>> {
 	const data = args[0];
-	return browser.runtime.sendMessage({ messageId, data });
+	try {
+		return await browser.runtime.sendMessage({ messageId, data });
+	} catch (error: unknown) {
+		if (error instanceof Error) {
+			console.error("Background Script Error:", error.message);
+		}
+
+		throw error;
+	}
 }

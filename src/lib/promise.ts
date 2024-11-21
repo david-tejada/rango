@@ -1,13 +1,23 @@
-import { isPromiseFulfilledResult } from "../typings/TypingUtils";
+import {
+	isPromiseFulfilledResult,
+	isPromiseRejectedResult,
+} from "../typings/TypingUtils";
 
 /**
- * Return an array of the fulfilled values of an array of promises.
+ * Returns the results of `Promise.allSettled` grouped into fulfilled and rejected
+ * categories, with easy access to fulfilled values.
  */
-export async function promiseAllSettledFulfilledValues<T>(
-	promises: Array<Promise<T>>
-) {
-	const results = await Promise.allSettled(promises);
-	return results
+export async function promiseAllSettledGrouped<T>(promises: Array<Promise<T>>) {
+	const allResults = await Promise.allSettled(promises);
+	const results = allResults
 		.filter((result) => isPromiseFulfilledResult(result))
 		.map((result) => result.value);
+	const rejected = allResults.filter((result) =>
+		isPromiseRejectedResult(result)
+	);
+
+	return {
+		results,
+		rejected,
+	};
 }
