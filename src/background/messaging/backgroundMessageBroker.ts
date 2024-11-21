@@ -9,7 +9,7 @@ import {
 	getTargetMarkType,
 	getTargetValues,
 } from "../../common/target/targetConversion";
-import { promiseAllSettledFulfilledValues } from "../../lib/promise";
+import { promiseAllSettledGrouped } from "../../lib/promise";
 import {
 	type BackgroundBoundMessageMap,
 	type ContentBoundMessageMap,
@@ -125,11 +125,19 @@ export async function sendMessage<K extends MessageWithoutTarget>(
 	const tabId = destination?.tabId ?? (await getCurrentTabId());
 	await pingContentScript(tabId);
 
-	return browser.tabs.sendMessage(
-		tabId,
-		{ messageId, data },
-		{ frameId: destination?.frameId ?? 0 }
-	);
+	try {
+		return await browser.tabs.sendMessage(
+			tabId,
+			{ messageId, data },
+			{ frameId: destination?.frameId ?? 0 }
+		);
+	} catch (error: unknown) {
+		if (error instanceof Error) {
+			console.error("Content Script Error:", error.message);
+		}
+
+		throw error;
+	}
 }
 
 /**
@@ -157,21 +165,33 @@ export async function sendMessageToAllFrames<K extends MessageWithoutTarget>(
 				{ messageId, data },
 				{ frameId }
 			) as Promise<MessageReturn<K>>
-		).then((value) => ({
+		).then((result) => ({
 			frameId,
-			value,
+			result,
 		}));
 	});
 
-	// Even if there is a content script running in the main frame, sending
-	// messages to other frames might be unsuccessful. For example, the URL of a
-	// frame might be `about:blank`, where content scripts are not allowed. For
-	// this reason we use `allSettled` and then filter fulfill results.
-	const results = await promiseAllSettledFulfilledValues(sending);
+	const { results: resultsWithFrameId, rejected } =
+		await promiseAllSettledGrouped(sending);
+
+	for (const { reason } of rejected) {
+		// Even if there is a content script running in the main frame, sending
+		// messages to child frames might be unsuccessful. For example, the URL of a
+		// frame might be `about:blank`, where content scripts are not allowed. We
+		// are not worried about those errors, so we ignore them.
+		if (
+			reason.message !==
+			"Could not establish connection. Receiving end does not exist."
+		) {
+			// In most cases we don't care about errors when sending messages to all
+			// frames, but if we don't log them here they get silently swallowed.
+			console.error("Content Script Error:", reason.message);
+		}
+	}
 
 	return {
-		results,
-		values: results.map((result) => result.value),
+		results: resultsWithFrameId.map((result) => result.result),
+		resultsWithFrameId,
 	};
 }
 
@@ -212,15 +232,18 @@ export async function sendMessageToTargetFrames<K extends MessageWithTarget>(
 				{ messageId, data: frameData },
 				{ frameId }
 			) as Promise<MessageReturn<K>>
-		).then((value) => ({
+		).then((result) => ({
 			frameId,
-			value,
+			result,
 		}));
 	});
 
-	const results = await Promise.all(sending);
+	const resultsWithFrameId = await Promise.all(sending);
 
-	return { results, values: results.map((result) => result.value) };
+	return {
+		results: resultsWithFrameId.map((result) => result.result),
+		resultsWithFrameId,
+	};
 }
 
 async function splitTargetByFrame(
@@ -300,7 +323,7 @@ async function splitElementReferenceTargetByFrame(
 		);
 	});
 
-	const results = await promiseAllSettledFulfilledValues(sending);
+	const { results } = await promiseAllSettledGrouped(sending);
 
 	if (results.length === 0) {
 		throw new Error("Unable to find elements for selected references.");
@@ -325,27 +348,28 @@ async function splitFuzzyTextTargetByFrame(
 	const prioritizeViewport = getPrioritizeViewportValue(target);
 	const frames = await getAllFrames(tabId);
 
-	const sending = texts.map(async (text) => {
-		return promiseAllSettledFulfilledValues(
-			frames.map(async ({ frameId }) => {
-				return sendMessage(
-					"matchElementByText",
-					{
-						text,
-						prioritizeViewport,
-					},
-					{ frameId }
-				).then((score) => ({
-					frameId,
+	const textsPromise = texts.map(async (text) => {
+		const framesPromise = frames.map(async ({ frameId }) => {
+			return sendMessage(
+				"matchElementByText",
+				{
 					text,
-					score,
-				}));
-			})
-		);
+					prioritizeViewport,
+				},
+				{ frameId }
+			).then((score) => ({
+				frameId,
+				text,
+				score,
+			}));
+		});
+
+		const { results } = await promiseAllSettledGrouped(framesPromise);
+		return results;
 	});
 
-	const promiseResults = await promiseAllSettledFulfilledValues(sending);
-	const allResults = promiseResults.flat();
+	const { results } = await promiseAllSettledGrouped(textsPromise);
+	const allResults = results.flat();
 
 	type ResultType = { frameId: number; text: string; score: number };
 

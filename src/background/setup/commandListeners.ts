@@ -269,15 +269,15 @@ export function addCommandListeners() {
 	// ELEMENTS
 	// ===========================================================================
 	function handleClickResults(
-		values: Awaited<
+		results: Awaited<
 			ReturnType<typeof sendMessageToTargetFrames<"clickElement">>
-		>["values"]
+		>["results"]
 	) {
-		const focusPage = values.find((value) => value?.focusPage);
+		const focusPage = results.find((value) => value?.focusPage);
 
 		// We can't open multiple selects and I don't think it's safe to press keys
 		// if there have been multiple things clicked.
-		const isSelect = values.length === 1 && values[0]?.isSelect;
+		const isSelect = results.length === 1 && results[0]?.isSelect;
 
 		const actions: TalonAction[] = [];
 		if (focusPage) actions.push({ name: "focusPage" });
@@ -291,11 +291,11 @@ export function addCommandListeners() {
 	}
 
 	onCommand("clickElement", async ({ target }) => {
-		const { values } = await sendMessageToTargetFrames("clickElement", {
+		const { results } = await sendMessageToTargetFrames("clickElement", {
 			target,
 		});
 
-		return handleClickResults(values);
+		return handleClickResults(results);
 	});
 
 	onCommand("directClickElement", async ({ target }) => {
@@ -319,20 +319,20 @@ export function addCommandListeners() {
 			const directClickWhenEditing = await retrieve("directClickWhenEditing");
 
 			if (!directClickWhenEditing) {
-				const { values } = await sendMessageToAllFrames(
+				const { results } = await sendMessageToAllFrames(
 					"hasActiveEditableElement"
 				);
 
-				if (values.includes(true)) return { name: "typeTargetCharacters" };
+				if (results.includes(true)) return { name: "typeTargetCharacters" };
 			}
 		}
 
 		try {
-			const { values } = await sendMessageToTargetFrames("clickElement", {
+			const { results } = await sendMessageToTargetFrames("clickElement", {
 				target,
 			});
 
-			return handleClickResults(values);
+			return handleClickResults(results);
 		} catch (error: unknown) {
 			if (
 				target.type === "primitive" &&
@@ -346,41 +346,41 @@ export function addCommandListeners() {
 	});
 
 	onCommand("copyElementTextContent", async ({ target }) => {
-		const { values } = await sendMessageToTargetFrames(
+		const { results } = await sendMessageToTargetFrames(
 			"getElementTextContent",
 			{ target }
 		);
-		if (values.flat().length === 0) return;
+		if (results.flat().length === 0) return;
 
 		return {
 			name: "copyToClipboard",
-			textToCopy: values.flat().join("\n"),
+			textToCopy: results.flat().join("\n"),
 		};
 	});
 
 	onCommand("copyLink", async ({ target }) => {
-		const { values } = await sendMessageToTargetFrames("getAnchorHref", {
+		const { results } = await sendMessageToTargetFrames("getAnchorHref", {
 			target,
 			showCopyTooltip: true,
 		});
-		if (values.flat().length === 0) return;
+		if (results.flat().length === 0) return;
 
 		return {
 			name: "copyToClipboard",
-			textToCopy: values.flat().join("\n"),
+			textToCopy: results.flat().join("\n"),
 		};
 	});
 
 	onCommand("copyMarkdownLink", async ({ target }) => {
-		const { values } = await sendMessageToTargetFrames(
+		const { results } = await sendMessageToTargetFrames(
 			"getElementMarkdownLink",
 			{ target }
 		);
-		if (values.flat().length === 0) return;
+		if (results.flat().length === 0) return;
 
 		return {
 			name: "copyToClipboard",
-			textToCopy: values.flat().join("\n"),
+			textToCopy: results.flat().join("\n"),
 		};
 	});
 
@@ -395,11 +395,11 @@ export function addCommandListeners() {
 	onCommand("focusElement", async ({ target }) => {
 		assertPrimitiveTarget(target);
 
-		const { values } = await sendMessageToTargetFrames("focusElement", {
+		const { results } = await sendMessageToTargetFrames("focusElement", {
 			target,
 		});
 
-		return values[0]?.focusPage ? { name: "focusPage" } : undefined;
+		return results[0]?.focusPage ? { name: "focusPage" } : undefined;
 	});
 
 	onCommand("focusFirstInput", async () => {
@@ -423,23 +423,23 @@ export function addCommandListeners() {
 	});
 
 	onCommand("openInBackgroundTab", async ({ target }) => {
-		const { values } = await sendMessageToTargetFrames("getAnchorHref", {
+		const { results } = await sendMessageToTargetFrames("getAnchorHref", {
 			target,
 		});
-		if (values.flat().length === 0) {
+		if (results.flat().length === 0) {
 			throw new Error("No URL to open in new tab");
 		}
 
 		await createRelatedTabs(
-			values.flat().map((url) => ({ url, active: false }))
+			results.flat().map((url) => ({ url, active: false }))
 		);
 	});
 
 	onCommand("openInNewTab", async ({ target }) => {
-		const { values } = await sendMessageToTargetFrames("getAnchorHref", {
+		const { results } = await sendMessageToTargetFrames("getAnchorHref", {
 			target,
 		});
-		const [first, ...rest] = values.flat();
+		const [first, ...rest] = results.flat();
 		if (!first) throw new Error("No URL to open in new tab");
 
 		await createRelatedTabs([{ url: first, active: true }]);
@@ -477,12 +477,12 @@ export function addCommandListeners() {
 		const documentHasFocus = await tryToFocusDocument();
 		if (!documentHasFocus) return { name: "focusPageAndResend" };
 
-		const { values } = await sendMessageToTargetFrames(
+		const { results } = await sendMessageToTargetFrames(
 			"tryToFocusElementAndCheckIsEditable",
 			{ target }
 		);
 
-		return { name: "responseValue", value: values[0]! };
+		return { name: "responseValue", value: results[0]! };
 	});
 
 	onCommand("showLink", async ({ target }) => {
@@ -792,11 +792,11 @@ export function addCommandListeners() {
 	});
 
 	onCommand("saveReferenceForActiveElement", async ({ referenceName }) => {
-		const { results } = await sendMessageToAllFrames(
+		const { resultsWithFrameId } = await sendMessageToAllFrames(
 			"hasActiveEditableElement"
 		);
 
-		const frameId = results.find(({ value }) => value)?.frameId;
+		const frameId = resultsWithFrameId.find(({ result }) => result)?.frameId;
 		if (frameId === undefined) {
 			throw new Error("No active editable element found");
 		}
