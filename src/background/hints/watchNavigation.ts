@@ -3,7 +3,7 @@ import {
 	UnreachableContentScriptError,
 	sendMessage,
 } from "../messaging/backgroundMessageBroker";
-import { initStack } from "./labelAllocator";
+import { initStack } from "./labelStack";
 import { preloadTabCommitted, preloadTabCompleted } from "./preloadTabs";
 
 async function preloadTabOnCompletedHandler() {
