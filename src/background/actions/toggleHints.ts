@@ -1,6 +1,5 @@
 import { retrieve, store } from "../../common/storage";
 import { type ToggleLevel } from "../../typings/Action";
-import { assertDefined } from "../../typings/TypingUtils";
 import { sendMessage } from "../messaging/backgroundMessageBroker";
 import { getCurrentTab } from "../utils/getCurrentTab";
 
@@ -13,8 +12,7 @@ export async function toggleHintsGlobal() {
 
 export async function updateHintsToggle(level: ToggleLevel, enable?: boolean) {
 	const currentTab = await getCurrentTab();
-	assertDefined(currentTab.url);
-	const { host, origin, pathname } = new URL(currentTab.url);
+	const { host, origin, pathname } = new URL(currentTab.url!);
 
 	switch (level) {
 		case "everywhere": {
@@ -45,11 +43,10 @@ export async function updateHintsToggle(level: ToggleLevel, enable?: boolean) {
 
 		case "tab": {
 			const hintsToggleTabs = await retrieve("hintsToggleTabs");
-			assertDefined(currentTab.id);
 			if (enable === undefined) {
-				hintsToggleTabs.delete(currentTab.id);
+				hintsToggleTabs.delete(currentTab.id!);
 			} else {
-				hintsToggleTabs.set(currentTab.id, enable);
+				hintsToggleTabs.set(currentTab.id!, enable);
 			}
 
 			await store("hintsToggleTabs", hintsToggleTabs);
