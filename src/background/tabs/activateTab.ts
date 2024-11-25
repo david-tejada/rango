@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { type TabMark, type Target } from "../../typings/Target/Target";
-import { getTabIdsFromTarget } from "./target";
+import { getTabIdsFromTarget } from "../target/tabMarkers";
 
 /**
  * Activate the tab with the given tab hint. If more than one tab hint is

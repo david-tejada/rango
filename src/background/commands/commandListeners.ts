@@ -43,8 +43,8 @@ import {
 	unmuteNextMutedTab,
 } from "../tabs/muteTabs";
 import { refreshTabMarkers } from "../tabs/tabMarkers";
-import { getTabIdsFromTarget } from "../tabs/target";
 import { assertReferenceInCurrentTab } from "../target/references";
+import { getTabIdsFromTarget } from "../target/tabMarkers";
 import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
 import { notify, notifyTogglesStatus } from "../utils/notify";
 import { tryToFocusDocument } from "../utils/tryToFocusDocument";

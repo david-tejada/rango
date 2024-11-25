@@ -4,7 +4,7 @@ import {
 	type TabMark,
 	type Target,
 } from "../../typings/Target/Target";
-import { getTabIdForMarker } from "./tabMarkers";
+import { getTabIdForMarker } from "../tabs/tabMarkers";
 
 export async function getTabIdsFromTarget(
 	target: Target<TabMark>
