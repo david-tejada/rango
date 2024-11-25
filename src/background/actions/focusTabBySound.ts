@@ -4,10 +4,16 @@ import { getNextTabByIndex } from "../utils/tabUtils";
 
 let tabLastSounded: number | undefined;
 
+/**
+ * Sets the tab that last started to play sound.
+ */
 export function setTabLastSounded(tabId: number) {
 	tabLastSounded = tabId;
 }
 
+/**
+ * Focuses the tab that last started to play sound.
+ */
 export async function focusTabLastSounded() {
 	if (!tabLastSounded)
 		return notify("No tab has emitted sound since startup.", {
@@ -19,6 +25,9 @@ export async function focusTabLastSounded() {
 	await browser.tabs.update(tabLastSounded, { active: true });
 }
 
+/**
+ * Focuses the next tab that is audible and not muted.
+ */
 export async function focusNextTabWithSound() {
 	const tabsWithSound = await browser.tabs.query({
 		audible: true,
@@ -32,6 +41,9 @@ export async function focusNextTabWithSound() {
 	await browser.tabs.update(nextTabWithSound.id, { active: true });
 }
 
+/**
+ * Focuses the next tab that is muted.
+ */
 export async function focusNextMutedTab() {
 	const mutedTabs = await browser.tabs.query({ muted: true });
 	const nextMutedTab = await getNextTabByIndex(mutedTabs);
@@ -41,6 +53,9 @@ export async function focusNextMutedTab() {
 	await browser.tabs.update(nextMutedTab.id, { active: true });
 }
 
+/**
+ * Focuses the next tab that is audible. This tab might be muted.
+ */
 export async function focusNextAudibleTab() {
 	const audibleTabs = await browser.tabs.query({ audible: true });
 	const nextAudibleTab = await getNextTabByIndex(audibleTabs);
