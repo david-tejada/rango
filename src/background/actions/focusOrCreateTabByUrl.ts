@@ -2,12 +2,26 @@ import browser from "webextension-polyfill";
 import { getCurrentTab } from "../utils/getCurrentTab";
 
 /**
- * Given an array of Tabs it returns the first one in the current window or
- * just the first one if none belongs to the current window.
+ * Focuses or creates a tab with the given URL.
+ *
+ * First attempts to find an existing tab in the current window that starts with the URL.
+ * If found, focuses that tab. If not found in current window, looks in other windows.
+ * If no matching tab exists in any window, creates a new tab with the URL.
+ *
+ * @param url - The URL to match against or create a tab with
  */
-async function getTabPrioritizeCurrentWindow(tabs: browser.Tabs.Tab[]) {
-	const currentTab = await getCurrentTab();
-	return tabs.find((tab) => tab.windowId === currentTab.windowId) ?? tabs[0];
+export async function focusOrCreateTabByUrl(url: string) {
+	const tabs = await tabsQueryWithFallback(url);
+	const tabToFocus = await getTabPrioritizeCurrentWindow(tabs);
+
+	if (tabToFocus?.id) {
+		await browser.windows.update(tabToFocus.windowId!, { focused: true });
+		await browser.tabs.update(tabToFocus.id, { active: true });
+	} else {
+		return browser.tabs.create({ url, active: true });
+	}
+
+	return undefined;
 }
 
 /**
@@ -25,16 +39,11 @@ async function tabsQueryWithFallback(url: string) {
 	return allTabs.filter((tab) => tab.url?.startsWith(url));
 }
 
-export async function focusOrCreateTabByUrl(url: string) {
-	const tabs = await tabsQueryWithFallback(url);
-	const target = await getTabPrioritizeCurrentWindow(tabs);
-
-	if (target?.id) {
-		await browser.windows.update(target.windowId!, { focused: true });
-		await browser.tabs.update(target.id, { active: true });
-	} else {
-		return browser.tabs.create({ url, active: true });
-	}
-
-	return undefined;
+/**
+ * Given an array of Tabs it returns the first one in the current window.
+ * If none belongs to the current window, it returns the first one.
+ */
+async function getTabPrioritizeCurrentWindow(tabs: browser.Tabs.Tab[]) {
+	const currentTab = await getCurrentTab();
+	return tabs.find((tab) => tab.windowId === currentTab.windowId) ?? tabs[0];
 }
