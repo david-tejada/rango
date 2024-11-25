@@ -1,6 +1,7 @@
 import browser from "webextension-polyfill";
 import { retrieve, store } from "../common/storage";
 import { urls } from "../common/urls";
+import { getHostPattern } from "../common/utils";
 import { toggleKeyboardClicking } from "./actions/toggleKeyboardClicking";
 import { addCommandListeners } from "./commands/commandListeners";
 import { handleIncomingCommand } from "./commands/handleIncomingCommand";
@@ -11,10 +12,6 @@ import {
 	sendMessage,
 } from "./messaging/backgroundMessageBroker";
 import { addMessageListeners } from "./messaging/messageListeners";
-import {
-	contextMenusOnClicked,
-	createContextMenus,
-} from "./misc/createContextMenus";
 import { initTabMarkers } from "./misc/tabMarkers";
 import { setTabLastSounded } from "./tabs/focusTabBySound";
 import { trackRecentTabs } from "./tabs/trackRecentTabs";
@@ -220,5 +217,79 @@ async function resetBookmarkTitle(
 			// content script can't run. In that case the title wouldn't have been
 			// changed.
 		}
+	}
+}
+
+// =============================================================================
+// CONTEXT MENUS
+// =============================================================================
+async function createContextMenus() {
+	const keyboardClicking = await retrieve("keyboardClicking");
+
+	const contexts: browser.Menus.ContextType[] = browser.browserAction
+		? ["browser_action"]
+		: ["action"];
+
+	browser.contextMenus.create({
+		id: "keyboard-clicking",
+		title: "Keyboard Clicking",
+		type: "checkbox",
+		contexts,
+		checked: keyboardClicking,
+	});
+
+	browser.contextMenus.create({
+		id: "settings",
+		title: "Settings",
+		type: "normal",
+		contexts,
+	});
+
+	browser.contextMenus.create({
+		id: "help",
+		title: "Help",
+		type: "normal",
+		contexts,
+	});
+
+	browser.contextMenus.create({
+		id: "add-keys-to-exclude",
+		title: "Add Keys to Exclude",
+		type: "normal",
+		contexts,
+	});
+}
+
+async function contextMenusOnClicked({
+	menuItemId,
+}: browser.Menus.OnClickData) {
+	if (menuItemId === "keyboard-clicking") {
+		await toggleKeyboardClicking();
+	}
+
+	if (menuItemId === "settings") {
+		await browser.runtime.openOptionsPage();
+	}
+
+	if (menuItemId === "help") {
+		await browser.tabs.create({
+			url: "https://rango.click",
+		});
+	}
+
+	if (menuItemId === "add-keys-to-exclude") {
+		const keysToExclude = await retrieve("keysToExclude");
+		const tab = await getCurrentTab();
+		const hostPattern = tab.url && getHostPattern(tab.url);
+		const keysToExcludeForHost = keysToExclude.find(
+			([pattern]) => pattern === hostPattern
+		);
+
+		if (!keysToExcludeForHost && hostPattern) {
+			keysToExclude.push([hostPattern, ""]);
+			await store("keysToExclude", keysToExclude);
+		}
+
+		await browser.runtime.openOptionsPage();
 	}
 }
