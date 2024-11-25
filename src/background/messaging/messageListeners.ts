@@ -5,8 +5,8 @@ import {
 	reclaimLabelsFromOtherFrames,
 	releaseLabels,
 	storeLabelsInFrame,
-} from "../hints/labelAllocator";
-import { getRequiredStack, initStack } from "../hints/labelStack";
+} from "../hints/labels/labelAllocator";
+import { getRequiredStack, initStack } from "../hints/labels/labelStack";
 import { getTabMarker } from "../misc/tabMarkers";
 import { createRelatedTabs } from "../tabs/createRelatedTabs";
 import { getCurrentTabId } from "../utils/getCurrentTab";

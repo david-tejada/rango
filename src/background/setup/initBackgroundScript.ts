@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
 import { retrieve, store } from "../../common/storage";
 import { urls } from "../../common/urls";
-import { watchNavigation } from "../hints/watchNavigation";
+import { watchNavigation } from "../hints/labels/watchNavigation";
 import { sendMessage } from "../messaging/backgroundMessageBroker";
 import { addMessageListeners } from "../messaging/messageListeners";
 import { createContextMenus } from "../misc/createContextMenus";

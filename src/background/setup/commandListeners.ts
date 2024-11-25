@@ -14,7 +14,7 @@ import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
 import { toggleTabMarkers } from "../actions/toggleTabMarkers";
 import { onCommand } from "../commands/commandBroker";
 import { getAllFrames } from "../frames/frames";
-import { getFrameIdForHint } from "../hints/labelStack";
+import { getFrameIdForHint } from "../hints/labels/labelStack";
 import { refreshHints } from "../hints/refreshHints";
 import { toggleHintsGlobal, updateHintsToggle } from "../hints/toggleHints";
 import {

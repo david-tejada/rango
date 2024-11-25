@@ -8,8 +8,8 @@
 // or the real tab depending on how fast the user hits enter. For this reason we
 // can't trust the tabId information in the navigation event and we always need
 // to retrieve the current tab id.
-import { getAllFrames } from "../frames/frames";
-import { getCurrentTabId } from "../utils/getCurrentTab";
+import { getAllFrames } from "../../frames/frames";
+import { getCurrentTabId } from "../../utils/getCurrentTab";
 
 const preloadTabs = new Map<number, { url: string; completed: boolean }>();
 

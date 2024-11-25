@@ -1,9 +1,9 @@
 import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
-import { getKeysToExclude } from "../../common/getKeysToExclude";
-import { letterLabels, numberLabels } from "../../common/labels";
-import { retrieve, store } from "../../common/storage";
-import { type LabelStack } from "../../typings/StorageSchema";
+import { getKeysToExclude } from "../../../common/getKeysToExclude";
+import { letterLabels, numberLabels } from "../../../common/labels";
+import { retrieve, store } from "../../../common/storage";
+import { type LabelStack } from "../../../typings/StorageSchema";
 
 const mutex = new Mutex();
 

@@ -25,7 +25,7 @@ import {
 } from "../../typings/Target/Target";
 import { assertDefined } from "../../typings/TypingUtils";
 import { getAllFrames } from "../frames/frames";
-import { getRequiredStack } from "../hints/labelStack";
+import { getRequiredStack } from "../hints/labels/labelStack";
 import { assertReferencesInCurrentTab } from "../target/references";
 import { getCurrentTabId } from "../utils/getCurrentTab";
 

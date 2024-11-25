@@ -2,7 +2,7 @@ import browser from "webextension-polyfill";
 import {
 	UnreachableContentScriptError,
 	sendMessage,
-} from "../messaging/backgroundMessageBroker";
+} from "../../messaging/backgroundMessageBroker";
 import { initStack } from "./labelStack";
 import { preloadTabCommitted, preloadTabCompleted } from "./preloadTabs";
 
