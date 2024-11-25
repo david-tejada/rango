@@ -10,7 +10,6 @@ import {
 	type ElementMark,
 	type Target,
 } from "../../typings/Target/Target";
-import { getBareTitle } from "../actions/getBareTitle";
 import {
 	muteAllTabsWithSound,
 	muteNextTabWithSound,
@@ -44,6 +43,7 @@ import {
 	focusTabLastSounded,
 } from "../tabs/focusTabBySound";
 import { cycleTabsByText, focusTabByText } from "../tabs/focusTabByText";
+import { getBareTitle } from "../tabs/getBareTitle";
 import { getTabIdsFromTarget } from "../tabs/target";
 import { assertReferenceInCurrentTab } from "../target/references";
 import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
