@@ -1,12 +1,12 @@
 import browser from "webextension-polyfill";
 import { retrieve, store } from "../../common/storage";
 import { urls } from "../../common/urls";
-import { setTabLastSounded } from "../actions/focusTabBySound";
 import { watchNavigation } from "../hints/watchNavigation";
 import { sendMessage } from "../messaging/backgroundMessageBroker";
 import { addMessageListeners } from "../messaging/messageListeners";
 import { createContextMenus } from "../misc/createContextMenus";
 import { initTabMarkers } from "../misc/tabMarkers";
+import { setTabLastSounded } from "../tabs/focusTabBySound";
 import { setBrowserActionIcon } from "../utils/browserAction";
 import { getCurrentTab } from "../utils/getCurrentTab";
 import { isSafari } from "../utils/isSafari";

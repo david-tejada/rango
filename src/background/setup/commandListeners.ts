@@ -10,12 +10,6 @@ import {
 	type ElementMark,
 	type Target,
 } from "../../typings/Target/Target";
-import {
-	focusNextAudibleTab,
-	focusNextMutedTab,
-	focusNextTabWithSound,
-	focusTabLastSounded,
-} from "../actions/focusTabBySound";
 import { cycleTabsByText, focusTabByText } from "../actions/focusTabByText";
 import { getBareTitle } from "../actions/getBareTitle";
 import {
@@ -44,6 +38,12 @@ import { closeFilteredTabsInWindow } from "../tabs/closeMatchingTabsInWindow";
 import { createRelatedTabs } from "../tabs/createRelatedTabs";
 import { focusOrCreateTabByUrl } from "../tabs/focusOrCreateTabByUrl";
 import { focusPreviousTab } from "../tabs/focusPreviousTab";
+import {
+	focusNextAudibleTab,
+	focusNextMutedTab,
+	focusNextTabWithSound,
+	focusTabLastSounded,
+} from "../tabs/focusTabBySound";
 import { getTabIdsFromTarget } from "../tabs/target";
 import { assertReferenceInCurrentTab } from "../target/references";
 import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
