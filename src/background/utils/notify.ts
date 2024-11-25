@@ -26,3 +26,14 @@ export async function notify(text: string, options?: ToastOptions) {
 		});
 	}
 }
+
+/**
+ * Display a toast notification showing the toggle levels and their status.
+ */
+export async function notifyTogglesStatus() {
+	try {
+		await sendMessage("displayTogglesStatus");
+	} catch (error: unknown) {
+		if (!(error instanceof UnreachableContentScriptError)) throw error;
+	}
+}

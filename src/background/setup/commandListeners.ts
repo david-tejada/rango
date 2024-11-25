@@ -47,7 +47,7 @@ import {
 import { getTabIdsFromTarget } from "../tabs/target";
 import { assertReferenceInCurrentTab } from "../target/references";
 import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
-import { notify } from "../utils/notify";
+import { notify, notifyTogglesStatus } from "../utils/notify";
 import { discardNextResponse } from "../utils/requestAndResponse";
 import { tryToFocusDocument } from "../utils/tryToFocusDocument";
 import { withLockedStorageAccess } from "../utils/withLockedStorageValue";
@@ -698,26 +698,26 @@ export function addCommandListeners() {
 	// ===========================================================================
 	onCommand("disableHints", async ({ level }) => {
 		await updateHintsToggle(level, false);
-		await sendMessage("displayTogglesStatus");
+		await notifyTogglesStatus();
 	});
 
 	onCommand("displayTogglesStatus", async () => {
-		await sendMessage("displayTogglesStatus");
+		await notifyTogglesStatus();
 	});
 
 	onCommand("enableHints", async ({ level }) => {
 		await updateHintsToggle(level, true);
-		await sendMessage("displayTogglesStatus");
+		await notifyTogglesStatus();
 	});
 
 	onCommand("toggleHints", async () => {
 		await toggleHintsGlobal();
-		await sendMessage("displayTogglesStatus");
+		await notifyTogglesStatus();
 	});
 
 	onCommand("resetToggleLevel", async ({ level }) => {
 		await updateHintsToggle(level);
-		await sendMessage("displayTogglesStatus");
+		await notifyTogglesStatus();
 	});
 
 	// ===========================================================================
