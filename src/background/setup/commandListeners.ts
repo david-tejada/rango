@@ -10,7 +10,6 @@ import {
 	type ElementMark,
 	type Target,
 } from "../../typings/Target/Target";
-import { focusOrCreateTabByUrl } from "../actions/focusOrCreateTabByUrl";
 import { focusPreviousTab } from "../actions/focusPreviousTab";
 import {
 	focusNextAudibleTab,
@@ -44,6 +43,7 @@ import { refreshTabMarkers } from "../misc/tabMarkers";
 import { activateTab } from "../tabs/activateTab";
 import { closeFilteredTabsInWindow } from "../tabs/closeMatchingTabsInWindow";
 import { createRelatedTabs } from "../tabs/createRelatedTabs";
+import { focusOrCreateTabByUrl } from "../tabs/focusOrCreateTabByUrl";
 import { getTabIdsFromTarget } from "../tabs/target";
 import { assertReferenceInCurrentTab } from "../target/references";
 import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
