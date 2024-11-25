@@ -8,10 +8,10 @@ import { addMessageListeners } from "../messaging/messageListeners";
 import { createContextMenus } from "../misc/createContextMenus";
 import { initTabMarkers } from "../misc/tabMarkers";
 import { setTabLastSounded } from "../tabs/focusTabBySound";
+import { trackRecentTabs } from "../tabs/trackRecentTabs";
 import { setBrowserActionIcon } from "../utils/browserAction";
 import { getCurrentTab } from "../utils/getCurrentTab";
 import { isSafari } from "../utils/isSafari";
-import { trackRecentTabs } from "./trackRecentTabs";
 
 export async function initBackgroundScript() {
 	addMessageListeners();
