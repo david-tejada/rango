@@ -22,7 +22,6 @@ import {
 	sendMessageToAllFrames,
 	sendMessageToTargetFrames,
 } from "../messaging/backgroundMessageBroker";
-import { refreshTabMarkers } from "../misc/tabMarkers";
 import { activateTab } from "../tabs/activateTab";
 import { closeFilteredTabsInWindow } from "../tabs/closeMatchingTabsInWindow";
 import { createRelatedTabs } from "../tabs/createRelatedTabs";
@@ -43,6 +42,7 @@ import {
 	unmuteAllMutedTabs,
 	unmuteNextMutedTab,
 } from "../tabs/muteTabs";
+import { refreshTabMarkers } from "../tabs/tabMarkers";
 import { getTabIdsFromTarget } from "../tabs/target";
 import { assertReferenceInCurrentTab } from "../target/references";
 import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";

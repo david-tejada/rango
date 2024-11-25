@@ -7,8 +7,8 @@ import {
 	storeLabelsInFrame,
 } from "../hints/labels/labelAllocator";
 import { getRequiredStack, initStack } from "../hints/labels/labelStack";
-import { getTabMarker } from "../misc/tabMarkers";
 import { createRelatedTabs } from "../tabs/createRelatedTabs";
+import { getTabMarker } from "../tabs/tabMarkers";
 import { getCurrentTabId } from "../utils/getCurrentTab";
 import {
 	resetCustomSelectors,

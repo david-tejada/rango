@@ -12,8 +12,8 @@ import {
 	sendMessage,
 } from "./messaging/backgroundMessageBroker";
 import { addMessageListeners } from "./messaging/messageListeners";
-import { initTabMarkers } from "./misc/tabMarkers";
 import { setTabLastSounded } from "./tabs/focusTabBySound";
+import { initTabMarkers } from "./tabs/tabMarkers";
 import { trackRecentTabs } from "./tabs/trackRecentTabs";
 import { browserAction, setBrowserActionIcon } from "./utils/browserAction";
 import { getCurrentTab } from "./utils/getCurrentTab";
