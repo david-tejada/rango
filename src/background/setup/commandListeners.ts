@@ -10,13 +10,13 @@ import {
 	type ElementMark,
 	type Target,
 } from "../../typings/Target/Target";
-import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
 import { toggleTabMarkers } from "../actions/toggleTabMarkers";
 import { onCommand } from "../commands/commandBroker";
 import { getAllFrames } from "../frames/frames";
 import { getFrameIdForHint } from "../hints/labelStack";
 import { refreshHints } from "../hints/refreshHints";
+import { toggleHintsGlobal, updateHintsToggle } from "../hints/toggleHints";
 import {
 	UnreachableContentScriptError,
 	sendMessage,

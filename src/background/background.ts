@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
-import { toggleHintsGlobal, updateHintsToggle } from "./actions/toggleHints";
 import { toggleKeyboardClicking } from "./actions/toggleKeyboardClicking";
 import { handleIncomingCommand } from "./commands/handleIncomingCommand";
+import { toggleHintsGlobal, updateHintsToggle } from "./hints/toggleHints";
 import { handleIncomingMessage } from "./messaging/backgroundMessageBroker";
 import { contextMenusOnClicked } from "./misc/createContextMenus";
 import { initBackgroundScript } from "./setup/initBackgroundScript";
