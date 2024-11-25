@@ -10,13 +10,6 @@ import {
 	type ElementMark,
 	type Target,
 } from "../../typings/Target/Target";
-import {
-	muteAllTabsWithSound,
-	muteNextTabWithSound,
-	muteTab,
-	unmuteAllMutedTabs,
-	unmuteNextMutedTab,
-} from "../actions/muteTabs";
 import { toggleHintsGlobal, updateHintsToggle } from "../actions/toggleHints";
 import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
 import { toggleTabMarkers } from "../actions/toggleTabMarkers";
@@ -44,6 +37,13 @@ import {
 } from "../tabs/focusTabBySound";
 import { cycleTabsByText, focusTabByText } from "../tabs/focusTabByText";
 import { getBareTitle } from "../tabs/getBareTitle";
+import {
+	muteAllTabsWithSound,
+	muteNextTabWithSound,
+	muteTab,
+	unmuteAllMutedTabs,
+	unmuteNextMutedTab,
+} from "../tabs/muteTabs";
 import { getTabIdsFromTarget } from "../tabs/target";
 import { assertReferenceInCurrentTab } from "../target/references";
 import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
