@@ -10,7 +10,6 @@ import {
 	type ElementMark,
 	type Target,
 } from "../../typings/Target/Target";
-import { activateTab } from "../actions/activateTab";
 import { focusOrCreateTabByUrl } from "../actions/focusOrCreateTabByUrl";
 import { focusPreviousTab } from "../actions/focusPreviousTab";
 import {
@@ -42,6 +41,7 @@ import {
 	sendMessageToTargetFrames,
 } from "../messaging/backgroundMessageBroker";
 import { refreshTabMarkers } from "../misc/tabMarkers";
+import { activateTab } from "../tabs/activateTab";
 import { closeFilteredTabsInWindow } from "../tabs/closeMatchingTabsInWindow";
 import { createRelatedTabs } from "../tabs/createRelatedTabs";
 import { getTabIdsFromTarget } from "../tabs/target";
