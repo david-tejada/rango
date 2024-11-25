@@ -1,7 +1,7 @@
 import { z } from "zod";
 import type { Command } from "../../typings/Command";
 import type { TalonAction } from "../../typings/TalonAction";
-import { readClipboard, writeClipboard } from "./clipboard";
+import { readClipboard, writeClipboard } from "../clipboard/clipboard";
 
 let shouldDiscardNextResponse = false;
 

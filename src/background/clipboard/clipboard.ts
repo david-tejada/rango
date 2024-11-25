@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { urls } from "../../common/urls";
-import { isSafari } from "./isSafari";
+import { isSafari } from "../utils/isSafari";
 
 /**
  * This is used to make headless testing possible. Because in Chrome for Testing
