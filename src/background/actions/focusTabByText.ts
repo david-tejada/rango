@@ -1,13 +1,25 @@
-import browser from "webextension-polyfill";
 import Fuse from "fuse.js";
-import { notify } from "../utils/notify";
+import browser from "webextension-polyfill";
 import { getCurrentTab } from "../utils/getCurrentTab";
 
+/**
+ * All tabs matching the previous search.
+ */
 let matches: browser.Tabs.Tab[] = [];
-let selectedIndex = -1;
 
+/**
+ * The last match that was selected.
+ */
+let selectedMatch: { text: string; index: number } | undefined;
+
+/**
+ * Focuses the tab with the given text using fuzzy search with the title and
+ * url.
+ */
 export async function focusTabByText(text: string) {
-	const currentTab = await getCurrentTab();
+	selectedMatch = undefined;
+
+	const currentWindow = await browser.windows.getCurrent();
 	const allTabs = await browser.tabs.query({});
 
 	const fuse = new Fuse(allTabs, {
@@ -17,61 +29,54 @@ export async function focusTabByText(text: string) {
 		threshold: 0.4,
 	});
 
-	const results = fuse.search(text).sort((a, b) => {
-		if (
-			a.item.windowId === currentTab.windowId &&
-			b.item.windowId !== currentTab.windowId
-		) {
-			return -1;
-		}
+	matches = fuse
+		.search(text)
+		// Sort the tabs by their score, preferring tabs in the current window.
+		.sort((a, b) => {
+			const aInCurrentWindow = a.item.windowId === currentWindow.id;
+			const bInCurrentWindow = b.item.windowId === currentWindow.id;
 
-		if (
-			a.item.windowId !== currentTab.windowId &&
-			b.item.windowId === currentTab.windowId
-		) {
-			return 1;
-		}
+			if (aInCurrentWindow && !bInCurrentWindow) return -1;
+			if (!aInCurrentWindow && bInCurrentWindow) return 1;
+			return a.score! - b.score!;
+		})
+		.map((result) => result.item);
 
-		return a.score! - b.score!;
-	});
-
-	matches = results.map((result) => result.item);
 	const targetTab = matches[0];
-	selectedIndex = targetTab ? 0 : -1;
+	if (!targetTab?.id) throw new Error(`No tab found with the text "${text}"`);
 
-	if (targetTab?.id) {
-		await browser.windows.update(targetTab.windowId!, { focused: true });
-		await browser.tabs.update(targetTab.id, { active: true });
-	} else {
-		await notify(`No tab found with the text "${text}"`, { type: "warning" });
-	}
+	selectedMatch = { text, index: 0 };
+	await browser.windows.update(targetTab.windowId!, { focused: true });
+	await browser.tabs.update(targetTab.id, { active: true });
 }
 
+/**
+ * Cycles through the tabs matching the previous tab search.
+ */
 export async function cycleTabsByText(step: number) {
-	const length = matches.length;
-
 	const currentTab = await getCurrentTab();
-	if (length === 0 || (length === 1 && matches[0]!.id === currentTab.id)) {
-		await notify("No more tabs matching the selected text.", {
-			type: "warning",
-		});
+
+	if (selectedMatch === undefined) {
+		throw new Error(`No previous tab search to cycle through.`);
 	}
 
-	selectedIndex += step;
-	// We adjust the index in case adding the step made it out of bounds
-	selectedIndex =
-		step > 0
-			? selectedIndex % length
-			: selectedIndex < 0
-				? length - 1
-				: selectedIndex;
-
-	const targetTab = matches[selectedIndex];
-
-	if (targetTab?.id) {
-		await browser.windows.update(targetTab.windowId!, { focused: true });
-		await browser.tabs.update(targetTab.id, { active: true });
+	if (matches.length === 1 && matches[0]!.id === currentTab.id) {
+		throw new Error(`No more tabs matching the text "${selectedMatch.text}".`);
 	}
+
+	// Update the selected match index. Wrap around the matches array when cycling
+	selectedMatch.index =
+		(selectedMatch.index + step + matches.length) % matches.length;
+
+	const targetTab = matches[selectedMatch.index];
+
+	// At this point the target tab must be defined. We are just being extra safe.
+	if (!targetTab?.id) {
+		throw new Error(`No tab found with the text "${selectedMatch.text}".`);
+	}
+
+	await browser.windows.update(targetTab.windowId!, { focused: true });
+	await browser.tabs.update(targetTab.id, { active: true });
 }
 
 browser.tabs.onRemoved.addListener((tabId) => {
