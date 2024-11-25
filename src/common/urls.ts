@@ -7,7 +7,7 @@ export const urls = {
 		import.meta.url
 	),
 	offscreenDocument: new URL(
-		"../background/utils/offscreen.html",
+		"../background/clipboard/offscreen.html",
 		import.meta.url
 	),
 	whatsNewPage: new URL("../pages/whatsNew/index.html", import.meta.url),
