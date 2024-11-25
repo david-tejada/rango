@@ -11,7 +11,6 @@ import {
 	type Target,
 } from "../../typings/Target/Target";
 import { activateTab } from "../actions/activateTab";
-import { closeTab } from "../actions/closeTab";
 import { focusOrCreateTabByUrl } from "../actions/focusOrCreateTabByUrl";
 import { focusPreviousTab } from "../actions/focusPreviousTab";
 import {
@@ -45,6 +44,7 @@ import {
 import { refreshTabMarkers } from "../misc/tabMarkers";
 import { closeFilteredTabsInWindow } from "../tabs/closeMatchingTabsInWindow";
 import { createRelatedTabs } from "../tabs/createRelatedTabs";
+import { getTabIdsFromTarget } from "../tabs/target";
 import { assertReferenceInCurrentTab } from "../target/references";
 import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
 import { notify } from "../utils/notify";
@@ -100,7 +100,8 @@ export function addCommandListeners() {
 	});
 
 	onCommand("closeTab", async ({ target }) => {
-		await closeTab(target);
+		const tabsToClose = await getTabIdsFromTarget(target);
+		await browser.tabs.remove(tabsToClose);
 	});
 
 	onCommand("cloneCurrentTab", async () => {
