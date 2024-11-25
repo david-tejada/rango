@@ -2,9 +2,9 @@ import browser from "webextension-polyfill";
 import { toggleKeyboardClicking } from "./actions/toggleKeyboardClicking";
 import { handleIncomingCommand } from "./commands/handleIncomingCommand";
 import { toggleHintsGlobal, updateHintsToggle } from "./hints/toggleHints";
+import { initBackgroundScript } from "./initBackgroundScript";
 import { handleIncomingMessage } from "./messaging/backgroundMessageBroker";
 import { contextMenusOnClicked } from "./misc/createContextMenus";
-import { initBackgroundScript } from "./setup/initBackgroundScript";
 import { browserAction } from "./utils/browserAction";
 import { notify } from "./utils/notify";
 
