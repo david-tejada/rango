@@ -1,6 +1,6 @@
 import { UnreachableContentScriptError } from "../messaging/backgroundMessageBroker";
-import { readRequest, writeResponse } from "../utils/requestAndResponse";
 import { handleCommand } from "./commandBroker";
+import { readRequest, writeResponse } from "./requestAndResponse";
 import { upgradeCommand } from "./upgradeCommand";
 
 export async function handleIncomingCommand() {

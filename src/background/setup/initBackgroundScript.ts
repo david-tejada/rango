@@ -1,6 +1,7 @@
 import browser from "webextension-polyfill";
 import { retrieve, store } from "../../common/storage";
 import { urls } from "../../common/urls";
+import { addCommandListeners } from "../commands/commandListeners";
 import { watchNavigation } from "../hints/labels/watchNavigation";
 import { sendMessage } from "../messaging/backgroundMessageBroker";
 import { addMessageListeners } from "../messaging/messageListeners";
@@ -10,7 +11,6 @@ import { setTabLastSounded } from "../tabs/focusTabBySound";
 import { setBrowserActionIcon } from "../utils/browserAction";
 import { getCurrentTab } from "../utils/getCurrentTab";
 import { isSafari } from "../utils/isSafari";
-import { addCommandListeners } from "./commandListeners";
 import { trackRecentTabs } from "./trackRecentTabs";
 
 export async function initBackgroundScript() {

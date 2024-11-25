@@ -12,7 +12,6 @@ import {
 } from "../../typings/Target/Target";
 import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
 import { toggleTabMarkers } from "../actions/toggleTabMarkers";
-import { onCommand } from "../commands/commandBroker";
 import { getAllFrames } from "../frames/frames";
 import { getFrameIdForHint } from "../hints/labels/labelStack";
 import { refreshHints } from "../hints/refreshHints";
@@ -48,9 +47,10 @@ import { getTabIdsFromTarget } from "../tabs/target";
 import { assertReferenceInCurrentTab } from "../target/references";
 import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
 import { notify, notifyTogglesStatus } from "../utils/notify";
-import { discardNextResponse } from "../utils/requestAndResponse";
 import { tryToFocusDocument } from "../utils/tryToFocusDocument";
 import { withLockedStorageAccess } from "../utils/withLockedStorageValue";
+import { onCommand } from "./commandBroker";
+import { discardNextResponse } from "./requestAndResponse";
 
 export function addCommandListeners() {
 	// ===========================================================================
