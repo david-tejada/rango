@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { notify } from "../utils/notify";
-import { getNextTabByIndex } from "../utils/tabUtils";
+import { getNextTabByIndex } from "./getNextTabByIndex";
 
 let tabLastSounded: number | undefined;
 

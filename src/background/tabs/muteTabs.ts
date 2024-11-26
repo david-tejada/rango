@@ -2,8 +2,8 @@ import browser from "webextension-polyfill";
 import { type TabMark, type Target } from "../../typings/Target/Target";
 import { getTabIdsFromTarget } from "../target/tabMarkers";
 import { notify } from "../utils/notify";
-import { getNextTabByIndex } from "../utils/tabUtils";
 import { getCurrentTabId } from "./getCurrentTab";
+import { getNextTabByIndex } from "./getNextTabByIndex";
 
 export async function muteTab(target?: Target<TabMark>, mute = true) {
 	const tabIds = target
