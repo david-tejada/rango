@@ -1,5 +1,8 @@
-// Function to filter an array in place
-export function filterInPlace<T>(
+/**
+ * Filters an array in place. It returns a reference to the original array, now
+ * filtered.
+ */
+export function filterArrayInPlace<T>(
 	array: T[],
 	filter: (item: T, index: number) => boolean
 ) {
@@ -8,4 +11,6 @@ export function filterInPlace<T>(
 			array.splice(i, 1);
 		}
 	}
+
+	return array;
 }

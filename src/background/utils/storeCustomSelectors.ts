@@ -1,9 +1,9 @@
 import assertNever from "assert-never";
 import { debounce } from "lodash";
 import { type CustomSelector } from "../../typings/StorageSchema";
+import { filterArrayInPlace } from "./filterArrayInPlace";
 import { notify } from "./notify";
 import { withLockedStorageAccess } from "./withLockedStorageValue";
-import { filterInPlace } from "./arrayUtils";
 
 let notifySuccess = false;
 let batchUpdatePromise: Promise<void> | undefined;
@@ -71,7 +71,7 @@ async function updateCustomSelectors(
 
 				// We need to filter the array in place because assigning would just
 				// modify the argument.
-				filterInPlace(customSelectors, ({ pattern }) => {
+				filterArrayInPlace(customSelectors, ({ pattern }) => {
 					const patternRe = new RegExp(pattern);
 					return !patternRe.test(url);
 				});
