@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { getCurrentTab } from "../utils/getCurrentTab";
+import { getCurrentTab } from "./getCurrentTab";
 
 /**
  * Focuses or creates a tab with the given URL.

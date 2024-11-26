@@ -13,10 +13,10 @@ import {
 } from "./messaging/backgroundMessageBroker";
 import { addMessageListeners } from "./messaging/messageListeners";
 import { setTabLastSounded } from "./tabs/focusTabBySound";
+import { getCurrentTab } from "./tabs/getCurrentTab";
 import { initTabMarkers } from "./tabs/tabMarkers";
 import { trackRecentTabs } from "./tabs/trackRecentTabs";
 import { browserAction, setBrowserActionIcon } from "./utils/browserAction";
-import { getCurrentTab } from "./utils/getCurrentTab";
 import { isSafari } from "./utils/isSafari";
 import { notify } from "./utils/notify";
 

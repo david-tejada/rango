@@ -35,6 +35,7 @@ import {
 } from "../tabs/focusTabBySound";
 import { cycleTabsByText, focusTabByText } from "../tabs/focusTabByText";
 import { getBareTitle } from "../tabs/getBareTitle";
+import { getCurrentTab, getCurrentTabId } from "../tabs/getCurrentTab";
 import {
 	muteAllTabsWithSound,
 	muteNextTabWithSound,
@@ -45,7 +46,6 @@ import {
 import { refreshTabMarkers } from "../tabs/tabMarkers";
 import { assertReferenceInCurrentTab } from "../target/references";
 import { getTabIdsFromTarget } from "../target/tabMarkers";
-import { getCurrentTab, getCurrentTabId } from "../utils/getCurrentTab";
 import { notify, notifyTogglesStatus } from "../utils/notify";
 import { tryToFocusDocument } from "../utils/tryToFocusDocument";
 import { withLockedStorageAccess } from "../utils/withLockedStorageValue";

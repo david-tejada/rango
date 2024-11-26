@@ -1,7 +1,7 @@
 import { retrieve, store } from "../../common/storage";
 import { type ToggleLevel } from "../../typings/Action";
 import { sendMessage } from "../messaging/backgroundMessageBroker";
-import { getCurrentTab } from "../utils/getCurrentTab";
+import { getCurrentTab } from "../tabs/getCurrentTab";
 
 export async function toggleHintsGlobal() {
 	const hintsToggleGlobal = await retrieve("hintsToggleGlobal");

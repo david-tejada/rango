@@ -2,7 +2,7 @@ import {
 	sendMessage,
 	UnreachableContentScriptError,
 } from "../messaging/backgroundMessageBroker";
-import { getCurrentTab } from "../utils/getCurrentTab";
+import { getCurrentTab } from "./getCurrentTab";
 
 export async function getBareTitle() {
 	try {

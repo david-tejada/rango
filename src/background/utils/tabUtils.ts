@@ -1,5 +1,5 @@
 import type browser from "webextension-polyfill";
-import { getCurrentTab } from "./getCurrentTab";
+import { getCurrentTab } from "../tabs/getCurrentTab";
 
 /**
  * Given an array of tabs as a parameter, return the first tab in the array that

@@ -8,8 +8,8 @@ import {
 } from "../hints/labels/labelAllocator";
 import { getRequiredStack, initStack } from "../hints/labels/labelStack";
 import { createRelatedTabs } from "../tabs/createRelatedTabs";
+import { getCurrentTabId } from "../tabs/getCurrentTab";
 import { getTabMarker } from "../tabs/tabMarkers";
-import { getCurrentTabId } from "../utils/getCurrentTab";
 import {
 	resetCustomSelectors,
 	storeCustomSelectors,

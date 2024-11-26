@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { assertDefined } from "../../typings/TypingUtils";
-import { getCurrentTabId } from "../utils/getCurrentTab";
+import { getCurrentTabId } from "../tabs/getCurrentTab";
 
 /**
  * Get all frames for the given tab id or the current tab if no tab id is

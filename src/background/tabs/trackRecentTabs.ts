@@ -1,7 +1,7 @@
 import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
 import { retrieve, store } from "../../common/storage";
-import { getCurrentTab } from "../utils/getCurrentTab";
+import { getCurrentTab } from "./getCurrentTab";
 
 /**
  * Start tracking tabs to be able to use the command `focusPreviousTab`.

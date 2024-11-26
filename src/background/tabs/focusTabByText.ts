@@ -1,6 +1,6 @@
 import Fuse from "fuse.js";
 import browser from "webextension-polyfill";
-import { getCurrentTab } from "../utils/getCurrentTab";
+import { getCurrentTab } from "./getCurrentTab";
 
 /**
  * All tabs matching the previous search.

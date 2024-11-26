@@ -9,7 +9,7 @@
 // can't trust the tabId information in the navigation event and we always need
 // to retrieve the current tab id.
 import { getAllFrames } from "../../frames/frames";
-import { getCurrentTabId } from "../../utils/getCurrentTab";
+import { getCurrentTabId } from "../../tabs/getCurrentTab";
 
 const preloadTabs = new Map<number, { url: string; completed: boolean }>();
 

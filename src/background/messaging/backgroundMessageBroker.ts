@@ -26,8 +26,8 @@ import {
 import { assertDefined } from "../../typings/TypingUtils";
 import { getAllFrames } from "../frames/frames";
 import { getRequiredStack } from "../hints/labels/labelStack";
+import { getCurrentTabId } from "../tabs/getCurrentTab";
 import { assertReferencesInCurrentTab } from "../target/references";
-import { getCurrentTabId } from "../utils/getCurrentTab";
 
 type Destination = { tabId?: number; frameId?: number };
 type Sender = { tab: Tabs.Tab; tabId: number; frameId: number };
