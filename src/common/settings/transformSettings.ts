@@ -3,8 +3,8 @@ import {
 	type CustomSelector,
 	type StorageSchema,
 } from "../../typings/StorageSchema";
+import { isValidRegExp } from "../isValidRegExp";
 import { isValidSelector } from "../isValidSelector";
-import { isValidRegExp } from "../textUtils";
 
 type CustomsSelectorsLegacyEntry = [
 	string,
