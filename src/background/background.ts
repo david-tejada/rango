@@ -4,7 +4,7 @@ import { urls } from "../common/urls";
 import { getHostPattern } from "../common/utils";
 import { addCommandListeners } from "./commands/commandListeners";
 import { handleIncomingCommand } from "./commands/handleIncomingCommand";
-import { watchNavigation } from "./hints/labels/watchNavigation";
+import { addWebNavigationListeners } from "./hints/labels/webNavigation";
 import { toggleHintsGlobal, updateHintsToggle } from "./hints/toggleHints";
 import {
 	handleIncomingMessage,
@@ -29,7 +29,7 @@ browser.contextMenus.onClicked.addListener(contextMenusOnClicked);
 		addMessageListeners();
 		addCommandListeners();
 		await trackRecentTabs();
-		watchNavigation();
+		addWebNavigationListeners();
 	} catch (error: unknown) {
 		console.error(error);
 	}

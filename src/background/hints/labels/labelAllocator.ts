@@ -1,7 +1,7 @@
 import browser from "webextension-polyfill";
 import { getAllFrames } from "../../utils/getAllFrames";
 import { resetStack, withStack } from "./labelStack";
-import { navigationOccurred } from "./preloadTabs";
+import { navigationOccurred } from "./webNavigation";
 
 export async function claimLabels(
 	tabId: number,
