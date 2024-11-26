@@ -1,9 +1,9 @@
 import assertNever from "assert-never";
 import { debounce } from "lodash";
 import { type CustomSelector } from "../../typings/StorageSchema";
-import { filterArrayInPlace } from "./filterArrayInPlace";
-import { notify } from "./notify";
-import { withLockedStorageAccess } from "./withLockedStorageValue";
+import { filterArrayInPlace } from "../utils/filterArrayInPlace";
+import { notify } from "../utils/notify";
+import { withLockedStorageAccess } from "../utils/withLockedStorageValue";
 
 let notifySuccess = false;
 let batchUpdatePromise: Promise<void> | undefined;

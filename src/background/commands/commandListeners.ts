@@ -9,8 +9,6 @@ import {
 	type ElementMark,
 	type Target,
 } from "../../typings/Target/Target";
-import { toggleKeyboardClicking } from "../actions/toggleKeyboardClicking";
-import { toggleTabMarkers } from "../actions/toggleTabMarkers";
 import { getAllFrames } from "../frames/frames";
 import { getFrameIdForHint } from "../hints/labels/labelStack";
 import { refreshHints } from "../hints/refreshHints";
@@ -21,6 +19,8 @@ import {
 	sendMessageToAllFrames,
 	sendMessageToTargetFrames,
 } from "../messaging/backgroundMessageBroker";
+import { toggleKeyboardClicking } from "../settings/keyboardClicking";
+import { toggleTabMarkers } from "../settings/tabMarkers";
 import { activateTab } from "../tabs/activateTab";
 import { closeFilteredTabsInWindow } from "../tabs/closeMatchingTabsInWindow";
 import { createRelatedTabs } from "../tabs/createRelatedTabs";

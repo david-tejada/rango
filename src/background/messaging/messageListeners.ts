@@ -7,13 +7,13 @@ import {
 	storeLabelsInFrame,
 } from "../hints/labels/labelAllocator";
 import { getRequiredStack, initStack } from "../hints/labels/labelStack";
-import { createRelatedTabs } from "../tabs/createRelatedTabs";
-import { getCurrentTabId } from "../tabs/getCurrentTab";
-import { getTabMarker } from "../tabs/tabMarkers";
 import {
 	resetCustomSelectors,
 	storeCustomSelectors,
-} from "../utils/storeCustomSelectors";
+} from "../settings/customSelectors";
+import { createRelatedTabs } from "../tabs/createRelatedTabs";
+import { getCurrentTabId } from "../tabs/getCurrentTab";
+import { getTabMarker } from "../tabs/tabMarkers";
 import {
 	onMessage,
 	sendMessageToAllFrames,

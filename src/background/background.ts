@@ -2,7 +2,6 @@ import browser from "webextension-polyfill";
 import { retrieve, store } from "../common/storage";
 import { urls } from "../common/urls";
 import { getHostPattern } from "../common/utils";
-import { toggleKeyboardClicking } from "./actions/toggleKeyboardClicking";
 import { addCommandListeners } from "./commands/commandListeners";
 import { handleIncomingCommand } from "./commands/handleIncomingCommand";
 import { watchNavigation } from "./hints/labels/watchNavigation";
@@ -12,6 +11,7 @@ import {
 	sendMessage,
 } from "./messaging/backgroundMessageBroker";
 import { addMessageListeners } from "./messaging/messageListeners";
+import { toggleKeyboardClicking } from "./settings/keyboardClicking";
 import { setTabLastSounded } from "./tabs/focusTabBySound";
 import { getCurrentTab } from "./tabs/getCurrentTab";
 import { initTabMarkers } from "./tabs/tabMarkers";
