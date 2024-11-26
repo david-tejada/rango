@@ -6,8 +6,8 @@
 	"manifest_version": 3,
 	"minimum_chrome_version": "109",
 	"icons": {
-		"48": "../assets/icon48.png",
-		"128": "../assets/icon128.png"
+		"48": "../../assets/icon48.png",
+		"128": "../../assets/icon128.png"
 	},
 	"permissions": [
 		"storage",
@@ -24,19 +24,19 @@
 	"content_scripts": [
 		{
 			"matches": ["<all_urls>"],
-			"js": ["../content/content.ts"],
-			"css": ["../content/hints/tippy.css"],
+			"js": ["../../content/content.ts"],
+			"css": ["../../content/hints/tippy.css"],
 			"all_frames": true,
 			"match_about_blank": true,
 			"run_at": "document_idle"
 		}
 	],
 	"background": {
-		"service_worker": "../background/background.ts",
+		"service_worker": "../../background/background.ts",
 		"type": "module"
 	},
 	"options_ui": {
-		"page": "../settings/index.html",
+		"page": "../../settings/index.html",
 		"open_in_tab": true
 	},
 	"commands": {
@@ -77,7 +77,7 @@
 	},
 	"action": {
 		"default_icon": {
-			"48": "../assets/icon48.png"
+			"48": "../../assets/icon48.png"
 		},
 		"default_title": "Rango"
 	}

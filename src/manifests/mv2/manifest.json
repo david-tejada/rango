@@ -11,8 +11,8 @@
 		}
 	},
 	"icons": {
-		"48": "../assets/icon48.png",
-		"128": "../assets/icon128.png"
+		"48": "../../assets/icon48.png",
+		"128": "../../assets/icon128.png"
 	},
 	"permissions": [
 		"storage",
@@ -28,20 +28,20 @@
 	"content_scripts": [
 		{
 			"matches": ["<all_urls>"],
-			"js": ["../content/content.ts"],
-			"css": ["../content/hints/tippy.css"],
+			"js": ["../../content/content.ts"],
+			"css": ["../../content/hints/tippy.css"],
 			"all_frames": true,
 			"match_about_blank": true,
 			"run_at": "document_idle"
 		}
 	],
 	"options_ui": {
-		"page": "../settings/index.html",
+		"page": "../../settings/index.html",
 		"open_in_tab": true
 	},
 	"background": {
 		"persistent": false,
-		"scripts": ["../background/background.ts"]
+		"scripts": ["../../background/background.ts"]
 	},
 	"commands": {
 		"get-talon-request": {
@@ -88,7 +88,7 @@
 		}
 	},
 	"browser_action": {
-		"default_icon": "../assets/icon48.png",
+		"default_icon": "../../assets/icon48.png",
 		"default_title": "Rango"
 	}
 }

@@ -1,9 +1,9 @@
 {
 	"private": true,
 	"scripts": {
-		"build:mv2": "rimraf dist-mv2 && parcel build src/mv2/manifest.json --no-content-hash --dist-dir dist-mv2 --no-cache --no-source-maps --detailed-report 0",
-		"build:mv2-safari": "rimraf dist-mv2-safari && parcel build src/mv2-safari/manifest.json --no-content-hash --dist-dir dist-mv2-safari --no-cache --detailed-report 0",
-		"build:mv3": "rimraf dist-mv3 && parcel build src/mv3/manifest.json --no-content-hash --dist-dir dist-mv3 --no-cache --detailed-report 0",
+		"build:mv2": "rimraf dist-mv2 && parcel build src/manifests/mv2/manifest.json --no-content-hash --dist-dir dist-mv2 --no-cache --no-source-maps --detailed-report 0",
+		"build:mv2-safari": "rimraf dist-mv2-safari && parcel build src/manifests/mv2-safari/manifest.json --no-content-hash --dist-dir dist-mv2-safari --no-cache --detailed-report 0",
+		"build:mv3": "rimraf dist-mv3 && parcel build src/manifests/mv3/manifest.json --no-content-hash --dist-dir dist-mv3 --no-cache --detailed-report 0",
 		"build": "run-p build:*",
 		"package:mv2": "web-ext build --artifacts-dir=web-ext-artifacts/mv2",
 		"package:mv2-safari": "web-ext build --source-dir=dist-mv2-safari --artifacts-dir=web-ext-artifacts/mv2-safari",
@@ -19,8 +19,8 @@
 		"lint": "run-p lint:* check-types",
 		"pretest": "NODE_ENV=test run-p lint unused-exports build:mv3",
 		"test": "jest --runInBand",
-		"watch": "parcel watch src/mv2/manifest.json --dist-dir dist-mv2 --no-cache --no-hmr",
-		"watch:mv3": "parcel watch src/mv3/manifest.json --dist-dir dist-mv3 --no-cache --no-hmr",
+		"watch": "parcel watch src/manifests/mv2/manifest.json --dist-dir dist-mv2 --no-cache --no-hmr",
+		"watch:mv3": "parcel watch src/manifests/mv3/manifest.json --dist-dir dist-mv3 --no-cache --no-hmr",
 		"start:firefox": "web-ext run --target firefox-desktop",
 		"start:chromium": "web-ext run --source-dir dist-mv3 --target chromium"
 	},
