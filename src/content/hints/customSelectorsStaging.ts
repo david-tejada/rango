@@ -1,4 +1,4 @@
-import { getHostPattern } from "../../common/utils";
+import { getHostPattern } from "../../common/getHostPattern";
 import { type SelectorAlternative } from "../../typings/SelectorAlternative";
 import { type CustomSelector } from "../../typings/StorageSchema";
 import { sendMessage } from "../messaging/contentMessageBroker";

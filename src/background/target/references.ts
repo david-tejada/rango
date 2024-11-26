@@ -1,5 +1,5 @@
+import { getHostPattern } from "../../common/getHostPattern";
 import { retrieve } from "../../common/storage";
-import { getHostPattern } from "../../common/utils";
 import { getAllFrames } from "../utils/getAllFrames";
 
 export async function assertReferencesInCurrentTab(referenceNames: string[]) {
