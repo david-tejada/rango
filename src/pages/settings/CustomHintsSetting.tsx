@@ -1,8 +1,8 @@
 import { faBan, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { isValidRegExp } from "../common/isValidRegExp";
-import { isValidSelector } from "../common/isValidSelector";
-import { type CustomSelector } from "../typings/StorageSchema";
+import { isValidRegExp } from "../../common/isValidRegExp";
+import { isValidSelector } from "../../common/isValidSelector";
+import { type CustomSelector } from "../../typings/StorageSchema";
 import "./CustomHintsSetting.css";
 
 type CustomHintsSettingProps = {

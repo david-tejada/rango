@@ -1,13 +1,13 @@
 import Color from "color";
 import { useEffect, useState } from "react";
 import browser from "webextension-polyfill";
-import { hasMatchingKeys } from "../common/hasMatchingKeys";
+import { hasMatchingKeys } from "../../common/hasMatchingKeys";
 import {
 	defaultSettingsMutable,
 	isValidSetting,
-} from "../common/settings/settings";
-import { retrieveSettings, store } from "../common/storage/storage";
-import { type StorageSchema } from "../typings/StorageSchema";
+} from "../../common/settings/settings";
+import { retrieveSettings, store } from "../../common/storage/storage";
+import { type StorageSchema } from "../../typings/StorageSchema";
 import { Alert } from "./Alert";
 import { CustomHintsSetting } from "./CustomHintsSetting";
 import { ExcludeKeysSetting } from "./ExcludeKeysSetting";

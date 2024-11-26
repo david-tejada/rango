@@ -36,7 +36,7 @@
 		"type": "module"
 	},
 	"options_ui": {
-		"page": "../../settings/index.html",
+		"page": "../../pages/settings/index.html",
 		"open_in_tab": true
 	},
 	"commands": {

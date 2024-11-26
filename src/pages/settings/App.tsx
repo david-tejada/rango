@@ -1,10 +1,10 @@
+import { Alert } from "./Alert";
 import "./App.css";
 import { SettingsComponent } from "./SettingsComponent";
-import { Alert } from "./Alert";
 
 // I can't use urls.iconSvg because importing urls would duplicate the image
 // bundles, I think it has to do with jsx transpilation
-const iconSvgUrl = new URL("../assets/icon.svg", import.meta.url);
+const iconSvgUrl = new URL("../../assets/icon.svg", import.meta.url);
 
 type AppProps = {
 	readonly hasSeenSettingsPage: boolean;

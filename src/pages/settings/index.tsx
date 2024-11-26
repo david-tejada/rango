@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { retrieve, store } from "../common/storage/storage";
+import { retrieve, store } from "../../common/storage/storage";
 import { App } from "./App";
 import "./index.css";
 
