@@ -1,5 +1,5 @@
 import Color from "color";
-import { assertDefined } from "../typings/TypingUtils";
+import { assertDefined } from "../../typings/TypingUtils";
 
 export function rgbaToRgb(rgba: Color, backgroundRgb: Color): Color {
 	const { r, g, b } = rgba.object();

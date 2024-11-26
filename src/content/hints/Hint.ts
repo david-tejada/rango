@@ -1,6 +1,5 @@
 import Color from "color";
 import { debounce } from "lodash";
-import { rgbaToRgb } from "../../lib/rgbaToRgb";
 import { getAllSettings, getSetting } from "../settings/settingsManager";
 import { getToggles } from "../settings/toggles";
 import { createsStackingContext } from "../utils/createsStackingContext";
@@ -28,6 +27,7 @@ import {
 	getOffsetParent,
 	removeFromLayoutCache,
 } from "./layoutCache";
+import { rgbaToRgb } from "./rgbaToRgb";
 import { setStyleProperties } from "./setStyleProperties";
 
 const hintQueue = new Set<Hint>();

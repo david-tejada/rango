@@ -1,20 +1,20 @@
-import browser from "webextension-polyfill";
-import { useEffect, useState } from "react";
 import Color from "color";
+import { useEffect, useState } from "react";
+import browser from "webextension-polyfill";
+import { hasMatchingKeys } from "../common/hasMatchingKeys";
 import { defaultSettingsMutable, isValidSetting } from "../common/settings";
 import { retrieveSettings, store } from "../common/storage";
 import { type StorageSchema } from "../typings/StorageSchema";
-import { hasMatchingKeys } from "../lib/utils";
-import { SettingsGroup } from "./SettingsGroup";
-import { Toggle } from "./Toggle";
+import { Alert } from "./Alert";
+import { CustomHintsSetting } from "./CustomHintsSetting";
+import { ExcludeKeysSetting } from "./ExcludeKeysSetting";
 import { NumberInput } from "./NumberInput";
 import { Radio, RadioGroup } from "./RadioGroup";
-import { SettingRow } from "./SettingRow";
-import { TextInput } from "./TextInput";
 import { Option, Select } from "./Select";
-import { Alert } from "./Alert";
-import { ExcludeKeysSetting } from "./ExcludeKeysSetting";
-import { CustomHintsSetting } from "./CustomHintsSetting";
+import { SettingRow } from "./SettingRow";
+import { SettingsGroup } from "./SettingsGroup";
+import { TextInput } from "./TextInput";
+import { Toggle } from "./Toggle";
 
 let justSaved = false;
 

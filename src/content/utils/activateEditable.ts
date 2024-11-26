@@ -1,4 +1,3 @@
-import { sleep } from "../../lib/utils";
 import { notify } from "../notify/notify";
 import { type ElementWrapper } from "../wrappers/ElementWrapper";
 import { getWrapperForElement } from "../wrappers/wrappers";
@@ -46,10 +45,12 @@ export async function activateEditable(wrapper: ElementWrapper) {
 
 	await wrapper.click();
 
-	// We need to add a sleep here so that the focus has had time to move to the
-	// clicked element. If we call waitActiveElementIsEditable too early we might
-	// get the previously focused element.
-	await sleep(50);
+	// We need to wait here so that the focus has had time to move to the clicked
+	// element. If we call waitActiveElementIsEditable too early we might get the
+	// previously focused element.
+	await new Promise((resolve) => {
+		setTimeout(resolve, 50);
+	});
 
 	const activeEditable = await waitActiveEditable();
 	if (!activeEditable) return undefined;
