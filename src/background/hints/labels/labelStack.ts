@@ -1,6 +1,5 @@
 import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
-import { getKeysToExclude } from "../../../common/getKeysToExclude";
 import { letterLabels, numberLabels } from "../../../common/labels";
 import { retrieve, store } from "../../../common/storage";
 import { type LabelStack } from "../../../typings/StorageSchema";
@@ -103,9 +102,7 @@ async function getEmptyStack(tabId: number): Promise<LabelStack> {
 	// We filter out any label the user has excluded or any label that starts with
 	// an excluded key for the current url.
 	const tab = await browser.tabs.get(tabId);
-	const keysToExclude = tab.url
-		? await getKeysToExclude(tab.url)
-		: new Set<string>();
+	const keysToExclude = await getKeysToExclude(tab.url!);
 	const labelsToExclude = await retrieve("hintsToExclude");
 
 	const filteredLabels = possibleLabels.filter(
@@ -123,4 +120,28 @@ async function getEmptyStack(tabId: number): Promise<LabelStack> {
 		free: filteredLabels,
 		assigned: new Map(),
 	};
+}
+
+/**
+ * Get a set of keys to exclude for a given url according to the user settings.
+ */
+async function getKeysToExclude(url: string) {
+	const keyboardClicking = await retrieve("keyboardClicking");
+	if (!keyboardClicking) return new Set<string>();
+
+	const keysToExclude = await retrieve("keysToExclude");
+
+	// Get all matching patterns and map to their keys, then join with commas
+	const allKeysToExclude = keysToExclude
+		.filter(([pattern]) => new RegExp(pattern).test(url))
+		.map(([_, keys]) => keys)
+		.join(", ")
+		.toLowerCase();
+
+	return new Set(
+		allKeysToExclude
+			.split(/[, ]/)
+			.map((string) => string.trim())
+			.filter(Boolean)
+	);
 }
