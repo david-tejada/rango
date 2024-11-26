@@ -1,8 +1,8 @@
 import Emittery from "emittery";
 import browser from "webextension-polyfill";
 import { hasMatchingKeys } from "../../common/hasMatchingKeys";
-import { defaultSettings, type Settings } from "../../common/settings";
-import { retrieve, retrieveSettings } from "../../common/storage";
+import { defaultSettings, type Settings } from "../../common/settings/settings";
+import { retrieve, retrieveSettings } from "../../common/storage/storage";
 import { assertDefined } from "../../typings/TypingUtils";
 
 // https://github.com/microsoft/TypeScript/issues/51572#issuecomment-1319153323

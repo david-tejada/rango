@@ -1,4 +1,4 @@
-import { retrieve, store } from "../../common/storage";
+import { retrieve, store } from "../../common/storage/storage";
 import { notify } from "../utils/notify";
 
 export async function toggleTabMarkers() {

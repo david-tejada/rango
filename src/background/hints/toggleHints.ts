@@ -1,4 +1,4 @@
-import { retrieve, store } from "../../common/storage";
+import { retrieve, store } from "../../common/storage/storage";
 import { type ToggleLevel } from "../../typings/Action";
 import { sendMessage } from "../messaging/backgroundMessageBroker";
 import { getCurrentTab } from "../tabs/getCurrentTab";

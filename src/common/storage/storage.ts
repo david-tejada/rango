@@ -1,18 +1,21 @@
 /* eslint-disable no-await-in-loop */
 import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
-import { type StorageSchema, zStorageSchema } from "../typings/StorageSchema";
-import { defaultStorage } from "./defaultStorage";
+import {
+	type StorageSchema,
+	zStorageSchema,
+} from "../../typings/StorageSchema";
 import {
 	type Settings,
 	defaultSettings,
 	isSetting,
 	isValidSetting,
-} from "./settings";
+} from "../settings/settings";
 import {
 	prepareSettingForStoring,
 	upgradeCustomSelectors,
-} from "./transformSettings";
+} from "../settings/transformSettings";
+import { defaultStorage } from "./defaultStorage";
 
 const useLocalStorage = new Set<keyof StorageSchema>([
 	"hintsToggleTabs",

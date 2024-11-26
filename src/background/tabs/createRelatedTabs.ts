@@ -1,5 +1,5 @@
 import browser, { type Tabs } from "webextension-polyfill";
-import { retrieve } from "../../common/storage";
+import { retrieve } from "../../common/storage/storage";
 import { getCurrentTabId } from "./getCurrentTab";
 
 /**

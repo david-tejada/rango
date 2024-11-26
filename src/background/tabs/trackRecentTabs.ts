@@ -1,6 +1,6 @@
 import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
-import { retrieve, store } from "../../common/storage";
+import { retrieve, store } from "../../common/storage/storage";
 import { getCurrentTab } from "./getCurrentTab";
 
 /**

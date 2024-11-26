@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { getHostPattern } from "../common/getHostPattern";
-import { retrieve, store } from "../common/storage";
+import { retrieve, store } from "../common/storage/storage";
 import { urls } from "../common/urls";
 import { addCommandListeners } from "./commands/commandListeners";
 import { handleIncomingCommand } from "./commands/handleIncomingCommand";

@@ -1,6 +1,6 @@
-import { type StorageSchema } from "../typings/StorageSchema";
-import { letterLabels } from "./labels";
-import { defaultSettings } from "./settings";
+import { type StorageSchema } from "../../typings/StorageSchema";
+import { letterLabels } from "../labels";
+import { defaultSettings } from "../settings/settings";
 
 export const defaultStorage: StorageSchema = {
 	...defaultSettings,

@@ -1,6 +1,6 @@
 import { type ToastOptions } from "react-toastify";
 import browser from "webextension-polyfill";
-import { retrieve } from "../../common/storage";
+import { retrieve } from "../../common/storage/storage";
 import { urls } from "../../common/urls";
 import {
 	sendMessage,

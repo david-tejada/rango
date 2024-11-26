@@ -1,6 +1,6 @@
 import { getCssSelector } from "css-selector-generator";
 import { getHostPattern } from "../../common/getHostPattern";
-import { store } from "../../common/storage";
+import { store } from "../../common/storage/storage";
 import { showTooltip } from "../hints/showTooltip";
 import { getSetting } from "../settings/settingsManager";
 import { getActiveElement } from "../utils/domUtils";

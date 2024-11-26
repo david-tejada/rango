@@ -1,4 +1,4 @@
-import { store } from "../../common/storage";
+import { store } from "../../common/storage/storage";
 import { getSetting, onSettingChange } from "../settings/settingsManager";
 import { refresh } from "../wrappers/refresh";
 

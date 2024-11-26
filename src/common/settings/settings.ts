@@ -2,7 +2,7 @@ import Color from "color";
 import {
 	type CustomSelector,
 	type StorageSchema,
-} from "../typings/StorageSchema";
+} from "../../typings/StorageSchema";
 
 export const defaultSettings = {
 	hintUppercaseLetters: false,

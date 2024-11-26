@@ -1,7 +1,7 @@
 import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
 import { letterLabels, numberLabels } from "../../../common/labels";
-import { retrieve, store } from "../../../common/storage";
+import { retrieve, store } from "../../../common/storage/storage";
 import { type LabelStack } from "../../../typings/StorageSchema";
 
 const mutex = new Mutex();

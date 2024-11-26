@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { retrieve } from "../../common/storage";
+import { retrieve } from "../../common/storage/storage";
 
 /**
  * Focuses the tab in the current window that was most recently active.

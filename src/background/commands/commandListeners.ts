@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { getHostPattern } from "../../common/getHostPattern";
-import { retrieve, store } from "../../common/storage";
+import { retrieve, store } from "../../common/storage/storage";
 import { isTargetError } from "../../common/target/TargetError";
 import { getTargetMarkType } from "../../common/target/targetConversion";
 import { type TalonAction } from "../../typings/TalonAction";

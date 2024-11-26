@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { retrieve, store } from "../../common/storage";
+import { retrieve, store } from "../../common/storage/storage";
 import { setBrowserActionIcon } from "../utils/browserAction";
 
 export async function toggleKeyboardClicking() {
