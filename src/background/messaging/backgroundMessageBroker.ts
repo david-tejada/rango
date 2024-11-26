@@ -9,7 +9,6 @@ import {
 	getTargetMarkType,
 	getTargetValues,
 } from "../../common/target/targetConversion";
-import { promiseAllSettledGrouped } from "../../lib/promise";
 import {
 	type BackgroundBoundMessageMap,
 	type ContentBoundMessageMap,
@@ -28,6 +27,7 @@ import { getAllFrames } from "../frames/frames";
 import { getRequiredStack } from "../hints/labels/labelStack";
 import { getCurrentTabId } from "../tabs/getCurrentTab";
 import { assertReferencesInCurrentTab } from "../target/references";
+import { promiseAllSettledGrouped } from "../utils/promises";
 
 type Destination = { tabId?: number; frameId?: number };
 type Sender = { tab: Tabs.Tab; tabId: number; frameId: number };

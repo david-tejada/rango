@@ -1,5 +1,5 @@
-import { promiseWrap } from "../../lib/promiseWrap";
 import { sendMessage } from "../messaging/backgroundMessageBroker";
+import { promiseWrap } from "./promises";
 
 /**
  * Tries to focus the Document. Returns a boolean indicating success. True means

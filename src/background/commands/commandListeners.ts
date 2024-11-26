@@ -3,7 +3,6 @@ import { retrieve, store } from "../../common/storage";
 import { isTargetError } from "../../common/target/TargetError";
 import { getTargetMarkType } from "../../common/target/targetConversion";
 import { getHostPattern } from "../../common/utils";
-import { promiseWrap } from "../../lib/promiseWrap";
 import { type TalonAction } from "../../typings/TalonAction";
 import {
 	assertPrimitiveTarget,
@@ -47,6 +46,7 @@ import { refreshTabMarkers } from "../tabs/tabMarkers";
 import { assertReferenceInCurrentTab } from "../target/references";
 import { getTabIdsFromTarget } from "../target/tabMarkers";
 import { notify, notifyTogglesStatus } from "../utils/notify";
+import { promiseWrap } from "../utils/promises";
 import { tryToFocusDocument } from "../utils/tryToFocusDocument";
 import { withLockedStorageAccess } from "../utils/withLockedStorageValue";
 import { onCommand } from "./commandBroker";
