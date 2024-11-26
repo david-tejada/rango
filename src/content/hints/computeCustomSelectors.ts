@@ -1,12 +1,9 @@
 import intersect from "intersect";
+import { calculate } from "specificity";
+import { isValidSelector } from "../../common/isValidSelector";
+import { type SelectorAlternative } from "../../typings/SelectorAlternative";
 import { deepGetElements } from "../utils/deepGetElements";
 import { generatePossibleSelectors } from "../utils/generatePossibleSelectors";
-import {
-	getSpecificityValue,
-	isValidSelector,
-	selectorToArray,
-} from "../../common/selectorUtils";
-import { type SelectorAlternative } from "../../typings/SelectorAlternative";
 
 function getChildNumber(target: Element) {
 	if (!target.parentElement) return undefined;
@@ -249,4 +246,17 @@ export function getSelectorAlternatives(elements: Element[]) {
 		if (a.elementsMatching < b.elementsMatching) return -1;
 		return 0;
 	});
+}
+
+function getSpecificityValue(selector: string) {
+	const {
+		specificityArray: [a, b, c, d],
+	} = calculate(selector)[0]!;
+
+	return a * 1000 + b * 100 + c * 10 + d;
+}
+
+function selectorToArray(selector: string) {
+	const specificity = calculate(selector);
+	return specificity[0]!.parts.map((part) => part.selector);
 }

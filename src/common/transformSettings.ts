@@ -3,7 +3,7 @@ import {
 	type CustomSelector,
 	type StorageSchema,
 } from "../typings/StorageSchema";
-import { isValidSelector } from "./selectorUtils";
+import { isValidSelector } from "./isValidSelector";
 import { isValidRegExp } from "./textUtils";
 
 type CustomsSelectorsLegacyEntry = [
