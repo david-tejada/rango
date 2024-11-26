@@ -23,10 +23,10 @@ import {
 	type Target,
 } from "../../typings/Target/Target";
 import { assertDefined } from "../../typings/TypingUtils";
-import { getAllFrames } from "../frames/frames";
 import { getRequiredStack } from "../hints/labels/labelStack";
 import { getCurrentTabId } from "../tabs/getCurrentTab";
 import { assertReferencesInCurrentTab } from "../target/references";
+import { getAllFrames } from "../utils/getAllFrames";
 import { promiseAllSettledGrouped } from "../utils/promises";
 
 type Destination = { tabId?: number; frameId?: number };

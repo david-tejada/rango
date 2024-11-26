@@ -1,6 +1,6 @@
 import { retrieve } from "../../common/storage";
 import { getHostPattern } from "../../common/utils";
-import { getAllFrames } from "../frames/frames";
+import { getAllFrames } from "../utils/getAllFrames";
 
 export async function assertReferencesInCurrentTab(referenceNames: string[]) {
 	await Promise.all(

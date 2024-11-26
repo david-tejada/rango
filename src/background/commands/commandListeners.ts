@@ -9,7 +9,6 @@ import {
 	type ElementMark,
 	type Target,
 } from "../../typings/Target/Target";
-import { getAllFrames } from "../frames/frames";
 import { getFrameIdForHint } from "../hints/labels/labelStack";
 import { refreshHints } from "../hints/refreshHints";
 import { toggleHintsGlobal, updateHintsToggle } from "../hints/toggleHints";
@@ -45,6 +44,7 @@ import {
 import { refreshTabMarkers } from "../tabs/tabMarkers";
 import { assertReferenceInCurrentTab } from "../target/references";
 import { getTabIdsFromTarget } from "../target/tabMarkers";
+import { getAllFrames } from "../utils/getAllFrames";
 import { notify, notifyTogglesStatus } from "../utils/notify";
 import { promiseWrap } from "../utils/promises";
 import { tryToFocusDocument } from "../utils/tryToFocusDocument";

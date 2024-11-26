@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { getAllFrames } from "../../frames/frames";
+import { getAllFrames } from "../../utils/getAllFrames";
 import { resetStack, withStack } from "./labelStack";
 import { navigationOccurred } from "./preloadTabs";
 
