@@ -47,10 +47,10 @@ import { getTabIdsFromTarget } from "../target/tabMarkers";
 import { getAllFrames } from "../utils/getAllFrames";
 import { notify, notifyTogglesStatus } from "../utils/notify";
 import { promiseWrap } from "../utils/promises";
-import { tryToFocusDocument } from "../utils/tryToFocusDocument";
 import { withLockedStorageAccess } from "../utils/withLockedStorageValue";
 import { onCommand } from "./commandBroker";
 import { discardNextResponse } from "./requestAndResponse";
+import { tryToFocusDocument } from "./tryToFocusDocument";
 
 export function addCommandListeners() {
 	// ===========================================================================
