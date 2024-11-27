@@ -1,4 +1,4 @@
-import { showTooltip } from "../hints/showTooltip";
+import { showTooltip } from "../feedback/tooltip/showTooltip";
 import { type ElementWrapper } from "../wrappers/ElementWrapper";
 
 export function showTitleAndHref(wrappers: ElementWrapper[]) {

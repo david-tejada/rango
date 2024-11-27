@@ -1,5 +1,5 @@
-import { getLabelStackForTab } from "../hints/hintsRequests";
-import { getLabelCache } from "../hints/labelCache";
+import { getLabelCache } from "../hints/labels/labelCache";
+import { getLabelStackForTab } from "../hints/labels/labelRequest";
 import {
 	getAllWrappers,
 	getHintedWrappers,

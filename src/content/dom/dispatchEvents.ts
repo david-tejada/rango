@@ -1,6 +1,6 @@
 import { setSelectionAtEdge } from "../actions/setSelection";
-import { getElementCenter } from "./cssomUtils";
-import { getFocusable, isEditable } from "./domUtils";
+import { getElementCenter } from "./getElementCenter";
+import { getFocusable, isEditable } from "./utils";
 
 // At the moment this only works in Firefox but it seems it's going to be
 // implemented in the other browsers.

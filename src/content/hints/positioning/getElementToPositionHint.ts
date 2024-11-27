@@ -4,14 +4,14 @@
 // case it would make more sense to place the hint next to the SVG. Similarly,
 // most of the time, we want the hint next to the text of the hinted element.
 
-import { deepGetElements } from "../utils/deepGetElements";
-import { getClosestHtmlElement } from "../utils/domUtils";
-import { getWrapperForElement } from "../wrappers/wrappers";
+import { deepGetElements } from "../../dom/deepGetElements";
+import { getClosestHtmlElement } from "../../dom/utils";
+import { getWrapperForElement } from "../../wrappers/wrappers";
 import {
 	getBoundingClientRect,
 	getCachedStyle,
 	getFirstCharacterRect,
-} from "./layoutCache";
+} from "../layoutCache";
 
 function elementsAreNear(a: Element, b: Element) {
 	const aRect = getBoundingClientRect(a);

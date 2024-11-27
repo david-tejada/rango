@@ -1,11 +1,11 @@
-import { isMainFrame } from "../setup/contentScriptContext";
-import { reclaimLabels } from "../wrappers/wrappers";
+import { isMainFrame } from "../../setup/contentScriptContext";
+import { reclaimLabels } from "../../wrappers/wrappers";
 import {
 	claimLabels,
 	initStack,
 	reclaimLabelsFromOtherFrames,
 	releaseLabels,
-} from "./hintsRequests";
+} from "./labelRequest";
 import { clearLabelsInFrame } from "./labelsInFrame";
 
 /**

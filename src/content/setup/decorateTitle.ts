@@ -2,7 +2,7 @@ import { throttle } from "lodash";
 import { sendMessage } from "../messaging/contentMessageBroker";
 import { getSetting, onSettingChange } from "../settings/settingsManager";
 import { getToggles } from "../settings/toggles";
-import { isMainFrame } from "../setup/contentScriptContext";
+import { isMainFrame } from "./contentScriptContext";
 
 // Settings
 let urlInTitle: boolean;

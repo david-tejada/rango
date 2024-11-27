@@ -1,5 +1,5 @@
+import { deepGetElements } from "../dom/deepGetElements";
 import { getToggles } from "../settings/toggles";
-import { deepGetElements } from "../utils/deepGetElements";
 import { type ElementWrapper } from "./ElementWrapper";
 
 const wrappersAll = new Map<Element, ElementWrapper>();

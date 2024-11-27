@@ -1,8 +1,8 @@
-import { resetStagedSelectors } from "../hints/customSelectorsStaging";
-import { cacheLabels, clearLabelsCache } from "../hints/labelCache";
 import { refresh } from "../wrappers/refresh";
 import { getHintedWrappers } from "../wrappers/wrappers";
-import { resetExtraHintsToggles } from "./customHints";
+import { resetExtraHintsToggles } from "./customHints/customHints";
+import { resetStagedSelectors } from "./customHints/customSelectorsStaging";
+import { cacheLabels, clearLabelsCache } from "./labels/labelCache";
 
 export async function refreshHints() {
 	await resetStagedSelectors();

@@ -1,6 +1,6 @@
 import tippy from "tippy.js";
-import { type ElementWrapper } from "../wrappers/ElementWrapper";
-import { setStyleProperties } from "./setStyleProperties";
+import { setStyleProperties } from "../../dom/setStyleProperties";
+import { type ElementWrapper } from "../../wrappers/ElementWrapper";
 
 export function showTooltip(
 	wrapper: ElementWrapper,

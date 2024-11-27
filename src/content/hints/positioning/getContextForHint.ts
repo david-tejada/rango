@@ -1,10 +1,10 @@
-import { assertDefined } from "../../typings/TypingUtils";
+import { assertDefined } from "../../../typings/TypingUtils";
 import {
 	getBoundingClientRect,
 	getCachedStyle,
 	getClientDimensions,
 	getFirstCharacterRect,
-} from "./layoutCache";
+} from "../layoutCache";
 
 // Minimum space that needs to be available so that we can place the hint in the
 // current element

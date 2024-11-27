@@ -1,11 +1,10 @@
 import Color from "color";
 import { debounce } from "lodash";
+import { setStyleProperties } from "../dom/setStyleProperties";
+import { getFirstTextNodeDescendant } from "../dom/textNode";
+import { isEditable } from "../dom/utils";
 import { getAllSettings, getSetting } from "../settings/settingsManager";
 import { getToggles } from "../settings/toggles";
-import { createsStackingContext } from "../utils/createsStackingContext";
-import { isEditable } from "../utils/domUtils";
-import { getEffectiveBackgroundColor } from "../utils/getEffectiveBackgroundColor";
-import { getFirstTextNodeDescendant } from "../utils/nodeUtils";
 import { refresh } from "../wrappers/refresh";
 import {
 	clearHintedWrapper,
@@ -13,11 +12,10 @@ import {
 	getWrapperForElement,
 	setHintedWrapper,
 } from "../wrappers/wrappers";
-import { matchesStagedSelector } from "./customSelectorsStaging";
-import { getAptContainer, getContextForHint } from "./getContextForHint";
-import { getCustomNudge } from "./getCustomNudge";
-import { getElementToPositionHint } from "./getElementToPositionHint";
-import { popLabel, pushLabel } from "./labelCache";
+import { getEffectiveBackgroundColor } from "./color/getEffectiveBackgroundColor";
+import { rgbaToRgb } from "./color/rgbaToRgb";
+import { matchesStagedSelector } from "./customHints/customSelectorsStaging";
+import { popLabel, pushLabel } from "./labels/labelCache";
 import {
 	cacheLayout,
 	clearLayoutCache,
@@ -27,8 +25,13 @@ import {
 	getOffsetParent,
 	removeFromLayoutCache,
 } from "./layoutCache";
-import { rgbaToRgb } from "./rgbaToRgb";
-import { setStyleProperties } from "./setStyleProperties";
+import { createsStackingContext } from "./positioning/createsStackingContext";
+import {
+	getAptContainer,
+	getContextForHint,
+} from "./positioning/getContextForHint";
+import { getCustomNudge } from "./positioning/getCustomNudge";
+import { getElementToPositionHint } from "./positioning/getElementToPositionHint";
 
 const hintQueue = new Set<Hint>();
 

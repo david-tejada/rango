@@ -1,8 +1,8 @@
 import {
 	getExtraHintsToggle,
 	getShowExcludedToggle,
-} from "../actions/customHints";
-import { matchesStagedSelector } from "../hints/customSelectorsStaging";
+} from "../hints/customHints/customHints";
+import { matchesStagedSelector } from "../hints/customHints/customSelectorsStaging";
 import {
 	matchesCustomExclude,
 	matchesCustomInclude,

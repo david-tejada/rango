@@ -1,4 +1,4 @@
-import { getToggles } from "../settings/toggles";
+import { getToggles } from "../../settings/toggles";
 import { ToastIcon } from "./ToastIcon";
 import { ToastMessage } from "./ToastMessage";
 import "./ToastTogglesMessage.css";

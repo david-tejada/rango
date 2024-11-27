@@ -1,4 +1,4 @@
-import { isHintableExtra } from "../utils/isHintable";
+import { isHintableExtra } from "../dom/isHintable";
 import { getAllWrappers } from "../wrappers/wrappers";
 
 const i18nPreviousRe =

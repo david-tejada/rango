@@ -1,9 +1,9 @@
 import Fuse from "fuse.js";
+import { deepGetElements } from "../dom/deepGetElements";
+import { isHintable } from "../dom/isHintable";
+import { isVisible } from "../dom/isVisible";
 import { getSetting } from "../settings/settingsManager";
 import { getToggles } from "../settings/toggles";
-import { deepGetElements } from "../utils/deepGetElements";
-import { isHintable } from "../utils/isHintable";
-import { isVisible } from "../utils/isVisible";
 import { getAllWrappers } from "../wrappers/wrappers";
 
 type TextMatchable = {

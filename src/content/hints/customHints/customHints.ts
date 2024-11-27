@@ -1,18 +1,18 @@
+import { sendMessage } from "../../messaging/contentMessageBroker";
+import { type ElementWrapper } from "../../wrappers/ElementWrapper";
+import { refresh } from "../../wrappers/refresh";
+import {
+	extraSelector,
+	getExcludeSelectorAll,
+	updateCustomSelectors,
+} from "../selectors";
 import {
 	pickSelectorAlternative,
 	resetStagedSelectors,
 	saveCustomSelectors,
 	stageCustomSelectors,
 	stageExcludeUniversalSelector,
-} from "../hints/customSelectorsStaging";
-import {
-	extraSelector,
-	getExcludeSelectorAll,
-	updateCustomSelectors,
-} from "../hints/selectors";
-import { sendMessage } from "../messaging/contentMessageBroker";
-import { type ElementWrapper } from "../wrappers/ElementWrapper";
-import { refresh } from "../wrappers/refresh";
+} from "./customSelectorsStaging";
 
 let showExtraHints = false;
 let showExcludedHints = false;

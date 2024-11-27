@@ -1,9 +1,9 @@
 import intersect from "intersect";
 import { calculate } from "specificity";
-import { isValidSelector } from "../../common/isValidSelector";
-import { type SelectorAlternative } from "../../typings/SelectorAlternative";
-import { deepGetElements } from "../utils/deepGetElements";
-import { generatePossibleSelectors } from "../utils/generatePossibleSelectors";
+import { isValidSelector } from "../../../common/isValidSelector";
+import { deepGetElements } from "../../dom/deepGetElements";
+import { type SelectorAlternative } from "./SelectorAlternative";
+import { generatePossibleSelectors } from "./generatePossibleSelectors";
 
 function getChildNumber(target: Element) {
 	if (!target.parentElement) return undefined;

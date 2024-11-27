@@ -2,10 +2,10 @@ import { createRoot } from "react-dom/client";
 import { type ToastOptions, toast } from "react-toastify";
 import { getSetting } from "../settings/settingsManager";
 import { isCurrentTab, isMainFrame } from "../setup/contentScriptContext";
-import { Toast } from "./Toast";
-import { ToastIcon } from "./ToastIcon";
-import { ToastMessage } from "./ToastMessage";
-import { TogglesStatusMessage } from "./ToastTogglesMessage";
+import { Toast } from "./toast/Toast";
+import { ToastIcon } from "./toast/ToastIcon";
+import { ToastMessage } from "./toast/ToastMessage";
+import { TogglesStatusMessage } from "./toast/ToastTogglesMessage";
 
 function renderToast() {
 	let toastContainer = document.querySelector("#rango-toast");

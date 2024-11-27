@@ -1,10 +1,10 @@
-import { getHostPattern } from "../../common/getHostPattern";
-import { type SelectorAlternative } from "../../typings/SelectorAlternative";
-import { type CustomSelector } from "../../typings/StorageSchema";
-import { sendMessage } from "../messaging/contentMessageBroker";
-import { type ElementWrapper } from "../wrappers/ElementWrapper";
+import { getHostPattern } from "../../../common/getHostPattern";
+import { type CustomSelector } from "../../../typings/StorageSchema";
+import { sendMessage } from "../../messaging/contentMessageBroker";
+import { type ElementWrapper } from "../../wrappers/ElementWrapper";
+import { updateCustomSelectors } from "../selectors";
+import { type SelectorAlternative } from "./SelectorAlternative";
 import { getSelectorAlternatives } from "./computeCustomSelectors";
-import { updateCustomSelectors } from "./selectors";
 
 let includeSelectors: string[] = [];
 let excludeSelectors: string[] = [];

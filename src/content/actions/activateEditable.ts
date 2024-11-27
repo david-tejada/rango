@@ -1,7 +1,7 @@
-import { notify } from "../notify/notify";
+import { getActiveElement, isEditable } from "../dom/utils";
+import { notify } from "../feedback/notify";
 import { type ElementWrapper } from "../wrappers/ElementWrapper";
 import { getWrapperForElement } from "../wrappers/wrappers";
-import { getActiveElement, isEditable } from "./domUtils";
 
 async function waitActiveEditable(): Promise<Element | undefined | null> {
 	return new Promise((resolve) => {
