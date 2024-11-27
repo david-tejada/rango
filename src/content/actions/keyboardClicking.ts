@@ -1,7 +1,7 @@
+import { getActiveElement, isEditable } from "../dom/utils";
+import { notify } from "../feedback/notify";
 import { sendMessage } from "../messaging/contentMessageBroker";
-import { notify } from "../notify/notify";
 import { onSettingChange } from "../settings/settingsManager";
-import { getActiveElement, isEditable } from "../utils/domUtils";
 import { getHintedWrappers } from "../wrappers/wrappers";
 
 let keysPressedBuffer = "";

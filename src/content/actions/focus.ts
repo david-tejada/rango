@@ -1,6 +1,6 @@
-import { notify } from "../notify/notify";
-import { dispatchKeyDown, dispatchKeyUp } from "../utils/dispatchEvents";
-import { editableElementSelector, getFocusable } from "../utils/domUtils";
+import { dispatchKeyDown, dispatchKeyUp } from "../dom/dispatchEvents";
+import { editableElementSelector, getFocusable } from "../dom/utils";
+import { notify } from "../feedback/notify";
 import {
 	type ElementWrapper,
 	getOrCreateWrapper,

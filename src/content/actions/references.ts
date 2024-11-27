@@ -1,9 +1,9 @@
 import { getCssSelector } from "css-selector-generator";
-import { store } from "../../common/storage";
-import { getHostPattern } from "../../common/utils";
-import { showTooltip } from "../hints/showTooltip";
+import { getHostPattern } from "../../common/getHostPattern";
+import { store } from "../../common/storage/storage";
+import { getActiveElement } from "../dom/utils";
+import { showTooltip } from "../feedback/tooltip/showTooltip";
 import { getSetting } from "../settings/settingsManager";
-import { getActiveElement } from "../utils/domUtils";
 import {
 	type ElementWrapper,
 	getOrCreateWrapper,

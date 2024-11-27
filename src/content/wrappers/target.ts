@@ -6,7 +6,7 @@ import { TargetError } from "../../common/target/TargetError";
 import { type ElementMark, type Target } from "../../typings/Target/Target";
 import { getTextMatchedElement } from "../actions/matchElementByText";
 import { getReferences } from "../actions/references";
-import { getElementFromSelector } from "../selectors/getElementFromSelector";
+import { getElementFromSelector } from "../dom/getElementFromSelector";
 import { assertWrappersIntersectViewport } from "./assertIntersectingWrappers";
 import { type ElementWrapper, getOrCreateWrapper } from "./ElementWrapper";
 import { setLastTargetedWrapper } from "./lastTargetedWrapper";

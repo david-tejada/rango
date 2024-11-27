@@ -1,22 +1,16 @@
 import { toast } from "react-toastify";
+import { activateEditable } from "../actions/activateEditable";
 import { clickElement } from "../actions/clickElement";
-import { getElementTextContent, getMarkdownLink } from "../actions/copy";
-import {
-	customHintsConfirm,
-	customHintsReset,
-	displayMoreOrLessHints,
-	markAllHintsForExclusion,
-	markHintsForExclusion,
-	markHintsForInclusion,
-	markHintsWithBroaderSelector,
-	markHintsWithNarrowerSelector,
-} from "../actions/customHints";
 import {
 	scrollToPosition,
 	storeScrollPosition,
 } from "../actions/customScrollPositions";
 import { blur, focus, focusFirstInput } from "../actions/focus";
-import { getAnchorHref } from "../actions/getAnchorHref";
+import {
+	getAnchorHref,
+	getElementTextContent,
+	getMarkdownLink,
+} from "../actions/getElementInfo";
 import { hoverElement, unhoverAll } from "../actions/hoverElement";
 import {
 	markHintsAsKeyboardReachable,
@@ -33,24 +27,33 @@ import {
 	saveReferenceForActiveElement,
 	showReferences,
 } from "../actions/references";
-import { refreshHints } from "../actions/refreshHints";
 import { scroll, snapScroll } from "../actions/scroll";
 import { setSelectionAfter, setSelectionBefore } from "../actions/setSelection";
 import { showTitleAndHref } from "../actions/showTitleAndHref";
-import { synchronizeLabels } from "../hints/hintsRequests";
-import { reclaimLabelsFromCache } from "../hints/labelCache";
-import { deleteLabelsInFrame } from "../hints/labelsInFrame";
-import { notify, notifyTogglesStatus } from "../notify/notify";
+import { getElementFromSelector } from "../dom/getElementFromSelector";
+import { isEditable } from "../dom/utils";
+import { notify, notifyTogglesStatus } from "../feedback/notify";
+import {
+	customHintsConfirm,
+	customHintsReset,
+	displayMoreOrLessHints,
+	markAllHintsForExclusion,
+	markHintsForExclusion,
+	markHintsForInclusion,
+	markHintsWithBroaderSelector,
+	markHintsWithNarrowerSelector,
+} from "../hints/customHints/customHints";
+import { reclaimLabelsFromCache } from "../hints/labels/labelCache";
+import { synchronizeLabels } from "../hints/labels/labelRequest";
+import { deleteLabelsInFrame } from "../hints/labels/labelsInFrame";
+import { refreshHints } from "../hints/refreshHints";
 import { updateHintsEnabled } from "../observe";
-import { getElementFromSelector } from "../selectors/getElementFromSelector";
 import { setNavigationToggle } from "../settings/toggles";
-import { activateEditable } from "../utils/activateEditable";
 import {
 	getTitleBeforeDecoration,
 	initTitleDecoration,
 	removeDecorations,
-} from "../utils/decorateTitle";
-import { isEditable } from "../utils/domUtils";
+} from "../setup/decorateTitle";
 import { getFirstWrapper, getTargetedWrappers } from "../wrappers/target";
 import { reclaimLabels } from "../wrappers/wrappers";
 import { onMessage } from "./contentMessageBroker";

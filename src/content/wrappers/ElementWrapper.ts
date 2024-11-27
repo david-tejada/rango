@@ -1,24 +1,24 @@
 import { debounce } from "lodash";
-import { getExtraHintsToggle } from "../actions/customHints";
-import { Hint } from "../hints/Hint";
-import { cacheLabels } from "../hints/labelCache";
-import { cacheLayout, clearLayoutCache } from "../hints/layoutCache";
-import { matchesCustomExclude, matchesCustomInclude } from "../hints/selectors";
-import { setStyleProperties } from "../hints/setStyleProperties";
-import { sendMessage } from "../messaging/contentMessageBroker";
-import { getSetting } from "../settings/settingsManager";
-import { BoundedIntersectionObserver } from "../utils/BoundedIntersectionObserver";
-import { getElementCenter } from "../utils/cssomUtils";
-import { deepGetElements } from "../utils/deepGetElements";
+import { deepGetElements } from "../dom/deepGetElements";
 import {
 	dispatchClick,
 	dispatchHover,
 	dispatchUnhover,
-} from "../utils/dispatchEvents";
-import { getUserScrollableContainer } from "../utils/getUserScrollableContainer";
-import { isDisabled } from "../utils/isDisabled";
-import { isHintable } from "../utils/isHintable";
-import { isVisible } from "../utils/isVisible";
+} from "../dom/dispatchEvents";
+import { getElementCenter } from "../dom/getElementCenter";
+import { getUserScrollableContainer } from "../dom/getUserScrollableContainer";
+import { isDisabled } from "../dom/isDisabled";
+import { isHintable } from "../dom/isHintable";
+import { isVisible } from "../dom/isVisible";
+import { setStyleProperties } from "../dom/setStyleProperties";
+import { getExtraHintsToggle } from "../hints/customHints/customHints";
+import { Hint } from "../hints/Hint";
+import { cacheLabels } from "../hints/labels/labelCache";
+import { cacheLayout, clearLayoutCache } from "../hints/layoutCache";
+import { matchesCustomExclude, matchesCustomInclude } from "../hints/selectors";
+import { sendMessage } from "../messaging/contentMessageBroker";
+import { getSetting } from "../settings/settingsManager";
+import { BoundedIntersectionObserver } from "./BoundedIntersectionObserver";
 import { refresh } from "./refresh";
 import {
 	addWrapper,

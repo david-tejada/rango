@@ -1,5 +1,5 @@
 import browser, { type Tabs } from "webextension-polyfill";
-import { getCurrentTab } from "../utils/getCurrentTab";
+import { getCurrentTab } from "./getCurrentTab";
 
 /**
  * Closes all tabs in the current window that match the filter function.

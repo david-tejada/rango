@@ -1,6 +1,6 @@
 import { type ToastOptions } from "react-toastify";
 import browser from "webextension-polyfill";
-import { retrieve } from "../../common/storage";
+import { retrieve } from "../../common/storage/storage";
 import { urls } from "../../common/urls";
 import {
 	sendMessage,
@@ -24,5 +24,16 @@ export async function notify(text: string, options?: ToastOptions) {
 			title: "Rango",
 			message: text,
 		});
+	}
+}
+
+/**
+ * Display a toast notification showing the toggle levels and their status.
+ */
+export async function notifyTogglesStatus() {
+	try {
+		await sendMessage("displayTogglesStatus");
+	} catch (error: unknown) {
+		if (!(error instanceof UnreachableContentScriptError)) throw error;
 	}
 }

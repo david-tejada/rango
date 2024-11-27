@@ -1,6 +1,6 @@
 import browser, { type Tabs } from "webextension-polyfill";
-import { retrieve } from "../../common/storage";
-import { getCurrentTabId } from "../utils/getCurrentTab";
+import { retrieve } from "../../common/storage/storage";
+import { getCurrentTabId } from "./getCurrentTab";
 
 /**
  * Create tabs related to the current tab. The index of the new tabs is

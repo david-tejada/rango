@@ -5,15 +5,15 @@ import {
 	reclaimLabelsFromOtherFrames,
 	releaseLabels,
 	storeLabelsInFrame,
-} from "../hints/labelAllocator";
-import { getRequiredStack, initStack } from "../hints/labelStack";
-import { getTabMarker } from "../misc/tabMarkers";
-import { createRelatedTabs } from "../tabs/createRelatedTabs";
-import { getCurrentTabId } from "../utils/getCurrentTab";
+} from "../hints/labels/labelAllocator";
+import { getRequiredStack, initStack } from "../hints/labels/labelStack";
 import {
 	resetCustomSelectors,
 	storeCustomSelectors,
-} from "../utils/storeCustomSelectors";
+} from "../settings/customSelectors";
+import { createRelatedTabs } from "../tabs/createRelatedTabs";
+import { getCurrentTabId } from "../tabs/getCurrentTab";
+import { getTabMarker } from "../tabs/tabMarkers";
 import {
 	onMessage,
 	sendMessageToAllFrames,

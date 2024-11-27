@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
+import { retrieve } from "../../common/storage/storage";
 import { urls } from "../../common/urls";
-import { retrieve } from "../../common/storage";
 
 /**
  * `browser.browserAction` for MV2 and `browser.action` for MV3.

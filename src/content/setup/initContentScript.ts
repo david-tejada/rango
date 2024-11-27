@@ -2,9 +2,9 @@ import { initKeyboardClicking } from "../actions/keyboardClicking";
 import { updateCustomSelectors } from "../hints/selectors";
 import observe from "../observe";
 import { getSetting, initSettingsManager } from "../settings/settingsManager";
-import { initTitleDecoration } from "../utils/decorateTitle";
-import { loadDevtoolsUtils } from "../utils/devtoolsUtils";
 import { loadContentScriptContext } from "./contentScriptContext";
+import { initTitleDecoration } from "./decorateTitle";
+import { loadDevtoolsUtils } from "./devtoolsUtils";
 
 let initContentScriptPromise: Promise<void> | undefined;
 
