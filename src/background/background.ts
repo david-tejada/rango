@@ -293,3 +293,13 @@ async function contextMenusOnClicked({
 		await browser.runtime.openOptionsPage();
 	}
 }
+
+// =============================================================================
+// TAB UPDATED
+// =============================================================================
+browser.tabs.onUpdated.addListener(async (tabId, changeInfo) => {
+	const { title, url } = changeInfo;
+	if (title ?? url) {
+		await sendMessage("tabDidUpdate", { title, url }, { tabId });
+	}
+});

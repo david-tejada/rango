@@ -51,8 +51,8 @@ import { updateHintsEnabled } from "../observe";
 import { setNavigationToggle } from "../settings/toggles";
 import {
 	getTitleBeforeDecoration,
-	initTitleDecoration,
 	removeDecorations,
+	updateTitleDecorations,
 } from "../setup/decorateTitle";
 import { getFirstWrapper, getTargetedWrappers } from "../wrappers/target";
 import { reclaimLabels } from "../wrappers/wrappers";
@@ -119,7 +119,7 @@ export function addMessageListeners() {
 
 	onMessage("refreshTitleDecorations", async () => {
 		removeDecorations();
-		await initTitleDecoration();
+		await updateTitleDecorations();
 	});
 
 	onMessage("clickElement", async ({ target }) => {

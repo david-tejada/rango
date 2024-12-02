@@ -132,6 +132,7 @@ export type ContentBoundMessageMap = {
 	// Tabs
 	getTitleBeforeDecoration: () => string;
 	refreshTitleDecorations: () => void;
+	tabDidUpdate: (data: { title?: string; url?: string }) => void;
 
 	// Notifications
 	displayToastNotification: (data: {
