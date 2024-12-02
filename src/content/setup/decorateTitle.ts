@@ -35,7 +35,7 @@ export async function updateTitleDecorations() {
 	// duplicate the prefix or suffix. Prevents decorations from being added
 	// multiple times when the extension is updated and in some other difficult to
 	// reproduce situations.
-	removeDecorations(prefix);
+	await removeDecorations();
 
 	if (document.title !== titleAfterDecoration) {
 		titleBeforeDecoration = document.title;
@@ -47,15 +47,18 @@ export async function updateTitleDecorations() {
 	if (prefix || suffix) titleAfterDecoration = document.title;
 }
 
-export function removeDecorations(prefix?: string) {
-	if (
-		prefix &&
-		(document.title.startsWith(prefix.toUpperCase()) ||
-			document.title.startsWith(prefix.toLowerCase()))
-	) {
+export async function removeDecorations() {
+	const prefix = await getTitlePrefix();
+
+	// This handles removing the title prefix when, for example, there is a hash
+	// change.
+	if (prefix && document.title.toLowerCase().startsWith(prefix.toLowerCase())) {
 		document.title = document.title.slice(prefix.length);
 	}
 
+	// This handles removing the prefix in some other circumstances. For example,
+	// when the prefix needs to be removed because of settings changes or the
+	// extension is updated.
 	if (!prefix) {
 		document.title = document.title.replace(/^[a-z]{1,2} \| /i, "");
 	}
