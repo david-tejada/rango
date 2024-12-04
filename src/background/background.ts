@@ -9,6 +9,7 @@ import { toggleHintsGlobal, updateHintsToggle } from "./hints/toggleHints";
 import {
 	handleIncomingMessage,
 	sendMessage,
+	sendMessageSafe,
 } from "./messaging/backgroundMessageBroker";
 import { addMessageListeners } from "./messaging/messageListeners";
 import { toggleKeyboardClicking } from "./settings/keyboardClicking";
@@ -300,6 +301,63 @@ async function contextMenusOnClicked({
 browser.tabs.onUpdated.addListener(async (tabId, changeInfo) => {
 	const { title, url } = changeInfo;
 	if (title ?? url) {
-		await sendMessage("tabDidUpdate", { title, url }, { tabId });
+		await sendMessageSafe("tabDidUpdate", { title, url }, { tabId });
 	}
 });
+
+let lastCurrentTab: browser.Tabs.Tab;
+
+(async () => {
+	try {
+		lastCurrentTab = await getCurrentTab();
+	} catch (error: unknown) {
+		console.error(error);
+	}
+})();
+
+browser.tabs.onActivated.addListener(async (activeInfo) => {
+	try {
+		const { tabId, windowId } = activeInfo;
+
+		// If the window also changes the update will be handled by the
+		// `windows.onFocusChanged` listener.
+		if (windowId !== lastCurrentTab.windowId) return;
+
+		await sendMessageSafe("currentTabChanged", undefined, {
+			tabId: lastCurrentTab.id,
+		});
+
+		await sendMessageSafe("currentTabChanged", undefined, { tabId });
+
+		lastCurrentTab = await browser.tabs.get(tabId);
+	} catch (error: unknown) {
+		console.error(error);
+	}
+});
+
+browser.windows.onFocusChanged.addListener(async (windowId) => {
+	try {
+		// The window might not be valid. For example, if it's a devtools window.
+		if (!(await isValidWindow(windowId))) return;
+
+		await sendMessageSafe("currentTabChanged", undefined, {
+			tabId: lastCurrentTab.id,
+		});
+
+		lastCurrentTab = await getCurrentTab();
+		await sendMessageSafe("currentTabChanged", undefined, {
+			tabId: lastCurrentTab.id,
+		});
+	} catch (error: unknown) {
+		console.error(error);
+	}
+});
+
+async function isValidWindow(windowId: number) {
+	try {
+		await browser.windows.get(windowId);
+		return true;
+	} catch {
+		return false;
+	}
+}

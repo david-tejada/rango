@@ -1,11 +1,20 @@
 import { onMessage, sendMessage } from "../messaging/contentMessageBroker";
 import { getSetting, onSettingChange } from "../settings/settingsManager";
 import { getToggles } from "../settings/toggles";
-import { isMainFrame } from "./contentScriptContext";
+import { isCurrentTab, isMainFrame } from "./contentScriptContext";
 
 let lastUrlAdded: string | undefined;
-let titleBeforeDecoration: string | undefined;
-let titleAfterDecoration: string | undefined;
+
+/**
+ * Last title before any decorations were added.
+ */
+let lastUndecoratedTitle = document.title;
+
+/**
+ * Last title including possible decorations. It might be the same as
+ * `lastUndecoratedTitle` if no decorations were added.
+ */
+let lastDecoratedTitle = document.title;
 
 /**
  * Update the title decorations. Add the necessary decorations (tab marker and
@@ -14,65 +23,66 @@ let titleAfterDecoration: string | undefined;
 export async function updateTitleDecorations() {
 	if (!isMainFrame()) return;
 
-	// Sometimes the document.title is modified by the page itself starting with
-	// the previous document.title. For example, in Bandcamp when the play button
-	// is clicked, "▶︎ " is added to the front of the title. After the track is
-	// stopped the first three characters of the title are removed.
+	const isCurrentTab_ = await isCurrentTab();
+
+	// Avoid adding decorations for the current tab if the `document.title` is
+	// empty. This can happen when the page is loading or we are dealing with a
+	// PDF or similar file.
+	if (isCurrentTab_ && document.title === "") return;
+
+	// Remove decorations when the tab becomes the current tab for documents
+	// without title. This is only necessary for PDFs or similar files that have
+	// an empty `document.title`.
+	if (isCurrentTab_ && lastUndecoratedTitle === "") {
+		document.title = "";
+		lastDecoratedTitle = "";
+		return;
+	}
+
+	// Sometimes the `document.title` is modified by the page itself starting from
+	// the previous `document.title`. For example, in Bandcamp when the play
+	// button is clicked, "▶︎ " is added to the front of the title. After the track
+	// is stopped the first three characters of the title are removed.
 	if (
-		titleAfterDecoration &&
-		document.title !== titleAfterDecoration &&
-		document.title.includes(titleAfterDecoration)
+		document.title !== lastDecoratedTitle &&
+		document.title.includes(lastDecoratedTitle)
 	) {
-		titleAfterDecoration = document.title;
+		lastDecoratedTitle = document.title;
 		return;
 	}
 
 	const prefix = await getTitlePrefix();
 	const suffix = getTitleSuffix();
 
-	// Remove decorations. Handle settings having changed and removing some
-	// decoration that is not needed anymore. Also make extra sure we don't
+	// Remove decorations. Handle settings having changed and removing any
+	// decorations that are not needed anymore. Also make extra sure we don't
 	// duplicate the prefix or suffix. Prevents decorations from being added
 	// multiple times when the extension is updated and in some other difficult to
 	// reproduce situations.
-	document.title = await removeDecorations(document.title);
+	lastUndecoratedTitle = await removeDecorations(document.title);
 
-	if (document.title !== titleAfterDecoration) {
-		titleBeforeDecoration = document.title;
-	}
-
-	document.title = prefix + titleBeforeDecoration! + suffix;
+	// It's important to first assign to `document.title` because this assignment
+	// might perform some changes, like removing excess contiguous space
+	// characters.
+	document.title = prefix + lastUndecoratedTitle + suffix;
+	lastDecoratedTitle = document.title;
 
 	if (suffix) lastUrlAdded = window.location.href;
-	if (prefix || suffix) titleAfterDecoration = document.title;
 }
 
-export async function removeDecorations(title: string) {
-	const prefix = await getTitlePrefix();
-
-	// This handles removing the title prefix when, for example, there is a hash
-	// change.
-	if (prefix && title.toLowerCase().startsWith(prefix.toLowerCase())) {
-		title = title.slice(prefix.length);
-	}
-
-	// This handles removing the prefix in some other circumstances. For example,
-	// when the prefix needs to be removed because of settings changes or the
-	// extension is updated.
-	if (!prefix) {
-		title = title.replace(/^[a-z]{1,2} \| /i, "");
-	}
-
+async function removeDecorations(title: string) {
 	const possibleSuffix = ` - ${lastUrlAdded ?? window.location.href}`;
 	if (title.endsWith(possibleSuffix)) {
 		title = title.slice(0, -possibleSuffix.length);
 	}
 
-	return title;
+	// If document.title is empty, the space after the "|" might have been removed
+	// when removing the suffix. That's why it's optional.
+	return title.replace(/^[a-z]{1,2} \| ?/i, "");
 }
 
 async function getTitlePrefix() {
-	if (!shouldIncludeTabMarkers()) return "";
+	if (!(await shouldIncludeTabMarkers())) return "";
 
 	const tabMarker = await sendMessage("getTabMarker");
 	const marker = getSetting("uppercaseTabMarkers")
@@ -91,10 +101,10 @@ function getTitleSuffix() {
 }
 
 export function getTitleBeforeDecoration() {
-	return titleBeforeDecoration ?? document.title;
+	return lastUndecoratedTitle;
 }
 
-function shouldIncludeTabMarkers() {
+async function shouldIncludeTabMarkers() {
 	if (!getSetting("includeTabMarkers")) return false;
 
 	const globalHintsDisabled = !getToggles().global;
@@ -106,9 +116,15 @@ function shouldIncludeTabMarkers() {
 }
 
 onMessage("tabDidUpdate", async ({ title }) => {
-	// We ignore the instances after we decorate the title.
-	if (title && title === titleAfterDecoration) return;
+	// We ignore the instances after we decorate the title. Note: `title` is not
+	// necessarily the same as `document.title`. For example, with PDFs,
+	// `document.title` is usually empty while title is the title of the tab.
+	if (title && document.title === lastDecoratedTitle) return;
 
+	await updateTitleDecorations();
+});
+
+onMessage("currentTabChanged", async () => {
 	await updateTitleDecorations();
 });
 

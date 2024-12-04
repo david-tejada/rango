@@ -19,6 +19,10 @@ export function getTabId() {
 	return tabId;
 }
 
+/**
+ * Returns `true` if this is the current tab; that is, the active tab of the
+ * focused window.
+ */
 export async function isCurrentTab(): Promise<boolean> {
 	return sendMessage("isCurrentTab");
 }
