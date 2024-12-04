@@ -3,7 +3,7 @@ import { updateCustomSelectors } from "../hints/selectors";
 import observe from "../observe";
 import { getSetting, initSettingsManager } from "../settings/settingsManager";
 import { loadContentScriptContext } from "./contentScriptContext";
-import { initTitleDecoration } from "./decorateTitle";
+import { updateTitleDecorations } from "./decorateTitle";
 import { loadDevtoolsUtils } from "./devtoolsUtils";
 
 let initContentScriptPromise: Promise<void> | undefined;
@@ -20,7 +20,7 @@ export async function initContentScriptOrWait() {
 		await loadContentScriptContext();
 		await initSettingsManager();
 		await updateCustomSelectors();
-		await initTitleDecoration();
+		await updateTitleDecorations();
 		await observe();
 		if (getSetting("keyboardClicking")) initKeyboardClicking();
 	})();

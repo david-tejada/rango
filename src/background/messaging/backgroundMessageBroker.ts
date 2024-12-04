@@ -141,6 +141,25 @@ export async function sendMessage<K extends MessageWithoutTarget>(
 }
 
 /**
+ * Send a message to the content script. If the content script is unreachable or
+ * any other error occurs, this function will silently ignore the error and
+ * return `undefined`.
+ */
+export async function sendMessageSafe<K extends MessageWithoutTarget>(
+	messageId: K,
+	...args: HasRequiredData<K> extends true
+		? [data: MessageData<K>, destination?: Destination]
+		: [data?: MessageData<K>, destination?: Destination]
+) {
+	try {
+		return await sendMessage(messageId, ...args);
+	} catch {
+		// Silently ignore errors
+		return undefined;
+	}
+}
+
+/**
  * Send a message to all frames of the tab. It will return an object in the
  * shape `{ results, values }`. The `results` property is an array of objects
  * with the shape `{ frameId, value }`. The `values` property is just the
