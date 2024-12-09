@@ -5,4 +5,4 @@ class MockResizeObserver {
 	disconnect() {}
 }
 
-window.ResizeObserver = MockResizeObserver;
+globalThis.ResizeObserver = MockResizeObserver;

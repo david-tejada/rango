@@ -9,7 +9,7 @@ describe("Background color", () => {
 	test("If the element doesn't have a background color set the background color of the hint will be white", async () => {
 		const backgroundColor = await page.$eval(".rango-hint", (hint) => {
 			const inner = hint.shadowRoot?.querySelector(".inner");
-			return window.getComputedStyle(inner!).backgroundColor;
+			return globalThis.getComputedStyle(inner!).backgroundColor;
 		});
 
 		expect(backgroundColor).toBe("rgb(255, 255, 255)");
@@ -21,7 +21,7 @@ describe("Background color", () => {
 
 		const backgroundColor = await page.$eval(".rango-hint", (hint) => {
 			const inner = hint.shadowRoot?.querySelector(".inner");
-			return window.getComputedStyle(inner!).backgroundColor;
+			return globalThis.getComputedStyle(inner!).backgroundColor;
 		});
 
 		expect(backgroundColor).toBe("rgb(0, 0, 128)");
@@ -38,7 +38,7 @@ describe("Background color", () => {
 
 		const backgroundColor = await page.$eval(".rango-hint", (hint) => {
 			const inner = hint.shadowRoot?.querySelector(".inner");
-			return window.getComputedStyle(inner!).backgroundColor;
+			return globalThis.getComputedStyle(inner!).backgroundColor;
 		});
 
 		expect(backgroundColor).toBe("rgb(0, 0, 64)");

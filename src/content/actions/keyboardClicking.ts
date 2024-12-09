@@ -91,11 +91,11 @@ async function keydownHandler(event: KeyboardEvent) {
 }
 
 export function initKeyboardClicking() {
-	window.addEventListener("keydown", keydownHandler, true);
+	globalThis.addEventListener("keydown", keydownHandler, true);
 }
 
 function stopKeyboardClicking() {
-	window.removeEventListener("keydown", keydownHandler, true);
+	globalThis.removeEventListener("keydown", keydownHandler, true);
 }
 
 onSettingChange("keyboardClicking", async (keyboardClicking) => {

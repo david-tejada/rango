@@ -16,7 +16,6 @@ let lastClicked: Element | undefined;
 
 function mouseEvent(type: string, clientX: number, clientY: number) {
 	return new MouseEvent(type, {
-		view: window,
 		clientX,
 		clientY,
 		composed: true,
@@ -32,7 +31,6 @@ function pointerEvent(type: string, clientX: number, clientY: number) {
 		pointerId: 1,
 		isPrimary: true,
 		pointerType: "mouse",
-		view: window,
 		clientX,
 		clientY,
 		composed: true,
@@ -59,7 +57,7 @@ export function dispatchClick(element: Element): boolean {
 
 	if (element instanceof HTMLElement && isEditable(element)) {
 		window.focus();
-		const selection = window.getSelection();
+		const selection = globalThis.getSelection();
 
 		// This handles an issue where the element doesn't focus (Notion)
 		if (selection && !element.contains(selection.anchorNode)) {
@@ -106,7 +104,6 @@ export function dispatchUnhover(element: Element) {
 
 export function dispatchKeyDown(element: Element, key: string) {
 	const keydownEvent = new KeyboardEvent("keydown", {
-		view: window,
 		code: key,
 		key,
 		composed: true,
@@ -119,7 +116,6 @@ export function dispatchKeyDown(element: Element, key: string) {
 
 export function dispatchKeyUp(element: Element, key: string) {
 	const keyupEvent = new KeyboardEvent("keyup", {
-		view: window,
 		code: key,
 		key,
 		composed: true,

@@ -119,7 +119,7 @@ export async function customHintsReset() {
 	showExcludedHints = false;
 
 	await sendMessage("resetCustomSelectors", {
-		url: window.location.href,
+		url: globalThis.location.href,
 	});
 
 	await updateCustomSelectors();

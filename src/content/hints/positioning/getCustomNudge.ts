@@ -12,7 +12,7 @@ customNudges.set("onenote.officeapps.live.com", [
  * @returns A tupple [left, top] with the pixel values that the hint needs to be nudged
  */
 export function getCustomNudge(element: Element): [number, number] {
-	const nudgesForHost = customNudges.get(window.location.host);
+	const nudgesForHost = customNudges.get(globalThis.location.host);
 
 	const nudgeForSelector = nudgesForHost?.find(([selector]) =>
 		element.matches(selector)

@@ -153,7 +153,7 @@ export function cacheLayout(
 			offsetHeight:
 				element instanceof HTMLElement ? element.offsetHeight : undefined,
 		});
-		styles.set(element, window.getComputedStyle(element));
+		styles.set(element, globalThis.getComputedStyle(element));
 
 		if (element instanceof HTMLElement) {
 			offsetParents.set(element, element.offsetParent);
@@ -197,5 +197,5 @@ export function getClientDimensions(element: Element) {
 }
 
 export function getCachedStyle(element: Element) {
-	return styles.get(element) ?? window.getComputedStyle(element);
+	return styles.get(element) ?? globalThis.getComputedStyle(element);
 }

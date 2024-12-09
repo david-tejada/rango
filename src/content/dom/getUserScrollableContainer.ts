@@ -9,7 +9,7 @@ export function getUserScrollableContainer(
 	element: Element,
 	direction?: "vertical" | "horizontal"
 ) {
-	const elementPosition = window.getComputedStyle(element).position;
+	const elementPosition = globalThis.getComputedStyle(element).position;
 
 	const checked = [];
 	let current: Element | null = element;
@@ -18,7 +18,8 @@ export function getUserScrollableContainer(
 		const cached = containersCache.get(current);
 		if (cached) return cached;
 
-		const { position, overflowX, overflowY } = window.getComputedStyle(current);
+		const { position, overflowX, overflowY } =
+			globalThis.getComputedStyle(current);
 		const { scrollWidth, clientWidth, scrollHeight, clientHeight } = current;
 
 		if (position === "fixed") {
