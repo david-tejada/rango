@@ -10,6 +10,7 @@ import {
 	handleIncomingMessage,
 	sendMessage,
 	sendMessageSafe,
+	UnreachableContentScriptError,
 } from "./messaging/backgroundMessageBroker";
 import { addMessageListeners } from "./messaging/messageListeners";
 import { toggleKeyboardClicking } from "./settings/keyboardClicking";
@@ -186,37 +187,42 @@ async function resetBookmarkTitle(
 	id: string,
 	changeInfo: browser.Bookmarks.OnChangedChangeInfoType
 ) {
-	const includeTabMarkers = await retrieve("includeTabMarkers");
-	const urlInTitle = await retrieve("urlInTitle");
+	try {
+		// The user might be bookmarking multiple tabs, so we need to find the tab
+		// that matches the bookmark.
+		const matchingTabs = await browser.tabs.query({
+			url: changeInfo.url,
+			title: changeInfo.title,
+		});
+		const tabForBookmark = matchingTabs[0];
 
-	const currentTab = await getCurrentTab();
-	const { title: bookmarkTitle, url: bookmarkUrl } = changeInfo;
+		// Here we make sure that the bookmark event was triggered because the
+		// user saved a bookmark. We don't want to modify the title if the user was
+		// changing it manually.
+		if (!tabForBookmark || tabForBookmark.title !== changeInfo.title) {
+			return;
+		}
 
-	if (
-		!bookmarkUrl ||
-		currentTab.url !== bookmarkUrl ||
-		currentTab.title !== bookmarkTitle
-	) {
-		return;
-	}
+		const titleBeforeDecorations = await sendMessage(
+			"getTitleBeforeDecoration",
+			undefined,
+			{ tabId: tabForBookmark.id }
+		);
 
-	if (includeTabMarkers || urlInTitle) {
-		try {
-			const titleBeforeDecorations = await sendMessage(
-				"getTitleBeforeDecoration"
-			);
-
-			if (titleBeforeDecorations) {
-				// We remove the event listener temporarily so it doesn't trigger when
-				// we update the title.
-				browser.bookmarks?.onChanged.removeListener(resetBookmarkTitle);
-				await browser.bookmarks.update(id, { title: titleBeforeDecorations });
-				browser.bookmarks?.onChanged.addListener(resetBookmarkTitle);
-			}
-		} catch {
-			// Do nothing. The user might be adding a bookmark to a page where the
-			// content script can't run. In that case the title wouldn't have been
-			// changed.
+		if (titleBeforeDecorations) {
+			// We remove the event listener temporarily so it doesn't trigger when we
+			// update the title.
+			browser.bookmarks?.onChanged.removeListener(resetBookmarkTitle);
+			await browser.bookmarks.update(id, { title: titleBeforeDecorations });
+			browser.bookmarks?.onChanged.addListener(resetBookmarkTitle);
+		}
+	} catch (error: unknown) {
+		// If we get an `UnreachableContentScriptError` we don't need to do
+		// anything. The user might be adding a bookmark to a page where the content
+		// script can't run. In that case decorations wouldn't have been added to
+		// the title. We log all other errors to the console.
+		if (!(error instanceof UnreachableContentScriptError)) {
+			console.error(error);
 		}
 	}
 }
