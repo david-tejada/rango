@@ -8,7 +8,7 @@ import {
 	type ToggleLevel,
 } from "../../typings/Action";
 import { type Command, type CommandV2 } from "../../typings/Command";
-import { getTargetFromTabHints } from "../target/tabMarkers";
+import { getTargetFromTabMarkers } from "../target/tabMarkers";
 
 function upgradeAction(action: ActionV1): ActionV2<keyof ActionMap> {
 	const { type: name, target, ...rest } = action;
@@ -42,7 +42,7 @@ function upgradeAction(action: ActionV1): ActionV2<keyof ActionMap> {
 		case "unmuteTab": {
 			return {
 				name,
-				target: target ? getTargetFromTabHints(target) : undefined,
+				target: target ? getTargetFromTabMarkers(target) : undefined,
 			};
 		}
 

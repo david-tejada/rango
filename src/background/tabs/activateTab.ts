@@ -3,7 +3,7 @@ import { type TabMark, type Target } from "../../typings/Target/Target";
 import { getTabIdsFromTarget } from "../target/tabMarkers";
 
 /**
- * Activate the tab with the given tab hint. If more than one tab hint is
+ * Activate the tab with the given tab marker. If more than one tab marker is
  * provided it will activate the given tabs as long as they belong to different
  * windows. It will focus the window of the first tab provided.
  */

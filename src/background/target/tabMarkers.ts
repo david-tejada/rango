@@ -1,7 +1,7 @@
 import { arrayToTarget } from "../../common/target/targetConversion";
 import {
-	type TabHintMark,
 	type TabMark,
+	type TabMarkerMark,
 	type Target,
 } from "../../typings/Target/Target";
 import { getTabIdForMarker } from "../tabs/tabMarkers";
@@ -18,6 +18,6 @@ export async function getTabIdsFromTarget(
 	return [await getTabIdForMarker(target.mark.value)];
 }
 
-export function getTargetFromTabHints(target: string[]) {
-	return arrayToTarget<TabHintMark>(target, "tabHint");
+export function getTargetFromTabMarkers(target: string[]) {
+	return arrayToTarget<TabMarkerMark>(target, "tabMarker");
 }

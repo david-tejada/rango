@@ -27,7 +27,6 @@ export async function createRelatedTabs(
 async function getNewTabIndex(tabId: number) {
 	const tab = await browser.tabs.get(tabId);
 	const newTabPosition = await retrieve("newTabPosition");
-	console.log("newTabPosition", newTabPosition);
 
 	switch (newTabPosition) {
 		case "relatedAfterCurrent": {

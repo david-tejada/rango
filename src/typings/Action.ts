@@ -1,6 +1,6 @@
 import {
 	type ElementMark,
-	type TabHintMark,
+	type TabMarkerMark,
 	type Target,
 } from "./Target/Target";
 
@@ -32,12 +32,12 @@ export type ActionMap = {
 	navigateToPreviousPage: void;
 
 	// Tabs
-	activateTab: { target: Target<TabHintMark> };
+	activateTab: { target: Target<TabMarkerMark> };
 	cloneCurrentTab: void;
 	closeNextTabsInWindow: { amount: number };
 	closeOtherTabsInWindow: void;
 	closePreviousTabsInWindow: { amount: number };
-	closeTab: { target: Target<TabHintMark> };
+	closeTab: { target: Target<TabMarkerMark> };
 	closeTabsLeftEndInWindow: { amount: number };
 	closeTabsRightEndInWindow: { amount: number };
 	closeTabsToTheLeftInWindow: void;
@@ -57,14 +57,14 @@ export type ActionMap = {
 	muteAllTabsWithSound: void;
 	muteCurrentTab: void;
 	muteNextTabWithSound: void;
-	muteTab: { target: Target<TabHintMark> };
+	muteTab: { target: Target<TabMarkerMark> };
 	openPageInNewTab: { url: string };
 	refreshTabMarkers: void;
 	toggleTabMarkers: void;
 	unmuteAllMutedTabs: void;
 	unmuteCurrentTab: void;
 	unmuteNextMutedTab: void;
-	unmuteTab: { target: Target<TabHintMark> };
+	unmuteTab: { target: Target<TabMarkerMark> };
 
 	// Keyboard Clicking
 	toggleKeyboardClicking: void;
