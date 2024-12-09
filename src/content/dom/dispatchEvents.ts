@@ -57,7 +57,7 @@ export function dispatchClick(element: Element): boolean {
 
 	if (element instanceof HTMLElement && isEditable(element)) {
 		window.focus();
-		const selection = globalThis.getSelection();
+		const selection = getSelection();
 
 		// This handles an issue where the element doesn't focus (Notion)
 		if (selection && !element.contains(selection.anchorNode)) {

@@ -205,11 +205,11 @@ export function addMessageListeners() {
 	});
 
 	onMessage("historyGoBack", () => {
-		globalThis.history.back();
+		history.back();
 	});
 
 	onMessage("historyGoForward", () => {
-		globalThis.history.forward();
+		history.forward();
 	});
 
 	onMessage("navigateToNextPage", navigateToNextPage);
@@ -217,7 +217,7 @@ export function addMessageListeners() {
 	onMessage("navigateToPreviousPage", navigateToPreviousPage);
 
 	onMessage("navigateToPageRoot", () => {
-		globalThis.location.href = "/";
+		location.href = "/";
 	});
 
 	onMessage("markHintsForInclusion", async ({ target }) => {

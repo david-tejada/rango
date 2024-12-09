@@ -21,7 +21,7 @@ export function setSelectionAtEdge(target: Element, atStart: boolean) {
 		range.selectNodeContents(targetNode);
 
 		range.collapse(atStart);
-		const selection = globalThis.getSelection();
+		const selection = getSelection();
 		assertDefined(selection);
 		selection.removeAllRanges();
 		selection.addRange(range);

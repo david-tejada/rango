@@ -11,7 +11,7 @@ test("Hint outer div position should be relative for elements overflowing if the
 		"li:nth-child(20) > .rango-hint",
 		(shadowHost) => {
 			const outer = shadowHost.shadowRoot?.querySelector(".outer");
-			if (outer) return globalThis.getComputedStyle(outer).position;
+			if (outer) return getComputedStyle(outer).position;
 			return undefined;
 		}
 	);
@@ -29,7 +29,7 @@ test("Hint outer div position should be absolute for elements overflowing if the
 		"ul.relative > li:nth-child(20) > .rango-hint",
 		(shadowHost) => {
 			const outer = shadowHost.shadowRoot?.querySelector(".outer");
-			if (outer) return globalThis.getComputedStyle(outer).position;
+			if (outer) return getComputedStyle(outer).position;
 			return undefined;
 		}
 	);

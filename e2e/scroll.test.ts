@@ -1,11 +1,11 @@
 /* eslint-disable max-nested-callbacks */
 import { type ElementHandle } from "puppeteer";
+import { getHintForElement } from "./utils/getHintForElement";
 import {
 	rangoCommandWithoutTarget,
 	rangoCommandWithTarget,
 } from "./utils/rangoCommands";
 import { sleep } from "./utils/testHelpers";
-import { getHintForElement } from "./utils/getHintForElement";
 
 jest.retryTimes(3);
 
@@ -25,7 +25,7 @@ async function getActionableHint(containerSelector: string, top = true) {
 		left: cLeft,
 	} = await $container!.evaluate((container) => {
 		const { top, right, bottom, left } = container.getBoundingClientRect();
-		if (globalThis.getComputedStyle(container).overflow === "visible") {
+		if (getComputedStyle(container).overflow === "visible") {
 			return {
 				top: 0,
 				right: document.documentElement.clientWidth,

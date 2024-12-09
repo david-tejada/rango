@@ -66,7 +66,7 @@ export async function showReferences() {
 }
 
 export async function getReferences() {
-	const hostPattern = getHostPattern(globalThis.location.href);
+	const hostPattern = getHostPattern(location.href);
 	const references = getSetting("references");
 	const hostReferences =
 		references.get(hostPattern) ?? new Map<string, string>();
