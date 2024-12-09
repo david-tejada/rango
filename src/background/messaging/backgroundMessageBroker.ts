@@ -9,6 +9,7 @@ import {
 	getTargetMarkType,
 	getTargetValues,
 } from "../../common/target/targetConversion";
+import { TargetError } from "../../common/target/TargetError";
 import {
 	type BackgroundBoundMessageMap,
 	type ContentBoundMessageMap,
@@ -22,7 +23,6 @@ import {
 	type FuzzyTextElementMark,
 	type Target,
 } from "../../typings/Target/Target";
-import { assertDefined } from "../../typings/TypingUtils";
 import { getRequiredStack } from "../hints/labels/labelStack";
 import { getCurrentTabId } from "../tabs/getCurrentTab";
 import { assertReferencesInCurrentTab } from "../target/references";
@@ -305,7 +305,9 @@ async function splitElementHintTargetByFrame(
 
 	for (const hint of hints) {
 		const frameId = stack.assigned.get(hint);
-		assertDefined(frameId, `Couldn't find mark "${hint}".`);
+		if (frameId === undefined) {
+			throw new TargetError(`Couldn't find mark "${hint}".`);
+		}
 
 		hintsByFrame.set(frameId, [...(hintsByFrame.get(frameId) ?? []), hint]);
 	}
