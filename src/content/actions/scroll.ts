@@ -22,9 +22,7 @@ export function getScrollBehavior() {
 	const scrollBehavior = getSetting("scrollBehavior");
 
 	if (scrollBehavior === "auto") {
-		const mediaQuery = globalThis.matchMedia(
-			"(prefers-reduced-motion: reduce)"
-		);
+		const mediaQuery = matchMedia("(prefers-reduced-motion: reduce)");
 		return !mediaQuery || mediaQuery.matches ? "instant" : "smooth";
 	}
 
@@ -73,7 +71,7 @@ function isScrollable(
 	direction: "horizontal" | "vertical"
 ) {
 	const { clientHeight, clientWidth, scrollHeight, scrollWidth } = element;
-	const { overflowX, overflowY } = globalThis.getComputedStyle(element);
+	const { overflowX, overflowY } = getComputedStyle(element);
 
 	if (direction === "horizontal" && clientWidth !== scrollWidth) {
 		if (element === document.documentElement) return true;
@@ -245,7 +243,7 @@ export function snapScroll(
 			}
 
 			const { position, display, visibility, opacity } =
-				globalThis.getComputedStyle(element);
+				getComputedStyle(element);
 
 			if (
 				display !== "none" &&
@@ -278,7 +276,7 @@ export function snapScroll(
 					}
 
 					const { position, display, visibility, opacity } =
-						globalThis.getComputedStyle(element);
+						getComputedStyle(element);
 
 					if (
 						display !== "none" &&

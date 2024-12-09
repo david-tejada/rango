@@ -1,7 +1,7 @@
 import { getBoundingClientRect } from "../hints/layoutCache";
 
 export function isVisible(element: Element): boolean {
-	const { visibility, opacity } = globalThis.getComputedStyle(element);
+	const { visibility, opacity } = getComputedStyle(element);
 	const { width, height } = getBoundingClientRect(element);
 
 	if (visibility === "hidden" || width < 5 || height < 5 || opacity === "0") {
@@ -29,7 +29,7 @@ export function isVisible(element: Element): boolean {
 	let counter = 0;
 
 	while (current && counter < 4) {
-		const { opacity } = globalThis.getComputedStyle(current);
+		const { opacity } = getComputedStyle(current);
 		if (opacity === "0") {
 			return false;
 		}

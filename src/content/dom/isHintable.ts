@@ -67,7 +67,7 @@ function isRedundant(target: Element) {
 }
 
 export function isHintableExtra(target: Element): boolean {
-	const { cursor } = globalThis.getComputedStyle(target);
+	const { cursor } = getComputedStyle(target);
 
 	if (
 		(cursor === "pointer" ||

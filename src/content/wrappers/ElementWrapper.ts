@@ -466,8 +466,8 @@ export class ElementWrapper {
 				this.element.getAttribute("href") &&
 				// Issue #213: Open Discord's internal links in the same tab.
 				!(
-					globalThis.location.host === "discord.com" &&
-					globalThis.location.host === new URL(this.element.href).host
+					location.host === "discord.com" &&
+					location.host === new URL(this.element.href).host
 				)
 			) {
 				// In Firefox if we click a link with target="_blank" we get a popup

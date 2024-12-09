@@ -67,11 +67,11 @@ export async function updateTitleDecorations() {
 	document.title = prefix + lastUndecoratedTitle + suffix;
 	lastDecoratedTitle = document.title;
 
-	if (suffix) lastUrlAdded = globalThis.location.href;
+	if (suffix) lastUrlAdded = location.href;
 }
 
 async function removeDecorations(title: string) {
-	const possibleSuffix = ` - ${lastUrlAdded ?? globalThis.location.href}`;
+	const possibleSuffix = ` - ${lastUrlAdded ?? location.href}`;
 	if (title.endsWith(possibleSuffix)) {
 		title = title.slice(0, -possibleSuffix.length);
 	}
@@ -94,7 +94,7 @@ async function getTitlePrefix() {
 
 function getTitleSuffix() {
 	if (getSetting("urlInTitle")) {
-		return ` - ${globalThis.location.href}`;
+		return ` - ${location.href}`;
 	}
 
 	return "";

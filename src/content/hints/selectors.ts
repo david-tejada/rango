@@ -37,7 +37,7 @@ export async function updateCustomSelectors() {
 	for (const { pattern, type, selector } of customSelectors.values()) {
 		const patternRe = new RegExp(pattern);
 
-		if (patternRe.test(globalThis.location.href)) {
+		if (patternRe.test(location.href)) {
 			if (type === "include") {
 				include.push(selector);
 			} else {

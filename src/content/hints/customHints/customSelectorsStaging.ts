@@ -100,7 +100,7 @@ export function pickSelectorAlternative(options: {
  * @returns An array with the selectors that were added
  */
 export async function saveCustomSelectors() {
-	const pattern = getHostPattern(globalThis.location.href);
+	const pattern = getHostPattern(location.href);
 	const newCustomSelectors: CustomSelector[] = [];
 
 	for (const selector of includeSelectors) {
@@ -114,7 +114,7 @@ export async function saveCustomSelectors() {
 	// Even if both include and exclude are empty arrays we need to send the
 	// message to the background script to handle notifications
 	await sendMessage("storeCustomSelectors", {
-		url: globalThis.location.href,
+		url: location.href,
 		selectors: newCustomSelectors,
 	});
 

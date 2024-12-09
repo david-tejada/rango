@@ -148,7 +148,7 @@ function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {
 	for (const descendant of descendants) {
 		if (createsStackingContext(descendant)) {
 			const descendantIndex = Number.parseInt(
-				globalThis.getComputedStyle(descendant).zIndex,
+				getComputedStyle(descendant).zIndex,
 				10
 			);
 			if (!Number.isNaN(descendantIndex)) {
@@ -164,7 +164,7 @@ function calculateZIndex(target: Element, hintOuter: HTMLDivElement) {
 
 		if (createsStackingContext(current)) {
 			const currentIndex = Number.parseInt(
-				globalThis.getComputedStyle(current).zIndex,
+				getComputedStyle(current).zIndex,
 				10
 			);
 			zIndex = Number.isNaN(currentIndex) ? 0 : currentIndex;
@@ -453,7 +453,7 @@ export class Hint {
 			} else {
 				const elementToGetColorFrom =
 					this.firstTextNodeDescendant?.parentElement;
-				let colorString = globalThis.getComputedStyle(
+				let colorString = getComputedStyle(
 					elementToGetColorFrom ?? this.target
 				).color;
 				colorString = colorString.startsWith("rgb")
@@ -536,7 +536,7 @@ export class Hint {
 
 		// We need to calculate this here the first time the hint is appended
 		if (this.wrapperRelative === undefined) {
-			const { display } = globalThis.getComputedStyle(
+			const { display } = getComputedStyle(
 				this.container instanceof HTMLElement
 					? this.container
 					: this.container.host
@@ -597,7 +597,7 @@ export class Hint {
 		// simple solution is to, when possible, place the hint as close to the
 		// hinted element as possible
 		if (this.elementToPositionHint instanceof Text) {
-			const { fontSize } = globalThis.getComputedStyle(
+			const { fontSize } = getComputedStyle(
 				this.elementToPositionHint.parentElement!
 			);
 			const fontSizePixels = Number.parseInt(fontSize, 10);

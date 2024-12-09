@@ -15,7 +15,7 @@ test("The URL and the tab marker are attached to the title", async () => {
 test("If something in the page changes and the URL changes it updates the title", async () => {
 	await page.evaluate(() => {
 		document.body.innerHTML = "<h1>New page</h1>";
-		globalThis.history.pushState({}, "", "new.html");
+		history.pushState({}, "", "new.html");
 	});
 
 	await sleep(200);
