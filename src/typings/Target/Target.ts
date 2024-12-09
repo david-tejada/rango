@@ -14,8 +14,8 @@ export type FuzzyTextElementMark = {
 	prioritizeViewport: boolean;
 };
 
-export type TabHintMark = {
-	type: "tabHint";
+export type TabMarkerMark = {
+	type: "tabMarker";
 	value: string;
 };
 
@@ -24,7 +24,7 @@ export type ElementMark =
 	| ElementReferenceMark
 	| FuzzyTextElementMark;
 
-export type TabMark = TabHintMark;
+export type TabMark = TabMarkerMark;
 
 export type Mark = ElementMark | TabMark;
 
