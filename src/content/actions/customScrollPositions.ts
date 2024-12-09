@@ -16,13 +16,14 @@ export async function storeScrollPosition(name: string) {
 
 	const scrollPositions = getSetting("customScrollPositions");
 	const scrollPositionsForCurrentPage =
-		scrollPositions.get(window.location.origin + window.location.pathname) ??
-		new Map<string, number>();
+		scrollPositions.get(
+			globalThis.location.origin + globalThis.location.pathname
+		) ?? new Map<string, number>();
 
 	scrollPositionsForCurrentPage.set(name, scrollTop);
 
 	scrollPositions.set(
-		window.location.origin + window.location.pathname,
+		globalThis.location.origin + globalThis.location.pathname,
 		scrollPositionsForCurrentPage
 	);
 	await store("customScrollPositions", scrollPositions);
@@ -35,8 +36,9 @@ export async function scrollToPosition(name: string) {
 
 	const scrollPositions = getSetting("customScrollPositions");
 	const scrollPositionsForCurrentPage =
-		scrollPositions.get(window.location.origin + window.location.pathname) ??
-		new Map<string, number>();
+		scrollPositions.get(
+			globalThis.location.origin + globalThis.location.pathname
+		) ?? new Map<string, number>();
 
 	const scrollPositionsArray = [...scrollPositionsForCurrentPage].map(
 		([name, number]) => ({ name, number })

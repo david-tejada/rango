@@ -82,7 +82,7 @@ function isImage(element: Element) {
 		(backgroundImage !== "none" ||
 			(Boolean(maskImage) && maskImage !== "none"));
 
-	const { content } = window.getComputedStyle(element, ":before");
+	const { content } = globalThis.getComputedStyle(element, ":before");
 	const isFontIcon =
 		element.tagName === "I" && content !== "none" && content !== "normal";
 

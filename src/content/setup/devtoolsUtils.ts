@@ -25,7 +25,7 @@ export function loadDevtoolsUtils() {
 				const wrapper = getWrapper(target);
 				console.log(wrapper);
 			},
-			window,
+			globalThis,
 			{ defineAs: "logWrapper" }
 		);
 
@@ -34,7 +34,7 @@ export function loadDevtoolsUtils() {
 				const wrappers = onlyHinted ? getHintedWrappers() : getAllWrappers();
 				console.log(wrappers);
 			},
-			window,
+			globalThis,
 			{ defineAs: "logWrappers" }
 		);
 
@@ -43,7 +43,7 @@ export function loadDevtoolsUtils() {
 				const stack = await getLabelStackForTab();
 				console.log(stack);
 			},
-			window,
+			globalThis,
 			{ defineAs: "logLabelStack" }
 		);
 
@@ -51,7 +51,7 @@ export function loadDevtoolsUtils() {
 			async () => {
 				console.log(getLabelCache());
 			},
-			window,
+			globalThis,
 			{ defineAs: "logLabelCache" }
 		);
 	}

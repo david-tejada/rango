@@ -25,7 +25,7 @@ async function getActionableHint(containerSelector: string, top = true) {
 		left: cLeft,
 	} = await $container!.evaluate((container) => {
 		const { top, right, bottom, left } = container.getBoundingClientRect();
-		if (window.getComputedStyle(container).overflow === "visible") {
+		if (globalThis.getComputedStyle(container).overflow === "visible") {
 			return {
 				top: 0,
 				right: document.documentElement.clientWidth,

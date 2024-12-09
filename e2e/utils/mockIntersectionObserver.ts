@@ -23,4 +23,4 @@ class MockIntersectionObserver {
 	unobserve() {}
 }
 
-window.IntersectionObserver = MockIntersectionObserver;
+globalThis.IntersectionObserver = MockIntersectionObserver;

@@ -10,7 +10,10 @@ async function testKeyboardClickingHighlighting(frame?: Frame) {
 		".rango-hint",
 		(element) => {
 			const inner = element.shadowRoot!.querySelector(".inner")!;
-			return Number.parseInt(window.getComputedStyle(inner).borderWidth, 10);
+			return Number.parseInt(
+				globalThis.getComputedStyle(inner).borderWidth,
+				10
+			);
 		}
 	);
 
@@ -21,7 +24,7 @@ async function testKeyboardClickingHighlighting(frame?: Frame) {
 		".rango-hint",
 		(element) => {
 			const inner = element.shadowRoot!.querySelector(".inner")!;
-			const style = window.getComputedStyle(inner);
+			const style = globalThis.getComputedStyle(inner);
 			return [Number.parseInt(style.borderWidth, 10), style.borderColor];
 		}
 	);
@@ -35,7 +38,7 @@ async function testKeyboardClickingHighlighting(frame?: Frame) {
 	const [borderWidthAfterCompletion, borderColorAfterCompletion] =
 		await pageOrFrame.$eval(".rango-hint", (element) => {
 			const inner = element.shadowRoot!.querySelector(".inner")!;
-			const style = window.getComputedStyle(inner);
+			const style = globalThis.getComputedStyle(inner);
 			return [Number.parseInt(style.borderWidth, 10), style.borderColor];
 		});
 

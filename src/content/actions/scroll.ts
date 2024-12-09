@@ -22,7 +22,9 @@ export function getScrollBehavior() {
 	const scrollBehavior = getSetting("scrollBehavior");
 
 	if (scrollBehavior === "auto") {
-		const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
+		const mediaQuery = globalThis.matchMedia(
+			"(prefers-reduced-motion: reduce)"
+		);
 		return !mediaQuery || mediaQuery.matches ? "instant" : "smooth";
 	}
 
@@ -71,7 +73,7 @@ function isScrollable(
 	direction: "horizontal" | "vertical"
 ) {
 	const { clientHeight, clientWidth, scrollHeight, scrollWidth } = element;
-	const { overflowX, overflowY } = window.getComputedStyle(element);
+	const { overflowX, overflowY } = globalThis.getComputedStyle(element);
 
 	if (direction === "horizontal" && clientWidth !== scrollWidth) {
 		if (element === document.documentElement) return true;
@@ -243,7 +245,7 @@ export function snapScroll(
 			}
 
 			const { position, display, visibility, opacity } =
-				window.getComputedStyle(element);
+				globalThis.getComputedStyle(element);
 
 			if (
 				display !== "none" &&
@@ -259,7 +261,7 @@ export function snapScroll(
 		// Handle the cases where the sticky header wasn't in its final position
 		// before scrolling.
 		(scrollContainer === document.documentElement
-			? window
+			? globalThis
 			: scrollContainer
 		).addEventListener(
 			"scrollend",
@@ -276,7 +278,7 @@ export function snapScroll(
 					}
 
 					const { position, display, visibility, opacity } =
-						window.getComputedStyle(element);
+						globalThis.getComputedStyle(element);
 
 					if (
 						display !== "none" &&

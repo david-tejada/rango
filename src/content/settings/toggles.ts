@@ -16,9 +16,9 @@ export function getToggles() {
 	} = getAllSettings();
 
 	const tabSwitch = hintsToggleTabs.get(getTabId());
-	const hostSwitch = hintsToggleHosts.get(window.location.host);
+	const hostSwitch = hintsToggleHosts.get(globalThis.location.host);
 	const pathSwitch = hintsTogglePaths.get(
-		window.location.origin + window.location.pathname
+		globalThis.location.origin + globalThis.location.pathname
 	);
 
 	return {

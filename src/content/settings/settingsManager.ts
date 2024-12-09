@@ -26,7 +26,7 @@ export async function initSettingsManager() {
 			if (document.visibilityState === "visible") {
 				await handleSettingChange(changes);
 			} else {
-				window.requestIdleCallback(async () => {
+				globalThis.requestIdleCallback(async () => {
 					await handleSettingChange(changes);
 				});
 			}
