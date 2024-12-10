@@ -173,13 +173,13 @@ export function addMessageListeners() {
 	onMessage("setSelectionBefore", async ({ target }) => {
 		const wrapper = await getFirstWrapper(target);
 
-		await setSelectionBefore(wrapper);
+		return setSelectionBefore(wrapper);
 	});
 
 	onMessage("setSelectionAfter", async ({ target }) => {
 		const wrapper = await getFirstWrapper(target);
 
-		await setSelectionAfter(wrapper);
+		return setSelectionAfter(wrapper);
 	});
 
 	onMessage("scroll", async ({ dir, reference, factor }) => {

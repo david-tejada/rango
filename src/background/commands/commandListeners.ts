@@ -455,10 +455,11 @@ export function addCommandListeners() {
 		const documentHasFocus = await tryToFocusDocument();
 		if (!documentHasFocus) return { name: "focusPageAndResend" };
 
-		await sendMessageToTargetFrames("setSelectionBefore", {
+		const { results } = await sendMessageToTargetFrames("setSelectionBefore", {
 			target,
 		});
-		return undefined;
+
+		return results[0] ? undefined : { name: "editLineStart" };
 	});
 
 	onCommand("setSelectionAfter", async ({ target }) => {
@@ -467,10 +468,11 @@ export function addCommandListeners() {
 		const documentHasFocus = await tryToFocusDocument();
 		if (!documentHasFocus) return { name: "focusPageAndResend" };
 
-		await sendMessageToTargetFrames("setSelectionAfter", {
+		const { results } = await sendMessageToTargetFrames("setSelectionAfter", {
 			target,
 		});
-		return undefined;
+
+		return results[0] ? undefined : { name: "editLineEnd" };
 	});
 
 	onCommand("tryToFocusElementAndCheckIsEditable", async ({ target }) => {

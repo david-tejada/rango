@@ -77,8 +77,8 @@ export type ContentBoundMessageMap = {
 	focusFirstInput: () => void;
 	hoverElement: (data: { target: Target<ElementMark> }) => void;
 	unhoverAll: () => void;
-	setSelectionBefore: (data: { target: Target<ElementMark> }) => void;
-	setSelectionAfter: (data: { target: Target<ElementMark> }) => void;
+	setSelectionBefore: (data: { target: Target<ElementMark> }) => boolean;
+	setSelectionAfter: (data: { target: Target<ElementMark> }) => boolean;
 
 	// Scroll
 	scroll: (data: {
