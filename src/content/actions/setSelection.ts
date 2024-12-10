@@ -8,8 +8,15 @@ export function setSelectionAtEdge(target: Element, atStart: boolean) {
 		target instanceof HTMLInputElement ||
 		target instanceof HTMLTextAreaElement
 	) {
-		const selectionOffset = atStart ? 0 : target.value.length;
-		target.setSelectionRange(selectionOffset, selectionOffset);
+		// Some input types like `number` and `email` throw an error when setting
+		// the selection range. In those cases we return false so that we can move
+		// the cursor to the start of the line with talon.
+		try {
+			const selectionOffset = atStart ? 0 : target.value.length;
+			target.setSelectionRange(selectionOffset, selectionOffset);
+		} catch {
+			return false;
+		}
 	} else {
 		const textNode = atStart
 			? findFirstTextNode(target)
@@ -26,14 +33,34 @@ export function setSelectionAtEdge(target: Element, atStart: boolean) {
 		selection.removeAllRanges();
 		selection.addRange(range);
 	}
+
+	return true;
 }
 
+/**
+ * Set the selection to the start of the editable element.
+ *
+ * @returns `true` if the selection was set, `false` otherwise.
+ *
+ * @throws If no editable element was found.
+ */
 export async function setSelectionBefore(wrapper: ElementWrapper) {
 	const editableWrapper = await activateEditable(wrapper);
-	if (editableWrapper) setSelectionAtEdge(editableWrapper.element, true);
+	if (!editableWrapper) throw new Error("No editable element found");
+
+	return setSelectionAtEdge(editableWrapper.element, true);
 }
 
+/**
+ * Set the selection to the end of the editable element.
+ *
+ * @returns `true` if the selection was set, `false` otherwise.
+ *
+ * @throws If no editable element was found.
+ */
 export async function setSelectionAfter(wrapper: ElementWrapper) {
 	const editableWrapper = await activateEditable(wrapper);
-	if (editableWrapper) setSelectionAtEdge(editableWrapper.element, false);
+	if (!editableWrapper) throw new Error("No editable element found");
+
+	return setSelectionAtEdge(editableWrapper.element, false);
 }
