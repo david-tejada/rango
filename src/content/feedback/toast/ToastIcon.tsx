@@ -1,3 +1,4 @@
+import { config, dom } from "@fortawesome/fontawesome-svg-core";
 import {
 	faCircleCheck,
 	faCircleExclamation,
@@ -5,10 +6,15 @@ import {
 	faMinus,
 	faToggleOff,
 	faToggleOn,
-	faTriangleExclamation,
 	faTrash,
+	faTriangleExclamation,
 } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useEffect, useRef } from "react";
+
+// Prevent FontAwesome from dynamically adding its styles since we need them in
+// shadow root
+config.autoAddCss = false;
 
 const icons = {
 	info: { icon: faCircleInfo, color: "#0ea5e9" },
@@ -26,8 +32,27 @@ type ToastIconProps = {
 };
 
 export function ToastIcon({ iconType }: ToastIconProps) {
+	const iconRef = useRef<HTMLSpanElement>(null);
+
+	useEffect(() => {
+		const element = iconRef.current;
+		if (!element) return;
+
+		const shadowRoot = element.getRootNode() as ShadowRoot;
+		if (shadowRoot && !shadowRoot.querySelector("#fa-styles")) {
+			const faStyle = document.createElement("style");
+			faStyle.id = "fa-styles";
+			faStyle.textContent = dom.css();
+			shadowRoot.prepend(faStyle);
+		}
+	}, []);
+
 	const faIcon = icons[iconType].icon;
 	const color = icons[iconType].color;
 
-	return <FontAwesomeIcon icon={faIcon} size="xl" style={{ color }} />;
+	return (
+		<span ref={iconRef}>
+			<FontAwesomeIcon icon={faIcon} size="xl" style={{ color }} />
+		</span>
+	);
 }

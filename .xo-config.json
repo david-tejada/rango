@@ -20,7 +20,8 @@
 			"never",
 			{
 				"png": "always",
-				"html": "always"
+				"html": "always",
+				"css": "always"
 			}
 		],
 		"unicorn/filename-case": [
@@ -34,20 +35,7 @@
 		],
 		"complexity": "off",
 		"@typescript-eslint/ban-types": "off",
-		"unicorn/prevent-abbreviations": [
-			"error",
-			{
-				"extendDefaultAllowList": true,
-				"allowList": {
-					"arg": true,
-					"args": true,
-					"i": true
-				},
-				"replacements": {
-					"props": false
-				}
-			}
-		]
+		"unicorn/prevent-abbreviations": "off"
 	},
 	"overrides": [
 		{

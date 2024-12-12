@@ -1,5 +1,9 @@
-import { createRoot } from "react-dom/client";
-import { type ToastOptions, toast } from "react-toastify";
+import * as toastCSS from "bundle-text:./toast/Toast.css";
+import * as toastifyCSS from "bundle-text:./toast/toastify.css";
+import * as toastTogglesCSS from "bundle-text:./toast/ToastTogglesMessage.css";
+import { createRoot, type Root } from "react-dom/client";
+import { toast, type ToastOptions } from "react-toastify";
+import { createElement } from "../dom/utils";
 import { getSetting } from "../settings/settingsManager";
 import { isCurrentTab, isMainFrame } from "../setup/contentScriptContext";
 import { Toast } from "./toast/Toast";
@@ -7,15 +11,41 @@ import { ToastIcon } from "./toast/ToastIcon";
 import { ToastMessage } from "./toast/ToastMessage";
 import { TogglesStatusMessage } from "./toast/ToastTogglesMessage";
 
-function renderToast() {
-	let toastContainer = document.querySelector("#rango-toast");
+let toastRoot: Root | undefined;
 
-	if (!toastContainer) {
-		toastContainer = document.createElement("div");
-		toastContainer.id = "rango-toast";
-		document.body.append(toastContainer);
-		const root = createRoot(toastContainer);
-		root.render(<Toast />);
+function renderToast() {
+	let shadowHost = document.querySelector("#rango-toast");
+
+	if (shadowHost && toastRoot) {
+		return;
+	}
+
+	if (!shadowHost) {
+		shadowHost = createElement("div", { id: "rango-toast" });
+		const shadowRoot = shadowHost.attachShadow({ mode: "open" });
+
+		shadowRoot.append(
+			createElement("style", {
+				id: "toastify-styles",
+				textContent: toastifyCSS,
+			}),
+			createElement("style", {
+				id: "toast-styles",
+				textContent: toastCSS,
+			}),
+			createElement("style", {
+				id: "toast-toggles-styles",
+				textContent: toastTogglesCSS,
+			})
+		);
+
+		document.body.append(shadowHost);
+	}
+
+	const shadowRoot = shadowHost.shadowRoot;
+	if (shadowRoot) {
+		toastRoot = createRoot(shadowRoot);
+		toastRoot.render(<Toast />);
 	}
 }
 

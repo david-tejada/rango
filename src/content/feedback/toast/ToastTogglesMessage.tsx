@@ -1,7 +1,6 @@
 import { getToggles } from "../../settings/toggles";
 import { ToastIcon } from "./ToastIcon";
 import { ToastMessage } from "./ToastMessage";
-import "./ToastTogglesMessage.css";
 
 function getIconType(value: boolean | undefined) {
 	if (value === undefined) return "unset";

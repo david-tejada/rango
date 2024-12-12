@@ -55,3 +55,17 @@ export function getFocusable(element: Element) {
 		: (element.querySelector(focusableSelector) ??
 				element.closest(focusableSelector));
 }
+
+/**
+ * Creates an element with the given tag and attributes.
+ *
+ * @param tag The tag name of the element to create
+ * @param attributes The attributes to set on the element
+ * @returns The created element
+ */
+export function createElement<K extends keyof HTMLElementTagNameMap>(
+	tag: K,
+	attributes: Partial<HTMLElementTagNameMap[K]>
+) {
+	return Object.assign(document.createElement(tag), attributes);
+}
