@@ -7,26 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		63F487932D00407A00BE8269 /* offscreen.a61bb80b.html in Resources */ = {isa = PBXBuildFile; fileRef = 63F4878A2D00407A00BE8269 /* offscreen.a61bb80b.html */; };
-		63F487942D00407A00BE8269 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 63F487882D00407A00BE8269 /* manifest.json */; };
-		63F487952D00407A00BE8269 /* content.b723d995.css in Resources */ = {isa = PBXBuildFile; fileRef = 63F487812D00407A00BE8269 /* content.b723d995.css */; };
-		63F487962D00407A00BE8269 /* settings.db0fd559.html in Resources */ = {isa = PBXBuildFile; fileRef = 63F4878D2D00407A00BE8269 /* settings.db0fd559.html */; };
-		63F487972D00407A00BE8269 /* onboarding.b6199567.html in Resources */ = {isa = PBXBuildFile; fileRef = 63F4878B2D00407A00BE8269 /* onboarding.b6199567.html */; };
-		63F487982D00407A00BE8269 /* settings.runtime.12e0b2a1.js in Resources */ = {isa = PBXBuildFile; fileRef = 63F4878F2D00407A00BE8269 /* settings.runtime.12e0b2a1.js */; };
-		63F487992D00407A00BE8269 /* icon-keyboard-clicking48.ac857c64.png in Resources */ = {isa = PBXBuildFile; fileRef = 63F487832D00407A00BE8269 /* icon-keyboard-clicking48.ac857c64.png */; };
-		63F4879A2D00407A00BE8269 /* icon48.ace12d5e.png in Resources */ = {isa = PBXBuildFile; fileRef = 63F487862D00407A00BE8269 /* icon48.ace12d5e.png */; };
-		63F4879B2D00407A00BE8269 /* icon128.8b6ee0ac.png in Resources */ = {isa = PBXBuildFile; fileRef = 63F487872D00407A00BE8269 /* icon128.8b6ee0ac.png */; };
-		63F4879C2D00407A00BE8269 /* background.runtime.45ec5fa6.js in Resources */ = {isa = PBXBuildFile; fileRef = 63F487802D00407A00BE8269 /* background.runtime.45ec5fa6.js */; };
-		63F4879D2D00407A00BE8269 /* icon.d20d9b97.svg in Resources */ = {isa = PBXBuildFile; fileRef = 63F487842D00407A00BE8269 /* icon.d20d9b97.svg */; };
-		63F4879E2D00407A00BE8269 /* settings.e932913c.js in Resources */ = {isa = PBXBuildFile; fileRef = 63F4878E2D00407A00BE8269 /* settings.e932913c.js */; };
-		63F4879F2D00407A00BE8269 /* tippy.a5573b16.css in Resources */ = {isa = PBXBuildFile; fileRef = 63F487902D00407A00BE8269 /* tippy.a5573b16.css */; };
-		63F487A02D00407A00BE8269 /* settings.c8a6c321.css in Resources */ = {isa = PBXBuildFile; fileRef = 63F4878C2D00407A00BE8269 /* settings.c8a6c321.css */; };
-		63F487A12D00407A00BE8269 /* whatsNew.e79f552b.css in Resources */ = {isa = PBXBuildFile; fileRef = 63F487922D00407A00BE8269 /* whatsNew.e79f552b.css */; };
-		63F487A22D00407A00BE8269 /* content.d5600b6a.js in Resources */ = {isa = PBXBuildFile; fileRef = 63F487822D00407A00BE8269 /* content.d5600b6a.js */; };
-		63F487A32D00407A00BE8269 /* background.ec971b02.js in Resources */ = {isa = PBXBuildFile; fileRef = 63F4877F2D00407A00BE8269 /* background.ec971b02.js */; };
-		63F487A42D00407A00BE8269 /* icon.f5383140.svg in Resources */ = {isa = PBXBuildFile; fileRef = 63F487852D00407A00BE8269 /* icon.f5383140.svg */; };
-		63F487A52D00407A00BE8269 /* offscreen.18275b4d.js in Resources */ = {isa = PBXBuildFile; fileRef = 63F487892D00407A00BE8269 /* offscreen.18275b4d.js */; };
-		63F487A62D00407A00BE8269 /* whatsNew.0b415932.html in Resources */ = {isa = PBXBuildFile; fileRef = 63F487912D00407A00BE8269 /* whatsNew.0b415932.html */; };
+		63A9F3B92D0AF8AB0082F9FC /* offscreen.a61bb80b.html in Resources */ = {isa = PBXBuildFile; fileRef = 63A9F3B12D0AF8AB0082F9FC /* offscreen.a61bb80b.html */; };
+		63A9F3BA2D0AF8AB0082F9FC /* settings.e932913c.js in Resources */ = {isa = PBXBuildFile; fileRef = 63A9F3B52D0AF8AB0082F9FC /* settings.e932913c.js */; };
+		63A9F3BB2D0AF8AB0082F9FC /* onboarding.b6199567.html in Resources */ = {isa = PBXBuildFile; fileRef = 63A9F3B22D0AF8AB0082F9FC /* onboarding.b6199567.html */; };
+		63A9F3BC2D0AF8AB0082F9FC /* whatsNew.e79f552b.css in Resources */ = {isa = PBXBuildFile; fileRef = 63A9F3B82D0AF8AB0082F9FC /* whatsNew.e79f552b.css */; };
+		63A9F3BD2D0AF8AB0082F9FC /* icon128.8b6ee0ac.png in Resources */ = {isa = PBXBuildFile; fileRef = 63A9F3AE2D0AF8AB0082F9FC /* icon128.8b6ee0ac.png */; };
+		63A9F3BE2D0AF8AB0082F9FC /* settings.c8a6c321.css in Resources */ = {isa = PBXBuildFile; fileRef = 63A9F3B32D0AF8AB0082F9FC /* settings.c8a6c321.css */; };
+		63A9F3BF2D0AF8AB0082F9FC /* background.ec971b02.js in Resources */ = {isa = PBXBuildFile; fileRef = 63A9F3A82D0AF8AB0082F9FC /* background.ec971b02.js */; };
+		63A9F3C02D0AF8AB0082F9FC /* whatsNew.0b415932.html in Resources */ = {isa = PBXBuildFile; fileRef = 63A9F3B72D0AF8AB0082F9FC /* whatsNew.0b415932.html */; };
+		63A9F3C12D0AF8AB0082F9FC /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 63A9F3AF2D0AF8AB0082F9FC /* manifest.json */; };
+		63A9F3C22D0AF8AB0082F9FC /* icon-keyboard-clicking48.ac857c64.png in Resources */ = {isa = PBXBuildFile; fileRef = 63A9F3AA2D0AF8AB0082F9FC /* icon-keyboard-clicking48.ac857c64.png */; };
+		63A9F3C32D0AF8AB0082F9FC /* tippy.a5573b16.css in Resources */ = {isa = PBXBuildFile; fileRef = 63A9F3B62D0AF8AB0082F9FC /* tippy.a5573b16.css */; };
+		63A9F3C42D0AF8AB0082F9FC /* offscreen.18275b4d.js in Resources */ = {isa = PBXBuildFile; fileRef = 63A9F3B02D0AF8AB0082F9FC /* offscreen.18275b4d.js */; };
+		63A9F3C52D0AF8AB0082F9FC /* content.d5600b6a.js in Resources */ = {isa = PBXBuildFile; fileRef = 63A9F3A92D0AF8AB0082F9FC /* content.d5600b6a.js */; };
+		63A9F3C62D0AF8AB0082F9FC /* icon48.ace12d5e.png in Resources */ = {isa = PBXBuildFile; fileRef = 63A9F3AD2D0AF8AB0082F9FC /* icon48.ace12d5e.png */; };
+		63A9F3C72D0AF8AB0082F9FC /* icon.f5383140.svg in Resources */ = {isa = PBXBuildFile; fileRef = 63A9F3AC2D0AF8AB0082F9FC /* icon.f5383140.svg */; };
+		63A9F3C82D0AF8AB0082F9FC /* settings.db0fd559.html in Resources */ = {isa = PBXBuildFile; fileRef = 63A9F3B42D0AF8AB0082F9FC /* settings.db0fd559.html */; };
+		63A9F3C92D0AF8AB0082F9FC /* icon.d20d9b97.svg in Resources */ = {isa = PBXBuildFile; fileRef = 63A9F3AB2D0AF8AB0082F9FC /* icon.d20d9b97.svg */; };
 		E17BC8F8285E2315007EB9C6 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17BC8F7285E2315007EB9C6 /* Application.swift */; };
 		E1AEB977284D1D7800154974 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AEB976284D1D7800154974 /* AppDelegate.swift */; };
 		E1AEB97A284D1D7800154974 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E1AEB978284D1D7800154974 /* Main.storyboard */; };
@@ -65,26 +62,23 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		63F4877F2D00407A00BE8269 /* background.ec971b02.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = background.ec971b02.js; sourceTree = "<group>"; };
-		63F487802D00407A00BE8269 /* background.runtime.45ec5fa6.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = background.runtime.45ec5fa6.js; sourceTree = "<group>"; };
-		63F487812D00407A00BE8269 /* content.b723d995.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = content.b723d995.css; sourceTree = "<group>"; };
-		63F487822D00407A00BE8269 /* content.d5600b6a.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = content.d5600b6a.js; sourceTree = "<group>"; };
-		63F487832D00407A00BE8269 /* icon-keyboard-clicking48.ac857c64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-keyboard-clicking48.ac857c64.png"; sourceTree = "<group>"; };
-		63F487842D00407A00BE8269 /* icon.d20d9b97.svg */ = {isa = PBXFileReference; lastKnownFileType = text; path = icon.d20d9b97.svg; sourceTree = "<group>"; };
-		63F487852D00407A00BE8269 /* icon.f5383140.svg */ = {isa = PBXFileReference; lastKnownFileType = text; path = icon.f5383140.svg; sourceTree = "<group>"; };
-		63F487862D00407A00BE8269 /* icon48.ace12d5e.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon48.ace12d5e.png; sourceTree = "<group>"; };
-		63F487872D00407A00BE8269 /* icon128.8b6ee0ac.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon128.8b6ee0ac.png; sourceTree = "<group>"; };
-		63F487882D00407A00BE8269 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
-		63F487892D00407A00BE8269 /* offscreen.18275b4d.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = offscreen.18275b4d.js; sourceTree = "<group>"; };
-		63F4878A2D00407A00BE8269 /* offscreen.a61bb80b.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = offscreen.a61bb80b.html; sourceTree = "<group>"; };
-		63F4878B2D00407A00BE8269 /* onboarding.b6199567.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = onboarding.b6199567.html; sourceTree = "<group>"; };
-		63F4878C2D00407A00BE8269 /* settings.c8a6c321.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = settings.c8a6c321.css; sourceTree = "<group>"; };
-		63F4878D2D00407A00BE8269 /* settings.db0fd559.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = settings.db0fd559.html; sourceTree = "<group>"; };
-		63F4878E2D00407A00BE8269 /* settings.e932913c.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = settings.e932913c.js; sourceTree = "<group>"; };
-		63F4878F2D00407A00BE8269 /* settings.runtime.12e0b2a1.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = settings.runtime.12e0b2a1.js; sourceTree = "<group>"; };
-		63F487902D00407A00BE8269 /* tippy.a5573b16.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = tippy.a5573b16.css; sourceTree = "<group>"; };
-		63F487912D00407A00BE8269 /* whatsNew.0b415932.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = whatsNew.0b415932.html; sourceTree = "<group>"; };
-		63F487922D00407A00BE8269 /* whatsNew.e79f552b.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = whatsNew.e79f552b.css; sourceTree = "<group>"; };
+		63A9F3A82D0AF8AB0082F9FC /* background.ec971b02.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = background.ec971b02.js; sourceTree = "<group>"; };
+		63A9F3A92D0AF8AB0082F9FC /* content.d5600b6a.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = content.d5600b6a.js; sourceTree = "<group>"; };
+		63A9F3AA2D0AF8AB0082F9FC /* icon-keyboard-clicking48.ac857c64.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = "icon-keyboard-clicking48.ac857c64.png"; sourceTree = "<group>"; };
+		63A9F3AB2D0AF8AB0082F9FC /* icon.d20d9b97.svg */ = {isa = PBXFileReference; lastKnownFileType = text; path = icon.d20d9b97.svg; sourceTree = "<group>"; };
+		63A9F3AC2D0AF8AB0082F9FC /* icon.f5383140.svg */ = {isa = PBXFileReference; lastKnownFileType = text; path = icon.f5383140.svg; sourceTree = "<group>"; };
+		63A9F3AD2D0AF8AB0082F9FC /* icon48.ace12d5e.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon48.ace12d5e.png; sourceTree = "<group>"; };
+		63A9F3AE2D0AF8AB0082F9FC /* icon128.8b6ee0ac.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = icon128.8b6ee0ac.png; sourceTree = "<group>"; };
+		63A9F3AF2D0AF8AB0082F9FC /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = manifest.json; sourceTree = "<group>"; };
+		63A9F3B02D0AF8AB0082F9FC /* offscreen.18275b4d.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = offscreen.18275b4d.js; sourceTree = "<group>"; };
+		63A9F3B12D0AF8AB0082F9FC /* offscreen.a61bb80b.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = offscreen.a61bb80b.html; sourceTree = "<group>"; };
+		63A9F3B22D0AF8AB0082F9FC /* onboarding.b6199567.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = onboarding.b6199567.html; sourceTree = "<group>"; };
+		63A9F3B32D0AF8AB0082F9FC /* settings.c8a6c321.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = settings.c8a6c321.css; sourceTree = "<group>"; };
+		63A9F3B42D0AF8AB0082F9FC /* settings.db0fd559.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = settings.db0fd559.html; sourceTree = "<group>"; };
+		63A9F3B52D0AF8AB0082F9FC /* settings.e932913c.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; path = settings.e932913c.js; sourceTree = "<group>"; };
+		63A9F3B62D0AF8AB0082F9FC /* tippy.a5573b16.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = tippy.a5573b16.css; sourceTree = "<group>"; };
+		63A9F3B72D0AF8AB0082F9FC /* whatsNew.0b415932.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; path = whatsNew.0b415932.html; sourceTree = "<group>"; };
+		63A9F3B82D0AF8AB0082F9FC /* whatsNew.e79f552b.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; path = whatsNew.e79f552b.css; sourceTree = "<group>"; };
 		E17BC8F7285E2315007EB9C6 /* Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
 		E18784B1298EEFB50028A679 /* UserSpecific.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = UserSpecific.xcconfig; sourceTree = "<group>"; };
 		E18784B2298EEFB50028A679 /* RangoVersion.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = RangoVersion.xcconfig; sourceTree = "<group>"; };
@@ -137,26 +131,23 @@
 		E18A7D4A298ED9B7000801AD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				63F4877F2D00407A00BE8269 /* background.ec971b02.js */,
-				63F487802D00407A00BE8269 /* background.runtime.45ec5fa6.js */,
-				63F487812D00407A00BE8269 /* content.b723d995.css */,
-				63F487822D00407A00BE8269 /* content.d5600b6a.js */,
-				63F487832D00407A00BE8269 /* icon-keyboard-clicking48.ac857c64.png */,
-				63F487842D00407A00BE8269 /* icon.d20d9b97.svg */,
-				63F487852D00407A00BE8269 /* icon.f5383140.svg */,
-				63F487862D00407A00BE8269 /* icon48.ace12d5e.png */,
-				63F487872D00407A00BE8269 /* icon128.8b6ee0ac.png */,
-				63F487882D00407A00BE8269 /* manifest.json */,
-				63F487892D00407A00BE8269 /* offscreen.18275b4d.js */,
-				63F4878A2D00407A00BE8269 /* offscreen.a61bb80b.html */,
-				63F4878B2D00407A00BE8269 /* onboarding.b6199567.html */,
-				63F4878C2D00407A00BE8269 /* settings.c8a6c321.css */,
-				63F4878D2D00407A00BE8269 /* settings.db0fd559.html */,
-				63F4878E2D00407A00BE8269 /* settings.e932913c.js */,
-				63F4878F2D00407A00BE8269 /* settings.runtime.12e0b2a1.js */,
-				63F487902D00407A00BE8269 /* tippy.a5573b16.css */,
-				63F487912D00407A00BE8269 /* whatsNew.0b415932.html */,
-				63F487922D00407A00BE8269 /* whatsNew.e79f552b.css */,
+				63A9F3A82D0AF8AB0082F9FC /* background.ec971b02.js */,
+				63A9F3A92D0AF8AB0082F9FC /* content.d5600b6a.js */,
+				63A9F3AA2D0AF8AB0082F9FC /* icon-keyboard-clicking48.ac857c64.png */,
+				63A9F3AB2D0AF8AB0082F9FC /* icon.d20d9b97.svg */,
+				63A9F3AC2D0AF8AB0082F9FC /* icon.f5383140.svg */,
+				63A9F3AD2D0AF8AB0082F9FC /* icon48.ace12d5e.png */,
+				63A9F3AE2D0AF8AB0082F9FC /* icon128.8b6ee0ac.png */,
+				63A9F3AF2D0AF8AB0082F9FC /* manifest.json */,
+				63A9F3B02D0AF8AB0082F9FC /* offscreen.18275b4d.js */,
+				63A9F3B12D0AF8AB0082F9FC /* offscreen.a61bb80b.html */,
+				63A9F3B22D0AF8AB0082F9FC /* onboarding.b6199567.html */,
+				63A9F3B32D0AF8AB0082F9FC /* settings.c8a6c321.css */,
+				63A9F3B42D0AF8AB0082F9FC /* settings.db0fd559.html */,
+				63A9F3B52D0AF8AB0082F9FC /* settings.e932913c.js */,
+				63A9F3B62D0AF8AB0082F9FC /* tippy.a5573b16.css */,
+				63A9F3B72D0AF8AB0082F9FC /* whatsNew.0b415932.html */,
+				63A9F3B82D0AF8AB0082F9FC /* whatsNew.e79f552b.css */,
 			);
 			name = Resources;
 			path = "../../dist-mv2-safari";
@@ -328,26 +319,23 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				63F487932D00407A00BE8269 /* offscreen.a61bb80b.html in Resources */,
-				63F487942D00407A00BE8269 /* manifest.json in Resources */,
-				63F487952D00407A00BE8269 /* content.b723d995.css in Resources */,
-				63F487962D00407A00BE8269 /* settings.db0fd559.html in Resources */,
-				63F487972D00407A00BE8269 /* onboarding.b6199567.html in Resources */,
-				63F487982D00407A00BE8269 /* settings.runtime.12e0b2a1.js in Resources */,
-				63F487992D00407A00BE8269 /* icon-keyboard-clicking48.ac857c64.png in Resources */,
-				63F4879A2D00407A00BE8269 /* icon48.ace12d5e.png in Resources */,
-				63F4879B2D00407A00BE8269 /* icon128.8b6ee0ac.png in Resources */,
-				63F4879C2D00407A00BE8269 /* background.runtime.45ec5fa6.js in Resources */,
-				63F4879D2D00407A00BE8269 /* icon.d20d9b97.svg in Resources */,
-				63F4879E2D00407A00BE8269 /* settings.e932913c.js in Resources */,
-				63F4879F2D00407A00BE8269 /* tippy.a5573b16.css in Resources */,
-				63F487A02D00407A00BE8269 /* settings.c8a6c321.css in Resources */,
-				63F487A12D00407A00BE8269 /* whatsNew.e79f552b.css in Resources */,
-				63F487A22D00407A00BE8269 /* content.d5600b6a.js in Resources */,
-				63F487A32D00407A00BE8269 /* background.ec971b02.js in Resources */,
-				63F487A42D00407A00BE8269 /* icon.f5383140.svg in Resources */,
-				63F487A52D00407A00BE8269 /* offscreen.18275b4d.js in Resources */,
-				63F487A62D00407A00BE8269 /* whatsNew.0b415932.html in Resources */,
+				63A9F3B92D0AF8AB0082F9FC /* offscreen.a61bb80b.html in Resources */,
+				63A9F3BA2D0AF8AB0082F9FC /* settings.e932913c.js in Resources */,
+				63A9F3BB2D0AF8AB0082F9FC /* onboarding.b6199567.html in Resources */,
+				63A9F3BC2D0AF8AB0082F9FC /* whatsNew.e79f552b.css in Resources */,
+				63A9F3BD2D0AF8AB0082F9FC /* icon128.8b6ee0ac.png in Resources */,
+				63A9F3BE2D0AF8AB0082F9FC /* settings.c8a6c321.css in Resources */,
+				63A9F3BF2D0AF8AB0082F9FC /* background.ec971b02.js in Resources */,
+				63A9F3C02D0AF8AB0082F9FC /* whatsNew.0b415932.html in Resources */,
+				63A9F3C12D0AF8AB0082F9FC /* manifest.json in Resources */,
+				63A9F3C22D0AF8AB0082F9FC /* icon-keyboard-clicking48.ac857c64.png in Resources */,
+				63A9F3C32D0AF8AB0082F9FC /* tippy.a5573b16.css in Resources */,
+				63A9F3C42D0AF8AB0082F9FC /* offscreen.18275b4d.js in Resources */,
+				63A9F3C52D0AF8AB0082F9FC /* content.d5600b6a.js in Resources */,
+				63A9F3C62D0AF8AB0082F9FC /* icon48.ace12d5e.png in Resources */,
+				63A9F3C72D0AF8AB0082F9FC /* icon.f5383140.svg in Resources */,
+				63A9F3C82D0AF8AB0082F9FC /* settings.db0fd559.html in Resources */,
+				63A9F3C92D0AF8AB0082F9FC /* icon.d20d9b97.svg in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

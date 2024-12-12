@@ -1,4 +1,4 @@
-#rango-toast .ToggleStatus {
+.ToggleStatus {
 	display: flex;
 	justify-content: space-between;
 	font-size: 1em;
@@ -7,7 +7,7 @@
 	min-width: 12em;
 }
 
-#rango-toast .ToggleStatus.set ~ .ToggleStatus.set,
-#rango-toast .ToggleStatus.unset {
+.ToggleStatus.set ~ .ToggleStatus.set,
+.ToggleStatus.unset {
 	opacity: 0.4;
 }

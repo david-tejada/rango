@@ -19,8 +19,8 @@
 		"lint": "run-p lint:* check-types",
 		"pretest": "NODE_ENV=test run-p lint unused-exports build:mv3",
 		"test": "jest --runInBand",
-		"watch": "parcel watch src/manifests/mv2/manifest.json --dist-dir dist-mv2 --no-cache --no-hmr",
-		"watch:mv3": "parcel watch src/manifests/mv3/manifest.json --dist-dir dist-mv3 --no-cache --no-hmr",
+		"watch": "parcel watch src/manifests/mv2/manifest.json --dist-dir dist-mv2 --no-cache --no-content-hash --no-hmr",
+		"watch:mv3": "parcel watch src/manifests/mv3/manifest.json --dist-dir dist-mv3 --no-cache --no-content-hash --no-hmr",
 		"start:firefox": "web-ext run --target firefox-desktop",
 		"start:chromium": "web-ext run --source-dir dist-mv3 --target chromium"
 	},

@@ -1,18 +1,18 @@
 /* stylelint-disable selector-class-pattern */
-#rango-toast {
+:host {
 	font-size: 16px;
 }
 
-#rango-toast .Toastify__toast-container {
+.Toastify__toast-container {
 	width: auto;
 	max-width: 30em;
 }
 
-#rango-toast .Toastify__toast {
+.Toastify__toast {
 	border-radius: 0.5em !important;
 }
 
-#rango-toast .Toastify__toast-body {
+.Toastify__toast-body {
 	font-family:
 		system-ui,
 		-apple-system,
@@ -27,8 +27,8 @@
 	color: var(--toastify-text-color-light) !important;
 }
 
-#rango-toast .Toastify__toast-body h2,
-#rango-toast .Toastify__toast-body p {
+.Toastify__toast-body h2,
+.Toastify__toast-body p {
 	font-size: 1em !important;
 	text-transform: none !important;
 	letter-spacing: initial !important;
@@ -49,23 +49,23 @@
 	margin: 0 !important;
 }
 
-#rango-toast .Toastify__toast-body h2 {
+.Toastify__toast-body h2 {
 	border: 0 !important;
 	font-weight: bold !important;
 	color: var(--toastify-color-dark) !important;
 }
 
-#rango-toast .Toastify__toast-body p {
+.Toastify__toast-body p {
 	margin-top: 0.1em !important;
 }
 
-#rango-toast .Toastify__toast-body footer {
+.Toastify__toast-body footer {
 	margin-top: 0.7em !important;
 	font-size: 0.75em !important;
 	text-align: right;
 }
 
-#rango-toast .Toastify__toast-body footer code {
+.Toastify__toast-body footer code {
 	padding: 0.2em 0.4em !important;
 	border-radius: 0.3em !important;
 	background-color: #e5e5e5 !important;
@@ -74,7 +74,7 @@
 	font-size: inherit;
 }
 
-#rango-toast .Toastify__toast-icon {
+.Toastify__toast-icon {
 	margin-right: 1em !important;
 	margin-top: 1em !important;
 	align-self: start !important;
