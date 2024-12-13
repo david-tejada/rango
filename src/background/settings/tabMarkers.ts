@@ -8,8 +8,5 @@ export async function toggleTabMarkers() {
 
 	await store("includeTabMarkers", newIncludeTabMarkers);
 
-	await notify(`Tab markers ${newStatus}.`, {
-		icon: newStatus,
-		toastId: "tabMarkers",
-	});
+	await notify[newStatus](`Tab markers ${newStatus}.`, "tabMarkers");
 }

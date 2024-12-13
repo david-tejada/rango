@@ -60,7 +60,7 @@ browserAction.onClicked.addListener(async () => {
 	} catch (error: unknown) {
 		console.error(error);
 		if (error instanceof Error) {
-			await notify(error.message, { type: "error" });
+			await notify.error(error.message);
 		}
 	}
 });
@@ -95,7 +95,7 @@ browser.commands.onCommand.addListener(async (internalCommand: string) => {
 	} catch (error: unknown) {
 		console.error(error);
 		if (error instanceof Error) {
-			await notify(error.message, { type: "error" });
+			await notify.error(error.message);
 		}
 	}
 });

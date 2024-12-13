@@ -31,7 +31,7 @@ export async function focusFirstInput() {
 	const firstInput = document.querySelector(editableElementSelector);
 
 	if (!firstInput) {
-		await notify("No input found", { type: "error" });
+		await notify.error("No input found");
 		return;
 	}
 
