@@ -82,7 +82,9 @@ export function addMessageListeners() {
 		await notify[type](text, toastId);
 	});
 
-	onMessage("displayTogglesStatus", notifyTogglesStatus);
+	onMessage("displayTogglesStatus", async ({ force }) => {
+		await notifyTogglesStatus(force);
+	});
 
 	onMessage("updateNavigationToggle", async ({ enable }) => {
 		setNavigationToggle(enable);

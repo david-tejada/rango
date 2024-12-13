@@ -99,8 +99,17 @@ async function shouldNotify() {
 	return true;
 }
 
-export async function notifyTogglesStatus() {
-	if (!((await shouldNotify()) && getSetting("notifyWhenTogglingHints"))) {
+/**
+ * Display a toast notification showing the toggle levels and their status.
+ *
+ * @param force - If `true`, the notification will be always displayed, no matter
+ * what the notification settings are.
+ */
+export async function notifyTogglesStatus(force = false) {
+	if (
+		!force &&
+		!((await shouldNotify()) && getSetting("notifyWhenTogglingHints"))
+	) {
 		return;
 	}
 
