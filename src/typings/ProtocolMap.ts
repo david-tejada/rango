@@ -141,7 +141,7 @@ export type ContentBoundMessageMap = {
 		type: NotificationType;
 		toastId?: string;
 	}) => void;
-	displayTogglesStatus: () => void;
+	displayTogglesStatus: (data: { force: boolean }) => void;
 
 	// Keyboard Clicking
 	markHintsAsKeyboardReachable: (data: { letter: string }) => void;

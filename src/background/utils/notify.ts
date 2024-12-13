@@ -39,10 +39,13 @@ export const notify = createNotifier(
 
 /**
  * Display a toast notification showing the toggle levels and their status.
+ *
+ * @param force - If `true`, the notification will be always displayed, no matter
+ * what the notification settings are.
  */
-export async function notifyTogglesStatus() {
+export async function notifyTogglesStatus(force = false) {
 	try {
-		await sendMessage("displayTogglesStatus");
+		await sendMessage("displayTogglesStatus", { force });
 	} catch (error: unknown) {
 		if (!(error instanceof UnreachableContentScriptError)) throw error;
 	}

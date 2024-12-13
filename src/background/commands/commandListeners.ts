@@ -702,7 +702,7 @@ export function addCommandListeners() {
 	});
 
 	onCommand("displayTogglesStatus", async () => {
-		await notifyTogglesStatus();
+		await notifyTogglesStatus(true);
 	});
 
 	onCommand("enableHints", async ({ level }) => {
