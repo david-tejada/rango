@@ -16,9 +16,7 @@ export function setTabLastSounded(tabId: number) {
  */
 export async function focusTabLastSounded() {
 	if (!tabLastSounded)
-		return notify("No tab has emitted sound since startup.", {
-			type: "warning",
-		});
+		return notify.warning("No tab has emitted sound since startup.");
 
 	const tab = await browser.tabs.get(tabLastSounded);
 	await browser.windows.update(tab.windowId!, { focused: true });

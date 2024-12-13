@@ -155,7 +155,7 @@ export function addCommandListeners() {
 		const tab = await getCurrentTab();
 		const markdownUrl = `[${bareTitle}](${tab.url!})`;
 
-		await notify("Markdown link copied to the clipboard.", { type: "success" });
+		await notify.success("Markdown link copied to the clipboard.");
 
 		return { name: "copyToClipboard", textToCopy: markdownUrl };
 	});
@@ -164,9 +164,7 @@ export function addCommandListeners() {
 		const tab = await getCurrentTab();
 		const url = new URL(tab.url!);
 
-		await notify(`Property "${property}" copied to the clipboard.`, {
-			type: "success",
-		});
+		await notify.success(`Property "${property}" copied to the clipboard.`);
 
 		return { name: "copyToClipboard", textToCopy: url[property] };
 	});
@@ -388,7 +386,7 @@ export function addCommandListeners() {
 	// This command was changed on 2023-06-02. Remove this after April 2025.
 	onCommand("focusAndDeleteContents", async () => {
 		const message = `Command "focusAndDeleteContents" has been removed. Update rango-talon.`;
-		await notify(message, { type: "error" });
+		await notify.error(message);
 
 		return { name: "printError", message };
 	});
@@ -418,7 +416,7 @@ export function addCommandListeners() {
 	// This command was changed on 2023-06-02. Remove this after April 2025.
 	onCommand("insertToField", async () => {
 		const message = `Command "insertToField" has been removed. Update rango-talon.`;
-		await notify(message, { type: "error" });
+		await notify.error(message);
 
 		return { name: "printError", message };
 	});
@@ -756,7 +754,7 @@ export function addCommandListeners() {
 	// still in use.
 	onCommand("checkActiveElementIsEditable", async () => {
 		const message = `Command "checkActiveElementIsEditable" has been removed. Update rango-talon.`;
-		await notify(message, { type: "error" });
+		await notify.error(message);
 
 		return { name: "printError", message };
 	});
@@ -788,7 +786,7 @@ export function addCommandListeners() {
 			}
 		});
 
-		await notify(`Removed reference "${referenceName}"`, { type: "success" });
+		await notify.success(`Removed reference "${referenceName}"`);
 	});
 
 	onCommand("showReferences", async () => {

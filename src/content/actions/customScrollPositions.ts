@@ -8,7 +8,7 @@ export async function storeScrollPosition(name: string) {
 	const scrollContainer = getMainScrollable("vertical");
 
 	if (!scrollContainer) {
-		await notify(`Unable to find scroll container`, { type: "error" });
+		await notify.error(`Unable to find scroll container`);
 		return;
 	}
 
@@ -27,7 +27,7 @@ export async function storeScrollPosition(name: string) {
 	);
 	await store("customScrollPositions", scrollPositions);
 
-	await notify(`Scroll position "${name}" saved`, { type: "success" });
+	await notify.success(`Scroll position "${name}" saved`);
 }
 
 export async function scrollToPosition(name: string) {
@@ -50,7 +50,7 @@ export async function scrollToPosition(name: string) {
 	const position = results[0]?.item.number;
 
 	if (!position) {
-		await notify(`No scroll position matching "${name}"`, { type: "error" });
+		await notify.error(`No scroll position matching "${name}"`);
 		return;
 	}
 

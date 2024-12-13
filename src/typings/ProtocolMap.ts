@@ -1,5 +1,5 @@
-import { type ToastOptions } from "react-toastify";
 import { type Tabs } from "webextension-polyfill";
+import { type NotificationType } from "../common/createNotifier";
 import { type Direction } from "./Direction";
 import { type CustomSelector, type LabelStack } from "./StorageSchema";
 import { type ElementMark, type Target } from "./Target/Target";
@@ -138,7 +138,8 @@ export type ContentBoundMessageMap = {
 	// Notifications
 	displayToastNotification: (data: {
 		text: string;
-		options?: ToastOptions;
+		type: NotificationType;
+		toastId?: string;
 	}) => void;
 	displayTogglesStatus: () => void;
 

@@ -107,8 +107,5 @@ onSettingChange("keyboardClicking", async (keyboardClicking) => {
 
 	const status = keyboardClicking ? "enabled" : "disabled";
 
-	await notify(`Keyboard clicking ${status}`, {
-		icon: status,
-		toastId: "keyboardToggle",
-	});
+	await notify[status](`Keyboard clicking ${status}`, "keyboardToggle");
 });

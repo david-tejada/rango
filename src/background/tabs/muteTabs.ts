@@ -23,9 +23,7 @@ export async function muteNextTabWithSound() {
 
 	const nextTabWithSound = await getNextTabByIndex(tabsWithSound);
 	if (!nextTabWithSound)
-		return notify("There are currently no tabs with sound", {
-			type: "warning",
-		});
+		return notify.warning("There are currently no tabs with sound");
 
 	await browser.tabs.update(nextTabWithSound.id, { muted: true });
 }
@@ -33,10 +31,7 @@ export async function muteNextTabWithSound() {
 export async function unmuteNextMutedTab() {
 	const mutedTabs = await browser.tabs.query({ muted: true });
 	const nextMutedTab = await getNextTabByIndex(mutedTabs);
-	if (!nextMutedTab)
-		return notify("There are currently no muted tabs", {
-			type: "warning",
-		});
+	if (!nextMutedTab) return notify.warning("There are currently no muted tabs");
 
 	await browser.tabs.update(nextMutedTab.id, { muted: false });
 }

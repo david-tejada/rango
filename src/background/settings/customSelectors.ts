@@ -35,7 +35,7 @@ const debouncedNotifyAndReset = debounce(async (action: ActionType) => {
 		: messages[action].fail;
 	const type = notifySuccess ? "success" : "warning";
 
-	await notify(message, { type });
+	await notify[type](message);
 
 	// Reset the success flag after the debounce period.
 	notifySuccess = false;

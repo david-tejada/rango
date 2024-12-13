@@ -78,8 +78,8 @@ export function addMessageListeners() {
 		);
 	});
 
-	onMessage("displayToastNotification", async ({ text, options }) => {
-		await notify(text, options);
+	onMessage("displayToastNotification", async ({ text, type, toastId }) => {
+		await notify[type](text, toastId);
 	});
 
 	onMessage("displayTogglesStatus", notifyTogglesStatus);
