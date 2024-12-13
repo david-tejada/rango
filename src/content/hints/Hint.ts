@@ -431,6 +431,10 @@ export class Hint {
 			color = new Color("white");
 			this.borderColor = new Color("white");
 		} else {
+			setStyleProperties(this.inner, {
+				outline: "none",
+			});
+
 			const customBackgroundColor = getSetting("hintBackgroundColor");
 			const customFontColor = getSetting("hintFontColor");
 			const backgroundOpacity = getSetting("hintBackgroundOpacity");
