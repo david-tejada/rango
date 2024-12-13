@@ -17,27 +17,25 @@ export async function getTabIdsFromTarget(
 	}
 
 	if (target.type === "range") {
-		const startTabId = await getTabIdForMarker(target.start.mark.value);
-		const endTabId = await getTabIdForMarker(target.end.mark.value);
+		const anchorTabId = await getTabIdForMarker(target.anchor.mark.value);
+		const activeTabId = await getTabIdForMarker(target.active.mark.value);
 
-		const startTab = await browser.tabs.get(startTabId);
-		const endTab = await browser.tabs.get(endTabId);
+		const anchorTab = await browser.tabs.get(anchorTabId);
+		const activeTab = await browser.tabs.get(activeTabId);
 
-		if (startTab.windowId !== endTab.windowId) {
-			throw new Error("Start and end tabs are in different windows.");
+		if (anchorTab.windowId !== activeTab.windowId) {
+			throw new Error("Anchor and active tabs are in different windows.");
 		}
 
-		const firstTab = startTab.index < endTab.index ? startTab : endTab;
-		const lastTab = startTab.index < endTab.index ? endTab : startTab;
+		const startTab = anchorTab.index < activeTab.index ? anchorTab : activeTab;
+		const endTab = anchorTab.index < activeTab.index ? activeTab : anchorTab;
 
 		const tabsInWindow = await browser.tabs.query({
 			windowId: startTab.windowId,
 		});
 
 		return tabsInWindow
-			.filter(
-				(tab) => tab.index >= firstTab.index && tab.index <= lastTab.index
-			)
+			.filter((tab) => tab.index >= startTab.index && tab.index <= endTab.index)
 			.map((tab) => tab.id!);
 	}
 

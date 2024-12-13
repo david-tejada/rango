@@ -42,7 +42,7 @@ export function getTargetMarkType<T extends Mark>(
 	}
 
 	if (target.type === "range") {
-		return target.start.mark.type;
+		return target.anchor.mark.type;
 	}
 
 	const firstItem = target.items[0];
@@ -60,7 +60,7 @@ export function getTargetValues<T extends Mark>(target: Target<T>) {
 	}
 
 	if (target.type === "range") {
-		return [target.start.mark.value, target.end.mark.value];
+		return [target.anchor.mark.value, target.active.mark.value];
 	}
 
 	return target.items.map((item) => item.mark.value);
@@ -83,7 +83,7 @@ export function getPrioritizeViewportValue<T extends FuzzyTextElementMark>(
 	}
 
 	if (target.type === "range") {
-		return target.start.mark.prioritizeViewport;
+		return target.anchor.mark.prioritizeViewport;
 	}
 
 	return target.items[0]!.mark.prioritizeViewport;

@@ -2,22 +2,22 @@
  * Get all elements between two elements that are similar. Elements are considered similar if
  * they have the same tag name and their classes are similar.
  *
- * @param start - The start element.
- * @param end - The end element.
- * @returns An array of all elements between the start and end element that are similar.
+ * @param anchor - The anchor element.
+ * @param active - The active element.
+ * @returns An array of all elements between the anchor and active element that are similar.
  */
 export function getSimilarElementsInRange(
-	start: Element,
-	end: Element
+	anchor: Element,
+	active: Element
 ): Element[] {
-	const commonAncestor = findCommonAncestor(start, end);
+	const commonAncestor = findCommonAncestor(anchor, active);
 	if (!commonAncestor) return [];
 
 	// Get all elements between start and end that are similar
-	const elements = getAllElementsBetween(start, end, commonAncestor);
+	const elements = getAllElementsBetween(anchor, active, commonAncestor);
 	return elements.filter(
 		(element) =>
-			isSimilarElement(element, start) || isSimilarElement(element, end)
+			isSimilarElement(element, anchor) || isSimilarElement(element, active)
 	);
 }
 
@@ -41,8 +41,8 @@ function getAncestors(element: Element) {
 }
 
 function getAllElementsBetween(
-	start: Element,
-	end: Element,
+	anchor: Element,
+	active: Element,
 	commonAncestor: Element
 ) {
 	const walker = document.createTreeWalker(
@@ -51,7 +51,7 @@ function getAllElementsBetween(
 		null
 	);
 
-	const [firstElement, lastElement] = sortByDocumentPosition([start, end]);
+	const [start, end] = sortByDocumentPosition([anchor, active]);
 
 	const elements: Element[] = [];
 	let currentNode = walker.currentNode as Element;
@@ -61,7 +61,7 @@ function getAllElementsBetween(
 	// Walk through all elements in DOM order starting with the common ancestor.
 	// Push elements to the array if they are between the first and last element.
 	while (currentNode && !foundLast) {
-		if (currentNode === firstElement) {
+		if (currentNode === start) {
 			foundFirst = true;
 		}
 
@@ -69,7 +69,7 @@ function getAllElementsBetween(
 			elements.push(currentNode);
 		}
 
-		if (currentNode === lastElement) {
+		if (currentNode === end) {
 			foundLast = true;
 		}
 

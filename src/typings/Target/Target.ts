@@ -40,8 +40,8 @@ type ListTarget<T extends Mark> = {
 
 export type RangeTarget<T extends Mark> = {
 	type: "range";
-	start: PrimitiveTarget<T>;
-	end: PrimitiveTarget<T>;
+	anchor: PrimitiveTarget<T>;
+	active: PrimitiveTarget<T>;
 };
 
 export type Target<T extends Mark> =

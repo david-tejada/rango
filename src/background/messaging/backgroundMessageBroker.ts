@@ -303,23 +303,27 @@ async function splitElementHintTargetByFrame(
 	const stack = await getRequiredStack(tabId);
 
 	if (target.type === "range") {
-		const startFrameId = stack.assigned.get(target.start.mark.value);
-		if (startFrameId === undefined) {
-			throw new TargetError(`Couldn't find mark "${target.start.mark.value}".`);
-		}
-
-		const endFrameId = stack.assigned.get(target.end.mark.value);
-		if (endFrameId === undefined) {
-			throw new TargetError(`Couldn't find mark "${target.end.mark.value}".`);
-		}
-
-		if (startFrameId !== endFrameId) {
+		const anchorFrameId = stack.assigned.get(target.anchor.mark.value);
+		if (anchorFrameId === undefined) {
 			throw new TargetError(
-				`Marks "${target.start.mark.value}" and "${target.end.mark.value}" are in different frames.`
+				`Couldn't find mark "${target.anchor.mark.value}".`
 			);
 		}
 
-		return new Map([[startFrameId, target]]);
+		const activeFrameId = stack.assigned.get(target.active.mark.value);
+		if (activeFrameId === undefined) {
+			throw new TargetError(
+				`Couldn't find mark "${target.active.mark.value}".`
+			);
+		}
+
+		if (anchorFrameId !== activeFrameId) {
+			throw new TargetError(
+				`Marks "${target.anchor.mark.value}" and "${target.active.mark.value}" are in different frames.`
+			);
+		}
+
+		return new Map([[anchorFrameId, target]]);
 	}
 
 	const hintsByFrame = new Map<number, string[]>();

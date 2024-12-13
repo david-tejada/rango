@@ -94,23 +94,23 @@ async function getWrappersForTarget(target: Target<ElementMark>) {
 }
 
 function getRangeWrappers(target: RangeTarget<ElementMark>) {
-	const start = target.start.mark.value;
-	const end = target.end.mark.value;
+	const anchor = target.anchor.mark.value;
+	const active = target.active.mark.value;
 
-	const startWrapper = getWrapper(start);
-	const endWrapper = getWrapper(end);
+	const anchorWrapper = getWrapper(anchor);
+	const activeWrapper = getWrapper(active);
 
-	if (!startWrapper?.isIntersectingViewport) {
-		throw new TargetError(`Couldn't find mark "${start}" in viewport.`);
+	if (!anchorWrapper?.isIntersectingViewport) {
+		throw new TargetError(`Couldn't find mark "${anchor}" in viewport.`);
 	}
 
-	if (!endWrapper?.isIntersectingViewport) {
-		throw new TargetError(`Couldn't find mark "${end}" in viewport.`);
+	if (!activeWrapper?.isIntersectingViewport) {
+		throw new TargetError(`Couldn't find mark "${active}" in viewport.`);
 	}
 
 	const elements = getSimilarElementsInRange(
-		startWrapper.element,
-		endWrapper.element
+		anchorWrapper.element,
+		activeWrapper.element
 	);
 
 	return elements
