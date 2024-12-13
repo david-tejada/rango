@@ -28,3 +28,7 @@ export function hasPropertyDisabled(
 export function isHtmlElement(element: Element): element is HTMLElement {
 	return element instanceof HTMLElement;
 }
+
+export function isDefined<T>(value: T | null | undefined): value is T {
+	return value !== null && value !== undefined;
+}

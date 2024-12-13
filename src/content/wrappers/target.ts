@@ -3,24 +3,32 @@ import {
 	getTargetValues,
 } from "../../common/target/targetConversion";
 import { TargetError } from "../../common/target/TargetError";
-import { type ElementMark, type Target } from "../../typings/Target/Target";
+import {
+	type ElementMark,
+	type RangeTarget,
+	type Target,
+} from "../../typings/Target/Target";
+import { isDefined } from "../../typings/TypingUtils";
 import { getTextMatchedElement } from "../actions/matchElementByText";
 import { getReferences } from "../actions/references";
 import { getElementFromSelector } from "../dom/getElementFromSelector";
+import { getSimilarElementsInRange } from "../dom/getSimilarElementsBetween";
 import { assertWrappersIntersectViewport } from "./assertIntersectingWrappers";
-import { type ElementWrapper, getOrCreateWrapper } from "./ElementWrapper";
+import { getOrCreateWrapper } from "./ElementWrapper";
 import { setLastTargetedWrapper } from "./lastTargetedWrapper";
 import { getWrapper } from "./wrappers";
 
 export async function getTargetedWrappers(target: Target<ElementMark>) {
-	const type = getTargetMarkType(target);
+	const markType = getTargetMarkType(target);
 
 	const wrappers = await getWrappersForTarget(target);
 
 	const lastWrapper = wrappers.at(-1);
 	if (lastWrapper) setLastTargetedWrapper(lastWrapper);
 
-	if (type === "elementHint") assertWrappersIntersectViewport(wrappers);
+	if (markType === "elementHint" && target.type !== "range") {
+		assertWrappersIntersectViewport(wrappers);
+	}
 
 	for (const wrapper of wrappers) wrapper.hint?.flash();
 
@@ -34,10 +42,19 @@ export async function getFirstWrapper(target: Target<ElementMark>) {
 }
 
 async function getWrappersForTarget(target: Target<ElementMark>) {
-	const values = getTargetValues(target);
-	const type = getTargetMarkType(target);
+	const markType = getTargetMarkType(target);
 
-	switch (type) {
+	if (target.type === "range") {
+		if (markType !== "elementHint") {
+			throw new Error("Range targets are only supported for element hints.");
+		}
+
+		return getRangeWrappers(target).filter((wrapper) => wrapper.isHintable);
+	}
+
+	const values = getTargetValues(target);
+
+	switch (markType) {
 		case "elementHint": {
 			return values.map((hint) => {
 				const wrapper = getWrapper(hint);
@@ -60,9 +77,7 @@ async function getWrappersForTarget(target: Target<ElementMark>) {
 					return element ? getOrCreateWrapper(element, false) : undefined;
 				})
 			);
-			return wrappers.filter(
-				(wrapper): wrapper is ElementWrapper => wrapper !== undefined
-			);
+			return wrappers.filter((element) => isDefined(element));
 		}
 
 		case "fuzzyText": {
@@ -73,7 +88,32 @@ async function getWrappersForTarget(target: Target<ElementMark>) {
 
 					return getOrCreateWrapper(element, false);
 				})
-				.filter((wrapper): wrapper is ElementWrapper => wrapper !== undefined);
+				.filter((element) => isDefined(element));
 		}
 	}
+}
+
+function getRangeWrappers(target: RangeTarget<ElementMark>) {
+	const anchor = target.anchor.mark.value;
+	const active = target.active.mark.value;
+
+	const anchorWrapper = getWrapper(anchor);
+	const activeWrapper = getWrapper(active);
+
+	if (!anchorWrapper?.isIntersectingViewport) {
+		throw new TargetError(`Couldn't find mark "${anchor}" in viewport.`);
+	}
+
+	if (!activeWrapper?.isIntersectingViewport) {
+		throw new TargetError(`Couldn't find mark "${active}" in viewport.`);
+	}
+
+	const elements = getSimilarElementsInRange(
+		anchorWrapper.element,
+		activeWrapper.element
+	);
+
+	return elements
+		.map((element) => getWrapper(element))
+		.filter((element) => isDefined(element));
 }
