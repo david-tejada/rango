@@ -38,7 +38,16 @@ type ListTarget<T extends Mark> = {
 	items: Array<PrimitiveTarget<T>>;
 };
 
-export type Target<T extends Mark> = ListTarget<T> | PrimitiveTarget<T>;
+export type RangeTarget<T extends Mark> = {
+	type: "range";
+	start: PrimitiveTarget<T>;
+	end: PrimitiveTarget<T>;
+};
+
+export type Target<T extends Mark> =
+	| ListTarget<T>
+	| PrimitiveTarget<T>
+	| RangeTarget<T>;
 
 export function assertPrimitiveTarget<T extends Mark>(
 	target: Target<T>
