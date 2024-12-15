@@ -19,7 +19,7 @@ export async function initContentScriptOrWait() {
 		loadDevtoolsUtils();
 		await loadContentScriptContext();
 		await initSettingsManager();
-		await updateCustomSelectors();
+		updateCustomSelectors();
 		await updateTitleDecorations();
 		await observe();
 		if (getSetting("keyboardClicking")) initKeyboardClicking();

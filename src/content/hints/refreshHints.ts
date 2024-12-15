@@ -5,7 +5,7 @@ import { resetStagedSelectors } from "./customHints/customSelectorsStaging";
 import { cacheLabels, clearLabelsCache } from "./labels/labelCache";
 
 export async function refreshHints() {
-	await resetStagedSelectors();
+	resetStagedSelectors();
 	resetExtraHintsToggles();
 
 	await refresh({ hintsStyle: true, isHintable: true });

@@ -1,4 +1,3 @@
-import { sendMessage } from "../../messaging/contentMessageBroker";
 import { type ElementWrapper } from "../../wrappers/ElementWrapper";
 import { refresh } from "../../wrappers/refresh";
 import {
@@ -9,7 +8,6 @@ import {
 import {
 	pickSelectorAlternative,
 	resetStagedSelectors,
-	saveCustomSelectors,
 	stageCustomSelectors,
 	stageExcludeUniversalSelector,
 } from "./customSelectorsStaging";
@@ -95,35 +93,12 @@ export async function markHintsWithNarrowerSelector() {
 	}
 }
 
-export async function customHintsConfirm() {
-	const selectorsAdded = await saveCustomSelectors();
-
-	if (selectorsAdded.length > 0) {
-		await refresh({
-			hintsStyle: true,
-			isHintable: true,
-			filterIn: selectorsAdded.map(({ selector }) => selector),
-		});
-	}
-
-	await displayMoreOrLessHints({ extra: false, excluded: false });
-}
-
-/**
- * Resets the custom selectors for the URL pattern of the current frame. To
- * avoid multiple frames changing the custom selectors at the same time a
- * message is sent to the background script where that is handled safely.
- */
-export async function customHintsReset() {
+export async function refreshCustomHints() {
 	showExtraHints = false;
 	showExcludedHints = false;
 
-	await sendMessage("resetCustomSelectors", {
-		url: location.href,
-	});
+	updateCustomSelectors();
+	resetStagedSelectors();
 
-	await updateCustomSelectors();
-	await resetStagedSelectors();
-
-	await refresh();
+	await refresh({ isHintable: true, hintsColors: true });
 }

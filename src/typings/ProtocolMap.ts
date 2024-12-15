@@ -110,7 +110,8 @@ export type ContentBoundMessageMap = {
 	markHintsWithBroaderSelector: () => void;
 	markHintsWithNarrowerSelector: () => void;
 	customHintsConfirm: () => void;
-	customHintsReset: () => void;
+	getStagedSelectors: () => CustomSelector[];
+	refreshCustomHints: () => void;
 	hideHint: (data: { target: Target<ElementMark> }) => void;
 	refreshHints: () => void;
 
