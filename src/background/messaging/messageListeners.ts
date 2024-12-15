@@ -7,10 +7,6 @@ import {
 	storeLabelsInFrame,
 } from "../hints/labels/labelAllocator";
 import { getRequiredStack, initStack } from "../hints/labels/labelStack";
-import {
-	resetCustomSelectors,
-	storeCustomSelectors,
-} from "../settings/customSelectors";
 import { createRelatedTabs } from "../tabs/createRelatedTabs";
 import { getCurrentTabId } from "../tabs/getCurrentTab";
 import { getTabMarker } from "../tabs/tabMarkers";
@@ -103,13 +99,5 @@ export function addMessageListeners() {
 
 	onMessage("getTabMarker", async (_, { tabId }) => {
 		return getTabMarker(tabId);
-	});
-
-	onMessage("storeCustomSelectors", async ({ url, selectors }) => {
-		await storeCustomSelectors(url, selectors);
-	});
-
-	onMessage("resetCustomSelectors", async ({ url }) => {
-		return resetCustomSelectors(url);
 	});
 }

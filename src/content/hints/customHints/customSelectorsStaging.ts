@@ -1,8 +1,5 @@
 import { getHostPattern } from "../../../common/getHostPattern";
-import { type CustomSelector } from "../../../typings/StorageSchema";
-import { sendMessage } from "../../messaging/contentMessageBroker";
 import { type ElementWrapper } from "../../wrappers/ElementWrapper";
-import { updateCustomSelectors } from "../selectors";
 import { type SelectorAlternative } from "./SelectorAlternative";
 import { getSelectorAlternatives } from "./computeCustomSelectors";
 
@@ -92,41 +89,30 @@ export function pickSelectorAlternative(options: {
 	return [...selectorsToUpdate];
 }
 
-/**
- * Stores the custom selectors for the URL pattern of the current frame. To
- * avoid multiple frames changing the custom selectors at the same time a
- * message is sent to the background script where that is handled safely.
- *
- * @returns An array with the selectors that were added
- */
-export async function saveCustomSelectors() {
+export async function getStagedSelectors() {
 	const pattern = getHostPattern(location.href);
-	const newCustomSelectors: CustomSelector[] = [];
 
-	for (const selector of includeSelectors) {
-		newCustomSelectors.push({ pattern, type: "include", selector });
-	}
-
-	for (const selector of excludeSelectors) {
-		newCustomSelectors.push({ pattern, type: "exclude", selector });
-	}
-
-	// Even if both include and exclude are empty arrays we need to send the
-	// message to the background script to handle notifications
-	await sendMessage("storeCustomSelectors", {
-		url: location.href,
-		selectors: newCustomSelectors,
-	});
-
-	includeSelectors = [];
-	excludeSelectors = [];
-
-	await updateCustomSelectors();
-
-	return newCustomSelectors;
+	return [
+		...includeSelectors.map(
+			(selector) =>
+				({
+					pattern,
+					type: "include",
+					selector,
+				}) as const
+		),
+		...excludeSelectors.map(
+			(selector) =>
+				({
+					pattern,
+					type: "exclude",
+					selector,
+				}) as const
+		),
+	];
 }
 
-export async function resetStagedSelectors() {
+export function resetStagedSelectors() {
 	includeSelectors = [];
 	excludeSelectors = [];
 	selectorAlternatives = [];

@@ -1,4 +1,3 @@
-import { store } from "../../common/storage/storage";
 import { getSetting, onSettingChange } from "../settings/settingsManager";
 import { refresh } from "../wrappers/refresh";
 
@@ -22,19 +21,13 @@ let excludeSelectorAll = "";
  * Updates the variables `includeSelectorAll` and `excludeSelectorAll` that are
  * used when checking if an element should be hinted.
  */
-export async function updateCustomSelectors() {
+export function updateCustomSelectors() {
 	const customSelectors = getSetting("customSelectors");
-
-	// This is stored when the extension first runs, so it shouldn't be undefined.
-	// But it is undefined when running tests. This way we also make extra sure.
-	if (!customSelectors) {
-		await store("customSelectors", []);
-	}
 
 	const include: string[] = [];
 	const exclude: string[] = [];
 
-	for (const { pattern, type, selector } of customSelectors.values()) {
+	for (const { pattern, type, selector } of customSelectors) {
 		const patternRe = new RegExp(pattern);
 
 		if (patternRe.test(location.href)) {
@@ -71,6 +64,6 @@ export function matchesExtraSelector(target: Element) {
 }
 
 onSettingChange("customSelectors", async () => {
-	await updateCustomSelectors();
+	updateCustomSelectors();
 	return refresh({ isHintable: true });
 });

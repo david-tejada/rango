@@ -44,6 +44,7 @@ import {
 import { refreshTabMarkers } from "../tabs/tabMarkers";
 import { assertReferenceInCurrentTab } from "../target/references";
 import { getTabIdsFromTarget } from "../target/tabMarkers";
+import { filterArrayInPlace } from "../utils/filterArrayInPlace";
 import { getAllFrames } from "../utils/getAllFrames";
 import { notify, notifyTogglesStatus } from "../utils/notify";
 import { promiseWrap } from "../utils/promises";
@@ -651,7 +652,24 @@ export function addCommandListeners() {
 	// CUSTOM SELECTORS
 	// ===========================================================================
 	onCommand("confirmSelectorsCustomization", async () => {
-		await sendMessageToAllFrames("customHintsConfirm");
+		// Await sendMessageToAllFrames("customHintsConfirm");
+		const { results } = await sendMessageToAllFrames("getStagedSelectors");
+
+		const customSelectorsToSave = results.flat();
+
+		if (customSelectorsToSave.length === 0) {
+			throw new Error("No selectors staged");
+		}
+
+		await withLockedStorageAccess(
+			"customSelectors",
+			async (customSelectors) => {
+				customSelectors.push(...customSelectorsToSave);
+			}
+		);
+
+		await sendMessageToAllFrames("refreshCustomHints");
+		await notify.success("Custom selectors saved");
 	});
 
 	onCommand("displayExcludedHints", async () => {
@@ -690,7 +708,24 @@ export function addCommandListeners() {
 	});
 
 	onCommand("resetCustomSelectors", async () => {
-		await sendMessageToAllFrames("customHintsReset");
+		const allFrames = await getAllFrames();
+		const framesUrl = allFrames.map((frame) => frame.url);
+
+		await withLockedStorageAccess(
+			"customSelectors",
+			async (customSelectors) => {
+				// We need to filter the array in place because assigning would just
+				// modify the argument and the selectors wouldn't be saved.
+				filterArrayInPlace(customSelectors, ({ pattern }) => {
+					const patternRe = new RegExp(pattern);
+					return !framesUrl.some((url) => patternRe.test(url));
+				});
+			}
+		);
+
+		await sendMessageToAllFrames("refreshCustomHints");
+
+		await notify.success("Successfully reset custom selectors.");
 	});
 
 	// ===========================================================================

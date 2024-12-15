@@ -34,15 +34,15 @@ import { getElementFromSelector } from "../dom/getElementFromSelector";
 import { isEditable } from "../dom/utils";
 import { notify, notifyTogglesStatus } from "../feedback/notify";
 import {
-	customHintsConfirm,
-	customHintsReset,
 	displayMoreOrLessHints,
 	markAllHintsForExclusion,
 	markHintsForExclusion,
 	markHintsForInclusion,
 	markHintsWithBroaderSelector,
 	markHintsWithNarrowerSelector,
+	refreshCustomHints,
 } from "../hints/customHints/customHints";
+import { getStagedSelectors } from "../hints/customHints/customSelectorsStaging";
 import { reclaimLabelsFromCache } from "../hints/labels/labelCache";
 import { synchronizeLabels } from "../hints/labels/labelRequest";
 import { deleteLabelsInFrame } from "../hints/labels/labelsInFrame";
@@ -240,9 +240,9 @@ export function addMessageListeners() {
 
 	onMessage("markHintsWithNarrowerSelector", markHintsWithNarrowerSelector);
 
-	onMessage("customHintsConfirm", customHintsConfirm);
+	onMessage("getStagedSelectors", getStagedSelectors);
 
-	onMessage("customHintsReset", customHintsReset);
+	onMessage("refreshCustomHints", refreshCustomHints);
 
 	onMessage("saveReference", async ({ target, referenceName }) => {
 		const wrapper = await getFirstWrapper(target);
