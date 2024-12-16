@@ -49,9 +49,14 @@ export function addMessageListeners() {
 		return getRequiredStack(tabId);
 	});
 
-	onMessage("getLabelsInTab", async (_, { tabId }) => {
-		const stack = await getRequiredStack(tabId);
-		return [...stack.assigned.keys()];
+	onMessage("getLabelsInViewport", async (_, { tabId }) => {
+		const { results } = await sendMessageToAllFrames(
+			"getLabelsInViewport",
+			undefined,
+			tabId
+		);
+
+		return results.flat();
 	});
 
 	onMessage("getContentScriptContext", async (_, { tabId, frameId }) => {
