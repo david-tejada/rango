@@ -41,12 +41,12 @@ async function keydownHandler(event: KeyboardEvent) {
 		return;
 	}
 
-	const labelsInTab = await sendMessage("getLabelsInTab");
+	const labelsInViewport = await sendMessage("getLabelsInViewport");
 
 	// After typing the first character we need to check if any of the hints start
 	// with that letter
 	const firstCharactersInHints = new Set(
-		labelsInTab.map((hint) => hint.slice(0, 1))
+		labelsInViewport.map((hint) => hint.slice(0, 1))
 	);
 
 	const hintIsReachable =
@@ -68,7 +68,7 @@ async function keydownHandler(event: KeyboardEvent) {
 		if (keysPressedBuffer.length === 2) {
 			await sendMessage("restoreKeyboardReachableHints");
 
-			if (labelsInTab.includes(keysPressedBuffer)) {
+			if (labelsInViewport.includes(keysPressedBuffer)) {
 				await sendMessage("clickHintInFrame", {
 					hint: keysPressedBuffer,
 				});

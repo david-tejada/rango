@@ -54,7 +54,7 @@ import {
 	updateTitleDecorations,
 } from "../setup/decorateTitle";
 import { getFirstWrapper, getTargetedWrappers } from "../wrappers/target";
-import { reclaimLabels } from "../wrappers/wrappers";
+import { getHintedWrappers, reclaimLabels } from "../wrappers/wrappers";
 import { onMessage } from "./contentMessageBroker";
 
 export function addMessageListeners() {
@@ -102,6 +102,13 @@ export function addMessageListeners() {
 
 		deleteLabelsInFrame(reclaimed);
 		return reclaimed;
+	});
+
+	onMessage("getLabelsInViewport", () => {
+		return getHintedWrappers()
+			.filter((wrapper) => wrapper.isIntersectingViewport)
+			.map((wrapper) => wrapper.hint?.label)
+			.filter((label) => label !== undefined);
 	});
 
 	onMessage("hideHint", async ({ target }) => {

@@ -37,7 +37,7 @@ export type BackgroundBoundMessageMap = {
 	createTabs: (data: {
 		createPropertiesArray: Tabs.CreateCreatePropertiesType[];
 	}) => void;
-	getLabelsInTab: () => string[];
+	getLabelsInViewport: () => string[];
 
 	// References
 	removeReference: (data: { hostPattern: string; name: string }) => void;
@@ -114,6 +114,7 @@ export type ContentBoundMessageMap = {
 	refreshCustomHints: () => void;
 	hideHint: (data: { target: Target<ElementMark> }) => void;
 	refreshHints: () => void;
+	getLabelsInViewport: () => string[];
 
 	// References
 	saveReference: (data: {
