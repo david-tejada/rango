@@ -7,11 +7,11 @@ const containersCache = new Map<Element, HTMLElement>();
  */
 export function getUserScrollableContainer(
 	element: Element,
-	direction?: "vertical" | "horizontal"
+	axis?: "vertical" | "horizontal"
 ) {
 	const elementPosition = getComputedStyle(element).position;
 
-	const checked = [];
+	const checked: Element[] = [];
 	let current: Element | null = element;
 
 	while (current) {
@@ -42,17 +42,23 @@ export function getUserScrollableContainer(
 			continue;
 		}
 
+		const isHorizontallyScrollable =
+			(!axis || axis === "horizontal") &&
+			scrollWidth > clientWidth &&
+			/scroll|auto/.test(overflowX);
+
+		const isVerticallyScrollable =
+			(!axis || axis === "vertical") &&
+			scrollHeight > clientHeight &&
+			/scroll|auto/.test(overflowY);
+
 		if (
 			current instanceof HTMLElement &&
-			(((!direction || direction === "horizontal") &&
-				scrollWidth > clientWidth &&
-				/scroll|auto/.test(overflowX)) ||
-				((!direction || direction === "vertical") &&
-					scrollHeight > clientHeight &&
-					/scroll|auto/.test(overflowY)))
+			(isHorizontallyScrollable || isVerticallyScrollable)
 		) {
 			checked.push(current);
 
+			// Cache the scrollable container for all checked elements
 			for (const element of checked) {
 				containersCache.set(element, current);
 			}

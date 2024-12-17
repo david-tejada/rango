@@ -58,22 +58,6 @@ export async function resetStack(stack: LabelStack, tabId: number) {
 	stack.assigned = emptyStack.assigned;
 }
 
-/**
- * Get the frame id for a hint.
- *
- * @throws If no hint is found for the tab.
- */
-export async function getFrameIdForHint(hint: string, tabId: number) {
-	const stack = await getRequiredStack(tabId);
-	const frameId = stack.assigned.get(hint);
-
-	if (frameId === undefined) {
-		throw new Error(`No hint found for tab with id ${tabId}`);
-	}
-
-	return frameId;
-}
-
 async function getStack(tabId: number) {
 	const stacks = await retrieve("labelStacks");
 	return stacks.get(tabId) ?? getEmptyStack(tabId);

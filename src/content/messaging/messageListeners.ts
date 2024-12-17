@@ -27,7 +27,7 @@ import {
 	saveReferenceForActiveElement,
 	showReferences,
 } from "../actions/references";
-import { scroll, snapScroll } from "../actions/scroll";
+import { scroll, scrollAtElement, snapScroll } from "../actions/scroll";
 import { setSelectionAfter, setSelectionBefore } from "../actions/setSelection";
 import { showTitleAndHref } from "../actions/showTitleAndHref";
 import { getElementFromSelector } from "../dom/getElementFromSelector";
@@ -191,18 +191,18 @@ export function addMessageListeners() {
 		return setSelectionAfter(wrapper);
 	});
 
-	onMessage("scroll", async ({ dir, reference, factor }) => {
-		const target =
-			typeof reference === "string"
-				? reference
-				: await getFirstWrapper(reference);
+	onMessage("scroll", async ({ region, direction, factor }) => {
+		scroll(region, direction, factor);
+	});
 
-		scroll({ dir, target, factor });
+	onMessage("scrollAtElement", async ({ target, direction, factor }) => {
+		const wrapper = await getFirstWrapper(target);
+		scrollAtElement(wrapper.element, direction, factor);
 	});
 
 	onMessage("snapScroll", async ({ position, target }) => {
 		const wrapper = await getFirstWrapper(target);
-		snapScroll(position, wrapper);
+		snapScroll(wrapper, position);
 	});
 
 	onMessage("storeScrollPosition", async ({ name }) => {

@@ -2,14 +2,8 @@ import browser from "webextension-polyfill";
 import { getHostPattern } from "../../common/getHostPattern";
 import { retrieve, store } from "../../common/storage/storage";
 import { isTargetError } from "../../common/target/TargetError";
-import { getTargetMarkType } from "../../common/target/targetConversion";
 import { type TalonAction } from "../../typings/TalonAction";
-import {
-	assertPrimitiveTarget,
-	type ElementMark,
-	type Target,
-} from "../../typings/Target/Target";
-import { getFrameIdForHint } from "../hints/labels/labelStack";
+import { assertPrimitiveTarget } from "../../typings/Target/Target";
 import { refreshHints } from "../hints/refreshHints";
 import { toggleHintsGlobal, updateHintsToggle } from "../hints/toggleHints";
 import {
@@ -497,146 +491,30 @@ export function addCommandListeners() {
 
 	let lastFrameId = 0;
 
-	async function parseScrollTarget(target?: Target<ElementMark>) {
-		if (!target) {
-			return {
-				frameId: lastFrameId,
-				reference: "repeatLast" as const,
-			};
-		}
+	onCommand("scroll", async ({ region, direction, factor }) => {
+		const frameId = region === "repeatLast" ? lastFrameId : 0;
+		await sendMessage("scroll", { region, direction, factor }, { frameId });
+	});
 
+	onCommand("scrollAtElement", async ({ target, direction, factor }) => {
 		assertPrimitiveTarget(target);
-		if (getTargetMarkType(target) !== "elementHint") {
-			throw new Error("Expected element hint");
-		}
-
-		const tabId = await getCurrentTabId();
-		const frameId = await getFrameIdForHint(target.mark.value, tabId);
-		lastFrameId = frameId;
-
-		return { frameId, reference: target };
-	}
-
-	// Scroll with target
-	onCommand("scrollUpAtElement", async ({ target, factor }) => {
-		const { frameId, reference } = await parseScrollTarget(target);
-		await sendMessage("scroll", { dir: "up", reference, factor }, { frameId });
-	});
-
-	onCommand("scrollDownAtElement", async ({ target, factor }) => {
-		const { frameId, reference } = await parseScrollTarget(target);
-		await sendMessage(
-			"scroll",
-			{ dir: "down", reference, factor },
-			{ frameId }
+		const { resultsWithFrameId } = await sendMessageToTargetFrames(
+			"scrollAtElement",
+			{
+				target,
+				direction,
+				factor,
+			}
 		);
+
+		lastFrameId = resultsWithFrameId[0]!.frameId;
 	});
 
-	onCommand("scrollLeftAtElement", async ({ target, factor }) => {
-		const { frameId, reference } = await parseScrollTarget(target);
-		await sendMessage(
-			"scroll",
-			{ dir: "left", reference, factor },
-			{ frameId }
-		);
-	});
-
-	onCommand("scrollRightAtElement", async ({ target, factor }) => {
-		const { frameId, reference } = await parseScrollTarget(target);
-		await sendMessage(
-			"scroll",
-			{ dir: "right", reference, factor },
-			{ frameId }
-		);
-	});
-
-	// Snap Scroll
-	onCommand("scrollElementToTop", async ({ target }) => {
+	onCommand("snapScroll", async ({ target, position }) => {
 		assertPrimitiveTarget(target);
 		await sendMessageToTargetFrames("snapScroll", {
-			position: "top",
 			target,
-		});
-	});
-
-	onCommand("scrollElementToCenter", async ({ target }) => {
-		assertPrimitiveTarget(target);
-		await sendMessageToTargetFrames("snapScroll", {
-			position: "center",
-			target,
-		});
-	});
-
-	onCommand("scrollElementToBottom", async ({ target }) => {
-		assertPrimitiveTarget(target);
-		await sendMessageToTargetFrames("snapScroll", {
-			position: "bottom",
-			target,
-		});
-	});
-
-	// Scroll without target
-	onCommand("scrollUpLeftAside", async ({ factor }) => {
-		await sendMessage("scroll", {
-			dir: "up",
-			reference: "leftAside",
-			factor,
-		});
-	});
-
-	onCommand("scrollDownLeftAside", async ({ factor }) => {
-		await sendMessage("scroll", {
-			dir: "down",
-			reference: "leftAside",
-			factor,
-		});
-	});
-
-	onCommand("scrollUpRightAside", async ({ factor }) => {
-		await sendMessage("scroll", {
-			dir: "up",
-			reference: "rightAside",
-			factor,
-		});
-	});
-
-	onCommand("scrollDownRightAside", async ({ factor }) => {
-		await sendMessage("scroll", {
-			dir: "down",
-			reference: "rightAside",
-			factor,
-		});
-	});
-
-	onCommand("scrollUpPage", async ({ factor }) => {
-		await sendMessage("scroll", {
-			dir: "up",
-			reference: "page",
-			factor,
-		});
-	});
-
-	onCommand("scrollDownPage", async ({ factor }) => {
-		await sendMessage("scroll", {
-			dir: "down",
-			reference: "page",
-			factor,
-		});
-	});
-
-	onCommand("scrollLeftPage", async ({ factor }) => {
-		await sendMessage("scroll", {
-			dir: "left",
-			reference: "page",
-			factor,
-		});
-	});
-
-	onCommand("scrollRightPage", async ({ factor }) => {
-		await sendMessage("scroll", {
-			dir: "right",
-			reference: "page",
-			factor,
+			position,
 		});
 	});
 
@@ -652,7 +530,6 @@ export function addCommandListeners() {
 	// CUSTOM SELECTORS
 	// ===========================================================================
 	onCommand("confirmSelectorsCustomization", async () => {
-		// Await sendMessageToAllFrames("customHintsConfirm");
 		const { results } = await sendMessageToAllFrames("getStagedSelectors");
 
 		const customSelectorsToSave = results.flat();
