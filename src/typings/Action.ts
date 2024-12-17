@@ -1,3 +1,4 @@
+import { type Direction } from "./Direction";
 import {
 	type ElementMark,
 	type TabMarkerMark,
@@ -89,6 +90,23 @@ export type ActionMap = {
 	unhoverAll: void;
 
 	// Scroll
+	scroll: {
+		direction: Direction;
+		region: "main" | "leftSidebar" | "rightSidebar" | "repeatLast";
+		factor?: number;
+	};
+	scrollAtElement: {
+		target: Target<ElementMark>;
+		direction: Direction;
+		factor?: number;
+	};
+	snapScroll: {
+		target: Target<ElementMark>;
+		position: "top" | "center" | "bottom";
+	};
+	storeScrollPosition: { positionName: string };
+	scrollToPosition: { positionName: string };
+	// Legacy scroll actions: only necessary for command upgrading.
 	scrollDownAtElement: { target?: Target<ElementMark>; factor?: number };
 	scrollDownLeftAside: { factor?: number };
 	scrollDownPage: { factor?: number };
@@ -107,8 +125,6 @@ export type ActionMap = {
 	scrollUpLeftAside: { factor?: number };
 	scrollUpPage: { factor?: number };
 	scrollUpRightAside: { factor?: number };
-	storeScrollPosition: { positionName: string };
-	scrollToPosition: { positionName: string };
 
 	// Custom Selectors
 	confirmSelectorsCustomization: void;

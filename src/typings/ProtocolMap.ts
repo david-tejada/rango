@@ -82,18 +82,18 @@ export type ContentBoundMessageMap = {
 
 	// Scroll
 	scroll: (data: {
-		dir: Direction;
-		reference:
-			| Target<ElementMark>
-			| "page"
-			| "leftAside"
-			| "rightAside"
-			| "repeatLast";
+		region: "main" | "leftSidebar" | "rightSidebar" | "repeatLast";
+		direction: Direction;
+		factor?: number;
+	}) => void;
+	scrollAtElement: (data: {
+		target: Target<ElementMark>;
+		direction: Direction;
 		factor?: number;
 	}) => void;
 	snapScroll: (data: {
-		position: "top" | "center" | "bottom";
 		target: Target<ElementMark>;
+		position: "top" | "center" | "bottom";
 	}) => void;
 	storeScrollPosition: (data: { name: string }) => void;
 	scrollToPosition: (data: { name: string }) => void;

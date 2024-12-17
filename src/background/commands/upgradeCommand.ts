@@ -8,6 +8,7 @@ import {
 	type ToggleLevel,
 } from "../../typings/Action";
 import { type Command, type CommandV2 } from "../../typings/Command";
+import { type Direction } from "../../typings/Direction";
 import { getTargetFromTabMarkers } from "../target/tabMarkers";
 
 function upgradeAction(action: ActionV1): ActionV2<keyof ActionMap> {
@@ -76,21 +77,68 @@ function upgradeAction(action: ActionV1): ActionV2<keyof ActionMap> {
 		}
 
 		case "scrollDownAtElement":
-		case "scrollDownLeftAside":
-		case "scrollDownPage":
-		case "scrollDownRightAside":
-		case "scrollLeftAtElement":
-		case "scrollLeftPage":
-		case "scrollRightAtElement":
-		case "scrollRightPage":
 		case "scrollUpAtElement":
-		case "scrollUpLeftAside":
+		case "scrollLeftAtElement":
+		case "scrollRightAtElement": {
+			if (!target) {
+				return {
+					name: "scroll",
+					region: "repeatLast",
+					direction: extractWordFromCamelCase(name, 1) as Direction,
+					factor: arg as number,
+				};
+			}
+
+			return {
+				name: "scrollAtElement",
+				target: getTargetFromLabels(target),
+				direction: extractWordFromCamelCase(name, 1) as Direction,
+				factor: arg as number,
+			};
+		}
+
+		case "scrollDownPage":
 		case "scrollUpPage":
+		case "scrollLeftPage":
+		case "scrollRightPage": {
+			return {
+				name: "scroll",
+				region: "main",
+				direction: extractWordFromCamelCase(name, 1) as Direction,
+				factor: arg as number,
+			};
+		}
+
+		case "scrollDownLeftAside":
+		case "scrollUpLeftAside": {
+			return {
+				name: "scroll",
+				region: "leftSidebar",
+				direction: extractWordFromCamelCase(name, 1) as Direction,
+				factor: arg as number,
+			};
+		}
+
+		case "scrollDownRightAside":
 		case "scrollUpRightAside": {
 			return {
-				name,
-				target: target ? getTargetFromLabels(target) : undefined,
+				name: "scroll",
+				region: "rightSidebar",
+				direction: extractWordFromCamelCase(name, 1) as Direction,
 				factor: arg as number,
+			};
+		}
+
+		case "scrollElementToTop":
+		case "scrollElementToCenter":
+		case "scrollElementToBottom": {
+			return {
+				name: "snapScroll",
+				target: getTargetFromLabels(target!),
+				position: extractWordFromCamelCase(name, 3) as
+					| "top"
+					| "center"
+					| "bottom",
 			};
 		}
 
@@ -149,4 +197,15 @@ export function upgradeCommand(command: Command): CommandV2<keyof ActionMap> {
 	}
 
 	return command;
+}
+
+function extractWordFromCamelCase(name: string, index: number): string {
+	const words = name.split(/(?=[A-Z])/);
+	const extractedWord = words[index];
+
+	if (!extractedWord) {
+		throw new Error(`Could not extract word from camel case string: ${name}`);
+	}
+
+	return extractedWord.toLowerCase();
 }
