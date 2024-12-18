@@ -1,3 +1,4 @@
+/* eslint-disable unicorn/prefer-global-this */
 import { getLabelCache } from "../hints/labels/labelCache";
 import { getLabelStackForTab } from "../hints/labels/labelRequest";
 import {
@@ -25,7 +26,7 @@ export function loadDevtoolsUtils() {
 				const wrapper = getWrapper(target);
 				console.log(wrapper);
 			},
-			globalThis,
+			window,
 			{ defineAs: "logWrapper" }
 		);
 
@@ -34,7 +35,7 @@ export function loadDevtoolsUtils() {
 				const wrappers = onlyHinted ? getHintedWrappers() : getAllWrappers();
 				console.log(wrappers);
 			},
-			globalThis,
+			window,
 			{ defineAs: "logWrappers" }
 		);
 
@@ -43,7 +44,7 @@ export function loadDevtoolsUtils() {
 				const stack = await getLabelStackForTab();
 				console.log(stack);
 			},
-			globalThis,
+			window,
 			{ defineAs: "logLabelStack" }
 		);
 
@@ -51,7 +52,7 @@ export function loadDevtoolsUtils() {
 			async () => {
 				console.log(getLabelCache());
 			},
-			globalThis,
+			window,
 			{ defineAs: "logLabelCache" }
 		);
 	}
