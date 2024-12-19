@@ -265,6 +265,24 @@ async function createContextMenus() {
 		type: "normal",
 		contexts,
 	});
+
+	browser.contextMenus.create({
+		id: "openSidePanel",
+		title: "Open side panel",
+		contexts,
+	});
+
+	browser.contextMenus.create({
+		id: "cursorlessSidePanel",
+		title: "Open Cursorless side panel",
+		contexts,
+	});
+
+	browser.contextMenus.create({
+		id: "tabsSidePanel",
+		title: "Open Tabs side panel",
+		contexts,
+	});
 }
 
 async function contextMenusOnClicked({
@@ -298,6 +316,27 @@ async function contextMenusOnClicked({
 		}
 
 		await browser.runtime.openOptionsPage();
+	}
+
+	if (menuItemId === "openSidePanel") {
+		const currentWindow = await browser.windows.getCurrent();
+		await chrome.sidePanel.open({ windowId: currentWindow.id! });
+	}
+
+	if (menuItemId === "cursorlessSidePanel") {
+		const currentWindow = await browser.windows.getCurrent();
+		await browser.sidebarAction.setPanel({
+			windowId: currentWindow.id!,
+			panel: urls.cursorlessPanel.href,
+		});
+	}
+
+	if (menuItemId === "tabsSidePanel") {
+		const currentWindow = await browser.windows.getCurrent();
+		await browser.sidebarAction.setPanel({
+			windowId: currentWindow.id!,
+			panel: urls.tabsPanel.href,
+		});
 	}
 }
 

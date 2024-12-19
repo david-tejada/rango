@@ -12,4 +12,6 @@ export const urls = {
 	),
 	whatsNewPage: new URL("../pages/whatsNew/index.html", import.meta.url),
 	onboarding: new URL("../pages/onboarding/index.html", import.meta.url),
+	cursorlessPanel: new URL("../pages/sidebar/cursorless.html", import.meta.url),
+	tabsPanel: new URL("../pages/sidebar/sidebar.html", import.meta.url),
 } as const;

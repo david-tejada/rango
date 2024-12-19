@@ -1,0 +1,11 @@
+html,
+body {
+	height: 100vh;
+	margin: 0;
+	overflow: hidden auto;
+}
+
+/* If you have a root div, you might also need: */
+#root {
+	height: 100%;
+}

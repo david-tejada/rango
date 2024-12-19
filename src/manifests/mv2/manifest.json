@@ -90,5 +90,10 @@
 	"browser_action": {
 		"default_icon": "../../assets/icon48.png",
 		"default_title": "Rango"
+	},
+	"sidebar_action": {
+		"default_icon": "../../assets/icon48.png",
+		"default_title": "Rango",
+		"default_panel": "../../pages/sidebar/sidebar.html"
 	}
 }

@@ -19,7 +19,8 @@
 		"webNavigation",
 		"offscreen",
 		"contextMenus",
-		"bookmarks"
+		"bookmarks",
+		"sidePanel"
 	],
 	"content_scripts": [
 		{
@@ -80,5 +81,8 @@
 			"48": "../../assets/icon48.png"
 		},
 		"default_title": "Rango"
+	},
+	"side_panel": {
+		"default_path": "../../pages/sidebar/sidebar.html"
 	}
 }

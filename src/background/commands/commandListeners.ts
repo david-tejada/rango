@@ -2,6 +2,7 @@ import browser from "webextension-polyfill";
 import { getHostPattern } from "../../common/getHostPattern";
 import { retrieve, store } from "../../common/storage/storage";
 import { isTargetError } from "../../common/target/TargetError";
+import { urls } from "../../common/urls";
 import { type TalonAction } from "../../typings/TalonAction";
 import { assertPrimitiveTarget } from "../../typings/Target/Target";
 import { refreshHints } from "../hints/refreshHints";
@@ -48,6 +49,32 @@ import { discardNextResponse } from "./requestAndResponse";
 import { tryToFocusDocument } from "./tryToFocusDocument";
 
 export function addCommandListeners() {
+	onCommand("openSidePanelTabs", async () => {
+		const currentWindow = await browser.windows.getCurrent();
+		// Await browser.sidebarAction.setPanel({
+		// 	windowId: currentWindow.id!,
+		// 	panel: urls.tabsPanel.href,
+		// });
+		await chrome.sidePanel.setOptions({ path: urls.tabsPanel.href });
+	});
+
+	onCommand("openSidePanelCursorless", async () => {
+		const currentWindow = await browser.windows.getCurrent();
+		// Await browser.sidebarAction.setPanel({
+		// 	windowId: currentWindow.id!,
+		// 	panel: urls.cursorlessPanel.href,
+		// });
+		await chrome.sidePanel.setOptions({ path: urls.cursorlessPanel.href });
+	});
+
+	onCommand("scrollTabs", async ({ direction }) => {
+		await browser.runtime.sendMessage({
+			destination: "sidebar",
+			name: "scrollTabs",
+			direction,
+		});
+	});
+
 	// ===========================================================================
 	// NAVIGATION
 	// ===========================================================================

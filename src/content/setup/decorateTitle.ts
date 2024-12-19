@@ -8,7 +8,7 @@ let lastUrlAdded: string | undefined;
 /**
  * Last title before any decorations were added.
  */
-let lastUndecoratedTitle = document.title;
+let lastUndecoratedTitle = removeDecorations(document.title);
 
 /**
  * Last title including possible decorations. It might be the same as
@@ -59,7 +59,7 @@ export async function updateTitleDecorations() {
 	// duplicate the prefix or suffix. Prevents decorations from being added
 	// multiple times when the extension is updated and in some other difficult to
 	// reproduce situations.
-	lastUndecoratedTitle = await removeDecorations(document.title);
+	lastUndecoratedTitle = removeDecorations(document.title);
 
 	// It's important to first assign to `document.title` because this assignment
 	// might perform some changes, like removing excess contiguous space
@@ -70,7 +70,7 @@ export async function updateTitleDecorations() {
 	if (suffix) lastUrlAdded = location.href;
 }
 
-async function removeDecorations(title: string) {
+function removeDecorations(title: string) {
 	const possibleSuffix = ` - ${lastUrlAdded ?? location.href}`;
 	if (title.endsWith(possibleSuffix)) {
 		title = title.slice(0, -possibleSuffix.length);
@@ -100,7 +100,8 @@ function getTitleSuffix() {
 	return "";
 }
 
-export function getTitleBeforeDecoration() {
+export async function getTitleBeforeDecoration() {
+	console.log("getTitleBeforeDecoration", lastUndecoratedTitle);
 	return lastUndecoratedTitle;
 }
 
