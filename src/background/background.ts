@@ -68,6 +68,25 @@ browserAction.onClicked.addListener(async () => {
 // =============================================================================
 // INTERNAL COMMAND HANDLING
 // =============================================================================
+// https://stackoverflow.com/questions/77213045/error-sidepanel-open-may-only-be-called-in-response-to-a-user-gesture-re
+let currentWindowId: number | undefined;
+
+void browser.windows.getCurrent().then((currentWindow) => {
+	currentWindowId = currentWindow.id;
+});
+
+browser.windows.onFocusChanged.addListener((windowId) => {
+	currentWindowId = windowId;
+});
+
+browser.commands.onCommand.addListener((command: string) => {
+	if (command === "open-tabs-panel") {
+		chrome.sidePanel.open({ windowId: currentWindowId! }).catch((error) => {
+			console.error(error);
+		});
+	}
+});
+
 browser.commands.onCommand.addListener(async (internalCommand: string) => {
 	try {
 		if (

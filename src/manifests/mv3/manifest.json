@@ -74,6 +74,9 @@
 				"default": "Ctrl+Shift+5",
 				"mac": "MacCtrl+Shift+5"
 			}
+		},
+		"open-tabs-panel": {
+			"description": "Open tabs panel"
 		}
 	},
 	"action": {
