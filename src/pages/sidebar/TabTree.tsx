@@ -25,7 +25,11 @@ export function TabTree() {
 
 		browser.tabs.onCreated.addListener(async (tab) => {
 			console.log("onCreated", tab);
-			setTabs((tabs) => [...tabs, tab]);
+			setTabs((tabs) => {
+				const start = tabs.filter((t) => t.index < tab.index);
+				const end = tabs.filter((t) => t.index >= tab.index);
+				return [...start, tab, ...end];
+			});
 		});
 
 		browser.tabs.onRemoved.addListener(async (tabId) => {
