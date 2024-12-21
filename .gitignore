@@ -1,7 +1,5 @@
 node_modules
-dist-mv2
-dist-mv2-safari
-dist-mv3
+dist
 web-ext-artifacts
 .parcel-cache
 workspace.code-workspace
