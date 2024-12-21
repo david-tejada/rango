@@ -1,53 +1,61 @@
 # Contributing
 
-## Installation
+Welcome! This guide will help you install and run the extension for development.
+
+## Setup
+
+### Prerequisites
+
+- [Node.js](https://nodejs.org/en/download/) `^20`
+- [npm](https://www.npmjs.com/get-npm)
+
+### Install
+
+Clone and cd into the repository:
+
+```bash
+git clone https://github.com/david-tejada/rango.git
+cd rango
+```
+
+Install dependencies:
 
 ```bash
 npm install
 ```
 
-## Running the extension
+### Run the extension for development
 
-Depending on the target browser, you need to build the extension for Manifest
-version 2 or 3.
-
-This can be done with:
-
-- `npm run-script watch` - where the extension will be built into the directory
-  `dist-mv2`
-- `npm run-script watch:mv3` - where the extension will be built into the
-  directory `dist-mv3`
-
-You can then follow the guide for how to load the extension into your browser of
-choice.
-
-The project includes scripts for running the extension in Firefox and Chromium
-using the [WebExtension tool](https://github.com/mozilla/web-ext) for your
-convenience.
-
-### Firefox
+The following command will build the extension for development and launch a
+Firefox instance using [mozilla/web-ext](https://github.com/mozilla/web-ext).
 
 ```bash
-npm run-script watch
-npm run-script start:firefox
+npm run dev
 ```
 
-### Chrome & Chromium Browsers
+You can also run the extension in Chrome. Note that in Chrome content scripts
+don't reload when the extension changes, so you need to refresh the page every
+time there is a change in the extension's code:
 
-By default `start:chromium` will launch Google Chrome:
+First build the extension in watch mode:
 
 ```bash
-npm run-script watch:mv3
-npm run-script start:chromium
+npm run watch:chrome
 ```
 
-To launch alternative Chromium browsers like Edge or Brave you can append the
-path to the binary suitable for your operating system:
-
-_This example is for launching Brave on MacOS_
+Then, in another terminal, run the extension:
 
 ```bash
-npm run-script start:chromium -- --chromium-binary /Applications/Brave\ Browser.app/Contents/MacOS/Brave\ Browser
+npm run start:chrome
+```
+
+To launch alternative Chromium browsers like Edge or Brave you can use the flag
+`--chromium-binary` and append the path to the binary suitable for your
+operating system:
+
+```bash
+# Launch Brave on MacOS
+npm run start:chrome -- --chromium-binary /Applications/Brave\ Browser.app/Contents/MacOS/Brave\ Browser
 ```
 
 ### Safari
@@ -63,10 +71,10 @@ or
 
 To build for development:
 
-1. Build the extension for manifest version 2:
+1. Build the extension for Safari in watch mode:
 
    ```bash
-   npm run build:mv2-safari
+   npm run watch:safari
    ```
 
 2. Update the project's marketing version from the manifest.
@@ -89,6 +97,18 @@ To build for development:
 
 5. Edit `Build` » `UserSpecific.xcconfig` according to the comments in the file.
 
-6. Build and run the project.
+6. At this point the files produced by the build process might not match the
+   ones specified in `Rango/Rango for Safari.xcodeproj/project.pbxproj`. If
+   that's the case some of them will be marked in red. In that case, in Xcode,
+   select all the files inside `Shared (Extension)/Resources` and delete them
+   (select `Remove References` when prompted). Then, right click on `Resources`
+   and select `Add Files to "Rango for Safari"`. Select all the files within
+   `dist/safari`. Make sure that only `Rango for Safari Extension (macOS)` is
+   checked in the `Targets` section.
 
-7. Enable the extension in Safari’s Preferences.
+7. Build the project (`cmd-b`).
+
+8. Enable the extension in Safari’s Preferences.
+
+9. After making changes to the extension, you need to run the build process
+   again and refresh the page in Safari.

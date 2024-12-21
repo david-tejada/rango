@@ -1,38 +1,39 @@
 {
 	"private": true,
 	"scripts": {
-		"build:mv2": "rimraf dist-mv2 && parcel build src/manifests/mv2/manifest.json --no-content-hash --dist-dir dist-mv2 --no-cache --no-source-maps --detailed-report 0",
-		"build:mv2-safari": "rimraf dist-mv2-safari && parcel build src/manifests/mv2-safari/manifest.json --no-content-hash --dist-dir dist-mv2-safari --no-cache --detailed-report 0",
-		"build:mv3": "rimraf dist-mv3 && parcel build src/manifests/mv3/manifest.json --no-content-hash --dist-dir dist-mv3 --no-cache --detailed-report 0",
+		"_build": "rimraf dist/$BROWSER && parcel build src/manifests/$BROWSER/manifest.json --no-content-hash --dist-dir dist/$BROWSER --no-cache --detailed-report 0",
+		"build:firefox": "cross-env BROWSER=firefox npm run _build -- --no-source-maps",
+		"build:safari": "cross-env BROWSER=safari npm run _build",
+		"build:chrome": "cross-env BROWSER=chrome npm run _build",
 		"build": "run-p build:*",
-		"package:mv2": "web-ext build --artifacts-dir=web-ext-artifacts/mv2",
-		"package:mv2-safari": "web-ext build --source-dir=dist-mv2-safari --artifacts-dir=web-ext-artifacts/mv2-safari",
-		"package:mv3": "web-ext build --source-dir=dist-mv3 --artifacts-dir=web-ext-artifacts/mv3",
+		"_watch": "parcel watch src/manifests/$BROWSER/manifest.json --dist-dir dist/$BROWSER --no-cache --no-content-hash --no-hmr",
+		"watch:firefox": "cross-env BROWSER=firefox npm run _watch",
+		"watch:chrome": "cross-env BROWSER=chrome npm run _watch",
+		"watch:safari": "rimraf dist/safari && cross-env BROWSER=safari npm run _watch",
+		"_package": "web-ext build --source-dir=dist/$BROWSER --artifacts-dir=web-ext-artifacts/$BROWSER",
+		"package:firefox": "cross-env BROWSER=firefox npm run _package",
+		"package:safari": "cross-env BROWSER=safari npm run _package",
+		"package:chrome": "cross-env BROWSER=chrome npm run _package",
 		"package": "run-p package:*",
+		"predev": "rimraf dist/firefox && mkdir -p dist/firefox && cp src/manifests/firefox/manifest.json dist/firefox/manifest.json",
+		"dev": "run-p watch:firefox start:firefox",
+		"start:firefox": "web-ext run --source-dir dist/firefox",
+		"start:chrome": "web-ext run --source-dir dist/chrome --target chromium",
 		"build-and-package": "run-s build package",
 		"check-types": "tsc --noemit",
 		"check-format": "prettier --check .",
 		"unused-exports": "ts-unused-exports ./tsconfig.json",
-		"lint-fix": "run-p 'lint:* -- --fix'",
 		"lint:css": "stylelint src/**/*.css",
 		"lint:js": "xo",
 		"lint": "run-p lint:* check-types",
-		"pretest": "NODE_ENV=test run-p lint unused-exports build:mv3",
-		"test": "jest --runInBand",
-		"watch": "parcel watch src/manifests/mv2/manifest.json --dist-dir dist-mv2 --no-cache --no-content-hash --no-hmr",
-		"watch:mv3": "parcel watch src/manifests/mv3/manifest.json --dist-dir dist-mv3 --no-cache --no-content-hash --no-hmr",
-		"start:firefox": "web-ext run --target firefox-desktop",
-		"start:chromium": "web-ext run --source-dir dist-mv3 --target chromium"
+		"lint-fix": "run-p 'lint:* -- --fix'",
+		"pretest": "cross-env NODE_ENV=test run-p lint unused-exports build:chrome",
+		"test": "jest --runInBand"
 	},
 	"browserslist": [
 		"last 1 Chrome version",
 		"last 1 Firefox version"
 	],
-	"@parcel/bundler-default": {
-		"minBundles": 10000000,
-		"minBundleSize": 3000,
-		"maxParallelRequests": 20
-	},
 	"dependencies": {
 		"@fortawesome/fontawesome-svg-core": "^6.4.0",
 		"@fortawesome/free-solid-svg-icons": "^6.4.0",
@@ -70,6 +71,7 @@
 		"@types/lodash": "^4.14.195",
 		"@types/react-dom": "^19.0.0",
 		"@types/webextension-polyfill": "^0.12.1",
+		"cross-env": "^7.0.3",
 		"eslint-config-xo-react": "^0.27.0",
 		"eslint-plugin-react": "^7.36.1",
 		"eslint-plugin-react-hooks": "^5.0.0",
@@ -97,10 +99,9 @@
 		}
 	},
 	"webExt": {
-		"sourceDir": "dist-mv2",
 		"run": {
 			"startUrl": [
-				"https://en.wikipedia.org/wiki/Main_Page"
+				"https://rango.click"
 			]
 		}
 	},
