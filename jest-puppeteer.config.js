@@ -1,5 +1,5 @@
 const path = require("node:path");
-const EXTENSION_PATH = path.resolve(__dirname, "dist-mv3");
+const EXTENSION_PATH = path.resolve(__dirname, "dist", "chrome");
 
 module.exports = {
 	launch: {
