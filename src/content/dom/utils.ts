@@ -67,5 +67,8 @@ export function createElement<K extends keyof HTMLElementTagNameMap>(
 	tag: K,
 	attributes: Partial<HTMLElementTagNameMap[K]>
 ) {
-	return Object.assign(document.createElement(tag), attributes);
+	return Object.assign(
+		document.createElement(tag),
+		attributes
+	) as HTMLElementTagNameMap[K];
 }

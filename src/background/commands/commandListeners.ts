@@ -339,6 +339,14 @@ export function addCommandListeners() {
 		}
 	});
 
+	onCommand("drawPattern", async ({ target }) => {
+		const { results } = await sendMessageToTargetFrames("drawPattern", {
+			target,
+		});
+
+		return { name: "responseValue", value: results[0]! };
+	});
+
 	onCommand("copyElementTextContent", async ({ target }) => {
 		const { results } = await sendMessageToTargetFrames(
 			"getElementTextContent",

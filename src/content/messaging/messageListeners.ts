@@ -5,6 +5,7 @@ import {
 	scrollToPosition,
 	storeScrollPosition,
 } from "../actions/customScrollPositions";
+import { drawPattern } from "../actions/drawPattern";
 import { blur, focus, focusFirstInput } from "../actions/focus";
 import {
 	getAnchorHref,
@@ -130,6 +131,11 @@ export function addMessageListeners() {
 	onMessage("clickElement", async ({ target }) => {
 		const wrappers = await getTargetedWrappers(target);
 		return clickElement(wrappers);
+	});
+
+	onMessage("drawPattern", async ({ target }) => {
+		const wrapper = await getFirstWrapper(target);
+		return drawPattern(wrapper);
 	});
 
 	onMessage("getElementTextContent", async ({ target }) => {
