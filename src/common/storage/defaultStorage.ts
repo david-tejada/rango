@@ -8,7 +8,6 @@ export const defaultStorage: StorageSchema = {
 	labelStacks: new Map(),
 	tabMarkers: {
 		free: letterLabels,
-		tabIdsToMarkers: new Map(),
-		markersToTabIds: new Map(),
+		assigned: new Map(),
 	},
 } as const;

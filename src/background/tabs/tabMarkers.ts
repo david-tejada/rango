@@ -8,48 +8,38 @@ import {
 import { withLockedStorageAccess } from "../utils/withLockedStorageValue";
 
 export async function getTabMarker(tabId: number) {
-	return withLockedStorageAccess(
-		"tabMarkers",
-		({ free, tabIdsToMarkers, markersToTabIds }) => {
-			const marker = tabIdsToMarkers.get(tabId) ?? free.pop();
-
-			if (!marker) return "";
-
-			tabIdsToMarkers.set(tabId, marker);
-			markersToTabIds.set(marker, tabId);
-
-			return marker;
-		}
-	);
+	return withLockedStorageAccess("tabMarkers", ({ free, assigned }) => {
+		const marker = assigned.get(tabId) ?? free.pop();
+		if (!marker) return "";
+		assigned.set(tabId, marker);
+		return marker;
+	});
 }
 
 async function assignTabMarker(tabId: number, marker: string) {
-	return withLockedStorageAccess(
-		"tabMarkers",
-		({ free, tabIdsToMarkers, markersToTabIds }) => {
-			if (!free.includes(marker)) {
-				throw new Error(
-					`Unable to assign marker ${marker} as it's already in use`
-				);
-			}
-
-			const markerIndex = free.indexOf(marker);
-			free.splice(markerIndex, 1);
-
-			tabIdsToMarkers.set(tabId, marker);
-			markersToTabIds.set(marker, tabId);
+	return withLockedStorageAccess("tabMarkers", ({ free, assigned }) => {
+		if (!free.includes(marker)) {
+			throw new Error(
+				`Unable to assign marker ${marker} as it's already in use`
+			);
 		}
-	);
+
+		const markerIndex = free.indexOf(marker);
+		free.splice(markerIndex, 1);
+
+		assigned.set(tabId, marker);
+	});
 }
 
 export async function getTabIdForMarker(marker: string) {
-	return withLockedStorageAccess("tabMarkers", ({ markersToTabIds }) => {
-		const tabId = markersToTabIds.get(marker);
-		if (!tabId) {
-			throw new Error(`No tab with the marker "${marker}"`);
+	return withLockedStorageAccess("tabMarkers", ({ assigned }) => {
+		for (const [tabId, currentMarker] of assigned.entries()) {
+			if (currentMarker === marker) {
+				return tabId;
+			}
 		}
 
-		return tabId;
+		throw new Error(`No tab with the marker "${marker}"`);
 	});
 }
 
@@ -57,15 +47,11 @@ async function releaseMarker(tabId: number) {
 	const marker = await getTabMarker(tabId);
 	if (!marker) return;
 
-	await withLockedStorageAccess(
-		"tabMarkers",
-		({ free, tabIdsToMarkers, markersToTabIds }) => {
-			tabIdsToMarkers.delete(tabId);
-			markersToTabIds.delete(marker);
-			free.push(marker);
-			free.sort((a, b) => b.length - a.length || b.localeCompare(a));
-		}
-	);
+	await withLockedStorageAccess("tabMarkers", ({ free, assigned }) => {
+		assigned.delete(tabId);
+		free.push(marker);
+		free.sort((a, b) => b.length - a.length || b.localeCompare(a));
+	});
 }
 
 browser.tabs.onRemoved.addListener(async (tabId) => {
@@ -74,28 +60,14 @@ browser.tabs.onRemoved.addListener(async (tabId) => {
 
 // In Chrome when a tab is discarded it changes its id
 browser.tabs.onReplaced.addListener(async (addedTabId, removedTabId) => {
-	await withLockedStorageAccess(
-		"tabMarkers",
-		({ tabIdsToMarkers, markersToTabIds }) => {
-			const tabMarker = tabIdsToMarkers.get(removedTabId);
-			if (!tabMarker) return;
+	await withLockedStorageAccess("tabMarkers", ({ assigned }) => {
+		const tabMarker = assigned.get(removedTabId);
+		if (!tabMarker) return;
 
-			tabIdsToMarkers.delete(removedTabId);
-			tabIdsToMarkers.set(addedTabId, tabMarker);
-			markersToTabIds.set(tabMarker, addedTabId);
-		}
-	);
-});
-
-async function resetTabMarkers() {
-	await withLockedStorageAccess("tabMarkers", (tabMarkers) => {
-		tabMarkers.free = [...letterLabels];
-		tabMarkers.tabIdsToMarkers = new Map();
-		tabMarkers.markersToTabIds = new Map();
-
-		return tabMarkers;
+		assigned.delete(removedTabId);
+		assigned.set(addedTabId, tabMarker);
 	});
-}
+});
 
 export async function initTabMarkers() {
 	await resetTabMarkers();
@@ -154,4 +126,12 @@ export async function refreshTabMarkers() {
 	});
 
 	await Promise.all(refreshing);
+}
+
+async function resetTabMarkers() {
+	await withLockedStorageAccess("tabMarkers", (tabMarkers) => {
+		tabMarkers.free = [...letterLabels];
+		tabMarkers.assigned = new Map();
+		return tabMarkers;
+	});
 }
