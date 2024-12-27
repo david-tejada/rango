@@ -14,6 +14,7 @@
 	"rules": {
 		"n/prefer-global/process": "off",
 		"unicorn/prefer-top-level-await": "off",
+		"capitalized-comments": "off",
 		"n/file-extension-in-import": "off",
 		"import/extensions": [
 			2,

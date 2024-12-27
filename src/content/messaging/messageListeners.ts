@@ -16,6 +16,10 @@ import {
 	markHintsAsKeyboardReachable,
 	restoreKeyboardReachableHints,
 } from "../actions/keyboardClicking";
+import {
+	drawLocatePattern,
+	removeLocatePattern,
+} from "../actions/locatePattern";
 import { matchElementByText } from "../actions/matchElementByText";
 import {
 	navigateToNextPage,
@@ -130,6 +134,15 @@ export function addMessageListeners() {
 	onMessage("clickElement", async ({ target }) => {
 		const wrappers = await getTargetedWrappers(target);
 		return clickElement(wrappers);
+	});
+
+	onMessage("drawLocatePattern", async ({ target, colors }) => {
+		const wrapper = await getFirstWrapper(target);
+		drawLocatePattern(wrapper, colors);
+	});
+
+	onMessage("removeLocatePattern", async () => {
+		removeLocatePattern();
 	});
 
 	onMessage("getElementTextContent", async ({ target }) => {

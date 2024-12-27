@@ -79,6 +79,11 @@ export type ContentBoundMessageMap = {
 	unhoverAll: () => void;
 	setSelectionBefore: (data: { target: Target<ElementMark> }) => boolean;
 	setSelectionAfter: (data: { target: Target<ElementMark> }) => boolean;
+	drawLocatePattern: (data: {
+		target: Target<ElementMark>;
+		colors: [number, number, number, number];
+	}) => void;
+	removeLocatePattern: () => void;
 
 	// Scroll
 	scroll: (data: {

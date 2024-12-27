@@ -339,6 +339,18 @@ export function addCommandListeners() {
 		}
 	});
 
+	onCommand("drawLocatePattern", async ({ target, colors }) => {
+		assertPrimitiveTarget(target);
+		await sendMessageToTargetFrames("drawLocatePattern", {
+			target,
+			colors,
+		});
+	});
+
+	onCommand("removeLocatePattern", async () => {
+		await sendMessageToAllFrames("removeLocatePattern");
+	});
+
 	onCommand("copyElementTextContent", async ({ target }) => {
 		const { results } = await sendMessageToTargetFrames(
 			"getElementTextContent",
@@ -383,7 +395,7 @@ export function addCommandListeners() {
 		const message = `Command "focusAndDeleteContents" has been removed. Update rango-talon.`;
 		await notify.error(message);
 
-		return { name: "printError", message };
+		return { name: "throwError", message };
 	});
 
 	onCommand("focusElement", async ({ target }) => {
@@ -413,7 +425,7 @@ export function addCommandListeners() {
 		const message = `Command "insertToField" has been removed. Update rango-talon.`;
 		await notify.error(message);
 
-		return { name: "printError", message };
+		return { name: "throwError", message };
 	});
 
 	onCommand("openInBackgroundTab", async ({ target }) => {
@@ -668,7 +680,7 @@ export function addCommandListeners() {
 		const message = `Command "checkActiveElementIsEditable" has been removed. Update rango-talon.`;
 		await notify.error(message);
 
-		return { name: "printError", message };
+		return { name: "throwError", message };
 	});
 
 	onCommand("requestTimedOut", async () => {
