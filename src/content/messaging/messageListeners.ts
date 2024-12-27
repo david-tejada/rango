@@ -5,7 +5,6 @@ import {
 	scrollToPosition,
 	storeScrollPosition,
 } from "../actions/customScrollPositions";
-import { drawPattern } from "../actions/drawPattern";
 import { blur, focus, focusFirstInput } from "../actions/focus";
 import {
 	getAnchorHref,
@@ -17,6 +16,10 @@ import {
 	markHintsAsKeyboardReachable,
 	restoreKeyboardReachableHints,
 } from "../actions/keyboardClicking";
+import {
+	drawLocatePattern,
+	removeLocatePattern,
+} from "../actions/locatePattern";
 import { matchElementByText } from "../actions/matchElementByText";
 import {
 	navigateToNextPage,
@@ -133,9 +136,13 @@ export function addMessageListeners() {
 		return clickElement(wrappers);
 	});
 
-	onMessage("drawPattern", async ({ target }) => {
+	onMessage("drawLocatePattern", async ({ target, colors }) => {
 		const wrapper = await getFirstWrapper(target);
-		return drawPattern(wrapper);
+		drawLocatePattern(wrapper, colors);
+	});
+
+	onMessage("removeLocatePattern", async () => {
+		removeLocatePattern();
 	});
 
 	onMessage("getElementTextContent", async ({ target }) => {

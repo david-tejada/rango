@@ -9,7 +9,7 @@ export type TalonAction =
 	| TalonActionBase<"focusPageAndResend">
 	| TalonActionBase<"key", { key: string }>
 	| TalonActionBase<"openInNewTab", { url: string }>
-	| TalonActionBase<"printError", { message: string }>
+	| TalonActionBase<"throwError", { message: string }>
 	| TalonActionBase<"responseValue", { value: any }>
 	| TalonActionBase<"sleep", { ms?: number }>
 	| TalonActionBase<"typeTargetCharacters">;
