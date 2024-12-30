@@ -3,7 +3,7 @@ import {
 	UnreachableContentScriptError,
 	sendMessage,
 } from "../../messaging/backgroundMessageBroker";
-import { getCurrentTabId } from "../../tabs/getCurrentTab";
+import { getRequiredCurrentTabId } from "../../tabs/getCurrentTab";
 import { getAllFrames } from "../../utils/getAllFrames";
 import { initStack } from "./labelStack";
 
@@ -107,12 +107,12 @@ export async function navigationOccurred(tabId: number) {
 // We use the onCommitted event to retrieve the URL since the main frame is
 // guarantied to come before the rest.
 async function preloadTabCommitted(url: string) {
-	const currentTabId = await getCurrentTabId();
+	const currentTabId = await getRequiredCurrentTabId();
 	preloadTabs.set(currentTabId, { url, completed: false });
 }
 
 async function preloadTabCompleted() {
-	const currentTabId = await getCurrentTabId();
+	const currentTabId = await getRequiredCurrentTabId();
 	const preloadTab = preloadTabs.get(currentTabId)!;
 	preloadTab.completed = true;
 }

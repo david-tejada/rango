@@ -1,6 +1,6 @@
 import browser, { type Tabs } from "webextension-polyfill";
 import { retrieve } from "../../common/storage/storage";
-import { getCurrentTabId } from "./getCurrentTab";
+import { getRequiredCurrentTabId } from "./getCurrentTab";
 
 /**
  * Create tabs related to the current tab. The index of the new tabs is
@@ -10,7 +10,7 @@ import { getCurrentTabId } from "./getCurrentTab";
 export async function createRelatedTabs(
 	createPropertiesArray: Tabs.CreateCreatePropertiesType[]
 ) {
-	const tabId = await getCurrentTabId();
+	const tabId = await getRequiredCurrentTabId();
 	let newIndex = await getNewTabIndex(tabId);
 
 	await Promise.all(

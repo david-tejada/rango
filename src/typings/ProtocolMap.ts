@@ -23,7 +23,6 @@ export type BackgroundBoundMessageMap = {
 	getContentScriptContext: () => {
 		tabId: number;
 		frameId: number;
-		currentTabId: number;
 	};
 	getTabMarker: () => string;
 
