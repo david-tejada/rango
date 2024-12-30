@@ -1,5 +1,5 @@
 import type browser from "webextension-polyfill";
-import { getCurrentTab } from "./getCurrentTab";
+import { getRequiredCurrentTab } from "./getCurrentTab";
 
 /**
  * Given an array of tabs as a parameter, return the first tab in the array that
@@ -8,7 +8,7 @@ import { getCurrentTab } from "./getCurrentTab";
  * the current window if necessary.
  */
 export async function getNextTabByIndex(tabs: browser.Tabs.Tab[]) {
-	const currentTab = await getCurrentTab();
+	const currentTab = await getRequiredCurrentTab();
 
 	return (
 		tabs.find(

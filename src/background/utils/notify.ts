@@ -5,14 +5,13 @@ import {
 } from "../../common/createNotifier";
 import { retrieve } from "../../common/storage/storage";
 import { urls } from "../../common/urls";
-import {
-	sendMessage,
-	UnreachableContentScriptError,
-} from "../messaging/backgroundMessageBroker";
+import { sendMessage } from "../messaging/backgroundMessageBroker";
 
 /**
  * Show a notification to the user. It displays a toast notification or, in case
- * there is no content script running in the current tab, a system notification.
+ * there is no content script running in the current tab or the current tab is
+ * undefined (for example, the devtools window is focused), a system
+ * notification.
  */
 export const notify = createNotifier(
 	async (text: string, type: NotificationType, toastId?: string) => {
@@ -24,15 +23,8 @@ export const notify = createNotifier(
 				type,
 				toastId,
 			});
-		} catch (error: unknown) {
-			if (!(error instanceof UnreachableContentScriptError)) throw error;
-
-			await browser.notifications.create("rango-notification", {
-				type: "basic",
-				iconUrl: urls.icon128.href,
-				title: "Rango",
-				message: text,
-			});
+		} catch {
+			await displaySystemNotification(text);
 		}
 	}
 );
@@ -46,7 +38,18 @@ export const notify = createNotifier(
 export async function notifyTogglesStatus(force = false) {
 	try {
 		await sendMessage("displayTogglesStatus", { force });
-	} catch (error: unknown) {
-		if (!(error instanceof UnreachableContentScriptError)) throw error;
+	} catch {
+		await displaySystemNotification(
+			"Unable to display the toggle status on the current page"
+		);
 	}
+}
+
+async function displaySystemNotification(text: string) {
+	await browser.notifications.create("rango-notification", {
+		type: "basic",
+		iconUrl: urls.icon128.href,
+		title: "Rango",
+		message: text,
+	});
 }

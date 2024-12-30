@@ -1,7 +1,7 @@
 import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
 import { retrieve, store } from "../../common/storage/storage";
-import { getCurrentTab } from "./getCurrentTab";
+import { getRequiredCurrentTab } from "./getCurrentTab";
 
 /**
  * Start tracking tabs to be able to use the command `focusPreviousTab`.
@@ -12,7 +12,7 @@ import { getCurrentTab } from "./getCurrentTab";
  */
 export async function trackRecentTabs() {
 	// We need to track the initial tab when the browser first opens
-	const currentTab = await getCurrentTab();
+	const currentTab = await getRequiredCurrentTab();
 	if (currentTab.windowId && currentTab.id) {
 		await updateRecentTab(currentTab.windowId, currentTab.id, false);
 	}
