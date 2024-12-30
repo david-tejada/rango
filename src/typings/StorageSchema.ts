@@ -20,8 +20,6 @@ const zTabMarkers = z.object({
 	assigned: z.map(z.number(), z.string()),
 });
 
-export type TabMarkers = z.infer<typeof zTabMarkers>;
-
 export const zStorageSchema = z.object({
 	// Hint style
 	hintUppercaseLetters: z.boolean(),
