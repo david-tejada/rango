@@ -76,6 +76,11 @@ export type ActionMap = {
 	copyLink: { target: Target<ElementMark> };
 	copyMarkdownLink: { target: Target<ElementMark> };
 	directClickElement: { target: Target<ElementMark> };
+	drawLocatePattern: {
+		target: Target<ElementMark>;
+		colors: [number, number, number, number];
+	};
+	removeLocatePattern: void;
 	focusAndDeleteContents: void;
 	focusElement: { target: Target<ElementMark> };
 	focusFirstInput: void;

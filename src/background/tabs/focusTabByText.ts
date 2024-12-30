@@ -1,6 +1,6 @@
 import Fuse from "fuse.js";
 import browser from "webextension-polyfill";
-import { getCurrentTab } from "./getCurrentTab";
+import { getRequiredCurrentTab } from "./getCurrentTab";
 
 /**
  * All tabs matching the previous search.
@@ -54,7 +54,7 @@ export async function focusTabByText(text: string) {
  * Cycles through the tabs matching the previous tab search.
  */
 export async function cycleTabsByText(step: number) {
-	const currentTab = await getCurrentTab();
+	const currentTab = await getRequiredCurrentTab();
 
 	if (selectedMatch === undefined) {
 		throw new Error(`No previous tab search to cycle through.`);

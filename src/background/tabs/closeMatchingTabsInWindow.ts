@@ -1,5 +1,5 @@
 import browser, { type Tabs } from "webextension-polyfill";
-import { getCurrentTab } from "./getCurrentTab";
+import { getRequiredCurrentTab } from "./getCurrentTab";
 
 /**
  * Closes all tabs in the current window that match the filter function.
@@ -15,7 +15,7 @@ export async function closeFilteredTabsInWindow(
 		totalTabs: number
 	) => boolean
 ) {
-	const currentTab = await getCurrentTab();
+	const currentTab = await getRequiredCurrentTab();
 	const allTabsInWindow = await browser.tabs.query({ currentWindow: true });
 	const totalTabs = allTabsInWindow.length;
 

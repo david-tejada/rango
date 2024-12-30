@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { getCurrentTab } from "./getCurrentTab";
+import { getRequiredCurrentTab } from "./getCurrentTab";
 
 /**
  * Focuses or creates a tab with the given URL.
@@ -44,6 +44,6 @@ async function tabsQueryWithFallback(url: string) {
  * If none belongs to the current window, it returns the first one.
  */
 async function getTabPrioritizeCurrentWindow(tabs: browser.Tabs.Tab[]) {
-	const currentTab = await getCurrentTab();
+	const currentTab = await getRequiredCurrentTab();
 	return tabs.find((tab) => tab.windowId === currentTab.windowId) ?? tabs[0];
 }

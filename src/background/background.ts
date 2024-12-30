@@ -15,7 +15,7 @@ import {
 import { addMessageListeners } from "./messaging/messageListeners";
 import { toggleKeyboardClicking } from "./settings/keyboardClicking";
 import { setTabLastSounded } from "./tabs/focusTabBySound";
-import { getCurrentTab } from "./tabs/getCurrentTab";
+import { getCurrentTab, getRequiredCurrentTab } from "./tabs/getCurrentTab";
 import { initTabMarkers } from "./tabs/tabMarkers";
 import { trackRecentTabs } from "./tabs/trackRecentTabs";
 import { browserAction, setBrowserActionIcon } from "./utils/browserAction";
@@ -323,7 +323,7 @@ async function contextMenusOnClicked({
 
 	if (menuItemId === "add-keys-to-exclude") {
 		const keysToExclude = await retrieve("keysToExclude");
-		const tab = await getCurrentTab();
+		const tab = await getRequiredCurrentTab();
 		const hostPattern = tab.url && getHostPattern(tab.url);
 		const keysToExcludeForHost = keysToExclude.find(
 			([pattern]) => pattern === hostPattern
@@ -369,7 +369,7 @@ browser.tabs.onUpdated.addListener(async (tabId, changeInfo) => {
 	}
 });
 
-let lastCurrentTab: browser.Tabs.Tab;
+let lastCurrentTab: browser.Tabs.Tab | undefined;
 
 (async () => {
 	try {
@@ -385,7 +385,7 @@ browser.tabs.onActivated.addListener(async (activeInfo) => {
 
 		// If the window also changes the update will be handled by the
 		// `windows.onFocusChanged` listener.
-		if (windowId !== lastCurrentTab.windowId) return;
+		if (windowId !== lastCurrentTab?.windowId) return;
 
 		await sendMessageSafe("currentTabChanged", undefined, {
 			tabId: lastCurrentTab.id,
@@ -404,11 +404,13 @@ browser.windows.onFocusChanged.addListener(async (windowId) => {
 		// The window might not be valid. For example, if it's a devtools window.
 		if (!(await isValidWindow(windowId))) return;
 
-		await sendMessageSafe("currentTabChanged", undefined, {
-			tabId: lastCurrentTab.id,
-		});
+		if (lastCurrentTab) {
+			await sendMessageSafe("currentTabChanged", undefined, {
+				tabId: lastCurrentTab.id,
+			});
+		}
 
-		lastCurrentTab = await getCurrentTab();
+		lastCurrentTab = await getRequiredCurrentTab();
 		await sendMessageSafe("currentTabChanged", undefined, {
 			tabId: lastCurrentTab.id,
 		});

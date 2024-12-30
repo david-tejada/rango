@@ -28,7 +28,10 @@ import {
 } from "../tabs/focusTabBySound";
 import { cycleTabsByText, focusTabByText } from "../tabs/focusTabByText";
 import { getBareTitle } from "../tabs/getBareTitle";
-import { getCurrentTab, getCurrentTabId } from "../tabs/getCurrentTab";
+import {
+	getRequiredCurrentTab,
+	getRequiredCurrentTabId,
+} from "../tabs/getCurrentTab";
 import {
 	muteAllTabsWithSound,
 	muteNextTabWithSound,
@@ -127,7 +130,7 @@ export function addCommandListeners() {
 	});
 
 	onCommand("cloneCurrentTab", async () => {
-		await browser.tabs.duplicate(await getCurrentTabId());
+		await browser.tabs.duplicate(await getRequiredCurrentTabId());
 	});
 
 	onCommand("closeNextTabsInWindow", async ({ amount }) => {
@@ -174,7 +177,7 @@ export function addCommandListeners() {
 
 	onCommand("copyCurrentTabMarkdownUrl", async () => {
 		const bareTitle = await getBareTitle();
-		const tab = await getCurrentTab();
+		const tab = await getRequiredCurrentTab();
 		const markdownUrl = `[${bareTitle}](${tab.url!})`;
 
 		await notify.success("Markdown link copied to the clipboard.");
@@ -183,7 +186,7 @@ export function addCommandListeners() {
 	});
 
 	onCommand("copyLocationProperty", async ({ property }) => {
-		const tab = await getCurrentTab();
+		const tab = await getRequiredCurrentTab();
 		const url = new URL(tab.url!);
 
 		await notify.success(`Property "${property}" copied to the clipboard.`);
@@ -209,7 +212,7 @@ export function addCommandListeners() {
 	});
 
 	onCommand("moveCurrentTabToNewWindow", async () => {
-		const tabId = await getCurrentTabId();
+		const tabId = await getRequiredCurrentTabId();
 		await browser.windows.create({ tabId });
 	});
 
@@ -366,6 +369,18 @@ export function addCommandListeners() {
 		}
 	});
 
+	onCommand("drawLocatePattern", async ({ target, colors }) => {
+		assertPrimitiveTarget(target);
+		await sendMessageToTargetFrames("drawLocatePattern", {
+			target,
+			colors,
+		});
+	});
+
+	onCommand("removeLocatePattern", async () => {
+		await sendMessageToAllFrames("removeLocatePattern");
+	});
+
 	onCommand("copyElementTextContent", async ({ target }) => {
 		const { results } = await sendMessageToTargetFrames(
 			"getElementTextContent",
@@ -410,7 +425,7 @@ export function addCommandListeners() {
 		const message = `Command "focusAndDeleteContents" has been removed. Update rango-talon.`;
 		await notify.error(message);
 
-		return { name: "printError", message };
+		return { name: "throwError", message };
 	});
 
 	onCommand("focusElement", async ({ target }) => {
@@ -440,7 +455,7 @@ export function addCommandListeners() {
 		const message = `Command "insertToField" has been removed. Update rango-talon.`;
 		await notify.error(message);
 
-		return { name: "printError", message };
+		return { name: "throwError", message };
 	});
 
 	onCommand("openInBackgroundTab", async ({ target }) => {
@@ -695,7 +710,7 @@ export function addCommandListeners() {
 		const message = `Command "checkActiveElementIsEditable" has been removed. Update rango-talon.`;
 		await notify.error(message);
 
-		return { name: "printError", message };
+		return { name: "throwError", message };
 	});
 
 	onCommand("requestTimedOut", async () => {

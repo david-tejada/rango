@@ -85,6 +85,8 @@ async function getTitlePrefix() {
 	if (!(await shouldIncludeTabMarkers())) return "";
 
 	const tabMarker = await sendMessage("getTabMarker");
+	if (!tabMarker) return "";
+
 	const marker = getSetting("uppercaseTabMarkers")
 		? tabMarker.toUpperCase()
 		: tabMarker;

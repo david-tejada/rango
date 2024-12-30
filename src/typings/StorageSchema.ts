@@ -17,11 +17,8 @@ export type LabelStack = z.infer<typeof zLabelStack>;
 
 const zTabMarkers = z.object({
 	free: z.array(z.string()),
-	tabIdsToMarkers: z.map(z.number(), z.string()),
-	markersToTabIds: z.map(z.string(), z.number()),
+	assigned: z.map(z.number(), z.string()),
 });
-
-export type TabMarkers = z.infer<typeof zTabMarkers>;
 
 export const zStorageSchema = z.object({
 	// Hint style

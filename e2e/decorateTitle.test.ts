@@ -1,5 +1,9 @@
 import { sleep } from "./utils/testHelpers";
 
+// There is another tab open before the current one that also gets a marker.
+// That's why we have to use this one.
+const tabMarker = "B";
+
 beforeAll(async () => {
 	await page.goto("http://localhost:8080/basic.html");
 });
@@ -9,7 +13,9 @@ test("The URL and the tab marker are attached to the title", async () => {
 
 	const title = await page.title();
 
-	expect(title).toBe("A | Document - http://localhost:8080/basic.html");
+	expect(title).toBe(
+		`${tabMarker} | Document - http://localhost:8080/basic.html`
+	);
 });
 
 test("If something in the page changes and the URL changes it updates the title", async () => {
@@ -22,7 +28,9 @@ test("If something in the page changes and the URL changes it updates the title"
 
 	const title = await page.title();
 
-	expect(title).toBe("A | Document - http://localhost:8080/new.html");
+	expect(title).toBe(
+		`${tabMarker} | Document - http://localhost:8080/new.html`
+	);
 });
 
 test("If the hash changes the URL in the title is updated", async () => {
@@ -36,5 +44,7 @@ test("If the hash changes the URL in the title is updated", async () => {
 
 	const title = await page.title();
 
-	expect(title).toBe("A | Document - http://localhost:8080/new.html#first");
+	expect(title).toBe(
+		`${tabMarker} | Document - http://localhost:8080/new.html#first`
+	);
 });

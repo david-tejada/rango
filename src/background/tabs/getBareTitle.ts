@@ -3,7 +3,7 @@ import {
 	sendMessage,
 	UnreachableContentScriptError,
 } from "../messaging/backgroundMessageBroker";
-import { getCurrentTab } from "./getCurrentTab";
+import { getRequiredCurrentTab } from "./getCurrentTab";
 
 export async function getBareTitle(tabId?: number) {
 	try {
@@ -13,7 +13,7 @@ export async function getBareTitle(tabId?: number) {
 		if (error instanceof UnreachableContentScriptError) {
 			const tab =
 				tabId === undefined
-					? await getCurrentTab()
+					? await getRequiredCurrentTab()
 					: await browser.tabs.get(tabId);
 			return removeDecorations(tab);
 		}
