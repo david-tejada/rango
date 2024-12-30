@@ -24,7 +24,7 @@ import {
 	type Target,
 } from "../../typings/Target/Target";
 import { getRequiredStack } from "../hints/labels/labelStack";
-import { getCurrentTabId } from "../tabs/getCurrentTab";
+import { getRequiredCurrentTabId } from "../tabs/getCurrentTab";
 import { assertReferencesInCurrentTab } from "../target/references";
 import { getAllFrames } from "../utils/getAllFrames";
 import { promiseAllSettledGrouped } from "../utils/promises";
@@ -122,7 +122,7 @@ export async function sendMessage<K extends MessageWithoutTarget>(
 		: [data?: MessageData<K>, destination?: Destination]
 ): Promise<MessageReturn<K>> {
 	const [data, destination] = args;
-	const tabId = destination?.tabId ?? (await getCurrentTabId());
+	const tabId = destination?.tabId ?? (await getRequiredCurrentTabId());
 	await pingContentScript(tabId);
 
 	try {
@@ -173,7 +173,7 @@ export async function sendMessageToAllFrames<K extends MessageWithoutTarget>(
 		: [data?: MessageData<K>, tabId?: number]
 ) {
 	const [data, tabId] = args;
-	const tabId_ = tabId ?? (await getCurrentTabId());
+	const tabId_ = tabId ?? (await getRequiredCurrentTabId());
 
 	const frames = await getAllFrames(tabId_);
 
@@ -235,7 +235,7 @@ export async function sendMessageToTargetFrames<K extends MessageWithTarget>(
 	data: NonNullable<MessageData<K>>,
 	tabId?: number
 ) {
-	const destinationTabId = tabId ?? (await getCurrentTabId());
+	const destinationTabId = tabId ?? (await getRequiredCurrentTabId());
 	await pingContentScript(destinationTabId);
 
 	const targetByFrameMap = await splitTargetByFrame(

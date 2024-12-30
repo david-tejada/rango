@@ -8,7 +8,6 @@ import {
 } from "../hints/labels/labelAllocator";
 import { getRequiredStack, initStack } from "../hints/labels/labelStack";
 import { createRelatedTabs } from "../tabs/createRelatedTabs";
-import { getCurrentTabId } from "../tabs/getCurrentTab";
 import { getTabMarker } from "../tabs/tabMarkers";
 import {
 	onMessage,
@@ -59,14 +58,10 @@ export function addMessageListeners() {
 		return results.flat();
 	});
 
-	onMessage("getContentScriptContext", async (_, { tabId, frameId }) => {
-		const currentTabId = await getCurrentTabId();
-		return {
-			tabId,
-			frameId,
-			currentTabId,
-		};
-	});
+	onMessage("getContentScriptContext", async (_, { tabId, frameId }) => ({
+		tabId,
+		frameId,
+	}));
 
 	onMessage("clickHintInFrame", async ({ hint }, { tabId }) => {
 		await sendMessageToTargetFrames(
