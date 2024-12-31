@@ -16,7 +16,7 @@ import { addMessageListeners } from "./messaging/messageListeners";
 import { toggleKeyboardClicking } from "./settings/keyboardClicking";
 import { setTabLastSounded } from "./tabs/focusTabBySound";
 import { getCurrentTab, getRequiredCurrentTab } from "./tabs/getCurrentTab";
-import { initTabMarkers } from "./tabs/tabMarkers";
+import { addTabCycleListeners, initTabMarkers } from "./tabs/tabMarkers";
 import { trackRecentTabs } from "./tabs/trackRecentTabs";
 import { browserAction, setBrowserActionIcon } from "./utils/browserAction";
 import { isSafari } from "./utils/isSafari";
@@ -160,9 +160,8 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 	// This has been renamed to `labelStacks`. Free up space in the storage area.
 	await browser.storage.local.remove("hintStacks");
 
-	if (reason === "install") {
-		await initTabMarkers();
-	}
+	if (reason === "install") await initTabMarkers();
+	if (reason === "update") addTabCycleListeners();
 });
 
 // =============================================================================

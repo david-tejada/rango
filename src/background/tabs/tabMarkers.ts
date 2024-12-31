@@ -158,7 +158,7 @@ function getMarkerFromTitle(title: string) {
 	return /^([a-z]{1,2}) \| /i.exec(title)?.[1]?.toLowerCase();
 }
 
-function addTabCycleListeners() {
+export function addTabCycleListeners() {
 	browser.tabs.onCreated.addListener(async ({ id }) => {
 		if (id) await setTabMarker(id);
 	});
