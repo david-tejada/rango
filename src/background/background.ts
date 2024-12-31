@@ -14,10 +14,10 @@ import {
 } from "./messaging/backgroundMessageBroker";
 import { addMessageListeners } from "./messaging/messageListeners";
 import { toggleKeyboardClicking } from "./settings/keyboardClicking";
+import { trackRecentTabs } from "./tabs/focusPreviousTab";
 import { setTabLastSounded } from "./tabs/focusTabBySound";
 import { getCurrentTab, getRequiredCurrentTab } from "./tabs/getCurrentTab";
 import { addTabMarkerListeners, initTabMarkers } from "./tabs/tabMarkers";
-import { trackRecentTabs } from "./tabs/trackRecentTabs";
 import { browserAction, setBrowserActionIcon } from "./utils/browserAction";
 import { isSafari } from "./utils/isSafari";
 import { notify } from "./utils/notify";
@@ -26,17 +26,17 @@ import { notify } from "./utils/notify";
 // while the background script/service worker is inactive might fail.
 browser.contextMenus.onClicked.addListener(contextMenusOnClicked);
 
-(async () => {
-	try {
-		addMessageListeners();
-		addCommandListeners();
-		await trackRecentTabs();
-		addWebNavigationListeners();
-		addTabMarkerListeners();
-	} catch (error: unknown) {
-		console.error(error);
-	}
-})();
+// Critical listeners. They need to be added as soon as possible.
+// https://developer.chrome.com/docs/extensions/develop/concepts/service-workers/events
+try {
+	addTabMarkerListeners();
+	trackRecentTabs();
+	addWebNavigationListeners();
+	addMessageListeners();
+	addCommandListeners();
+} catch (error: unknown) {
+	console.error(error);
+}
 
 // =============================================================================
 // TEST COMMAND HANDLING
@@ -172,7 +172,7 @@ browser.runtime.onStartup.addListener(async () => {
 	await setBrowserActionIcon();
 	await store("labelStacks", new Map());
 	await store("hintsToggleTabs", new Map());
-	await store("tabsByRecency", new Map());
+	await store("tabsByRecency", []);
 	// In Safari we need to create the menus every time the browser starts.
 	if (isSafari()) await createContextMenus();
 });

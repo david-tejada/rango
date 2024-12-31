@@ -84,7 +84,7 @@ export const zStorageSchema = z.object({
 	directClickWhenEditing: z.boolean(),
 
 	// Other data
-	tabsByRecency: z.map(z.number(), z.array(z.number())),
+	tabsByRecency: z.array(z.number()).catch([]), // This used to be a map.
 	labelStacks: z.map(z.number(), zLabelStack),
 	tabMarkers: zTabMarkers,
 });
