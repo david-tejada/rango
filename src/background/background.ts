@@ -16,7 +16,7 @@ import { addMessageListeners } from "./messaging/messageListeners";
 import { toggleKeyboardClicking } from "./settings/keyboardClicking";
 import { setTabLastSounded } from "./tabs/focusTabBySound";
 import { getCurrentTab, getRequiredCurrentTab } from "./tabs/getCurrentTab";
-import { addTabCycleListeners, initTabMarkers } from "./tabs/tabMarkers";
+import { addTabMarkerListeners, initTabMarkers } from "./tabs/tabMarkers";
 import { trackRecentTabs } from "./tabs/trackRecentTabs";
 import { browserAction, setBrowserActionIcon } from "./utils/browserAction";
 import { isSafari } from "./utils/isSafari";
@@ -32,6 +32,7 @@ browser.contextMenus.onClicked.addListener(contextMenusOnClicked);
 		addCommandListeners();
 		await trackRecentTabs();
 		addWebNavigationListeners();
+		addTabMarkerListeners();
 	} catch (error: unknown) {
 		console.error(error);
 	}
@@ -161,7 +162,6 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 	await browser.storage.local.remove("hintStacks");
 
 	if (reason === "install") await initTabMarkers();
-	if (reason === "update") addTabCycleListeners();
 });
 
 // =============================================================================

@@ -63,8 +63,25 @@ export async function initTabMarkers() {
 	await Promise.all(
 		tabsWithoutMarkers.map(async ({ tab }) => setTabMarker(tab.id))
 	);
+}
 
-	addTabCycleListeners();
+/**
+ * Adds listeners to the tab cycle events to update the tab markers.
+ */
+export function addTabMarkerListeners() {
+	browser.tabs.onCreated.addListener(async ({ id }) => {
+		if (id) await setTabMarker(id);
+	});
+
+	browser.tabs.onRemoved.addListener(async (tabId) => {
+		await releaseTabMarker(tabId);
+	});
+
+	// In Chrome when a tab is discarded it changes its id
+	browser.tabs.onReplaced.addListener(async (addedTabId, removedTabId) => {
+		const marker = await releaseTabMarker(removedTabId);
+		await setTabMarker(addedTabId, marker);
+	});
 }
 
 export async function refreshTabMarkers() {
@@ -156,20 +173,4 @@ async function resetTabMarkers() {
 
 function getMarkerFromTitle(title: string) {
 	return /^([a-z]{1,2}) \| /i.exec(title)?.[1]?.toLowerCase();
-}
-
-export function addTabCycleListeners() {
-	browser.tabs.onCreated.addListener(async ({ id }) => {
-		if (id) await setTabMarker(id);
-	});
-
-	browser.tabs.onRemoved.addListener(async (tabId) => {
-		await releaseTabMarker(tabId);
-	});
-
-	// In Chrome when a tab is discarded it changes its id
-	browser.tabs.onReplaced.addListener(async (addedTabId, removedTabId) => {
-		const marker = await releaseTabMarker(removedTabId);
-		await setTabMarker(addedTabId, marker);
-	});
 }
