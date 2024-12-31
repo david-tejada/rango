@@ -14,10 +14,10 @@ import {
 } from "./messaging/backgroundMessageBroker";
 import { addMessageListeners } from "./messaging/messageListeners";
 import { toggleKeyboardClicking } from "./settings/keyboardClicking";
+import { trackRecentTabs } from "./tabs/focusPreviousTab";
 import { setTabLastSounded } from "./tabs/focusTabBySound";
 import { getCurrentTab, getRequiredCurrentTab } from "./tabs/getCurrentTab";
 import { addTabMarkerListeners, initTabMarkers } from "./tabs/tabMarkers";
-import { trackRecentTabs } from "./tabs/trackRecentTabs";
 import { browserAction, setBrowserActionIcon } from "./utils/browserAction";
 import { isSafari } from "./utils/isSafari";
 import { notify } from "./utils/notify";
@@ -30,7 +30,7 @@ browser.contextMenus.onClicked.addListener(contextMenusOnClicked);
 	try {
 		addMessageListeners();
 		addCommandListeners();
-		await trackRecentTabs();
+		trackRecentTabs();
 		addWebNavigationListeners();
 		addTabMarkerListeners();
 	} catch (error: unknown) {
@@ -153,7 +153,7 @@ browser.runtime.onStartup.addListener(async () => {
 	await setBrowserActionIcon();
 	await store("labelStacks", new Map());
 	await store("hintsToggleTabs", new Map());
-	await store("tabsByRecency", new Map());
+	await store("tabsByRecency", []);
 	// In Safari we need to create the menus every time the browser starts.
 	if (isSafari()) await createContextMenus();
 });
