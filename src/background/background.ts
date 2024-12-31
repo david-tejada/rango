@@ -26,17 +26,17 @@ import { notify } from "./utils/notify";
 // while the background script/service worker is inactive might fail.
 browser.contextMenus.onClicked.addListener(contextMenusOnClicked);
 
-(async () => {
-	try {
-		addMessageListeners();
-		addCommandListeners();
-		trackRecentTabs();
-		addWebNavigationListeners();
-		addTabMarkerListeners();
-	} catch (error: unknown) {
-		console.error(error);
-	}
-})();
+// Critical listeners. They need to be added as soon as possible.
+// https://developer.chrome.com/docs/extensions/develop/concepts/service-workers/events
+try {
+	addTabMarkerListeners();
+	trackRecentTabs();
+	addWebNavigationListeners();
+	addMessageListeners();
+	addCommandListeners();
+} catch (error: unknown) {
+	console.error(error);
+}
 
 // =============================================================================
 // TEST COMMAND HANDLING
