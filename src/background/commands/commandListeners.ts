@@ -18,7 +18,7 @@ import { activateTab } from "../tabs/activateTab";
 import { closeFilteredTabsInWindow } from "../tabs/closeMatchingTabsInWindow";
 import { createRelatedTabs } from "../tabs/createRelatedTabs";
 import { focusOrCreateTabByUrl } from "../tabs/focusOrCreateTabByUrl";
-import { focusPreviousTab } from "../tabs/focusPreviousTab";
+import { focusPreviousTabInWindow } from "../tabs/focusPreviousTab";
 import {
 	focusNextAudibleTab,
 	focusNextMutedTab,
@@ -173,7 +173,7 @@ export function addCommandListeners() {
 	});
 
 	onCommand("focusPreviousTab", async () => {
-		await focusPreviousTab();
+		await focusPreviousTabInWindow();
 	});
 
 	onCommand("focusTabByText", async ({ text }) => {

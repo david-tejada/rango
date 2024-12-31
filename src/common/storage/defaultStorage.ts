@@ -4,7 +4,7 @@ import { defaultSettings } from "../settings/settings";
 
 export const defaultStorage: StorageSchema = {
 	...defaultSettings,
-	tabsByRecency: new Map(),
+	tabsByRecency: [],
 	labelStacks: new Map(),
 	tabMarkers: {
 		free: letterLabels,
