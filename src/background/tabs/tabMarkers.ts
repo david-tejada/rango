@@ -63,8 +63,6 @@ export async function initTabMarkers() {
 	await Promise.all(
 		tabsWithoutMarkers.map(async ({ tab }) => setTabMarker(tab.id))
 	);
-
-	addTabMarkerListeners();
 }
 
 /**

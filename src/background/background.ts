@@ -32,6 +32,7 @@ browser.contextMenus.onClicked.addListener(contextMenusOnClicked);
 		addCommandListeners();
 		await trackRecentTabs();
 		addWebNavigationListeners();
+		addTabMarkerListeners();
 	} catch (error: unknown) {
 		console.error(error);
 	}
@@ -142,7 +143,6 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 	await browser.storage.local.remove("hintStacks");
 
 	if (reason === "install") await initTabMarkers();
-	if (reason === "update") addTabMarkerListeners();
 });
 
 // =============================================================================
