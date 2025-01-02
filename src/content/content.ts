@@ -10,8 +10,8 @@ browser.runtime.onMessage.addListener(async (message) => {
 
 (async () => {
 	try {
-		await initContentScript();
 		addMessageListeners();
+		await initContentScript();
 	} catch (error: unknown) {
 		console.error(error);
 	}
