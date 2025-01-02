@@ -63,10 +63,10 @@ export function addWebNavigationListeners() {
 		if (isPreloadTab) return;
 
 		try {
-			await sendMessage("onCompleted", undefined, { tabId, frameId });
+			await sendMessage("synchronizeLabels", undefined, { tabId, frameId });
 		} catch (error: unknown) {
 			// At this point the content script might not have yet loaded. This is ok
-			// and expected. This command is only used for synchronizing hints when
+			// and expected. This command is only used for synchronizing labels when
 			// navigating back and forward in history and the content script being
 			// restored.
 			if (!(error instanceof UnreachableContentScriptError)) {
