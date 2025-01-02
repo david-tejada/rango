@@ -69,18 +69,37 @@ export async function initTabMarkers() {
  * Adds listeners to the tab cycle events to update the tab markers.
  */
 export function addTabMarkerListeners() {
-	browser.tabs.onCreated.addListener(async ({ id }) => {
-		if (id) await setTabMarker(id);
+	browser.tabs.onCreated.addListener(async (tab) => {
+		// In Safari, when a tab preloads (when a user types in the address bar and
+		// a url is matched) the `tab.index` is `NaN`.  In those cases we shouldn't
+		// assign a tab marker, we will do it when the preloaded tab replaces the
+		// actual tab.
+		if (tab.id && !Number.isNaN(tab.index)) await setTabMarker(tab.id);
 	});
 
 	browser.tabs.onRemoved.addListener(async (tabId) => {
 		await releaseTabMarker(tabId);
 	});
 
-	// In Chrome when a tab is discarded it changes its id
+	// In Chrome when a tab is discarded it changes its id.
+	// In Safari when a preloaded tab replaces the actual tab we also get an
+	// `onReplaced` event.
 	browser.tabs.onReplaced.addListener(async (addedTabId, removedTabId) => {
-		const marker = await releaseTabMarker(removedTabId);
-		await setTabMarker(addedTabId, marker);
+		const releasedMarker = await releaseTabMarker(removedTabId);
+		await setTabMarker(addedTabId, releasedMarker);
+
+		// In Safari, when a tab preloads, the content script runs. When the
+		// preloaded tab replaces the actual tab, we need to update the decorations
+		// so the tab marker updates.
+		const tab = await browser.tabs.get(addedTabId);
+		// We detect Safari because it doesn't have the `Tab.discarded` property.
+		// That might change in the future and we would need to revisit this logic.
+		// In any case, calling `refreshTitleDecorations` unnecessarily is harmless.
+		if (tab.discarded === undefined) {
+			await sendMessage("refreshTitleDecorations", undefined, {
+				tabId: addedTabId,
+			});
+		}
 	});
 }
 
