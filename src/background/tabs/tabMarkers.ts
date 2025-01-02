@@ -30,6 +30,8 @@ export async function getTabIdForMarker(marker: string) {
 	throw new Error(`No tab with the marker "${marker}"`);
 }
 
+let initializingTabMarkers = false;
+
 /**
  * Initializes the tab markers.
  *
@@ -37,6 +39,8 @@ export async function getTabIdForMarker(marker: string) {
  * in case the user has the setting "Continue where you left off" enabled.
  */
 export async function initTabMarkers() {
+	initializingTabMarkers = true;
+
 	await resetTabMarkers();
 
 	// We need to assign the tab markers to their corresponding tab id in case
@@ -63,6 +67,8 @@ export async function initTabMarkers() {
 	await Promise.all(
 		tabsWithoutMarkers.map(async ({ tab }) => setTabMarker(tab.id))
 	);
+
+	initializingTabMarkers = false;
 }
 
 /**
@@ -70,6 +76,12 @@ export async function initTabMarkers() {
  */
 export function addTabMarkerListeners() {
 	browser.tabs.onCreated.addListener(async (tab) => {
+		// In Chrome, when tabs are restored on startup the `onCreated` event is
+		// triggered. In my tests `initTabMarkers` seems to always be called before
+		// the tabs are restored. We don't want to assign tab markers if the
+		// initialization has begun.
+		if (initializingTabMarkers) return;
+
 		// In Safari, when a tab preloads (when a user types in the address bar and
 		// a url is matched) the `tab.index` is `NaN`.  In those cases we shouldn't
 		// assign a tab marker, we will do it when the preloaded tab replaces the
