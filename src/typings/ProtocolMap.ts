@@ -119,6 +119,7 @@ export type ContentBoundMessageMap = {
 	hideHint: (data: { target: Target<ElementMark> }) => void;
 	refreshHints: () => void;
 	getLabelsInViewport: () => string[];
+	synchronizeLabels: () => void;
 
 	// References
 	saveReference: (data: {
@@ -154,7 +155,6 @@ export type ContentBoundMessageMap = {
 	restoreKeyboardReachableHints: () => void;
 
 	// Navigation
-	onCompleted: () => void;
 	historyGoBack: () => void;
 	historyGoForward: () => void;
 	navigateToNextPage: () => void;

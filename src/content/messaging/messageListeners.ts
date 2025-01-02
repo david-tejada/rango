@@ -64,7 +64,7 @@ import { onMessage } from "./contentMessageBroker";
 export function addMessageListeners() {
 	onMessage("pingContentScript", () => true);
 
-	onMessage("onCompleted", async () => {
+	onMessage("synchronizeLabels", async () => {
 		await synchronizeLabels();
 	});
 
