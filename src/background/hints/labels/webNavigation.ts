@@ -1,3 +1,11 @@
+// Update (2025-01-02): Everything related to preload tabs doesn't apply anymore
+// beyond Safari 18. Preload tabs now work like normal tabs and replace the
+// actual tab when the user hits enter. The content script runs in them
+// normally. Also, the way we check if a tab is a preload tab doesn't work
+// anymore but since there's no need to check if a tab is a preload tab it
+// doesn't matter. I am going to leave this code as it is to avoid breaking the
+// extension for older versions of Safari.
+
 import browser from "webextension-polyfill";
 import {
 	UnreachableContentScriptError,
