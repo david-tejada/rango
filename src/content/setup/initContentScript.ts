@@ -6,24 +6,15 @@ import { loadContentScriptContext } from "./contentScriptContext";
 import { updateTitleDecorations } from "./decorateTitle";
 import { loadDevtoolsUtils } from "./devtoolsUtils";
 
-let initContentScriptPromise: Promise<void> | undefined;
-
 /**
- * Initializes the content script. If the content script is currently being
- * initialized it waits till it's ready. It makes sure that it only runs once
- * and returns a promise that will resolve once the content script is
- * initialized.
+ * Initializes the content script.
  */
-export async function initContentScriptOrWait() {
-	initContentScriptPromise ||= (async () => {
-		loadDevtoolsUtils();
-		await loadContentScriptContext();
-		await initSettingsManager();
-		updateCustomSelectors();
-		await updateTitleDecorations();
-		await observe();
-		if (getSetting("keyboardClicking")) initKeyboardClicking();
-	})();
-
-	return initContentScriptPromise;
+export async function initContentScript() {
+	loadDevtoolsUtils();
+	await loadContentScriptContext();
+	await initSettingsManager();
+	updateCustomSelectors();
+	await updateTitleDecorations();
+	await observe();
+	if (getSetting("keyboardClicking")) initKeyboardClicking();
 }

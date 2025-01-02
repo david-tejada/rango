@@ -2,7 +2,7 @@ import "requestidlecallback-polyfill"; // eslint-disable-line import/no-unassign
 import browser from "webextension-polyfill";
 import { handleIncomingMessage } from "./messaging/contentMessageBroker";
 import { addMessageListeners } from "./messaging/messageListeners";
-import { initContentScriptOrWait } from "./setup/initContentScript";
+import { initContentScript } from "./setup/initContentScript";
 
 browser.runtime.onMessage.addListener(async (message) => {
 	return handleIncomingMessage(message);
@@ -10,8 +10,8 @@ browser.runtime.onMessage.addListener(async (message) => {
 
 (async () => {
 	try {
+		await initContentScript();
 		addMessageListeners();
-		await initContentScriptOrWait();
 	} catch (error: unknown) {
 		console.error(error);
 	}
