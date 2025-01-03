@@ -162,7 +162,9 @@ export function addCommandListeners() {
 		const tab = await getRequiredCurrentTab();
 		const url = new URL(tab.url!);
 
-		await notify.success(`Property "${property}" copied to the clipboard.`);
+		await notify.success(
+			`URL ${property === "href" ? "" : property} copied to the clipboard.`
+		);
 
 		return { name: "copyToClipboard", textToCopy: url[property] };
 	});
