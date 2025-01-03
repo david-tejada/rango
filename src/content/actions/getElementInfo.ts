@@ -6,11 +6,12 @@ export function getElementTextContent(wrappers: ElementWrapper[]) {
 
 	for (const wrapper of wrappers) {
 		const textContent =
-			"value" in wrapper.element
+			wrapper.element.textContent || // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
+			("value" in wrapper.element
 				? typeof wrapper.element.value === "string"
 					? wrapper.element.value
 					: undefined
-				: wrapper.element.textContent;
+				: undefined);
 
 		if (textContent) {
 			textContents.push(textContent);
