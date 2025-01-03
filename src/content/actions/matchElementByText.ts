@@ -47,13 +47,6 @@ export function getTextMatchedElement(text: string) {
 	return match;
 }
 
-function normalizeTextContent(element: Element) {
-	return (element.textContent ?? "")
-		.replaceAll(/[^a-zA-Z\s]/g, "")
-		.replaceAll(/\s+/g, " ")
-		.trim();
-}
-
 async function getTextMatchableElements(
 	viewportOnly: boolean
 ): Promise<TextMatchable[]> {
@@ -112,4 +105,28 @@ function createPromise<T>() {
 		resolve_ = resolve;
 	});
 	return { promise, resolve: resolve_ };
+}
+
+function normalizeTextContent(element: Element) {
+	return getTextContent(element)
+		.replaceAll(/[^a-zA-Z\s]/g, "")
+		.replaceAll(/\s+/g, " ")
+		.trim();
+}
+
+function getTextContent(element: Element) {
+	if (element instanceof HTMLSelectElement) {
+		return element.selectedOptions[0]?.textContent ?? "";
+	}
+
+	const labels =
+		"labels" in element
+			? (element.labels as NodeListOf<HTMLLabelElement>)
+			: undefined;
+
+	const labelText = labels
+		? [...labels].map((label) => label.textContent ?? "").join(" ")
+		: "";
+
+	return (element.textContent ?? "") + " " + labelText;
 }
