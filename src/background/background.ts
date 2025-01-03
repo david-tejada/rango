@@ -114,11 +114,7 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 		await browser.tabs.create({ url: urls.onboarding.href });
 	}
 
-	if (
-		reason === "update" &&
-		(await retrieve("showWhatsNewPageOnUpdate")) &&
-		process.env["NODE_ENV"] === "production"
-	) {
+	if (reason === "update" && process.env["NODE_ENV"] === "production") {
 		const currentVersion = browser.runtime.getManifest().version;
 		const [currentMajor, currentMinor] = currentVersion.split(".") as [
 			string,
@@ -131,8 +127,11 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 			string,
 		];
 
-		if (currentMajor !== previousMajor || currentMinor !== previousMinor) {
-			await browser.tabs.create({ url: urls.whatsNewPage.href });
+		if (currentMajor > previousMajor || currentMinor > previousMinor) {
+			await store("showWhatsNewPageNextStartup", true);
+			await notify.info(
+				`Rango has been updated to version ${currentVersion}. Click "What's New" in the context menu to see the changes.`
+			);
 		}
 	}
 
@@ -156,6 +155,18 @@ browser.runtime.onStartup.addListener(async () => {
 	await store("tabsByRecency", []);
 	// In Safari we need to create the menus every time the browser starts.
 	if (isSafari()) await createContextMenus();
+
+	const showWhatsNewPageOnUpdate = await retrieve("showWhatsNewPageOnUpdate");
+	const showWhatsNewPageNextStartup = await retrieve(
+		"showWhatsNewPageNextStartup"
+	);
+
+	if (showWhatsNewPageOnUpdate && showWhatsNewPageNextStartup) {
+		await browser.tabs.create({ url: urls.whatsNewPage.href });
+		// The flag is cleared after the What's New page loads but we also clear it
+		// here to be extra safe.
+		await store("showWhatsNewPageNextStartup", false);
+	}
 });
 
 // =============================================================================
@@ -264,6 +275,13 @@ async function createContextMenus() {
 		type: "normal",
 		contexts,
 	});
+
+	browser.contextMenus.create({
+		id: "whats-new",
+		title: "What's New",
+		type: "normal",
+		contexts,
+	});
 }
 
 async function contextMenusOnClicked({
@@ -297,6 +315,10 @@ async function contextMenusOnClicked({
 		}
 
 		await browser.runtime.openOptionsPage();
+	}
+
+	if (menuItemId === "whats-new") {
+		await browser.tabs.create({ url: urls.whatsNewPage.href });
 	}
 }
 

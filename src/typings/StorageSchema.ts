@@ -87,6 +87,7 @@ export const zStorageSchema = z.object({
 	tabsByRecency: z.array(z.number()).catch([]), // This used to be a map.
 	labelStacks: z.map(z.number(), zLabelStack),
 	tabMarkers: zTabMarkers,
+	showWhatsNewPageNextStartup: z.boolean(),
 });
 
 export type StorageSchema = z.infer<typeof zStorageSchema>;
