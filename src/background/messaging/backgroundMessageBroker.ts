@@ -2,12 +2,12 @@ import { type SimplifyDeep } from "type-fest";
 import browser, { type Runtime, type Tabs } from "webextension-polyfill";
 import { isValidMessage } from "../../common/messaging/isValidMessage";
 import {
-	getPrioritizeViewportValue,
 	getTargetFromFuzzyTexts,
 	getTargetFromLabels,
 	getTargetFromReferences,
 	getTargetMarkType,
 	getTargetValues,
+	getViewportOnlyValue,
 } from "../../common/target/targetConversion";
 import { TargetError } from "../../common/target/TargetError";
 import {
@@ -391,7 +391,7 @@ async function splitFuzzyTextTargetByFrame(
 	target: Target<FuzzyTextElementMark>
 ) {
 	const texts = getTargetValues(target);
-	const prioritizeViewport = getPrioritizeViewportValue(target);
+	const viewportOnly = getViewportOnlyValue(target);
 	const frames = await getAllFrames(tabId);
 
 	const textsPromise = texts.map(async (text) => {
@@ -400,7 +400,7 @@ async function splitFuzzyTextTargetByFrame(
 				"matchElementByText",
 				{
 					text,
-					prioritizeViewport,
+					viewportOnly,
 				},
 				{ frameId }
 			).then((score) => ({

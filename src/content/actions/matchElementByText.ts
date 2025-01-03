@@ -8,17 +8,21 @@ import { getAllWrappers } from "../wrappers/wrappers";
 
 type TextMatchable = {
 	element: Element;
-	isIntersectingViewport: boolean;
 	normalizedTextContent: string;
 };
 
 const textMatchedElements = new Map<string, Element>();
 
-export async function matchElementByText(
-	text: string,
-	prioritizeViewport: boolean
-) {
-	const matchableElements = await getTextMatchableElements();
+/**
+ * Matches an element by its text content and stores the match in the
+ * `textMatchedElements` map.
+ *
+ * @param text - The text to match.
+ * @param viewportOnly - Whether to only match elements that are intersecting the viewport.
+ * @returns The best match score or undefined if no match is found.
+ */
+export async function matchElementByText(text: string, viewportOnly: boolean) {
+	const matchableElements = await getTextMatchableElements(viewportOnly);
 
 	const fuse = new Fuse(matchableElements, {
 		keys: ["normalizedTextContent"],
@@ -30,15 +34,6 @@ export async function matchElementByText(
 	const matches = fuse.search(text);
 
 	if (matches.length === 0) return;
-
-	if (prioritizeViewport) {
-		matches.sort((a, b) => {
-			const viewportIntersectionComparison =
-				Number(b.item.isIntersectingViewport) -
-				Number(a.item.isIntersectingViewport);
-			return viewportIntersectionComparison;
-		});
-	}
 
 	const bestMatch = matches[0]!;
 	textMatchedElements.set(text, bestMatch.item.element);
@@ -59,15 +54,19 @@ function normalizeTextContent(element: Element) {
 		.trim();
 }
 
-async function getTextMatchableElements() {
+async function getTextMatchableElements(
+	viewportOnly: boolean
+): Promise<TextMatchable[]> {
 	// Hints are on or alwaysComputeHintables is on. There will be wrappers for
 	// the hintable elements.
 	if (getToggles().computed || getSetting("alwaysComputeHintables")) {
 		return getAllWrappers()
 			.filter((wrapper) => wrapper.isHintable && isVisible(wrapper.element))
+			.filter((wrapper) =>
+				viewportOnly ? wrapper.isIntersectingViewport : true
+			)
 			.map((wrapper) => ({
 				element: wrapper.element,
-				isIntersectingViewport: wrapper.isIntersectingViewport,
 				normalizedTextContent: normalizeTextContent(wrapper.element),
 			}))
 			.filter((matchable) => matchable.normalizedTextContent.length > 0);
@@ -81,13 +80,16 @@ async function getTextMatchableElements() {
 
 	const intersectionObserver = new IntersectionObserver((entries) => {
 		for (const entry of entries) {
-			if (isHintable(entry.target) && isVisible(entry.target)) {
+			if (
+				(!viewportOnly || entry.isIntersecting) &&
+				isHintable(entry.target) &&
+				isVisible(entry.target)
+			) {
 				const normalizedTextContent = normalizeTextContent(entry.target);
 				if (normalizedTextContent.length === 0) continue;
 
 				matchables.push({
 					element: entry.target,
-					isIntersectingViewport: entry.isIntersecting,
 					normalizedTextContent: normalizeTextContent(entry.target),
 				});
 			}

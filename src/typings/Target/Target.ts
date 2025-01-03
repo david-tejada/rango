@@ -11,7 +11,7 @@ export type ElementReferenceMark = {
 export type FuzzyTextElementMark = {
 	type: "fuzzyText";
 	value: string;
-	prioritizeViewport: boolean;
+	viewportOnly: boolean;
 };
 
 export type TabMarkerMark = {

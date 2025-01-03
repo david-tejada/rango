@@ -70,7 +70,7 @@ function upgradeAction(action: ActionV1): ActionV2<keyof ActionMap> {
 						type: "fuzzyText",
 						value: arg2!,
 						// There was a bug in rango-talon where this was not set if it was false
-						prioritizeViewport: arg3 ?? false,
+						viewportOnly: arg3 ?? false,
 					},
 				},
 			};

@@ -133,7 +133,7 @@ export type ContentBoundMessageMap = {
 	// Fuzzy Text
 	matchElementByText: (data: {
 		text: string;
-		prioritizeViewport: boolean;
+		viewportOnly: boolean;
 	}) => number | undefined;
 
 	// Tabs

@@ -284,7 +284,7 @@ export function addMessageListeners() {
 		if (!element) throw new Error("No element found");
 	});
 
-	onMessage("matchElementByText", async ({ text, prioritizeViewport }) => {
-		return matchElementByText(text, prioritizeViewport);
+	onMessage("matchElementByText", async ({ text, viewportOnly }) => {
+		return matchElementByText(text, viewportOnly);
 	});
 }
