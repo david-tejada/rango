@@ -10,4 +10,5 @@ export const defaultStorage: StorageSchema = {
 		free: letterLabels,
 		assigned: new Map(),
 	},
+	showWhatsNewPageNextStartup: false,
 } as const;
