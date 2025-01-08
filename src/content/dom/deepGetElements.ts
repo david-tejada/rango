@@ -1,54 +1,52 @@
-// This function retrieves all Elements starting from root, including those
-// inside shadow DOMs or even nested shadow DOMs
+/**
+ * Selector for most common elements except `div`. It's unlikely that these
+ * elements will have a shadow root. Most elements that have a shadow root are
+ * custom elements.
+ */
+const commonElementExceptDivSelector =
+	"a, abbr, address, area, article, aside, audio, b, base, bdi, bdo, blockquote, body, br, button, canvas, caption, cite, code, col, colgroup, data, datalist, dd, del, details, dfn, dialog, dl, dt, ellipse, em, embed, fieldset, figcaption, figure, footer, form, g, h1, h2, h3, h4, h5, h6, head, header, hgroup, hr, html, i, iframe, image, img, input, ins, kbd, label, legend, li, line, link, main, map, mark, meta, meter, nav, noscript, object, ol, optgroup, option, output, p, param, path, picture, polygon, polyline, pre, progress, q, rect, rp, rt, ruby, s, samp, script, section, select, small, source, span, stop, strong, style, sub, summary, sup, svg, table, tbody, td, template, text, textarea, tfoot, th, thead, time, title, tr, track, tspan, u, ul, var, video, wbr";
+
+const rangoElementSelector = ".rango-hint, #rango-toast";
+
+/**
+ * Retrieve all elements starting from root, including those inside shadow DOMs
+ * or even nested shadow DOMs.
+ *
+ * @param root - The root element to start the search from.
+ * @param includeRoot - Whether to include the root element in the result.
+ * @param selector - The selector to filter the elements.
+ * @returns An array of all elements starting from root, including those inside
+ * shadow DOMs or even nested shadow DOMs.
+ */
 export function deepGetElements(
 	root: Element,
 	includeRoot = true,
-	selector = ":not(.rango-hint, #rango-copy-paste-area)"
+	selector = `:not(${rangoElementSelector})`
 ): Element[] {
-	const all = root.shadowRoot
-		? root.shadowRoot.querySelectorAll("*")
-		: root.querySelectorAll("*");
-	const result = includeRoot && root.matches(selector) ? [root] : [];
+	const rootOrShadowRoot = root.shadowRoot ?? root;
+	const elementList = rootOrShadowRoot.querySelectorAll(selector);
 
-	// This branch is more expensive so we only do it if some elements have
-	// shadowRoot
-	if ([...all].some((element) => element.shadowRoot)) {
-		const elements = root.shadowRoot
-			? [...root.shadowRoot.querySelectorAll("*")]
-			: [...root.querySelectorAll("*")];
+	const possibleShadowHosts = rootOrShadowRoot.querySelectorAll(
+		`:not(${rangoElementSelector}, ${commonElementExceptDivSelector})`
+	);
 
-		for (const element of elements) {
-			if (element.shadowRoot && element.className !== "rango-hint") {
-				result.push(...deepGetElements(element));
-			} else {
-				result.push(element);
-			}
-		}
+	const shadowHosts = [...possibleShadowHosts].filter((element) => {
+		return isShadowHost(element);
+	});
 
-		return result.filter((element) => {
-			let matches;
-			try {
-				matches = element.matches(selector);
-			} catch (error: unknown) {
-				// This handles cases of invalid selectors
-				if (error instanceof DOMException) {
-					matches = false;
-				}
-			}
+	const shadowRootElements = shadowHosts.flatMap((shadowHost) => {
+		return deepGetElements(shadowHost, false, selector);
+	});
 
-			return matches;
-		});
-	}
+	return [
+		...(includeRoot && root.matches(selector) ? [root] : []),
+		...elementList,
+		...shadowRootElements,
+	];
+}
 
-	const matchingSelector = root.shadowRoot
-		? root.shadowRoot.querySelectorAll(selector)
-		: root.querySelectorAll(selector);
-
-	// Will loop here because if we used result.push(...matchingSelector) we get
-	// RangeError: Maximum call stack size exceeded
-	for (const element of matchingSelector) {
-		result.push(element);
-	}
-
-	return result;
+function isShadowHost(
+	element: Element
+): element is Element & { shadowRoot: ShadowRoot } {
+	return element.shadowRoot !== null;
 }
