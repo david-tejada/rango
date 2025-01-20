@@ -1,4 +1,4 @@
-import { onMessage, sendMessage } from "../messaging/contentMessageBroker";
+import { onMessage, sendMessage } from "../messaging/messageHandler";
 import { getSetting, onSettingChange } from "../settings/settingsManager";
 import { getToggles } from "../settings/toggles";
 import { isCurrentTab, isMainFrame } from "./contentScriptContext";

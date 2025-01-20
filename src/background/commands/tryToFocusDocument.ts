@@ -1,4 +1,4 @@
-import { sendMessage } from "../messaging/backgroundMessageBroker";
+import { sendMessage } from "../messaging/sendMessage";
 import { promiseWrap } from "../utils/promises";
 
 /**

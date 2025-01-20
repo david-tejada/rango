@@ -1,10 +1,8 @@
 import browser from "webextension-polyfill";
 import { letterLabels } from "../../common/labels";
 import { retrieve } from "../../common/storage/storage";
-import {
-	sendMessage,
-	UnreachableContentScriptError,
-} from "../messaging/backgroundMessageBroker";
+import { sendMessage } from "../messaging/sendMessage";
+import { UnreachableContentScriptError } from "../messaging/UnreachableContentScriptError";
 import { withLockedStorageAccess } from "../utils/withLockedStorageValue";
 
 function isTabWithId(

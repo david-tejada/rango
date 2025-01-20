@@ -1,5 +1,5 @@
-import { UnreachableContentScriptError } from "../messaging/backgroundMessageBroker";
-import { handleCommand } from "./commandBroker";
+import { UnreachableContentScriptError } from "../messaging/UnreachableContentScriptError";
+import { handleCommand } from "./commandHandler";
 import { readRequest, writeResponse } from "./requestAndResponse";
 import { upgradeCommand } from "./upgradeCommand";
 

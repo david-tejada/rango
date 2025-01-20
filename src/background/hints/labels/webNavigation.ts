@@ -7,10 +7,8 @@
 // extension for older versions of Safari.
 
 import browser from "webextension-polyfill";
-import {
-	UnreachableContentScriptError,
-	sendMessage,
-} from "../../messaging/backgroundMessageBroker";
+import { sendMessage } from "../../messaging/sendMessage";
+import { UnreachableContentScriptError } from "../../messaging/UnreachableContentScriptError";
 import { getRequiredCurrentTabId } from "../../tabs/getCurrentTab";
 import { getAllFrames } from "../../utils/getAllFrames";
 import { initStack } from "./labelStack";

@@ -16,7 +16,7 @@ import { Hint } from "../hints/Hint";
 import { cacheLabels } from "../hints/labels/labelCache";
 import { cacheLayout, clearLayoutCache } from "../hints/layoutCache";
 import { matchesCustomExclude, matchesCustomInclude } from "../hints/selectors";
-import { sendMessage } from "../messaging/contentMessageBroker";
+import { sendMessage } from "../messaging/messageHandler";
 import { getSetting } from "../settings/settingsManager";
 import { BoundedIntersectionObserver } from "./BoundedIntersectionObserver";
 import { refresh } from "./refresh";

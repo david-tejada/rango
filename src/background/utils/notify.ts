@@ -5,7 +5,7 @@ import {
 } from "../../common/createNotifier";
 import { retrieve } from "../../common/storage/storage";
 import { urls } from "../../common/urls";
-import { sendMessage } from "../messaging/backgroundMessageBroker";
+import { sendMessage } from "../messaging/sendMessage";
 
 /**
  * Show a notification to the user. It displays a toast notification or, in case

@@ -6,12 +6,10 @@ import { type TalonAction } from "../../typings/TalonAction";
 import { assertPrimitiveTarget } from "../../typings/Target/Target";
 import { refreshHints } from "../hints/refreshHints";
 import { toggleHintsGlobal, updateHintsToggle } from "../hints/toggleHints";
-import {
-	UnreachableContentScriptError,
-	sendMessage,
-	sendMessageToAllFrames,
-	sendMessageToTargetFrames,
-} from "../messaging/backgroundMessageBroker";
+import { sendMessage } from "../messaging/sendMessage";
+import { sendMessageToAllFrames } from "../messaging/sendMessageToAllFrames";
+import { sendMessageToTargetFrames } from "../messaging/sendMessageToTargetFrames";
+import { UnreachableContentScriptError } from "../messaging/UnreachableContentScriptError";
 import { toggleKeyboardClicking } from "../settings/keyboardClicking";
 import { toggleTabMarkers } from "../settings/tabMarkers";
 import { activateTab } from "../tabs/activateTab";
@@ -46,7 +44,7 @@ import { getAllFrames } from "../utils/getAllFrames";
 import { notify, notifyTogglesStatus } from "../utils/notify";
 import { promiseWrap } from "../utils/promises";
 import { withLockedStorageAccess } from "../utils/withLockedStorageValue";
-import { onCommand } from "./commandBroker";
+import { onCommand } from "./commandHandler";
 import { discardNextResponse } from "./requestAndResponse";
 import { tryToFocusDocument } from "./tryToFocusDocument";
 
