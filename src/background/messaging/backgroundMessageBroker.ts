@@ -475,9 +475,9 @@ async function splitFuzzyTextTargetByFrame(
 	// be one text, but it is possible that there are more if the user says a
 	// command like `click text foo and text bar`.
 	const bestResults = texts.map((text) => {
-		const textResults = allResults.filter((r): r is FrameMatch => {
-			return r.text === text && r.match !== undefined;
-		});
+		const textResults = allResults
+			.filter((r): r is FrameMatch => Boolean(r.match))
+			.filter((r) => r.text === text);
 
 		const bestResult = getBestFuzzyMatch(textResults);
 
