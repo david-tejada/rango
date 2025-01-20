@@ -6,11 +6,9 @@ import { type TalonAction } from "../../typings/TalonAction";
 import { assertPrimitiveTarget } from "../../typings/Target/Target";
 import { refreshHints } from "../hints/refreshHints";
 import { toggleHintsGlobal, updateHintsToggle } from "../hints/toggleHints";
-import {
-	sendMessageToAllFrames,
-	sendMessageToTargetFrames,
-} from "../messaging/backgroundMessageBroker";
+import { sendMessageToTargetFrames } from "../messaging/backgroundMessageBroker";
 import { sendMessage } from "../messaging/sendMessage";
+import { sendMessageToAllFrames } from "../messaging/sendMessageToAllFrames";
 import { UnreachableContentScriptError } from "../messaging/UnreachableContentScriptError";
 import { toggleKeyboardClicking } from "../settings/keyboardClicking";
 import { toggleTabMarkers } from "../settings/tabMarkers";

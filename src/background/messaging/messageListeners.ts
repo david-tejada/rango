@@ -11,9 +11,9 @@ import { createRelatedTabs } from "../tabs/createRelatedTabs";
 import { getTabMarker } from "../tabs/tabMarkers";
 import {
 	onMessage,
-	sendMessageToAllFrames,
 	sendMessageToTargetFrames,
 } from "./backgroundMessageBroker";
+import { sendMessageToAllFrames } from "./sendMessageToAllFrames";
 
 export function addMessageListeners() {
 	onMessage("initStack", async (_, { tabId, frameId }) => {
