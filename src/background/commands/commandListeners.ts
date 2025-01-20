@@ -44,7 +44,7 @@ import { getAllFrames } from "../utils/getAllFrames";
 import { notify, notifyTogglesStatus } from "../utils/notify";
 import { promiseWrap } from "../utils/promises";
 import { withLockedStorageAccess } from "../utils/withLockedStorageValue";
-import { onCommand } from "./commandBroker";
+import { onCommand } from "./commandHandler";
 import { discardNextResponse } from "./requestAndResponse";
 import { tryToFocusDocument } from "./tryToFocusDocument";
 

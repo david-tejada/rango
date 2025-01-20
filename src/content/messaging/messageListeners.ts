@@ -59,7 +59,7 @@ import {
 } from "../setup/decorateTitle";
 import { getFirstWrapper, getTargetedWrappers } from "../wrappers/target";
 import { getHintedWrappers, reclaimLabels } from "../wrappers/wrappers";
-import { onMessage } from "./contentMessageBroker";
+import { onMessage } from "./messageHandler";
 
 export function addMessageListeners() {
 	onMessage("pingContentScript", () => true);

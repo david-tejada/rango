@@ -1,4 +1,4 @@
-import { sendMessage } from "../messaging/contentMessageBroker";
+import { sendMessage } from "../messaging/messageHandler";
 
 let tabId: number | undefined;
 let frameId: number | undefined;

@@ -1,4 +1,4 @@
-import { sendMessage } from "../messaging/contentMessageBroker";
+import { sendMessage } from "../messaging/messageHandler";
 import { type ElementWrapper } from "../wrappers/ElementWrapper";
 
 export async function clickElement(wrappers: ElementWrapper[]) {

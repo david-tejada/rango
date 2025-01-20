@@ -1,6 +1,6 @@
 import { getActiveElement, isEditable } from "../dom/utils";
 import { notify } from "../feedback/notify";
-import { sendMessage } from "../messaging/contentMessageBroker";
+import { sendMessage } from "../messaging/messageHandler";
 import { onSettingChange } from "../settings/settingsManager";
 import { getHintedWrappers } from "../wrappers/wrappers";
 

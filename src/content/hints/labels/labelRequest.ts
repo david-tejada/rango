@@ -1,5 +1,5 @@
 import { Mutex } from "async-mutex";
-import { sendMessage } from "../../messaging/contentMessageBroker";
+import { sendMessage } from "../../messaging/messageHandler";
 import {
 	addLabelsInFrame,
 	clearLabelsInFrame,
