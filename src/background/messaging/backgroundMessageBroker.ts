@@ -138,21 +138,17 @@ export async function sendMessage<K extends MessageWithoutTarget>(
 			{ frameId: options?.frameId ?? 0 }
 		) as Promise<MessageReturn<K>>;
 
-		if (options?.maxWait) {
-			const timeoutPromise = new Promise<MessageReturn<K>>(
-				(_resolve, reject) => {
-					setTimeout(() => {
-						reject(
-							new Error("Message timeout: Operation took too long to complete")
-						);
-					}, options.maxWait);
-				}
-			);
+		if (!options?.maxWait) return await messagePromise;
 
-			return await Promise.race([messagePromise, timeoutPromise]);
-		}
+		const timeoutPromise = new Promise<MessageReturn<K>>((_resolve, reject) => {
+			setTimeout(() => {
+				reject(
+					new Error("Message timeout: Operation took too long to complete")
+				);
+			}, options.maxWait);
+		});
 
-		return await messagePromise;
+		return await Promise.race([messagePromise, timeoutPromise]);
 	} catch (error: unknown) {
 		if (error instanceof Error) {
 			console.error("Content Script Error:", error.message);
@@ -458,8 +454,7 @@ async function splitFuzzyTextTargetByFrame(
 				).then((match) => ({
 					frameId,
 					text,
-					// When the message times out match is null
-					match: match ?? undefined,
+					match,
 				}));
 			});
 
