@@ -131,10 +131,12 @@ export type ContentBoundMessageMap = {
 	saveReferenceForActiveElement: (data: { referenceName: string }) => void;
 
 	// Fuzzy Text
-	matchElementByText: (data: {
-		text: string;
-		prioritizeViewport: boolean;
-	}) => number | undefined;
+	matchElementByText: (data: { text: string; viewportOnly: boolean }) =>
+		| {
+				score: number;
+				isHintable: boolean;
+		  }
+		| undefined;
 
 	// Tabs
 	getTitleBeforeDecoration: () => string;

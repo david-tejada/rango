@@ -3,7 +3,7 @@
 	"compilerOptions": {
 		"outDir": "dist",
 		"esModuleInterop": true,
-		"lib": ["es2022", "DOM", "DOM.Iterable"],
+		"lib": ["es2023", "DOM", "DOM.Iterable"],
 		"jsx": "react-jsx",
 		"noErrorTruncation": true
 	}

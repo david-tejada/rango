@@ -59,6 +59,14 @@ export function matchesHintableSelector(target: Element) {
 	return target.matches(hintableSelector);
 }
 
+export function getHintableSelector() {
+	const baseSelector = `:is(${hintableSelector})`;
+	const excludeClause = excludeSelectorAll ? `:not(${excludeSelectorAll})` : "";
+	const includeClause = includeSelectorAll ? `, ${includeSelectorAll}` : "";
+
+	return `${baseSelector}${excludeClause}${includeClause}`;
+}
+
 export function matchesExtraSelector(target: Element) {
 	return target.matches(extraSelector);
 }

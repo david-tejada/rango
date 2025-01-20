@@ -1,13 +1,14 @@
 import { type SimplifyDeep } from "type-fest";
 import browser, { type Runtime, type Tabs } from "webextension-polyfill";
+import { getBestFuzzyMatch } from "../../common/getBestFuzzyMatch";
 import { isValidMessage } from "../../common/messaging/isValidMessage";
 import {
-	getPrioritizeViewportValue,
 	getTargetFromFuzzyTexts,
 	getTargetFromLabels,
 	getTargetFromReferences,
 	getTargetMarkType,
 	getTargetValues,
+	getViewportOnlyValue,
 } from "../../common/target/targetConversion";
 import { TargetError } from "../../common/target/TargetError";
 import {
@@ -29,7 +30,6 @@ import { assertReferencesInCurrentTab } from "../target/references";
 import { getAllFrames } from "../utils/getAllFrames";
 import { promiseAllSettledGrouped } from "../utils/promises";
 
-type Destination = { tabId?: number; frameId?: number };
 type Sender = { tab: Tabs.Tab; tabId: number; frameId: number };
 
 type OnMessageCallback<K extends keyof BackgroundBoundMessageMap> =
@@ -115,22 +115,40 @@ type MessageWithoutTarget = {
 type HasRequiredData<K extends MessageWithoutTarget> =
 	MessageData<K> extends undefined ? false : true;
 
+type MessageOptions = {
+	tabId?: number;
+	frameId?: number;
+	maxWait?: number;
+};
+
 export async function sendMessage<K extends MessageWithoutTarget>(
 	messageId: K,
 	...args: HasRequiredData<K> extends true
-		? [data: MessageData<K>, destination?: Destination]
-		: [data?: MessageData<K>, destination?: Destination]
+		? [data: MessageData<K>, options?: MessageOptions]
+		: [data?: MessageData<K>, options?: MessageOptions]
 ): Promise<MessageReturn<K>> {
-	const [data, destination] = args;
-	const tabId = destination?.tabId ?? (await getRequiredCurrentTabId());
+	const [data, options] = args;
+	const tabId = options?.tabId ?? (await getRequiredCurrentTabId());
 	await pingContentScript(tabId);
 
 	try {
-		return await browser.tabs.sendMessage(
+		const messagePromise = browser.tabs.sendMessage(
 			tabId,
 			{ messageId, data },
-			{ frameId: destination?.frameId ?? 0 }
-		);
+			{ frameId: options?.frameId ?? 0 }
+		) as Promise<MessageReturn<K>>;
+
+		if (!options?.maxWait) return await messagePromise;
+
+		const timeoutPromise = new Promise<MessageReturn<K>>((_resolve, reject) => {
+			setTimeout(() => {
+				reject(
+					new Error("Message timeout: Operation took too long to complete")
+				);
+			}, options.maxWait);
+		});
+
+		return await Promise.race([messagePromise, timeoutPromise]);
 	} catch (error: unknown) {
 		if (error instanceof Error) {
 			console.error("Content Script Error:", error.message);
@@ -148,8 +166,8 @@ export async function sendMessage<K extends MessageWithoutTarget>(
 export async function sendMessageSafe<K extends MessageWithoutTarget>(
 	messageId: K,
 	...args: HasRequiredData<K> extends true
-		? [data: MessageData<K>, destination?: Destination]
-		: [data?: MessageData<K>, destination?: Destination]
+		? [data: MessageData<K>, options?: MessageOptions]
+		: [data?: MessageData<K>, options?: MessageOptions]
 ) {
 	try {
 		return await sendMessage(messageId, ...args);
@@ -390,63 +408,84 @@ async function splitFuzzyTextTargetByFrame(
 	tabId: number,
 	target: Target<FuzzyTextElementMark>
 ) {
+	const thresholdExcellent = 0.1;
+
 	const texts = getTargetValues(target);
-	const prioritizeViewport = getPrioritizeViewportValue(target);
-	const frames = await getAllFrames(tabId);
+	const viewportOnly = getViewportOnlyValue(target);
 
 	const textsPromise = texts.map(async (text) => {
-		const framesPromise = frames.map(async ({ frameId }) => {
-			return sendMessage(
-				"matchElementByText",
-				{
-					text,
-					prioritizeViewport,
-				},
-				{ frameId }
-			).then((score) => ({
-				frameId,
-				text,
-				score,
-			}));
+		// Main Frame: Most of the time we will find the searched element in the
+		// main frame. At the same time we need to avoid finding one element with a
+		// bad score when there might be an element with a better score in another
+		// frame. So if the match is not excellent we will send the message to all
+		// frames with a timeout to prevent the slow frames from making the command
+		// too slow.
+		const mainFrameResult = await sendMessage("matchElementByText", {
+			text,
+			viewportOnly,
 		});
+		const mainFrameMatch = { frameId: 0, text, match: mainFrameResult };
+
+		// If we have an excellent hintable match in the main frame (score < 0.1),
+		// use it immediately
+		if (
+			mainFrameResult &&
+			mainFrameResult.score < thresholdExcellent &&
+			mainFrameResult.isHintable
+		) {
+			return [mainFrameMatch];
+		}
+
+		// If no excellent hintable match in the main frame, send the message to
+		// all frames with a time out to prevent the slow frames from making the
+		// command too slow.
+		const frames = await getAllFrames(tabId);
+
+		const framesPromise = frames
+			.filter(({ frameId }) => frameId !== 0)
+			.map(async ({ frameId }) => {
+				return sendMessage(
+					"matchElementByText",
+					{
+						text,
+						viewportOnly,
+					},
+					{ frameId, maxWait: 300 }
+				).then((match) => ({
+					frameId,
+					text,
+					match,
+				}));
+			});
 
 		const { results } = await promiseAllSettledGrouped(framesPromise);
-		return results;
+		return [mainFrameMatch, ...results];
 	});
 
 	const { results } = await promiseAllSettledGrouped(textsPromise);
 	const allResults = results.flat();
 
-	type ResultType = { frameId: number; text: string; score: number };
+	type FrameMatch = {
+		frameId: number;
+		text: string;
+		match: { score: number; isHintable: boolean };
+	};
 
-	// Build an array of the best result for each text
+	// Build an array of the best result for each text. Normally, there will only
+	// be one text, but it is possible that there are more if the user says a
+	// command like `click text foo and text bar`.
 	const bestResults = texts.map((text) => {
-		const textResults = allResults.filter(
-			(r): r is ResultType => r.text === text && typeof r.score === "number"
-		);
+		const textResults = allResults
+			.filter((r): r is FrameMatch => Boolean(r.match))
+			.filter((r) => r.text === text);
 
-		if (textResults.length === 0) {
+		const bestResult = getBestFuzzyMatch(textResults);
+
+		if (!bestResult) {
 			throw new Error(`No matching element found for text: "${text}"`);
 		}
 
-		const minScore = Math.min(...textResults.map((r) => r.score));
-
-		// Get all results with the minimum score
-		const bestResults = textResults.filter((r) => r.score === minScore);
-
-		// If there's only one best result, return it
-		if (bestResults.length === 1) {
-			return bestResults[0]!;
-		}
-
-		// If multiple results have the same score, prefer the main frame (frameId: 0)
-		const mainFrameResult = bestResults.find((r) => r.frameId === 0);
-		if (mainFrameResult) {
-			return mainFrameResult;
-		}
-
-		// If no main frame result, return the first one
-		return bestResults[0]!;
+		return bestResult;
 	});
 
 	const fuzzyTextsByFrame = new Map<number, string[]>();

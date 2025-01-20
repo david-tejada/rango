@@ -67,26 +67,26 @@ export function getTargetValues<T extends Mark>(target: Target<T>) {
 }
 
 /**
- * Returns the `prioritizeViewport` value of the target.
+ * Returns the `viewportOnly` value of the target.
  *
  * In theory each primitive target could have a different value for
- * prioritizeViewport. However, we can assume it's always the same for all
- * primitives in the target. We could have `prioritizeViewport` be another
+ * viewportOnly. However, we can assume it's always the same for all
+ * primitives in the target. We could have `viewportOnly` be another
  * argument and not part of the mark but we would have to have that argument for
  * all commands with target.
  */
-export function getPrioritizeViewportValue<T extends FuzzyTextElementMark>(
+export function getViewportOnlyValue<T extends FuzzyTextElementMark>(
 	target: Target<T>
 ) {
 	if (target.type === "primitive") {
-		return target.mark.prioritizeViewport;
+		return target.mark.viewportOnly;
 	}
 
 	if (target.type === "range") {
-		return target.anchor.mark.prioritizeViewport;
+		return target.anchor.mark.viewportOnly;
 	}
 
-	return target.items[0]!.mark.prioritizeViewport;
+	return target.items[0]!.mark.viewportOnly;
 }
 
 export function getTargetFromLabels(labels: string[]) {

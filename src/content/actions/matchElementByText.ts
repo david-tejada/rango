@@ -1,49 +1,173 @@
 import Fuse from "fuse.js";
+import { getBestFuzzyMatch } from "../../common/getBestFuzzyMatch";
 import { deepGetElements } from "../dom/deepGetElements";
+import { getIntersectingElements } from "../dom/getIntersectingElements";
 import { isHintable } from "../dom/isHintable";
 import { isVisible } from "../dom/isVisible";
+import { getHintableSelector } from "../hints/selectors";
 import { getSetting } from "../settings/settingsManager";
 import { getToggles } from "../settings/toggles";
 import { getAllWrappers } from "../wrappers/wrappers";
 
-type TextMatchable = {
-	element: Element;
-	isIntersectingViewport: boolean;
-	normalizedTextContent: string;
-};
-
 const textMatchedElements = new Map<string, Element>();
 
-export async function matchElementByText(
-	text: string,
-	prioritizeViewport: boolean
-) {
-	const matchableElements = await getTextMatchableElements();
+type ElementMatch = {
+	element: Element;
+	match: { score: number; isHintable: boolean };
+};
 
-	const fuse = new Fuse(matchableElements, {
+// Converting a NodeListOf<Element> to an array of elements might be slow if
+// there are many elements. For this reason we avoid converting
+// NodeListOf<Element> to an array of elements and pass references to the array
+// or NodeListOf<Element> directly.
+
+type ElementCollector = (
+	viewportOnly: boolean
+) => Promise<Element[] | NodeListOf<Element>>;
+
+type MatchingStrategy = (
+	text: string,
+	elements: Element[] | NodeListOf<Element>
+) => Promise<ElementMatch[]> | ElementMatch[];
+
+const collectFromWrappers: ElementCollector = async (viewportOnly) => {
+	// Not using `getHintedWrappers` here because we also want to get non hintables.
+	const elements = getAllWrappers().map((wrapper) => wrapper.element);
+	return viewportOnly ? getIntersectingElements(elements) : elements;
+};
+
+const collectHintablesFromLightDom: ElementCollector = async (viewportOnly) => {
+	const hintableElements = document.querySelectorAll(getHintableSelector());
+	return viewportOnly
+		? getIntersectingElements(hintableElements)
+		: hintableElements;
+};
+
+const collectWithDeepGetElements: ElementCollector = async (viewportOnly) => {
+	const elements = deepGetElements(document.body, true);
+	return viewportOnly ? getIntersectingElements(elements) : elements;
+};
+
+const defaultMatchingStrategy: MatchingStrategy = fuzzySearchElements;
+
+const batchMatchingStrategy: MatchingStrategy = async (text, elements) => {
+	const maxElementsToCheck = 25_000;
+	const bestMatches = [];
+
+	for (let offset = 0; offset < maxElementsToCheck; offset += 1000) {
+		const elementsInBatch = Array.from(
+			{ length: Math.min(1000, maxElementsToCheck - offset) },
+			(_, i) => elements[offset + i]!
+		).filter(Boolean);
+
+		if (elementsInBatch.length === 0) break;
+
+		const matches = fuzzySearchElements(text, elementsInBatch);
+
+		// With this strategy we only check hintables for speed, so we don't need to
+		// use `getBestFuzzyMatch`. We just return if we find an excellent match.
+		const bestMatch = matches[0];
+		if (bestMatch?.match.score && bestMatch.match.score < 0.1) {
+			return [bestMatch];
+		}
+
+		if (bestMatch) bestMatches.push(bestMatch);
+	}
+
+	// If we weren't able to find an excellent match, search also in the viewport
+
+	const viewportElements = await collectHintablesFromLightDom(true);
+	const viewportMatches = fuzzySearchElements(text, viewportElements);
+
+	return [...bestMatches, ...viewportMatches];
+};
+
+/**
+ * Matches an element by its text content and stores the match in the
+ * `textMatchedElements` map.
+ *
+ * @param text - The text to match.
+ * @param viewportOnly - Whether to only match elements that are intersecting the viewport.
+ * @returns The best match score or undefined if no match is found.
+ */
+export async function matchElementByText(text: string, viewportOnly: boolean) {
+	const isComputingHintables =
+		getToggles().computed || getSetting("alwaysComputeHintables");
+	const isLargePage = document.querySelectorAll("*").length > 25_000;
+
+	const collector = isLargePage
+		? collectHintablesFromLightDom
+		: isComputingHintables
+			? collectFromWrappers
+			: collectWithDeepGetElements;
+
+	const matchingStrategy =
+		isLargePage && !viewportOnly
+			? batchMatchingStrategy
+			: defaultMatchingStrategy;
+
+	const elements = await collector(viewportOnly);
+	const matches = await matchingStrategy(text, elements);
+	const bestMatch = getBestFuzzyMatch(matches);
+
+	if (bestMatch) {
+		// With non hintables, selecting the innermost element with the same text is
+		// preferable for getting the pointer target. For example, in the language
+		// selection sidebar in forvo.com it doesn't click the right element unless
+		// we select the innermost element with the same text.
+		if (!bestMatch.match.isHintable) {
+			const descendants = Array.from(bestMatch.element.querySelectorAll("*"));
+			const descendantsMatchingText = descendants.findLast(
+				(descendant) =>
+					getNormalizedTextContent(descendant) ===
+					getNormalizedTextContent(bestMatch.element)
+			);
+
+			bestMatch.element = descendantsMatchingText ?? bestMatch.element;
+		}
+
+		textMatchedElements.set(text, bestMatch.element);
+	}
+
+	return bestMatch?.match;
+}
+
+function fuzzySearchElements(
+	text: string,
+	elements: Element[] | NodeListOf<Element>
+) {
+	const maxTextLengthToSearch = 200;
+	const elementArray = Array.isArray(elements)
+		? elements
+		: Array.from(elements);
+	const textMatchables = elementArray
+		.map((element) => ({
+			element,
+			normalizedTextContent: getNormalizedTextContent(element),
+		}))
+		.filter(
+			(matchable) =>
+				matchable.normalizedTextContent.length > 0 &&
+				matchable.normalizedTextContent.length < maxTextLengthToSearch
+		);
+
+	const fuse = new Fuse(textMatchables, {
 		keys: ["normalizedTextContent"],
 		ignoreLocation: true,
 		includeScore: true,
 		threshold: 0.4,
 	});
 
-	const matches = fuse.search(text);
-
-	if (matches.length === 0) return;
-
-	if (prioritizeViewport) {
-		matches.sort((a, b) => {
-			const viewportIntersectionComparison =
-				Number(b.item.isIntersectingViewport) -
-				Number(a.item.isIntersectingViewport);
-			return viewportIntersectionComparison;
-		});
-	}
-
-	const bestMatch = matches[0]!;
-	textMatchedElements.set(text, bestMatch.item.element);
-
-	return bestMatch.score;
+	return fuse
+		.search(text)
+		.map((result) => ({
+			element: result.item.element,
+			match: {
+				score: result.score!,
+				isHintable: isHintable(result.item.element),
+			},
+		}))
+		.filter(({ element }) => isVisible(element));
 }
 
 export function getTextMatchedElement(text: string) {
@@ -52,62 +176,28 @@ export function getTextMatchedElement(text: string) {
 	return match;
 }
 
-function normalizeTextContent(element: Element) {
-	return (element.textContent ?? "")
+function getNormalizedTextContent(element: Element) {
+	return getTextContent(element)
 		.replaceAll(/[^a-zA-Z\s]/g, "")
 		.replaceAll(/\s+/g, " ")
 		.trim();
 }
 
-async function getTextMatchableElements() {
-	// Hints are on or alwaysComputeHintables is on. There will be wrappers for
-	// the hintable elements.
-	if (getToggles().computed || getSetting("alwaysComputeHintables")) {
-		return getAllWrappers()
-			.filter((wrapper) => wrapper.isHintable && isVisible(wrapper.element))
-			.map((wrapper) => ({
-				element: wrapper.element,
-				isIntersectingViewport: wrapper.isIntersectingViewport,
-				normalizedTextContent: normalizeTextContent(wrapper.element),
-			}))
-			.filter((matchable) => matchable.normalizedTextContent.length > 0);
+function getTextContent(element: Element) {
+	if (element instanceof HTMLSelectElement) {
+		return element.selectedOptions[0]?.textContent ?? "";
 	}
 
-	// Hints are off and not computed, we need to find all hintable elements.
-	const matchables: TextMatchable[] = [];
-	const elements = deepGetElements(document.body, true);
+	if (element.textContent) return element.textContent;
 
-	const { promise, resolve } = createPromise<void>();
+	const labels =
+		"labels" in element
+			? (element.labels as NodeListOf<HTMLLabelElement>)
+			: undefined;
 
-	const intersectionObserver = new IntersectionObserver((entries) => {
-		for (const entry of entries) {
-			if (isHintable(entry.target) && isVisible(entry.target)) {
-				const normalizedTextContent = normalizeTextContent(entry.target);
-				if (normalizedTextContent.length === 0) continue;
+	const labelText = labels
+		? [...labels].map((label) => label.textContent ?? "").join(" ")
+		: "";
 
-				matchables.push({
-					element: entry.target,
-					isIntersectingViewport: entry.isIntersecting,
-					normalizedTextContent: normalizeTextContent(entry.target),
-				});
-			}
-		}
-
-		resolve();
-	});
-
-	for (const element of elements) {
-		intersectionObserver.observe(element);
-	}
-
-	await promise;
-	return matchables;
-}
-
-function createPromise<T>() {
-	let resolve_!: (value: T | PromiseLike<T>) => void;
-	const promise = new Promise<T>((resolve) => {
-		resolve_ = resolve;
-	});
-	return { promise, resolve: resolve_ };
+	return (element.textContent ?? "") + " " + labelText;
 }
