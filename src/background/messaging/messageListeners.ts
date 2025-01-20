@@ -9,11 +9,9 @@ import {
 import { getRequiredStack, initStack } from "../hints/labels/labelStack";
 import { createRelatedTabs } from "../tabs/createRelatedTabs";
 import { getTabMarker } from "../tabs/tabMarkers";
-import {
-	onMessage,
-	sendMessageToTargetFrames,
-} from "./backgroundMessageBroker";
+import { onMessage } from "./backgroundMessageBroker";
 import { sendMessageToAllFrames } from "./sendMessageToAllFrames";
+import { sendMessageToTargetFrames } from "./sendMessageToTargetFrames";
 
 export function addMessageListeners() {
 	onMessage("initStack", async (_, { tabId, frameId }) => {
