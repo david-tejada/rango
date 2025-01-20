@@ -6,7 +6,7 @@ import { addCommandListeners } from "./commands/commandListeners";
 import { handleIncomingCommand } from "./commands/handleIncomingCommand";
 import { addWebNavigationListeners } from "./hints/labels/webNavigation";
 import { toggleHintsGlobal, updateHintsToggle } from "./hints/toggleHints";
-import { handleIncomingMessage } from "./messaging/backgroundMessageBroker";
+import { handleIncomingMessage } from "./messaging/messageHandler";
 import { addMessageListeners } from "./messaging/messageListeners";
 import { sendMessage, sendMessageSafe } from "./messaging/sendMessage";
 import { UnreachableContentScriptError } from "./messaging/UnreachableContentScriptError";
