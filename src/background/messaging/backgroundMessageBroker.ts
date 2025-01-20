@@ -4,7 +4,6 @@ import { getBestFuzzyMatch } from "../../common/getBestFuzzyMatch";
 import { isValidMessage } from "../../common/messaging/isValidMessage";
 import {
 	getTargetFromFuzzyTexts,
-	getTargetFromReferences,
 	getTargetMarkType,
 	getTargetValues,
 	getViewportOnlyValue,
@@ -23,8 +22,8 @@ import {
 	type Target,
 } from "../../typings/Target/Target";
 import { getRequiredCurrentTabId } from "../tabs/getCurrentTab";
-import { assertReferencesInCurrentTab } from "../target/references";
 import { splitElementHintTargetByFrame } from "../target/splitElementHintTargetByFrame";
+import { splitElementReferenceTargetByFrame } from "../target/splitElementReferenceTargetByFrame";
 import { mapMapValues } from "../target/utils";
 import { getAllFrames } from "../utils/getAllFrames";
 import { promiseAllSettledGrouped } from "../utils/promises";
@@ -160,52 +159,6 @@ async function splitTargetByFrame(
 			);
 		}
 	}
-}
-
-async function splitElementReferenceTargetByFrame(
-	tabId: number,
-	target: Target<ElementReferenceMark>
-) {
-	const referenceNames = getTargetValues(target);
-	await assertReferencesInCurrentTab(referenceNames);
-
-	const frames = await getAllFrames(tabId);
-
-	// We use `Promise.any` to return the first frame that successfully asserts it
-	// has an active reference. We do this so that we make sure we only perform an
-	// action on a single element, in case the reference is active in multiple
-	// frames. Having this here also allows us to throw an appropriate error if no
-	// frame has an active reference for the reference name.
-	const sending = referenceNames.map(async (referenceName) => {
-		return Promise.any(
-			frames.map(async ({ frameId }) => {
-				return sendMessage(
-					"assertActiveReferenceInFrame",
-					{ referenceName },
-					{ frameId }
-				).then(() => ({
-					frameId,
-					referenceName,
-				}));
-			})
-		);
-	});
-
-	const { results } = await promiseAllSettledGrouped(sending);
-
-	if (results.length === 0) {
-		throw new Error("Unable to find elements for selected references.");
-	}
-
-	const referencesByFrame = new Map<number, string[]>();
-	for (const { frameId, referenceName } of results) {
-		referencesByFrame.set(frameId, [
-			...(referencesByFrame.get(frameId) ?? []),
-			referenceName,
-		]);
-	}
-
-	return mapMapValues(referencesByFrame, getTargetFromReferences);
 }
 
 async function splitFuzzyTextTargetByFrame(
