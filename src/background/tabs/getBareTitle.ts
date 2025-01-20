@@ -1,7 +1,5 @@
-import {
-	sendMessage,
-	UnreachableContentScriptError,
-} from "../messaging/backgroundMessageBroker";
+import { sendMessage } from "../messaging/sendMessage";
+import { UnreachableContentScriptError } from "../messaging/UnreachableContentScriptError";
 import { getRequiredCurrentTab } from "./getCurrentTab";
 
 export async function getBareTitle() {

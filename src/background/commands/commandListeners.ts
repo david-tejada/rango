@@ -7,11 +7,11 @@ import { assertPrimitiveTarget } from "../../typings/Target/Target";
 import { refreshHints } from "../hints/refreshHints";
 import { toggleHintsGlobal, updateHintsToggle } from "../hints/toggleHints";
 import {
-	UnreachableContentScriptError,
-	sendMessage,
 	sendMessageToAllFrames,
 	sendMessageToTargetFrames,
 } from "../messaging/backgroundMessageBroker";
+import { sendMessage } from "../messaging/sendMessage";
+import { UnreachableContentScriptError } from "../messaging/UnreachableContentScriptError";
 import { toggleKeyboardClicking } from "../settings/keyboardClicking";
 import { toggleTabMarkers } from "../settings/tabMarkers";
 import { activateTab } from "../tabs/activateTab";

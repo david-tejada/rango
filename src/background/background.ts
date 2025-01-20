@@ -6,13 +6,10 @@ import { addCommandListeners } from "./commands/commandListeners";
 import { handleIncomingCommand } from "./commands/handleIncomingCommand";
 import { addWebNavigationListeners } from "./hints/labels/webNavigation";
 import { toggleHintsGlobal, updateHintsToggle } from "./hints/toggleHints";
-import {
-	handleIncomingMessage,
-	sendMessage,
-	sendMessageSafe,
-	UnreachableContentScriptError,
-} from "./messaging/backgroundMessageBroker";
+import { handleIncomingMessage } from "./messaging/backgroundMessageBroker";
 import { addMessageListeners } from "./messaging/messageListeners";
+import { sendMessage, sendMessageSafe } from "./messaging/sendMessage";
+import { UnreachableContentScriptError } from "./messaging/UnreachableContentScriptError";
 import { toggleKeyboardClicking } from "./settings/keyboardClicking";
 import { trackRecentTabs } from "./tabs/focusPreviousTab";
 import { setTabLastSounded } from "./tabs/focusTabBySound";

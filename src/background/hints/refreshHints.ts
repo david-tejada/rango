@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { sendMessage } from "../messaging/backgroundMessageBroker";
+import { sendMessage } from "../messaging/sendMessage";
 
 export async function refreshHints() {
 	const activeTabs = await browser.tabs.query({ active: true });

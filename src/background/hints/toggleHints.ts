@@ -1,6 +1,6 @@
 import { retrieve, store } from "../../common/storage/storage";
 import { type ToggleLevel } from "../../typings/Action";
-import { sendMessage } from "../messaging/backgroundMessageBroker";
+import { sendMessage } from "../messaging/sendMessage";
 import { getRequiredCurrentTab } from "../tabs/getCurrentTab";
 
 export async function toggleHintsGlobal() {
