@@ -1,8 +1,8 @@
 import { getBestFuzzyMatch } from "../../common/getBestFuzzyMatch";
 import {
-	getTargetFromFuzzyTexts,
 	getTargetFromLabels,
 	getTargetFromReferences,
+	getTargetFromTextSearches,
 	getTargetMarkType,
 	getTargetValues,
 	getViewportOnlyValue,
@@ -12,8 +12,8 @@ import {
 	type ElementHintMark,
 	type ElementMark,
 	type ElementReferenceMark,
-	type FuzzyTextElementMark,
 	type Target,
+	type TextSearchElementMark,
 } from "../../typings/Target/Target";
 import { getRequiredStack } from "../hints/labels/labelStack";
 import { sendMessage } from "../messaging/sendMessage";
@@ -43,10 +43,10 @@ export async function splitTargetByFrame(
 			);
 		}
 
-		case "fuzzyText": {
-			return splitFuzzyTextTargetByFrame(
+		case "textSearch": {
+			return splitTextSearchTargetByFrame(
 				tabId,
-				target as Target<FuzzyTextElementMark>
+				target as Target<TextSearchElementMark>
 			);
 		}
 	}
@@ -143,9 +143,9 @@ async function splitElementReferenceTargetByFrame(
 	return mapMapValues(referencesByFrame, getTargetFromReferences);
 }
 
-async function splitFuzzyTextTargetByFrame(
+async function splitTextSearchTargetByFrame(
 	tabId: number,
-	target: Target<FuzzyTextElementMark>
+	target: Target<TextSearchElementMark>
 ) {
 	const thresholdExcellent = 0.1;
 
@@ -227,13 +227,13 @@ async function splitFuzzyTextTargetByFrame(
 		return bestResult;
 	});
 
-	const fuzzyTextsByFrame = new Map<number, string[]>();
+	const textSearchesByFrame = new Map<number, string[]>();
 	for (const { frameId, text } of bestResults) {
-		fuzzyTextsByFrame.set(frameId, [
-			...(fuzzyTextsByFrame.get(frameId) ?? []),
+		textSearchesByFrame.set(frameId, [
+			...(textSearchesByFrame.get(frameId) ?? []),
 			text,
 		]);
 	}
 
-	return mapMapValues(fuzzyTextsByFrame, getTargetFromFuzzyTexts);
+	return mapMapValues(textSearchesByFrame, getTargetFromTextSearches);
 }
