@@ -1,9 +1,9 @@
 import {
 	type ElementHintMark,
 	type ElementReferenceMark,
-	type FuzzyTextElementMark,
 	type Mark,
 	type Target,
+	type TextSearchElementMark,
 } from "../../typings/Target/Target";
 
 export function arrayToTarget<T extends Mark>(
@@ -75,7 +75,7 @@ export function getTargetValues<T extends Mark>(target: Target<T>) {
  * argument and not part of the mark but we would have to have that argument for
  * all commands with target.
  */
-export function getViewportOnlyValue<T extends FuzzyTextElementMark>(
+export function getViewportOnlyValue<T extends TextSearchElementMark>(
 	target: Target<T>
 ) {
 	if (target.type === "primitive") {
@@ -97,6 +97,6 @@ export function getTargetFromReferences(references: string[]) {
 	return arrayToTarget<ElementReferenceMark>(references, "elementReference");
 }
 
-export function getTargetFromFuzzyTexts(texts: string[]) {
-	return arrayToTarget<FuzzyTextElementMark>(texts, "fuzzyText");
+export function getTargetFromTextSearches(texts: string[]) {
+	return arrayToTarget<TextSearchElementMark>(texts, "textSearch");
 }

@@ -8,8 +8,8 @@ export type ElementReferenceMark = {
 	value: string;
 };
 
-export type FuzzyTextElementMark = {
-	type: "fuzzyText";
+export type TextSearchElementMark = {
+	type: "textSearch";
 	value: string;
 	viewportOnly: boolean;
 };
@@ -22,7 +22,7 @@ export type TabMarkerMark = {
 export type ElementMark =
 	| ElementHintMark
 	| ElementReferenceMark
-	| FuzzyTextElementMark;
+	| TextSearchElementMark;
 
 export type TabMark = TabMarkerMark;
 

@@ -80,7 +80,7 @@ async function getWrappersForTarget(target: Target<ElementMark>) {
 			return wrappers.filter((element) => isDefined(element));
 		}
 
-		case "fuzzyText": {
+		case "textSearch": {
 			return values
 				.map((text) => {
 					const element = getTextMatchedElement(text);

@@ -67,7 +67,7 @@ function upgradeAction(action: ActionV1): ActionV2<keyof ActionMap> {
 				target: {
 					type: "primitive",
 					mark: {
-						type: "fuzzyText",
+						type: "textSearch",
 						value: arg2!,
 						// There was a bug in rango-talon where this was not set if it was false
 						viewportOnly: arg3 ?? false,
