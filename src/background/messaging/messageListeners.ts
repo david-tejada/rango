@@ -6,7 +6,7 @@ import {
 	releaseLabels,
 	storeLabelsInFrame,
 } from "../hints/labels/labelAllocator";
-import { getRequiredStack, initStack } from "../hints/labels/labelStack";
+import { getStack, initStack } from "../hints/labels/labelStack";
 import { createRelatedTabs } from "../tabs/createRelatedTabs";
 import { getTabMarker } from "../tabs/tabMarkers";
 import { onMessage } from "./messageHandler";
@@ -20,7 +20,7 @@ export function addMessageListeners() {
 		// request from the main frame of the content script.
 		if (frameId !== 0) return;
 
-		return initStack(tabId);
+		await initStack(tabId);
 	});
 
 	onMessage("claimLabels", async ({ amount }, { tabId, frameId }) => {
@@ -35,15 +35,15 @@ export function addMessageListeners() {
 	);
 
 	onMessage("releaseLabels", async ({ labels }, { tabId }) => {
-		return releaseLabels(tabId, labels);
+		await releaseLabels(tabId, labels);
 	});
 
 	onMessage("storeLabelsInFrame", async ({ labels }, { tabId, frameId }) => {
-		return storeLabelsInFrame(tabId, frameId, labels);
+		await storeLabelsInFrame(tabId, frameId, labels);
 	});
 
 	onMessage("getLabelStackForTab", async (_, { tabId }) => {
-		return getRequiredStack(tabId);
+		return getStack(tabId);
 	});
 
 	onMessage("getLabelsInViewport", async (_, { tabId }) => {

@@ -2,54 +2,23 @@ import browser from "webextension-polyfill";
 import { letterLabels, numberLabels } from "../../../common/labels";
 import { retrieve } from "../../../common/storage/storage";
 import { store } from "../../../common/storage/store";
-import { type LabelStack } from "../../../typings/StorageSchema";
+import { type LabelStack } from "../../../typings/LabelStack";
 
 /**
  * Initialize the label stack for a tab.
  */
 export async function initStack(tabId: number) {
-	const emptyStack = await getEmptyStack(tabId);
-	await store.set(`labelStack:${tabId}`, emptyStack);
-}
-
-/**
- * Retrieve the label stack for a tab.
- *
- * @throws If no stack is found for the tab.
- */
-export async function getRequiredStack(tabId: number) {
-	const stack = await getStack(tabId);
-
-	if (!stack) {
-		throw new Error(`No label stack found for tab with id ${tabId}`);
-	}
-
+	const stack = await createStack(tabId);
+	await store.set(`labelStack:${tabId}`, stack);
 	return stack;
 }
 
-/**
- * Reset the label stack for a tab. It resets the stack in place.
- */
-export async function resetStack(stack: LabelStack, tabId: number) {
-	const emptyStack = await getEmptyStack(tabId);
-	stack.free = emptyStack.free;
-	stack.assigned = emptyStack.assigned;
-}
-
-async function getStack(tabId: number) {
+export async function getStack(tabId: number) {
 	const stack = await store.get(`labelStack:${tabId}`);
-	if (stack) return stack;
-
-	const emptyStack = await getEmptyStack(tabId);
-	await saveStack(tabId, emptyStack);
-	return emptyStack;
+	return stack ?? initStack(tabId);
 }
 
-async function saveStack(tabId: number, stack: LabelStack) {
-	await store.set(`labelStack:${tabId}`, stack);
-}
-
-async function getEmptyStack(tabId: number): Promise<LabelStack> {
+export async function createStack(tabId: number): Promise<LabelStack> {
 	const includeSingleLetterHints = await retrieve("includeSingleLetterHints");
 	const keyboardClicking = await retrieve("keyboardClicking");
 	const useNumberHints = await retrieve("useNumberHints");

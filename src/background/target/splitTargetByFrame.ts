@@ -15,7 +15,7 @@ import {
 	type Target,
 	type TextSearchElementMark,
 } from "../../typings/Target/Target";
-import { getRequiredStack } from "../hints/labels/labelStack";
+import { getStack } from "../hints/labels/labelStack";
 import { sendMessage } from "../messaging/sendMessage";
 import { getAllFrames } from "../utils/getAllFrames";
 import { promiseAllSettledGrouped } from "../utils/promises";
@@ -57,7 +57,7 @@ async function splitElementHintTargetByFrame(
 	target: Target<ElementHintMark>
 ) {
 	const hints = getTargetValues(target);
-	const stack = await getRequiredStack(tabId);
+	const stack = await getStack(tabId);
 
 	if (target.type === "range") {
 		const anchorFrameId = stack.assigned.get(target.anchor.mark.value);

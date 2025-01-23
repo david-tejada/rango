@@ -13,8 +13,6 @@ const zLabelStack = z.object({
 	assigned: z.map(z.string(), z.number()),
 });
 
-export type LabelStack = z.infer<typeof zLabelStack>;
-
 const zTabMarkers = z.object({
 	free: z.array(z.string()),
 	assigned: z.map(z.number(), z.string()),

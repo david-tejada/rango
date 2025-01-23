@@ -1,5 +1,7 @@
+import { Mutex } from "async-mutex";
 import { debounce } from "lodash";
 import browser from "webextension-polyfill";
+import { type LabelStack } from "../../typings/LabelStack";
 import { type StorageSchema } from "../../typings/StorageSchema";
 import { defaultSettings } from "../settings/settings";
 import { fromSerializable, toSerializable } from "./serializable";
@@ -7,11 +9,6 @@ import { fromSerializable, toSerializable } from "./serializable";
 type TabMarkers = {
 	free: number[];
 	assigned: Map<number, string>;
-};
-
-type LabelStack = {
-	free: string[];
-	assigned: Map<string, number>;
 };
 
 type Store = {
@@ -24,6 +21,7 @@ type Store = {
 
 const cache = new Map<keyof Store, Store[keyof Store]>();
 const pendingStorageChanges = new Map<keyof Store, Store[keyof Store]>();
+const mutexes = new Map<keyof Store, Mutex>();
 
 // Service workers terminate after 30 seconds of inactivity. Setting it safely
 // less than that to be cautious.
@@ -31,10 +29,10 @@ const pendingStorageChanges = new Map<keyof Store, Store[keyof Store]>();
 const debounceWait = 10_000;
 
 /**
- * Get a value from the appropriate storage area. It handles making Maps
- * serializable.
+ * Get a value from the appropriate storage area. It handles conversion from
+ * serializable objects to Maps.
  */
-export async function get<T extends keyof Store>(
+async function get<T extends keyof Store>(
 	key: T
 ): Promise<Store[T] | undefined> {
 	if (cache.has(key)) return cache.get(key) as Store[T];
@@ -48,9 +46,9 @@ export async function get<T extends keyof Store>(
 
 /**
  * Set a value for a given key in the appropriate storage area. It handles
- * conversion from serializable objects to Maps.
+ * making Maps serializable.
  */
-export async function set<T extends keyof Store>(key: T, value: Store[T]) {
+async function set<T extends keyof Store>(key: T, value: Store[T]) {
 	cache.set(key, value);
 
 	// Settings need to be stored right away because we have storage change
@@ -65,6 +63,32 @@ export async function set<T extends keyof Store>(key: T, value: Store[T]) {
 	}
 
 	storeWithDebounce(key, value);
+}
+
+/**
+ * Executes a callback with exclusive access to a stored value.
+ *
+ * @param key - The storage key to lock
+ * @param callback - Function to execute with the locked value. Must return a
+ * tuple of [updatedValue, result?]
+ * @returns The optional result from the callback, or undefined
+ * @throws Error if no value exists for the given key
+ */
+async function withLock<T extends keyof Store, U = void>(
+	key: T,
+	callback: (value: Store[T]) => Promise<[Store[T], U?]> | [Store[T], U?]
+): Promise<U> {
+	const mutex = getMutex(key);
+
+	return mutex.runExclusive(async () => {
+		const value = await get(key);
+		if (!value) throw new Error(`No value found for key "${key}"`);
+
+		const [updatedValue, result] = await callback(value);
+
+		await set(key, updatedValue);
+		return result as U;
+	});
 }
 
 const debouncedFlushStorageChanges = debounce(async () => {
@@ -103,4 +127,13 @@ function isSetting(key: keyof Store) {
 	return key in defaultSettings;
 }
 
-export const store = { get, set };
+function getMutex(key: keyof Store) {
+	if (mutexes.has(key)) return mutexes.get(key)!;
+
+	const mutex = new Mutex();
+	mutexes.set(key, mutex);
+
+	return mutex;
+}
+
+export const store = { get, set, withLock };

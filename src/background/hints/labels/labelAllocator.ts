@@ -1,6 +1,7 @@
 import browser from "webextension-polyfill";
+import { store } from "../../../common/storage/store";
 import { getAllFrames } from "../../utils/getAllFrames";
-import { resetStack, withStack } from "./labelStack";
+import { createStack } from "./labelStack";
 import { navigationOccurred } from "./webNavigation";
 
 export async function claimLabels(
@@ -8,18 +9,17 @@ export async function claimLabels(
 	frameId: number,
 	amount: number
 ): Promise<string[]> {
-	return withStack(tabId, async (stack) => {
+	return store.withLock(`labelStack:${tabId}`, async (stack) => {
 		if (await navigationOccurred(tabId)) {
-			await resetStack(stack, tabId);
+			stack = await createStack(tabId);
 		}
 
 		const labelsClaimed = stack.free.splice(-amount, amount);
-
 		for (const label of labelsClaimed) {
 			stack.assigned.set(label, frameId);
 		}
 
-		return labelsClaimed;
+		return [stack, labelsClaimed];
 	});
 }
 
@@ -28,7 +28,7 @@ export async function reclaimLabelsFromOtherFrames(
 	frameId: number,
 	amount: number
 ) {
-	return withStack(tabId, async (stack) => {
+	return store.withLock(`labelStack:${tabId}`, async (stack) => {
 		const frames = await getAllFrames(tabId);
 		const otherFramesIds = frames
 			.map((frame) => frame.frameId)
@@ -52,13 +52,11 @@ export async function reclaimLabelsFromOtherFrames(
 			if (reclaimed.length === amount) break;
 		}
 
-		if (reclaimed.length === 0) return [];
-
 		for (const label of reclaimed) {
 			stack.assigned.set(label, frameId);
 		}
 
-		return reclaimed;
+		return [stack, reclaimed];
 	});
 }
 
@@ -69,17 +67,19 @@ export async function storeLabelsInFrame(
 	frameId: number,
 	labels: string[]
 ) {
-	await withStack(tabId, async (stack) => {
+	return store.withLock(`labelStack:${tabId}`, async (stack) => {
 		stack.free = stack.free.filter((value) => !labels.includes(value));
 
 		for (const label of labels) {
 			stack.assigned.set(label, frameId);
 		}
+
+		return [stack];
 	});
 }
 
 export async function releaseLabels(tabId: number, labels: string[]) {
-	await withStack(tabId, async (stack) => {
+	return store.withLock(`labelStack:${tabId}`, async (stack) => {
 		// We make sure the labels to release are actually assigned
 		const filteredLabels = labels.filter((label) => stack.assigned.has(label));
 		stack.free.push(...filteredLabels);
@@ -88,5 +88,7 @@ export async function releaseLabels(tabId: number, labels: string[]) {
 		for (const label of filteredLabels) {
 			stack.assigned.delete(label);
 		}
+
+		return [stack];
 	});
 }
