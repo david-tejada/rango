@@ -82,7 +82,9 @@ const debouncedFlushStorageChanges = debounce(async () => {
 				// it's more graceful to keep the value in the cache and retry later
 				// when space might have been freed.
 				console.error(`Failed to store "${key}"`, error);
-				pendingStorageChanges.set(key, value);
+				if (!pendingStorageChanges.has(key)) {
+					pendingStorageChanges.set(key, value);
+				}
 			}
 		})
 	);
