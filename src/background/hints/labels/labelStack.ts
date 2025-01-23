@@ -1,38 +1,15 @@
-import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
 import { letterLabels, numberLabels } from "../../../common/labels";
 import { retrieve } from "../../../common/storage/storage";
 import { store } from "../../../common/storage/store";
 import { type LabelStack } from "../../../typings/StorageSchema";
 
-const mutex = new Mutex();
-
-/**
- * Execute a callback with the label stack for a tab. The execution is locked
- * with a mutex to prevent race conditions.
- *
- * Make sure of not reassigning the stack in the callback as it will not be
- * saved.
- */
-export async function withStack<T>(
-	tabId: number,
-	callback: (stack: LabelStack) => Promise<T>
-): Promise<T> {
-	return mutex.runExclusive(async () => {
-		const stack = await getStack(tabId);
-		const result = await callback(stack);
-		await saveStack(tabId, stack);
-		return result;
-	});
-}
-
 /**
  * Initialize the label stack for a tab.
  */
 export async function initStack(tabId: number) {
-	await withStack(tabId, async (stack) => {
-		await resetStack(stack, tabId);
-	});
+	const emptyStack = await getEmptyStack(tabId);
+	await store.set(`labelStack:${tabId}`, emptyStack);
 }
 
 /**
