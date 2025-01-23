@@ -1,7 +1,8 @@
 import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
 import { letterLabels, numberLabels } from "../../../common/labels";
-import { retrieve, store } from "../../../common/storage/storage";
+import { retrieve } from "../../../common/storage/storage";
+import { store } from "../../../common/storage/store";
 import { type LabelStack } from "../../../typings/StorageSchema";
 
 const mutex = new Mutex();
@@ -59,14 +60,16 @@ export async function resetStack(stack: LabelStack, tabId: number) {
 }
 
 async function getStack(tabId: number) {
-	const stacks = await retrieve("labelStacks");
-	return stacks.get(tabId) ?? getEmptyStack(tabId);
+	const stack = await store.get(`labelStack:${tabId}`);
+	if (stack) return stack;
+
+	const emptyStack = await getEmptyStack(tabId);
+	await saveStack(tabId, emptyStack);
+	return emptyStack;
 }
 
 async function saveStack(tabId: number, stack: LabelStack) {
-	const stacks = await retrieve("labelStacks");
-	stacks.set(tabId, stack);
-	await store("labelStacks", stacks);
+	await store.set(`labelStack:${tabId}`, stack);
 }
 
 async function getEmptyStack(tabId: number): Promise<LabelStack> {

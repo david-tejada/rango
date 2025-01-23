@@ -133,10 +133,8 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 	}
 
 	// If this is an update the content scrips either reload (Firefox) or stop
-	// completely (Chrome), either way we need to reset the label stacks
-	await store("labelStacks", new Map());
-	// This has been renamed to `labelStacks`. Free up space in the storage area.
-	await browser.storage.local.remove("hintStacks");
+	// completely (Chrome), either way we need to reset the local storage
+	await browser.storage.local.clear();
 
 	if (reason === "install") await initTabMarkers();
 });
@@ -145,9 +143,9 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 // EXTENSION STARTUP
 // =============================================================================
 browser.runtime.onStartup.addListener(async () => {
+	await browser.storage.local.clear();
 	await initTabMarkers();
 	await setBrowserActionIcon();
-	await store("labelStacks", new Map());
 	await store("hintsToggleTabs", new Map());
 	await store("tabsByRecency", []);
 	// In Safari we need to create the menus every time the browser starts.
