@@ -1,7 +1,5 @@
 import browser from "webextension-polyfill";
-import { retrieve } from "../../common/storage/storage";
-import { filterArrayInPlace } from "../utils/filterArrayInPlace";
-import { withLockedStorageAccess } from "../utils/withLockedStorageValue";
+import { store } from "../../common/storage/store";
 
 /**
  * Focuses the tab in the current window that was most recently active.
@@ -32,7 +30,7 @@ async function findPreviouslyActiveTab(windowId: number) {
 
 	// If `Tab.lastAccessed` is not available (Safari) we use `tabsByRecency` to
 	// find the previous tab.
-	const tabsByRecency = await retrieve("tabsByRecency");
+	const tabsByRecency = (await store.get("tabsByRecency")) ?? [];
 
 	for (const tabId of tabsByRecency) {
 		const tab = tabsInWindow.find((tab) => tab.id === tabId && !tab.active);
@@ -52,23 +50,31 @@ async function findPreviouslyActiveTab(windowId: number) {
  */
 export function trackRecentTabs() {
 	browser.tabs.onActivated.addListener(async ({ tabId, previousTabId }) => {
-		await withLockedStorageAccess("tabsByRecency", (tabsByRecency) => {
-			// If the browser launches with tabs 1 (active) and 2, and we switch to
-			// tab 2, then tab 1 won't be in `tabsByRecency` unless we add
-			// `previousTabId` here too.
-			if (previousTabId) {
-				filterArrayInPlace(tabsByRecency, (id) => id !== previousTabId);
-				tabsByRecency.unshift(previousTabId);
-			}
+		await store.withLock(
+			"tabsByRecency",
+			(tabsByRecency) => {
+				// If the browser launches with tabs 1 (active) and 2, and we switch to
+				// tab 2, then tab 1 won't be in `tabsByRecency` unless we add
+				// `previousTabId` here too.
+				if (previousTabId) {
+					tabsByRecency = tabsByRecency.filter((id) => id !== previousTabId);
+					tabsByRecency.unshift(previousTabId);
+				}
 
-			filterArrayInPlace(tabsByRecency, (id) => id !== tabId);
-			tabsByRecency.unshift(tabId);
-		});
+				tabsByRecency = tabsByRecency.filter((id) => id !== tabId);
+				tabsByRecency.unshift(tabId);
+
+				return [tabsByRecency];
+			},
+			() => []
+		);
 	});
 
 	browser.tabs.onRemoved.addListener(async (tabId) => {
-		await withLockedStorageAccess("tabsByRecency", (tabsByRecency) => {
-			filterArrayInPlace(tabsByRecency, (id) => id !== tabId);
-		});
+		await store.withLock(
+			"tabsByRecency",
+			(tabsByRecency) => [tabsByRecency.filter((id) => id !== tabId)],
+			() => []
+		);
 	});
 }

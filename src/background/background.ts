@@ -150,7 +150,6 @@ browser.runtime.onStartup.addListener(async () => {
 	await initializeAndReconcileTabMarkers();
 	await setBrowserActionIcon();
 	await store("hintsToggleTabs", new Map());
-	await store("tabsByRecency", []);
 	// In Safari we need to create the menus every time the browser starts.
 	if (isSafari()) await createContextMenus();
 
