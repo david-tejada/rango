@@ -14,7 +14,10 @@ import { toggleKeyboardClicking } from "./settings/keyboardClicking";
 import { trackRecentTabs } from "./tabs/focusPreviousTab";
 import { setTabLastSounded } from "./tabs/focusTabBySound";
 import { getCurrentTab, getRequiredCurrentTab } from "./tabs/getCurrentTab";
-import { addTabMarkerListeners, initTabMarkers } from "./tabs/tabMarkers";
+import {
+	addTabMarkerListeners,
+	initializeAndReconcileTabMarkers,
+} from "./tabs/tabMarkers";
 import { browserAction, setBrowserActionIcon } from "./utils/browserAction";
 import { isSafari } from "./utils/isSafari";
 import { notify } from "./utils/notify";
@@ -136,7 +139,7 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 	// completely (Chrome), either way we need to reset the local storage
 	await browser.storage.local.clear();
 
-	if (reason === "install") await initTabMarkers();
+	if (reason === "install") await initializeAndReconcileTabMarkers();
 });
 
 // =============================================================================
@@ -144,7 +147,7 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 // =============================================================================
 browser.runtime.onStartup.addListener(async () => {
 	await browser.storage.local.clear();
-	await initTabMarkers();
+	await initializeAndReconcileTabMarkers();
 	await setBrowserActionIcon();
 	await store("hintsToggleTabs", new Map());
 	await store("tabsByRecency", []);

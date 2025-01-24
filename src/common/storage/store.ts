@@ -3,13 +3,9 @@ import { debounce } from "lodash";
 import browser from "webextension-polyfill";
 import { type LabelStack } from "../../typings/LabelStack";
 import { type StorageSchema } from "../../typings/StorageSchema";
+import { type TabMarkers } from "../../typings/TabMarkers";
 import { defaultSettings } from "../settings/settings";
 import { fromSerializable, toSerializable } from "./serializable";
-
-type TabMarkers = {
-	free: number[];
-	assigned: Map<number, string>;
-};
 
 type Store = {
 	[K in keyof StorageSchema]: StorageSchema[K];
