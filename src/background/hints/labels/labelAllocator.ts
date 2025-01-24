@@ -1,5 +1,5 @@
-import browser from "webextension-polyfill";
 import { store } from "../../../common/storage/store";
+import { sendMessage } from "../../messaging/sendMessage";
 import { getAllFrames } from "../../utils/getAllFrames";
 import { createStack } from "./labelStack";
 import { navigationOccurred } from "./webNavigation";
@@ -37,12 +37,11 @@ export async function reclaimLabelsFromOtherFrames(
 		const reclaimed: string[] = [];
 
 		for (const frameId of otherFramesIds) {
-			// I'm not using our sendMessage to avoid dependency cycle.
 			// eslint-disable-next-line no-await-in-loop
-			const reclaimedFromFrame: string[] = await browser.tabs.sendMessage(
-				tabId,
-				{ type: "reclaimLabels", amount: amount - reclaimed.length },
-				{ frameId }
+			const reclaimedFromFrame = await sendMessage(
+				"reclaimLabels",
+				{ amount: amount - reclaimed.length },
+				{ tabId, frameId }
 			);
 
 			reclaimed.push(...reclaimedFromFrame);
