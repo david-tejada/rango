@@ -76,19 +76,24 @@ async function set<T extends keyof Store>(key: T, value: Store[T]) {
  */
 async function withLock<T extends keyof Store, U = void>(
 	key: T,
-	callback: (value: Store[T]) => Promise<[Store[T], U?]> | [Store[T], U?]
+	callback: (
+		value: Store[T] | undefined
+	) => Promise<[Store[T], U?]> | [Store[T], U?]
 ): Promise<U> {
 	const mutex = getMutex(key);
 
-	return mutex.runExclusive(async () => {
-		const value = await get(key);
-		if (!value) throw new Error(`No value found for key "${key}"`);
+	try {
+		return await mutex.runExclusive(async () => {
+			const value = await get(key);
 
-		const [updatedValue, result] = await callback(value);
+			const [updatedValue, result] = await callback(value);
 
-		await set(key, updatedValue);
-		return result as U;
-	});
+			await set(key, updatedValue);
+			return result as U;
+		});
+	} finally {
+		if (!mutex.isLocked()) mutexes.delete(key);
+	}
 }
 
 const debouncedFlushStorageChanges = debounce(async () => {

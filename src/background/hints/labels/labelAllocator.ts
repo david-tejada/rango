@@ -10,6 +10,8 @@ export async function claimLabels(
 	amount: number
 ): Promise<string[]> {
 	return store.withLock(`labelStack:${tabId}`, async (stack) => {
+		stack ??= await createStack(tabId);
+
 		if (await navigationOccurred(tabId)) {
 			stack = await createStack(tabId);
 		}
@@ -29,6 +31,8 @@ export async function reclaimLabelsFromOtherFrames(
 	amount: number
 ) {
 	return store.withLock(`labelStack:${tabId}`, async (stack) => {
+		stack ??= await createStack(tabId);
+
 		const frames = await getAllFrames(tabId);
 		const otherFramesIds = frames
 			.map((frame) => frame.frameId)
@@ -67,6 +71,8 @@ export async function storeLabelsInFrame(
 	labels: string[]
 ) {
 	return store.withLock(`labelStack:${tabId}`, async (stack) => {
+		stack ??= await createStack(tabId);
+
 		stack.free = stack.free.filter((value) => !labels.includes(value));
 
 		for (const label of labels) {
@@ -79,6 +85,8 @@ export async function storeLabelsInFrame(
 
 export async function releaseLabels(tabId: number, labels: string[]) {
 	return store.withLock(`labelStack:${tabId}`, async (stack) => {
+		stack ??= await createStack(tabId);
+
 		// We make sure the labels to release are actually assigned
 		const filteredLabels = labels.filter((label) => stack.assigned.has(label));
 		stack.free.push(...filteredLabels);
