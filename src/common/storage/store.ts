@@ -77,20 +77,30 @@ async function remove<T extends keyof Store>(key: T) {
  * @param key - The storage key to lock
  * @param callback - Function to execute with the locked value. Must return a
  * tuple of [updatedValue, result?]
+ * @param initializer - Optional function to initialize the value if it doesn't exist
  * @returns The optional result from the callback, or undefined
- * @throws Error if no value exists for the given key
+ * @throws Error if no value exists for the given key and no initializer is provided
  */
 async function withLock<T extends keyof Store, U = void>(
 	key: T,
-	callback: (
-		value: Store[T] | undefined
-	) => Promise<[Store[T], U?]> | [Store[T], U?]
+	callback: (value: Store[T]) => Promise<[Store[T], U?]> | [Store[T], U?],
+	initializer?: () => Promise<Store[T]> | Store[T]
 ): Promise<U> {
 	const mutex = getMutex(key);
 
 	try {
 		return await mutex.runExclusive(async () => {
-			const value = await get(key);
+			let value = await get(key);
+
+			if (value === undefined) {
+				if (initializer) {
+					value = await initializer();
+				} else {
+					throw new Error(
+						`No value exists for key "${key}" and no initializer was provided`
+					);
+				}
+			}
 
 			const [updatedValue, result] = await callback(value);
 
