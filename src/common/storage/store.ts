@@ -65,6 +65,12 @@ async function set<T extends keyof Store>(key: T, value: Store[T]) {
 	storeWithDebounce(key, value);
 }
 
+async function remove<T extends keyof Store>(key: T) {
+	cache.delete(key);
+	pendingStorageChanges.delete(key);
+	await getStorageArea(key).remove(key);
+}
+
 /**
  * Executes a callback with exclusive access to a stored value.
  *
@@ -141,4 +147,4 @@ function getMutex(key: keyof Store) {
 	return mutex;
 }
 
-export const store = { get, set, withLock };
+export const store = { get, set, remove, withLock };

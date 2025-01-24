@@ -4,9 +4,6 @@ import { retrieve } from "../../../common/storage/storage";
 import { store } from "../../../common/storage/store";
 import { type LabelStack } from "../../../typings/LabelStack";
 
-/**
- * Initialize the label stack for a tab.
- */
 export async function initStack(tabId: number) {
 	const stack = await createStack(tabId);
 	await store.set(`labelStack:${tabId}`, stack);
@@ -55,6 +52,10 @@ export async function createStack(tabId: number): Promise<LabelStack> {
 	};
 }
 
+export async function removeStack(tabId: number) {
+	await store.remove(`labelStack:${tabId}`);
+}
+
 /**
  * Get a set of keys to exclude for a given url according to the user settings.
  */
@@ -78,3 +79,19 @@ async function getKeysToExclude(url: string) {
 			.filter(Boolean)
 	);
 }
+
+browser.tabs.onRemoved.addListener(async (tabId) => {
+	try {
+		await removeStack(tabId);
+	} catch (error) {
+		console.error(error);
+	}
+});
+
+browser.tabs.onUpdated.addListener(async (tabId, changeInfo) => {
+	try {
+		if (changeInfo.discarded) await removeStack(tabId);
+	} catch (error) {
+		console.error(error);
+	}
+});
