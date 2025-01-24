@@ -139,7 +139,7 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 	// completely (Chrome), either way we need to reset the local storage
 	await browser.storage.local.clear();
 
-	if (reason === "install") await initializeAndReconcileTabMarkers();
+	await initializeAndReconcileTabMarkers();
 });
 
 // =============================================================================
