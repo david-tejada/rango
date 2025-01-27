@@ -61,10 +61,16 @@ async function set<T extends keyof Store>(key: T, value: Store[T]) {
 	storeWithDebounce(key, value);
 }
 
-async function remove<T extends keyof Store>(key: T) {
-	cache.delete(key);
-	pendingStorageChanges.delete(key);
-	await getStorageArea(key).remove(key);
+async function remove<T extends keyof Store>(keys: T | T[]) {
+	const keysArray = Array.isArray(keys) ? keys : [keys];
+
+	await Promise.all(
+		keysArray.map(async (key) => {
+			cache.delete(key);
+			pendingStorageChanges.delete(key);
+			await getStorageArea(key).remove(key);
+		})
+	);
 }
 
 /**
