@@ -19,10 +19,11 @@ const cache = new Map<keyof Store, Store[keyof Store]>();
 const pendingStorageChanges = new Map<keyof Store, Store[keyof Store]>();
 const mutexes = new Map<keyof Store, Mutex>();
 
-// Service workers terminate after 30 seconds of inactivity. Setting it safely
-// less than that to be cautious.
-// https://developer.chrome.com/docs/extensions/develop/concepts/service-workers/lifecycle#idle-shutdown
-const debounceWait = 10_000;
+/**
+ * The debounce wait time to consolidate changes to local or sync storage. It
+ * prevents continually having to transform objects to make them serializable.
+ */
+const debounceWait = 1000;
 
 /**
  * Get a value from the appropriate storage area. It handles conversion from
