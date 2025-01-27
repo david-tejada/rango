@@ -1,6 +1,7 @@
 import browser from "webextension-polyfill";
 import { getHostPattern } from "../common/getHostPattern";
-import { retrieve, store } from "../common/storage/storage";
+import { retrieve, store as store_ } from "../common/storage/storage";
+import { store } from "../common/storage/store";
 import { urls } from "../common/urls";
 import { addCommandListeners } from "./commands/commandListeners";
 import { handleIncomingCommand } from "./commands/handleIncomingCommand";
@@ -128,7 +129,7 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 		];
 
 		if (currentMajor > previousMajor || currentMinor > previousMinor) {
-			await store("showWhatsNewPageNextStartup", true);
+			await store.set("showWhatsNewPageNextStartup", true);
 			await notify.info(
 				`Rango has been updated to version ${currentVersion}. Click "What's New" in the context menu to see the changes.`
 			);
@@ -137,7 +138,7 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 
 	// If this is an update the content scrips either reload (Firefox) or stop
 	// completely (Chrome), either way we need to reset the local storage
-	await browser.storage.local.clear();
+	await store.remove(["tabsByRecency"]);
 
 	await initializeAndReconcileTabMarkers();
 });
@@ -146,15 +147,15 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 // EXTENSION STARTUP
 // =============================================================================
 browser.runtime.onStartup.addListener(async () => {
-	await browser.storage.local.clear();
+	await store.remove(["tabsByRecency"]);
 	await initializeAndReconcileTabMarkers();
 	await setBrowserActionIcon();
-	await store("hintsToggleTabs", new Map());
+	await store_("hintsToggleTabs", new Map());
 	// In Safari we need to create the menus every time the browser starts.
 	if (isSafari()) await createContextMenus();
 
-	const showWhatsNewPageOnUpdate = await retrieve("showWhatsNewPageOnUpdate");
-	const showWhatsNewPageNextStartup = await retrieve(
+	const showWhatsNewPageOnUpdate = await store.get("showWhatsNewPageOnUpdate");
+	const showWhatsNewPageNextStartup = await store.get(
 		"showWhatsNewPageNextStartup"
 	);
 
@@ -162,7 +163,7 @@ browser.runtime.onStartup.addListener(async () => {
 		await browser.tabs.create({ url: urls.whatsNewPage.href });
 		// The flag is cleared after the What's New page loads but we also clear it
 		// here to be extra safe.
-		await store("showWhatsNewPageNextStartup", false);
+		await store.remove("showWhatsNewPageNextStartup");
 	}
 });
 
@@ -308,7 +309,7 @@ async function contextMenusOnClicked({
 
 		if (!keysToExcludeForHost && hostPattern) {
 			keysToExclude.push([hostPattern, ""]);
-			await store("keysToExclude", keysToExclude);
+			await store_("keysToExclude", keysToExclude);
 		}
 
 		await browser.runtime.openOptionsPage();

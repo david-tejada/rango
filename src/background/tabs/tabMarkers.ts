@@ -5,24 +5,14 @@ import { type TabMarkers } from "../../typings/TabMarkers";
 import { sendMessage } from "../messaging/sendMessage";
 import { UnreachableContentScriptError } from "../messaging/UnreachableContentScriptError";
 
-async function initTabMarkers() {
-	const tabMarkers = createTabMarkers();
-	await store.set("tabMarkers", tabMarkers);
-	return tabMarkers;
-}
-
-async function getTabMarkers(): Promise<TabMarkers> {
-	return (await store.get("tabMarkers")) ?? initTabMarkers();
-}
-
 export async function getTabMarker(tabId: number) {
-	const { assigned } = await getTabMarkers();
-	const marker = assigned.get(tabId);
-	return marker;
+	const { assigned } = await store.waitFor("tabMarkers");
+	return assigned.get(tabId);
 }
 
 export async function getTabIdForMarker(marker: string) {
-	const { assigned } = await getTabMarkers();
+	const { assigned } = await store.waitFor("tabMarkers");
+
 	for (const [tabId, currentMarker] of assigned.entries()) {
 		if (currentMarker === marker) {
 			return tabId;
@@ -38,32 +28,25 @@ export async function getTabIdForMarker(marker: string) {
  * "Continue where you left off" enabled.
  */
 export async function initializeAndReconcileTabMarkers() {
-	await initTabMarkers();
-
-	// We need to assign the tab markers to their corresponding tab id in case
-	// the user has the setting "Continue where you left off" enabled. If we
-	// don't those tabs will have an invalid tab marker.
-
 	const tabs = await browser.tabs.query({});
-
 	const tabsAndTheirMarkers = tabs
 		.filter((tab) => isTabWithId(tab))
 		.map((tab) => ({ tab, marker: getMarkerFromTitle(tab.title!) }));
-
 	const tabsWithMarkers = tabsAndTheirMarkers.filter((tab) => tab.marker);
 	const tabsWithoutMarkers = tabsAndTheirMarkers.filter((tab) => !tab.marker);
 
-	// In order to avoid having to reload tabs that already have a tab marker
-	// in their title we first try to assign tab markers to the tabs that
-	// already have one.
-	await Promise.all(
-		tabsWithMarkers.map(async ({ tab, marker }) => setTabMarker(tab.id, marker))
-	);
+	const tabMarkers = createTabMarkers();
+	// First assign markers to tabs that already have them
+	for (const { tab, marker } of tabsWithMarkers) {
+		assignMarkerToTab(tabMarkers, tab.id, marker);
+	}
 
-	// Then the rest.
-	await Promise.all(
-		tabsWithoutMarkers.map(async ({ tab }) => setTabMarker(tab.id))
-	);
+	// Then assign new markers to tabs that don't have them
+	for (const { tab } of tabsWithoutMarkers) {
+		assignMarkerToTab(tabMarkers, tab.id);
+	}
+
+	await store.set("tabMarkers", tabMarkers);
 }
 
 /**
@@ -86,21 +69,27 @@ export function addTabMarkerListeners() {
 }
 
 export async function refreshTabMarkers() {
-	await initTabMarkers();
-
 	const tabs = await browser.tabs.query({});
 	const tabWithIds = tabs.filter((tab) => isTabWithId(tab));
 
-	await store.withLock("tabMarkers", async (tabMarkers) => {
-		const { free, assigned } = tabMarkers;
+	// We remove the value here to make sure the initializer is called and using
+	// `store.waitFor` will wait for the value to be set after the markers have
+	// been reassigned
+	await store.remove("tabMarkers");
+	await store.withLock(
+		"tabMarkers",
+		async (tabMarkers) => {
+			const { free, assigned } = tabMarkers;
 
-		for (const tab of tabWithIds) {
-			const marker = free.pop();
-			if (marker) assigned.set(tab.id, marker);
-		}
+			for (const tab of tabWithIds) {
+				const marker = free.pop();
+				if (marker) assigned.set(tab.id, marker);
+			}
 
-		return [tabMarkers];
-	});
+			return [tabMarkers];
+		},
+		createTabMarkers
+	);
 
 	const refreshing = tabWithIds.map(async (tab) => {
 		try {
@@ -135,20 +124,8 @@ export async function refreshTabMarkers() {
  */
 async function setTabMarker(tabId: number, preferredMarker?: string) {
 	return store.withLock("tabMarkers", async (tabMarkers) => {
-		const { free, assigned } = tabMarkers;
-
-		if (preferredMarker && free.includes(preferredMarker)) {
-			const markerIndex = free.indexOf(preferredMarker);
-			free.splice(markerIndex, 1);
-			assigned.set(tabId, preferredMarker);
-
-			return [tabMarkers, preferredMarker];
-		}
-
-		const newMarker = free.pop();
-		if (newMarker) assigned.set(tabId, newMarker);
-
-		return [tabMarkers, newMarker];
+		const marker = assignMarkerToTab(tabMarkers, tabId, preferredMarker);
+		return [tabMarkers, marker];
 	});
 }
 
@@ -171,6 +148,35 @@ async function releaseTabMarker(tabId: number) {
 
 		return [tabMarkers, marker];
 	});
+}
+
+/**
+ * Assigns a marker to a tab, modifying the TabMarkers object in place.
+ *
+ * @param tabMarkers - The TabMarkers object to modify
+ * @param tabId - The tab id to set the marker for
+ * @param preferredMarker - Optional preferred marker to use
+ * @returns The marker that was assigned, if any
+ */
+function assignMarkerToTab(
+	tabMarkers: TabMarkers,
+	tabId: number,
+	preferredMarker?: string
+) {
+	if (preferredMarker && tabMarkers.free.includes(preferredMarker)) {
+		const markerIndex = tabMarkers.free.indexOf(preferredMarker);
+		tabMarkers.free.splice(markerIndex, 1);
+		tabMarkers.assigned.set(tabId, preferredMarker);
+		return preferredMarker;
+	}
+
+	const newMarker = tabMarkers.free.pop();
+	if (newMarker) {
+		tabMarkers.assigned.set(tabId, newMarker);
+		return newMarker;
+	}
+
+	return undefined;
 }
 
 function createTabMarkers(): TabMarkers {

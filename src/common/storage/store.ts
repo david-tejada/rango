@@ -18,6 +18,10 @@ type Store = {
 const cache = new Map<keyof Store, Store[keyof Store]>();
 const pendingStorageChanges = new Map<keyof Store, Store[keyof Store]>();
 const mutexes = new Map<keyof Store, Mutex>();
+const pendingDefinedPromises = new Map<
+	keyof Store,
+	{ resolve: (value: any) => void; timer: NodeJS.Timeout }
+>();
 
 /**
  * The debounce wait time to consolidate changes to local or sync storage. It
@@ -42,11 +46,43 @@ async function get<T extends keyof Store>(
 }
 
 /**
+ * Retrieves a store value, waiting for it to be set if it is undefined.
+ *
+ * @param key - The store key to wait for
+ * @param timeout - Optional timeout in milliseconds (defaults to 5000)
+ * @returns The value once it becomes available
+ * @throws Error if the timeout is reached before the value is available
+ */
+async function waitFor<T extends keyof Store>(
+	key: T,
+	timeout = 5000
+): Promise<Store[T]> {
+	const value = await get(key);
+	if (value !== undefined) return value;
+
+	return new Promise((resolve, reject) => {
+		const timer = setTimeout(() => {
+			pendingDefinedPromises.delete(key);
+			reject(new Error(`Timeout waiting for "${key}" to be defined`));
+		}, timeout);
+
+		pendingDefinedPromises.set(key, { resolve, timer });
+	});
+}
+
+/**
  * Set a value for a given key in the appropriate storage area. It handles
  * making Maps serializable.
  */
 async function set<T extends keyof Store>(key: T, value: Store[T]) {
 	cache.set(key, value);
+
+	const pending = pendingDefinedPromises.get(key);
+	if (pending) {
+		clearTimeout(pending.timer);
+		pendingDefinedPromises.delete(key);
+		pending.resolve(value);
+	}
 
 	// Settings need to be stored right away because we have storage change
 	// listeners that need to be triggered immediately.
@@ -160,4 +196,4 @@ function getMutex(key: keyof Store) {
 	return mutex;
 }
 
-export const store = { get, set, remove, withLock };
+export const store = { get, set, remove, waitFor, withLock };

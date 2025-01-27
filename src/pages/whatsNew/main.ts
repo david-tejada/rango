@@ -1,5 +1,5 @@
-import { store } from "../../common/storage/storage";
+import { store } from "../../common/storage/store";
 
 (async () => {
-	await store("showWhatsNewPageNextStartup", false);
+	await store.remove("showWhatsNewPageNextStartup");
 })();
