@@ -704,7 +704,7 @@ export function addCommandListeners() {
 
 		await settings.withLock("references", async (references) => {
 			for (const hostPattern of hostPatterns) {
-				references.get(hostPattern)?.delete(referenceName);
+				delete references[hostPattern]?.[referenceName];
 			}
 
 			return [references];

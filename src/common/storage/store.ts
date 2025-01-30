@@ -4,7 +4,6 @@ import browser from "webextension-polyfill";
 import { type LabelStack } from "../../typings/LabelStack";
 import { type TabMarkers } from "../../typings/TabMarkers";
 import { settingsSchema, type Settings } from "../settings/settingsSchema";
-import { fromSerializable, toSerializable } from "./serializable";
 
 type LabelStacks = Record<`labelStack:${number}`, LabelStack>;
 
@@ -71,7 +70,7 @@ async function get<T extends keyof Store>(key: T) {
 	}
 
 	const record = await storageArea.get(key);
-	const value = fromSerializable(record[key]) as Store[T] | undefined;
+	const value = record[key] as Store[T] | undefined;
 
 	if (useCache && value !== undefined) cache.set(key, value);
 
@@ -123,7 +122,7 @@ async function set<T extends keyof Store>(key: T, value: Store[T]) {
 	}
 
 	try {
-		await storageArea.set({ [key]: toSerializable(value) });
+		await storageArea.set({ [key]: value });
 	} catch (error) {
 		cache.delete(key);
 		throw error;
@@ -199,7 +198,7 @@ const debouncedFlushStorageUpdates = debounce(async () => {
 		entries.map(async ([key, value]) => {
 			try {
 				await getStorageOptions(key).storageArea.set({
-					[key]: toSerializable(value),
+					[key]: value,
 				});
 			} catch (error) {
 				// The only circumstance I can think this will fail is if we exceed the

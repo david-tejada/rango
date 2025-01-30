@@ -277,7 +277,7 @@ export function addMessageListeners() {
 
 	onMessage("assertActiveReferenceInFrame", async ({ referenceName }) => {
 		const { hostReferences } = await getReferences();
-		const selector = hostReferences.get(referenceName);
+		const selector = hostReferences[referenceName];
 		if (!selector) throw new Error("No selector found");
 
 		const element = await getElementFromSelector(selector);

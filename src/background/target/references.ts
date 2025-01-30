@@ -16,7 +16,7 @@ export async function assertReferenceInCurrentTab(referenceName: string) {
 
 	const found = frames
 		.map(({ url }) => getHostPattern(url))
-		.some((hostPattern) => references.get(hostPattern)?.has(referenceName));
+		.some((hostPattern) => references[hostPattern]?.[referenceName]);
 
 	if (!found) {
 		throw new Error(`Reference "${referenceName}" not found in current tab.`);

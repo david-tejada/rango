@@ -42,9 +42,9 @@ export async function updateHintsToggle(level: ToggleLevel, enable?: boolean) {
 		const hintsToggleTabs = await settings.get("hintsToggleTabs");
 
 		if (enable === undefined) {
-			hintsToggleTabs.delete(currentTab.id!);
+			delete hintsToggleTabs[currentTab.id!];
 		} else {
-			hintsToggleTabs.set(currentTab.id!, enable);
+			hintsToggleTabs[currentTab.id!] = enable;
 		}
 
 		await settings.set("hintsToggleTabs", hintsToggleTabs);
@@ -55,9 +55,9 @@ export async function updateHintsToggle(level: ToggleLevel, enable?: boolean) {
 		const hintsToggleHosts = await settings.get("hintsToggleHosts");
 
 		if (enable === undefined) {
-			hintsToggleHosts.delete(host);
+			delete hintsToggleHosts[host];
 		} else {
-			hintsToggleHosts.set(host, enable);
+			hintsToggleHosts[host] = enable;
 		}
 
 		await settings.set("hintsToggleHosts", hintsToggleHosts);
@@ -66,11 +66,12 @@ export async function updateHintsToggle(level: ToggleLevel, enable?: boolean) {
 
 	if (level === "page") {
 		const hintsTogglePaths = await settings.get("hintsTogglePaths");
+		const path = origin + pathname;
 
 		if (enable === undefined) {
-			hintsTogglePaths.delete(origin + pathname);
+			delete hintsTogglePaths[path];
 		} else {
-			hintsTogglePaths.set(origin + pathname, enable);
+			hintsTogglePaths[path] = enable;
 		}
 
 		await settings.set("hintsTogglePaths", hintsTogglePaths);

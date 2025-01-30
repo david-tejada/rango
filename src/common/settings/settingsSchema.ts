@@ -63,9 +63,9 @@ export const settingsSchema = z.object({
 
 	// Toggle
 	hintsToggleGlobal: z.boolean().default(true),
-	hintsToggleHosts: z.map(z.string(), z.boolean()).default(new Map()),
-	hintsTogglePaths: z.map(z.string(), z.boolean()).default(new Map()),
-	hintsToggleTabs: z.map(z.number(), z.boolean()).default(new Map()),
+	hintsToggleHosts: z.record(z.string(), z.boolean()).default({}),
+	hintsTogglePaths: z.record(z.string(), z.boolean()).default({}),
+	hintsToggleTabs: z.record(z.number(), z.boolean()).default({}),
 
 	// Always compute hintables
 	alwaysComputeHintables: z.boolean().default(false),
@@ -97,11 +97,11 @@ export const settingsSchema = z.object({
 	keysToExclude: z.array(z.tuple([z.string(), z.string()])).default([]),
 	customSelectors: z.array(zCustomSelector).default([]),
 	customScrollPositions: z
-		.map(z.string(), z.map(z.string(), z.number()))
-		.default(new Map()),
+		.record(z.string(), z.record(z.string(), z.number()))
+		.default({}),
 	references: z
-		.map(z.string(), z.map(z.string(), z.string()))
-		.default(new Map()),
+		.record(z.string(), z.record(z.string(), z.string()))
+		.default({}),
 	showWhatsNewPageOnUpdate: z.boolean().default(true),
 	newTabPosition: z
 		.enum(["relatedAfterCurrent", "afterCurrent", "atEnd"])

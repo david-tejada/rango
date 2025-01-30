@@ -120,7 +120,9 @@ function parseLegacySetting(value: string) {
 			value.dataType === "Map" &&
 			value.value
 		) {
-			return new Map(value.value as Iterable<[unknown, unknown]>);
+			return Object.fromEntries(
+				value.value as Iterable<[unknown, unknown]>
+			) as Record<string, unknown>;
 		}
 
 		return value as unknown;

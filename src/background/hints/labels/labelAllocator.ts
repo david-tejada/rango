@@ -18,7 +18,7 @@ export async function claimLabels(
 
 			const labelsClaimed = stack.free.splice(-amount, amount);
 			for (const label of labelsClaimed) {
-				stack.assigned.set(label, frameId);
+				stack.assigned[label] = frameId;
 			}
 
 			return [stack, labelsClaimed];
@@ -56,7 +56,7 @@ export async function reclaimLabelsFromOtherFrames(
 		}
 
 		for (const label of reclaimed) {
-			stack.assigned.set(label, frameId);
+			stack.assigned[label] = frameId;
 		}
 
 		return [stack, reclaimed];
@@ -74,7 +74,7 @@ export async function storeLabelsInFrame(
 		stack.free = stack.free.filter((value) => !labels.includes(value));
 
 		for (const label of labels) {
-			stack.assigned.set(label, frameId);
+			stack.assigned[label] = frameId;
 		}
 
 		return [stack];
@@ -84,12 +84,12 @@ export async function storeLabelsInFrame(
 export async function releaseLabels(tabId: number, labels: string[]) {
 	return store.withLock(`labelStack:${tabId}`, async (stack) => {
 		// We make sure the labels to release are actually assigned
-		const filteredLabels = labels.filter((label) => stack.assigned.has(label));
+		const filteredLabels = labels.filter((label) => label in stack.assigned);
 		stack.free.push(...filteredLabels);
 		stack.free.sort((a, b) => b.length - a.length || b.localeCompare(a));
 
 		for (const label of filteredLabels) {
-			stack.assigned.delete(label);
+			delete stack.assigned[label];
 		}
 
 		return [stack];

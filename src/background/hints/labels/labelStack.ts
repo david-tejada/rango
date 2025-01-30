@@ -50,7 +50,7 @@ export async function createStack(tabId: number): Promise<LabelStack> {
 
 	return {
 		free: filteredLabels,
-		assigned: new Map(),
+		assigned: {},
 	};
 }
 
