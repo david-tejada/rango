@@ -2,46 +2,79 @@ import { Mutex } from "async-mutex";
 import { debounce } from "lodash";
 import browser from "webextension-polyfill";
 import { type LabelStack } from "../../typings/LabelStack";
-import { type StorageSchema } from "../../typings/StorageSchema";
 import { type TabMarkers } from "../../typings/TabMarkers";
-import { defaultSettings } from "../settings/settings";
+import { zSettings, type Settings } from "../settings/zSettings";
 import { fromSerializable, toSerializable } from "./serializable";
 
-type Store = {
-	[K in keyof StorageSchema]: StorageSchema[K];
-} & {
+type LabelStacks = Record<`labelStack:${number}`, LabelStack>;
+
+type ExtensionState = LabelStacks & {
 	tabsByRecency: number[];
 	tabMarkers: TabMarkers;
 	showWhatsNewPageNextStartup: boolean;
-} & Record<`labelStack:${number}`, LabelStack>;
+};
 
+export type Store = Settings & ExtensionState;
+
+const settingKeys = new Set(zSettings.keyof().options);
+const localStorageSettings = new Set<keyof Settings>(["hintsToggleTabs"]);
+
+/**
+ * A map of cached values in the store when the key uses the `useCache` option.
+ */
 const cache = new Map<keyof Store, Store[keyof Store]>();
-const pendingStorageChanges = new Map<keyof Store, Store[keyof Store]>();
+
+/**
+ * A map of deferred storage updates to be flushed to storage when the key uses
+ * the `useCache` option.
+ */
+const deferredStorageUpdates = new Map<keyof Store, Store[keyof Store]>();
+
+/**
+ * The debounce wait time to flush deferred updates to storage when the key uses
+ * the `useCache` option.
+ */
+const debounceWait = 1000;
+
+/**
+ * A map of mutexes to lock each key in the store when using `withLock`.
+ */
 const mutexes = new Map<keyof Store, Mutex>();
-const pendingDefinedPromises = new Map<
+
+/**
+ * The timeout to wait for a value to be set if it is undefined when using
+ * `waitFor`.
+ */
+const waitForTimeout = 5000;
+
+/**
+ * A map of resolvers and timers for operations that are waiting for a value to
+ * be set when using `waitFor`.
+ */
+const waitForResolvers = new Map<
 	keyof Store,
 	{ resolve: (value: any) => void; timer: NodeJS.Timeout }
 >();
 
 /**
- * The debounce wait time to consolidate changes to local or sync storage. It
- * prevents continually having to transform objects to make them serializable.
+ * Get a store value for a key.
+ *
+ * @param key - The key to get the value for
+ *
+ * @returns The value for the key, or undefined if it doesn't exist
  */
-const debounceWait = 1000;
+async function get<T extends keyof Store>(key: T) {
+	const { storageArea, useCache } = getStorageOptions(key);
 
-/**
- * Get a value from the appropriate storage area. It handles conversion from
- * serializable objects to Maps.
- */
-async function get<T extends keyof Store>(
-	key: T
-): Promise<Store[T] | undefined> {
-	if (cache.has(key)) return cache.get(key) as Store[T];
+	if (useCache && cache.has(key)) {
+		return cache.get(key) as Store[T];
+	}
 
-	const record = await getStorageArea(key).get(key);
-	const value = fromSerializable(record[key]) as Store[T];
+	const record = await storageArea.get(key);
+	const value = fromSerializable(record[key]) as Store[T] | undefined;
 
-	cache.set(key, value);
+	if (useCache && value !== undefined) cache.set(key, value);
+
 	return value;
 }
 
@@ -49,63 +82,67 @@ async function get<T extends keyof Store>(
  * Retrieves a store value, waiting for it to be set if it is undefined.
  *
  * @param key - The store key to wait for
- * @param timeout - Optional timeout in milliseconds (defaults to 5000)
+ *
  * @returns The value once it becomes available
  * @throws Error if the timeout is reached before the value is available
  */
-async function waitFor<T extends keyof Store>(
-	key: T,
-	timeout = 5000
-): Promise<Store[T]> {
+async function waitFor<T extends keyof Store>(key: T): Promise<Store[T]> {
 	const value = await get(key);
 	if (value !== undefined) return value;
 
 	return new Promise((resolve, reject) => {
 		const timer = setTimeout(() => {
-			pendingDefinedPromises.delete(key);
+			waitForResolvers.delete(key);
 			reject(new Error(`Timeout waiting for "${key}" to be defined`));
-		}, timeout);
+		}, waitForTimeout);
 
-		pendingDefinedPromises.set(key, { resolve, timer });
+		waitForResolvers.set(key, { resolve, timer });
 	});
 }
 
 /**
- * Set a value for a given key in the appropriate storage area. It handles
- * making Maps serializable.
+ * Set a value for a given key.
+ *
+ * @param key - The key to set the value for
+ * @param value - The value to set
  */
 async function set<T extends keyof Store>(key: T, value: Store[T]) {
-	cache.set(key, value);
+	const { storageArea, useCache } = getStorageOptions(key);
 
-	const pending = pendingDefinedPromises.get(key);
-	if (pending) {
-		clearTimeout(pending.timer);
-		pendingDefinedPromises.delete(key);
-		pending.resolve(value);
+	const resolver = waitForResolvers.get(key);
+	if (resolver) {
+		clearTimeout(resolver.timer);
+		waitForResolvers.delete(key);
+		resolver.resolve(value);
 	}
 
-	// Settings need to be stored right away because we have storage change
-	// listeners that need to be triggered immediately.
-	if (isSetting(key)) {
-		try {
-			await getStorageArea(key).set({ [key]: toSerializable(value) });
-		} catch (error) {
-			cache.delete(key);
-			throw error;
-		}
+	if (useCache) {
+		cache.set(key, value);
+		storeWithDebounce(key, value);
+		return;
 	}
 
-	storeWithDebounce(key, value);
+	try {
+		await storageArea.set({ [key]: toSerializable(value) });
+	} catch (error) {
+		cache.delete(key);
+		throw error;
+	}
 }
 
+/**
+ * Remove a value from the store.
+ *
+ * @param keys - The key or keys to remove
+ */
 async function remove<T extends keyof Store>(keys: T | T[]) {
 	const keysArray = Array.isArray(keys) ? keys : [keys];
 
 	await Promise.all(
 		keysArray.map(async (key) => {
 			cache.delete(key);
-			pendingStorageChanges.delete(key);
-			await getStorageArea(key).remove(key);
+			deferredStorageUpdates.delete(key);
+			await getStorageOptions(key).storageArea.remove(key);
 		})
 	);
 }
@@ -116,9 +153,12 @@ async function remove<T extends keyof Store>(keys: T | T[]) {
  * @param key - The storage key to lock
  * @param callback - Function to execute with the locked value. Must return a
  * tuple of [updatedValue, result?]
- * @param initializer - Optional function to initialize the value if it doesn't exist
+ * @param initializer - Optional function to initialize the value if it
+ * doesn't exist
+ *
  * @returns The optional result from the callback, or undefined
- * @throws Error if no value exists for the given key and no initializer is provided
+ * @throws Error if no value exists for the given key and no initializer is
+ * provided
  */
 async function withLock<T extends keyof Store, U = void>(
 	key: T,
@@ -151,14 +191,16 @@ async function withLock<T extends keyof Store, U = void>(
 	}
 }
 
-const debouncedFlushStorageChanges = debounce(async () => {
-	const entries = [...pendingStorageChanges.entries()];
-	pendingStorageChanges.clear();
+const debouncedFlushStorageUpdates = debounce(async () => {
+	const entries = [...deferredStorageUpdates.entries()];
+	deferredStorageUpdates.clear();
 
 	await Promise.allSettled(
 		entries.map(async ([key, value]) => {
 			try {
-				await getStorageArea(key).set({ [key]: toSerializable(value) });
+				await getStorageOptions(key).storageArea.set({
+					[key]: toSerializable(value),
+				});
 			} catch (error) {
 				// The only circumstance I can think this will fail is if we exceed the
 				// 5MB local storage limit (settings are stored right away in sync
@@ -166,8 +208,8 @@ const debouncedFlushStorageChanges = debounce(async () => {
 				// it's more graceful to keep the value in the cache and retry later
 				// when space might have been freed.
 				console.error(`Failed to store "${key}"`, error);
-				if (!pendingStorageChanges.has(key)) {
-					pendingStorageChanges.set(key, value);
+				if (!deferredStorageUpdates.has(key)) {
+					deferredStorageUpdates.set(key, value);
 				}
 			}
 		})
@@ -175,16 +217,8 @@ const debouncedFlushStorageChanges = debounce(async () => {
 }, debounceWait);
 
 function storeWithDebounce<T extends keyof Store>(key: T, value: Store[T]) {
-	pendingStorageChanges.set(key, value);
-	void debouncedFlushStorageChanges();
-}
-
-function getStorageArea(key: keyof Store) {
-	return isSetting(key) ? browser.storage.sync : browser.storage.local;
-}
-
-function isSetting(key: keyof Store) {
-	return key in defaultSettings;
+	deferredStorageUpdates.set(key, value);
+	void debouncedFlushStorageUpdates();
 }
 
 function getMutex(key: keyof Store) {
@@ -194,6 +228,20 @@ function getMutex(key: keyof Store) {
 	mutexes.set(key, mutex);
 
 	return mutex;
+}
+
+function getStorageOptions(key: keyof Store) {
+	const isSetting = settingKeys.has(key as keyof Settings);
+	const isLocalSetting =
+		isSetting && localStorageSettings.has(key as keyof Settings);
+
+	return {
+		storageArea:
+			isSetting && !isLocalSetting
+				? browser.storage.sync
+				: browser.storage.local,
+		useCache: !isSetting,
+	};
 }
 
 export const store = { get, set, remove, waitFor, withLock };

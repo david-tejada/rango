@@ -1,5 +1,5 @@
 import { getHostPattern } from "../../common/getHostPattern";
-import { retrieve } from "../../common/storage/storage";
+import { settings } from "../../common/settings/settingsNew";
 import { getAllFrames } from "../utils/getAllFrames";
 
 export async function assertReferencesInCurrentTab(referenceNames: string[]) {
@@ -12,7 +12,7 @@ export async function assertReferencesInCurrentTab(referenceNames: string[]) {
 
 export async function assertReferenceInCurrentTab(referenceName: string) {
 	const frames = await getAllFrames();
-	const references = await retrieve("references");
+	const references = await settings.get("references");
 
 	const found = frames
 		.map(({ url }) => getHostPattern(url))

@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { getHostPattern } from "../common/getHostPattern";
-import { retrieve, store as store_ } from "../common/storage/storage";
+import { settings } from "../common/settings/settingsNew";
 import { store } from "../common/storage/store";
 import { urls } from "../common/urls";
 import { addCommandListeners } from "./commands/commandListeners";
@@ -150,7 +150,7 @@ browser.runtime.onStartup.addListener(async () => {
 	await store.remove(["tabsByRecency"]);
 	await initializeAndReconcileTabMarkers();
 	await setBrowserActionIcon();
-	await store_("hintsToggleTabs", new Map());
+	await settings.remove("hintsToggleTabs");
 	// In Safari we need to create the menus every time the browser starts.
 	if (isSafari()) await createContextMenus();
 
@@ -239,7 +239,7 @@ async function resetBookmarkTitle(
 // CONTEXT MENUS
 // =============================================================================
 async function createContextMenus() {
-	const keyboardClicking = await retrieve("keyboardClicking");
+	const keyboardClicking = await settings.get("keyboardClicking");
 
 	const contexts: browser.Menus.ContextType[] = browser.browserAction
 		? ["browser_action"]
@@ -300,7 +300,7 @@ async function contextMenusOnClicked({
 	}
 
 	if (menuItemId === "add-keys-to-exclude") {
-		const keysToExclude = await retrieve("keysToExclude");
+		const keysToExclude = await settings.get("keysToExclude");
 		const tab = await getRequiredCurrentTab();
 		const hostPattern = tab.url && getHostPattern(tab.url);
 		const keysToExcludeForHost = keysToExclude.find(
@@ -309,7 +309,7 @@ async function contextMenusOnClicked({
 
 		if (!keysToExcludeForHost && hostPattern) {
 			keysToExclude.push([hostPattern, ""]);
-			await store_("keysToExclude", keysToExclude);
+			await settings.set("keysToExclude", keysToExclude);
 		}
 
 		await browser.runtime.openOptionsPage();

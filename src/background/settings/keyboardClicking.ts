@@ -1,17 +1,17 @@
 import browser from "webextension-polyfill";
-import { retrieve, store } from "../../common/storage/storage";
+import { settings } from "../../common/settings/settingsNew";
 import { setBrowserActionIcon } from "../utils/browserAction";
 
 export async function toggleKeyboardClicking() {
-	const keyboardClickingOld = await retrieve("keyboardClicking");
-	await store("keyboardClicking", !keyboardClickingOld);
+	const keyboardClickingOld = await settings.get("keyboardClicking");
+	await settings.set("keyboardClicking", !keyboardClickingOld);
 }
 
 browser.storage.onChanged.addListener(async (changes) => {
 	if ("keyboardClicking" in changes) {
 		await setBrowserActionIcon();
 
-		const keyboardClicking = await retrieve("keyboardClicking");
+		const keyboardClicking = await settings.get("keyboardClicking");
 
 		try {
 			await browser.contextMenus.update("keyboard-clicking", {

@@ -1,12 +1,12 @@
-import { retrieve, store } from "../../common/storage/storage";
+import { settings } from "../../common/settings/settingsNew";
 import { notify } from "../utils/notify";
 
 export async function toggleTabMarkers() {
-	const includeTabMarkers = await retrieve("includeTabMarkers");
+	const includeTabMarkers = await settings.get("includeTabMarkers");
 	const newIncludeTabMarkers = !includeTabMarkers;
 	const newStatus = newIncludeTabMarkers ? "enabled" : "disabled";
 
-	await store("includeTabMarkers", newIncludeTabMarkers);
+	await settings.set("includeTabMarkers", newIncludeTabMarkers);
 
 	await notify[newStatus](`Tab markers ${newStatus}.`, "tabMarkers");
 }

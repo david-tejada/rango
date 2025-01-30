@@ -1,5 +1,5 @@
 import Fuse from "fuse.js";
-import { store } from "../../common/storage/storage";
+import { settings } from "../../common/settings/settingsNew";
 import { notify } from "../feedback/notify";
 import { getSetting } from "../settings/settingsManager";
 import { getMainScrollable, getScrollBehavior } from "./scroll";
@@ -25,7 +25,7 @@ export async function storeScrollPosition(name: string) {
 		location.origin + location.pathname,
 		scrollPositionsForCurrentPage
 	);
-	await store("customScrollPositions", scrollPositions);
+	await settings.set("customScrollPositions", scrollPositions);
 
 	await notify.success(`Scroll position "${name}" saved`);
 }

@@ -1,22 +1,24 @@
-import { retrieve, store } from "../../common/storage/storage";
+import { settings } from "../../common/settings/settingsNew";
 import { type ToggleLevel } from "../../typings/Action";
 import { sendMessage } from "../messaging/sendMessage";
 import { getRequiredCurrentTab } from "../tabs/getCurrentTab";
 
 export async function toggleHintsGlobal() {
-	const hintsToggleGlobal = await retrieve("hintsToggleGlobal");
+	const hintsToggleGlobal = await settings.get("hintsToggleGlobal");
 	const newStatus = !hintsToggleGlobal;
-	await store("hintsToggleGlobal", newStatus);
+	await settings.set("hintsToggleGlobal", newStatus);
 	return newStatus;
 }
 
 export async function updateHintsToggle(level: ToggleLevel, enable?: boolean) {
 	if (level === "everywhere") {
 		if (enable === undefined) {
-			await store("hintsToggleGlobal", true);
-			await store("hintsToggleTabs", new Map());
-			await store("hintsToggleHosts", new Map());
-			await store("hintsTogglePaths", new Map());
+			await settings.remove([
+				"hintsToggleGlobal",
+				"hintsToggleTabs",
+				"hintsToggleHosts",
+				"hintsTogglePaths",
+			]);
 			await sendMessage("updateNavigationToggle", { enable });
 		}
 
@@ -29,7 +31,7 @@ export async function updateHintsToggle(level: ToggleLevel, enable?: boolean) {
 	}
 
 	if (level === "global") {
-		await store("hintsToggleGlobal", enable ?? true);
+		await settings.set("hintsToggleGlobal", enable ?? true);
 		return;
 	}
 
@@ -37,7 +39,7 @@ export async function updateHintsToggle(level: ToggleLevel, enable?: boolean) {
 	const { host, origin, pathname } = new URL(currentTab.url!);
 
 	if (level === "tab") {
-		const hintsToggleTabs = await retrieve("hintsToggleTabs");
+		const hintsToggleTabs = await settings.get("hintsToggleTabs");
 
 		if (enable === undefined) {
 			hintsToggleTabs.delete(currentTab.id!);
@@ -45,12 +47,12 @@ export async function updateHintsToggle(level: ToggleLevel, enable?: boolean) {
 			hintsToggleTabs.set(currentTab.id!, enable);
 		}
 
-		await store("hintsToggleTabs", hintsToggleTabs);
+		await settings.set("hintsToggleTabs", hintsToggleTabs);
 		return;
 	}
 
 	if (level === "host") {
-		const hintsToggleHosts = await retrieve("hintsToggleHosts");
+		const hintsToggleHosts = await settings.get("hintsToggleHosts");
 
 		if (enable === undefined) {
 			hintsToggleHosts.delete(host);
@@ -58,12 +60,12 @@ export async function updateHintsToggle(level: ToggleLevel, enable?: boolean) {
 			hintsToggleHosts.set(host, enable);
 		}
 
-		await store("hintsToggleHosts", hintsToggleHosts);
+		await settings.set("hintsToggleHosts", hintsToggleHosts);
 		return;
 	}
 
 	if (level === "page") {
-		const hintsTogglePaths = await retrieve("hintsTogglePaths");
+		const hintsTogglePaths = await settings.get("hintsTogglePaths");
 
 		if (enable === undefined) {
 			hintsTogglePaths.delete(origin + pathname);
@@ -71,6 +73,6 @@ export async function updateHintsToggle(level: ToggleLevel, enable?: boolean) {
 			hintsTogglePaths.set(origin + pathname, enable);
 		}
 
-		await store("hintsTogglePaths", hintsTogglePaths);
+		await settings.set("hintsTogglePaths", hintsTogglePaths);
 	}
 }

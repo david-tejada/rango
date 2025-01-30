@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { getHostPattern } from "../../common/getHostPattern";
-import { retrieve, store } from "../../common/storage/storage";
+import { settings } from "../../common/settings/settingsNew";
 import { isTargetError } from "../../common/target/TargetError";
 import { type TalonAction } from "../../typings/TalonAction";
 import { assertPrimitiveTarget } from "../../typings/Target/Target";
@@ -39,11 +39,9 @@ import {
 import { refreshTabMarkers } from "../tabs/tabMarkers";
 import { assertReferenceInCurrentTab } from "../target/references";
 import { getTabIdsFromTarget } from "../target/tabMarkers";
-import { filterArrayInPlace } from "../utils/filterArrayInPlace";
 import { getAllFrames } from "../utils/getAllFrames";
 import { notify, notifyTogglesStatus } from "../utils/notify";
 import { promiseWrap } from "../utils/promises";
-import { withLockedStorageAccess } from "../utils/withLockedStorageValue";
 import { onCommand } from "./commandHandler";
 import { discardNextResponse } from "./requestAndResponse";
 import { tryToFocusDocument } from "./tryToFocusDocument";
@@ -299,7 +297,7 @@ export function addCommandListeners() {
 		// Handle the possibility that the user might have intended to type those
 		// characters.
 		if (target.type === "primitive") {
-			const directClickWithNoFocusedDocument = await retrieve(
+			const directClickWithNoFocusedDocument = await settings.get(
 				"directClickWithNoFocusedDocument"
 			);
 
@@ -313,7 +311,9 @@ export function addCommandListeners() {
 				}
 			}
 
-			const directClickWhenEditing = await retrieve("directClickWhenEditing");
+			const directClickWhenEditing = await settings.get(
+				"directClickWhenEditing"
+			);
 
 			if (!directClickWhenEditing) {
 				const { results } = await sendMessageToAllFrames(
@@ -553,12 +553,10 @@ export function addCommandListeners() {
 			throw new Error("No selectors staged");
 		}
 
-		await withLockedStorageAccess(
-			"customSelectors",
-			async (customSelectors) => {
-				customSelectors.push(...customSelectorsToSave);
-			}
-		);
+		await settings.withLock("customSelectors", async (customSelectors) => {
+			customSelectors.push(...customSelectorsToSave);
+			return [customSelectors];
+		});
 
 		await sendMessageToAllFrames("refreshCustomHints");
 		await notify.success("Custom selectors saved");
@@ -603,17 +601,14 @@ export function addCommandListeners() {
 		const allFrames = await getAllFrames();
 		const framesUrl = allFrames.map((frame) => frame.url);
 
-		await withLockedStorageAccess(
-			"customSelectors",
-			async (customSelectors) => {
-				// We need to filter the array in place because assigning would just
-				// modify the argument and the selectors wouldn't be saved.
-				filterArrayInPlace(customSelectors, ({ pattern }) => {
-					const patternRe = new RegExp(pattern);
-					return !framesUrl.some((url) => patternRe.test(url));
-				});
-			}
-		);
+		await settings.withLock("customSelectors", async (customSelectors) => {
+			const updatedCustomSelectors = customSelectors.filter(({ pattern }) => {
+				const patternRe = new RegExp(pattern);
+				return !framesUrl.some((url) => patternRe.test(url));
+			});
+
+			return [updatedCustomSelectors];
+		});
 
 		await sendMessageToAllFrames("refreshCustomHints");
 
@@ -660,13 +655,13 @@ export function addCommandListeners() {
 	// SETTINGS
 	// ===========================================================================
 	onCommand("decreaseHintSize", async () => {
-		const hintFontSize = await retrieve("hintFontSize");
-		await store("hintFontSize", hintFontSize - 1);
+		const hintFontSize = await settings.get("hintFontSize");
+		await settings.set("hintFontSize", hintFontSize - 1);
 	});
 
 	onCommand("increaseHintSize", async () => {
-		const hintFontSize = await retrieve("hintFontSize");
-		await store("hintFontSize", hintFontSize + 1);
+		const hintFontSize = await settings.get("hintFontSize");
+		await settings.set("hintFontSize", hintFontSize + 1);
 	});
 
 	onCommand("openSettingsPage", async () => {
@@ -707,10 +702,12 @@ export function addCommandListeners() {
 		const allFrames = await getAllFrames();
 		const hostPatterns = allFrames.map((frame) => getHostPattern(frame.url));
 
-		await withLockedStorageAccess("references", async (references) => {
+		await settings.withLock("references", async (references) => {
 			for (const hostPattern of hostPatterns) {
 				references.get(hostPattern)?.delete(referenceName);
 			}
+
+			return [references];
 		});
 
 		await notify.success(`Removed reference "${referenceName}"`);

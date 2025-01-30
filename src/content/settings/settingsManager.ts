@@ -1,8 +1,8 @@
 import Emittery from "emittery";
 import browser from "webextension-polyfill";
 import { hasMatchingKeys } from "../../common/hasMatchingKeys";
-import { defaultSettings, type Settings } from "../../common/settings/settings";
-import { retrieve, retrieveSettings } from "../../common/storage/storage";
+import { settings } from "../../common/settings/settingsNew";
+import { type Settings } from "../../common/settings/zSettings";
 import { assertDefined } from "../../typings/TypingUtils";
 
 // https://github.com/microsoft/TypeScript/issues/51572#issuecomment-1319153323
@@ -13,9 +13,10 @@ const entries = Object.entries as <T>(
 const emitter = new Emittery<Settings>();
 
 let settingsCache: Settings | undefined;
+const defaultSettings = settings.defaults();
 
 export async function initSettingsManager() {
-	settingsCache = await retrieveSettings();
+	settingsCache = await settings.getAll();
 	browser.storage.onChanged.addListener(async (changes) => {
 		// Most of the time this event fires because we are storing or retrieving
 		// hint stacks, so we can directly ignore it here to gain a bit of
@@ -75,7 +76,7 @@ async function handleSettingChange(
 		entries(changes).map(async ([key, change]) => {
 			if (change && change.oldValue !== change.newValue) {
 				// We need to use retrieve here to get the deserialized value.
-				const newValue = await retrieve(key);
+				const newValue = await settings.get(key);
 				cacheSetting(key, newValue);
 				await emitter.emit(key, newValue);
 			}

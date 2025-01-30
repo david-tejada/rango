@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { letterLabels, numberLabels } from "../../../common/labels";
-import { retrieve } from "../../../common/storage/storage";
+import { settings } from "../../../common/settings/settingsNew";
 import { store } from "../../../common/storage/store";
 import { type LabelStack } from "../../../typings/LabelStack";
 
@@ -16,9 +16,11 @@ export async function getStack(tabId: number) {
 }
 
 export async function createStack(tabId: number): Promise<LabelStack> {
-	const includeSingleLetterHints = await retrieve("includeSingleLetterHints");
-	const keyboardClicking = await retrieve("keyboardClicking");
-	const useNumberHints = await retrieve("useNumberHints");
+	const includeSingleLetterHints = await settings.get(
+		"includeSingleLetterHints"
+	);
+	const keyboardClicking = await settings.get("keyboardClicking");
+	const useNumberHints = await settings.get("useNumberHints");
 
 	// To make all hints reachable via keyboard clicking, we exclude single-letter
 	// hints when keyboard clicking is active.
@@ -33,7 +35,7 @@ export async function createStack(tabId: number): Promise<LabelStack> {
 	// an excluded key for the current url.
 	const tab = await browser.tabs.get(tabId);
 	const keysToExclude = await getKeysToExclude(tab.url!);
-	const labelsToExclude = await retrieve("hintsToExclude");
+	const labelsToExclude = await settings.get("hintsToExclude");
 
 	const filteredLabels = possibleLabels.filter(
 		(label) =>
@@ -60,10 +62,10 @@ export async function removeStack(tabId: number) {
  * Get a set of keys to exclude for a given url according to the user settings.
  */
 async function getKeysToExclude(url: string) {
-	const keyboardClicking = await retrieve("keyboardClicking");
+	const keyboardClicking = await settings.get("keyboardClicking");
 	if (!keyboardClicking) return new Set<string>();
 
-	const keysToExclude = await retrieve("keysToExclude");
+	const keysToExclude = await settings.get("keysToExclude");
 
 	// Get all matching patterns and map to their keys, then join with commas
 	const allKeysToExclude = keysToExclude

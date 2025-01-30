@@ -1,10 +1,7 @@
 import { z } from "zod";
-import {
-	type CustomSelector,
-	type StorageSchema,
-} from "../../typings/StorageSchema";
 import { isValidRegExp } from "../isValidRegExp";
 import { isValidSelector } from "../isValidSelector";
+import { type CustomSelector, type Settings } from "./zSettings";
 
 type CustomsSelectorsLegacyEntry = [
 	string,
@@ -86,14 +83,14 @@ export function upgradeCustomSelectors(value: unknown) {
  * Perform some transformations to certain settings, like removing invalid
  * entries or sorting. Otherwise return the same value untouched.
  */
-export function prepareSettingForStoring<T extends keyof StorageSchema>(
+export function prepareSettingForStoring<T extends keyof Settings>(
 	key: T,
-	value: StorageSchema[T]
+	value: Settings[T]
 ) {
 	switch (key) {
 		case "customSelectors": {
 			return (
-				(value as StorageSchema["customSelectors"])
+				(value as Settings["customSelectors"])
 					.filter(
 						({ pattern, selector }) =>
 							isValidRegExp(pattern) && isValidSelector(selector)
@@ -105,14 +102,14 @@ export function prepareSettingForStoring<T extends keyof StorageSchema>(
 						(a, b) =>
 							a.pattern.localeCompare(b.pattern) ||
 							(a.type === "include" ? -1 : 1)
-					) as StorageSchema[T]
+					) as Settings[T]
 			);
 		}
 
 		case "keysToExclude": {
-			return (value as StorageSchema["keysToExclude"]).filter(
+			return (value as Settings["keysToExclude"]).filter(
 				([pattern]) => pattern
-			) as StorageSchema[T];
+			) as Settings[T];
 		}
 
 		default: {

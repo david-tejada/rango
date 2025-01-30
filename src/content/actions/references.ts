@@ -1,6 +1,6 @@
 import { getCssSelector } from "css-selector-generator";
 import { getHostPattern } from "../../common/getHostPattern";
-import { store } from "../../common/storage/storage";
+import { settings } from "../../common/settings/settingsNew";
 import { getActiveElement } from "../dom/utils";
 import { showTooltip } from "../feedback/tooltip/showTooltip";
 import { getSetting } from "../settings/settingsManager";
@@ -22,7 +22,7 @@ export async function saveReference(wrapper: ElementWrapper, name: string) {
 	const { hostPattern, references, hostReferences } = await getReferences();
 	hostReferences.set(name, uniqueSelector);
 	references.set(hostPattern, hostReferences);
-	await store("references", references);
+	await settings.set("references", references);
 
 	showTooltip(wrapper, name);
 }
