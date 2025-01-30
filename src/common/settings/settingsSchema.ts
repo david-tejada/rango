@@ -67,7 +67,8 @@ export const settingsSchema = z.object({
 	hintsToggleGlobal: z.boolean().default(true),
 	hintsToggleHosts: z.record(z.string(), z.boolean()).default({}),
 	hintsTogglePaths: z.record(z.string(), z.boolean()).default({}),
-	hintsToggleTabs: z.record(z.number(), z.boolean()).default({}),
+	// Tab ids are actually numbers but object keys can only be strings
+	hintsToggleTabs: z.record(z.string(), z.boolean()).default({}),
 
 	// Always compute hintables
 	alwaysComputeHintables: z.boolean().default(false),
