@@ -1,5 +1,7 @@
 import Color from "color";
 import { z } from "zod";
+import { isValidRegExp } from "../isValidRegExp";
+import { isValidSelector } from "../isValidSelector";
 
 const zCustomSelector = z.object({
 	pattern: z.string(),
@@ -94,8 +96,28 @@ export const settingsSchema = z.object({
 	hideTabMarkersWithGlobalHintsOff: z.boolean().default(false),
 	uppercaseTabMarkers: z.boolean().default(true),
 	keyboardClicking: z.boolean().default(false),
-	keysToExclude: z.array(z.tuple([z.string(), z.string()])).default([]),
-	customSelectors: z.array(zCustomSelector).default([]),
+	keysToExclude: z
+		.array(z.tuple([z.string(), z.string()]))
+		.default([])
+		.transform((value) => value.filter(([pattern]) => pattern)),
+	customSelectors: z
+		.array(zCustomSelector)
+		.default([])
+		.transform((value) => {
+			return (
+				value
+					.filter(
+						({ pattern, selector }) =>
+							isValidRegExp(pattern) && isValidSelector(selector)
+					)
+					// Sorting for when we display the setting in the settings page
+					.sort(
+						(a, b) =>
+							a.pattern.localeCompare(b.pattern) ||
+							(a.type === "include" ? -1 : 1)
+					)
+			);
+		}),
 	customScrollPositions: z
 		.record(z.string(), z.record(z.string(), z.number()))
 		.default({}),

@@ -20,7 +20,7 @@ async function set<T extends keyof Settings>(key: T, value: Settings[T]) {
 		);
 	}
 
-	await store.set(key, value as Store[T]);
+	await store.set(key, validated.data as Store[T]);
 }
 
 /**
@@ -49,7 +49,11 @@ async function withLock<T extends keyof Settings, U>(
 		key,
 		async (value) => {
 			const [updatedValue, result] = await callback(value);
-			return [updatedValue as Store[T], result];
+
+			const validated = settingsSchema.shape[key].safeParse(updatedValue);
+			if (!validated.success) throw new Error(`Validation error for ${key}`);
+
+			return [validated.data as Store[T], result];
 		},
 		() => settingsSchema.shape[key].parse(undefined) as Store[T]
 	);
