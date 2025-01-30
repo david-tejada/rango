@@ -54,7 +54,7 @@ export async function createStack(tabId: number): Promise<LabelStack> {
 	};
 }
 
-export async function removeStack(tabId: number) {
+async function removeStack(tabId: number) {
 	await store.remove(`labelStack:${tabId}`);
 }
 
