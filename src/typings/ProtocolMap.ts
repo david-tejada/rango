@@ -1,6 +1,6 @@
 import { type Tabs } from "webextension-polyfill";
 import { type NotificationType } from "../common/createNotifier";
-import { type CustomSelector } from "../common/settings/zSettings";
+import { type CustomSelector } from "../common/settings/settingsSchema";
 import { type Direction } from "./Direction";
 import { type LabelStack } from "./LabelStack";
 import { type ElementMark, type Target } from "./Target/Target";

@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { settings } from "../../common/settings/settingsNew";
+import { settings } from "../../common/settings/settings";
 import { setBrowserActionIcon } from "../utils/browserAction";
 
 export async function toggleKeyboardClicking() {

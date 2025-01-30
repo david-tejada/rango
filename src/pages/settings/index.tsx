@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { settings } from "../../common/settings/settingsNew";
+import { settings } from "../../common/settings/settings";
 import { App } from "./App";
 import "./index.css";
 

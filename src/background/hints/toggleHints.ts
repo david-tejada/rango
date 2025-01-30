@@ -1,4 +1,4 @@
-import { settings } from "../../common/settings/settingsNew";
+import { settings } from "../../common/settings/settings";
 import { type ToggleLevel } from "../../typings/Action";
 import { sendMessage } from "../messaging/sendMessage";
 import { getRequiredCurrentTab } from "../tabs/getCurrentTab";

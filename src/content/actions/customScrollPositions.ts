@@ -1,5 +1,5 @@
 import Fuse from "fuse.js";
-import { settings } from "../../common/settings/settingsNew";
+import { settings } from "../../common/settings/settings";
 import { notify } from "../feedback/notify";
 import { getSetting } from "../settings/settingsManager";
 import { getMainScrollable, getScrollBehavior } from "./scroll";

@@ -1,5 +1,5 @@
 import browser from "webextension-polyfill";
-import { settings } from "../../common/settings/settingsNew";
+import { settings } from "../../common/settings/settings";
 import { urls } from "../../common/urls";
 /**
  * `browser.browserAction` for MV2 and `browser.action` for MV3.

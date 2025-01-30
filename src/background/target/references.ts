@@ -1,5 +1,5 @@
 import { getHostPattern } from "../../common/getHostPattern";
-import { settings } from "../../common/settings/settingsNew";
+import { settings } from "../../common/settings/settings";
 import { getAllFrames } from "../utils/getAllFrames";
 
 export async function assertReferencesInCurrentTab(referenceNames: string[]) {

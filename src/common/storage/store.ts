@@ -3,7 +3,7 @@ import { debounce } from "lodash";
 import browser from "webextension-polyfill";
 import { type LabelStack } from "../../typings/LabelStack";
 import { type TabMarkers } from "../../typings/TabMarkers";
-import { zSettings, type Settings } from "../settings/zSettings";
+import { settingsSchema, type Settings } from "../settings/settingsSchema";
 import { fromSerializable, toSerializable } from "./serializable";
 
 type LabelStacks = Record<`labelStack:${number}`, LabelStack>;
@@ -16,7 +16,7 @@ type ExtensionState = LabelStacks & {
 
 export type Store = Settings & ExtensionState;
 
-const settingKeys = new Set(zSettings.keyof().options);
+const settingKeys = new Set(settingsSchema.keyof().options);
 const localStorageSettings = new Set<keyof Settings>(["hintsToggleTabs"]);
 
 /**

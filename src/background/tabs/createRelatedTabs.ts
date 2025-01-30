@@ -1,5 +1,5 @@
 import browser, { type Tabs } from "webextension-polyfill";
-import { settings } from "../../common/settings/settingsNew";
+import { settings } from "../../common/settings/settings";
 import { getRequiredCurrentTabId } from "./getCurrentTab";
 
 /**

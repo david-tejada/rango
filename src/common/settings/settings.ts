@@ -1,10 +1,10 @@
 import { isEqual } from "lodash";
 import { type Store, store } from "../storage/store";
-import { type Settings, zSettings } from "./zSettings";
+import { type Settings, settingsSchema } from "./settingsSchema";
 
 async function get<T extends keyof Settings>(key: T): Promise<Settings[T]> {
 	const value = await store.get(key);
-	const validated = zSettings.shape[key].safeParse(value);
+	const validated = settingsSchema.shape[key].safeParse(value);
 
 	if (validated.success) return validated.data as Settings[T];
 
@@ -12,7 +12,7 @@ async function get<T extends keyof Settings>(key: T): Promise<Settings[T]> {
 }
 
 async function set<T extends keyof Settings>(key: T, value: Settings[T]) {
-	const validated = zSettings.shape[key].safeParse(value);
+	const validated = settingsSchema.shape[key].safeParse(value);
 
 	if (!validated.success) {
 		throw new Error(
@@ -51,22 +51,22 @@ async function withLock<T extends keyof Settings, U>(
 			const [updatedValue, result] = await callback(value);
 			return [updatedValue as Store[T], result];
 		},
-		() => zSettings.shape[key].parse(undefined) as Store[T]
+		() => settingsSchema.shape[key].parse(undefined) as Store[T]
 	);
 }
 
 function isValid<T extends keyof Settings>(key: T, value: Settings[T]) {
-	return zSettings.shape[key].safeParse(value).success;
+	return settingsSchema.shape[key].safeParse(value).success;
 }
 
 /**
  * Get an object containing all default settings.
  */
 function defaults() {
-	const keys = zSettings.keyof().options;
+	const keys = settingsSchema.keyof().options;
 
 	return Object.fromEntries(
-		keys.map((key) => [key, zSettings.shape[key].parse(undefined)])
+		keys.map((key) => [key, settingsSchema.shape[key].parse(undefined)])
 	) as Settings;
 }
 
@@ -74,7 +74,7 @@ function defaults() {
  * Get an object containing all settings.
  */
 async function getAll(): Promise<Settings> {
-	const keys = zSettings.keyof().options;
+	const keys = settingsSchema.keyof().options;
 
 	const entries = await Promise.all(
 		keys.map(async (key) => [key, await get(key)])
@@ -90,11 +90,11 @@ async function handleInvalidSetting<T extends keyof Settings>(
 	if (typeof value !== "string") return resetSettingToDefault(key);
 
 	const legacyValue = parseLegacySetting(value);
-	const revalidated = zSettings.shape[key].safeParse(legacyValue);
+	const revalidated = settingsSchema.shape[key].safeParse(legacyValue);
 
 	if (!revalidated.success) return resetSettingToDefault(key);
 
-	const defaultValue = zSettings.shape[key].parse(undefined);
+	const defaultValue = settingsSchema.shape[key].parse(undefined);
 	const isDefault = isEqual(revalidated.data, defaultValue);
 
 	if (isDefault) {
@@ -109,7 +109,7 @@ async function resetSettingToDefault<T extends keyof Settings>(
 	key: T
 ): Promise<Settings[T]> {
 	await store.remove(key);
-	return zSettings.shape[key].parse(undefined) as Settings[T];
+	return settingsSchema.shape[key].parse(undefined) as Settings[T];
 }
 
 function parseLegacySetting(value: string) {

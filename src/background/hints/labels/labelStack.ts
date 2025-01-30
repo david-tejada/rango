@@ -1,6 +1,6 @@
 import browser from "webextension-polyfill";
 import { letterLabels, numberLabels } from "../../../common/labels";
-import { settings } from "../../../common/settings/settingsNew";
+import { settings } from "../../../common/settings/settings";
 import { store } from "../../../common/storage/store";
 import { type LabelStack } from "../../../typings/LabelStack";
 

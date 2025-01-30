@@ -1,4 +1,4 @@
-import { settings } from "../../common/settings/settingsNew";
+import { settings } from "../../common/settings/settings";
 import { notify } from "../utils/notify";
 
 export async function toggleTabMarkers() {

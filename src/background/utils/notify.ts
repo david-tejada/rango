@@ -3,7 +3,7 @@ import {
 	createNotifier,
 	type NotificationType,
 } from "../../common/createNotifier";
-import { settings } from "../../common/settings/settingsNew";
+import { settings } from "../../common/settings/settings";
 import { urls } from "../../common/urls";
 import { sendMessage } from "../messaging/sendMessage";
 

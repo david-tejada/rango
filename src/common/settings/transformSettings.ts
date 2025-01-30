@@ -1,7 +1,7 @@
 import { z } from "zod";
 import { isValidRegExp } from "../isValidRegExp";
 import { isValidSelector } from "../isValidSelector";
-import { type CustomSelector, type Settings } from "./zSettings";
+import { type CustomSelector, type Settings } from "./settingsSchema";
 
 type CustomsSelectorsLegacyEntry = [
 	string,

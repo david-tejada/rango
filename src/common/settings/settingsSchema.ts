@@ -13,7 +13,7 @@ const zSafeString = z
 	.string()
 	.refine((value) => !(value.startsWith('"') && value.endsWith('"')));
 
-export const zSettings = z.object({
+export const settingsSchema = z.object({
 	// Hint style
 	hintUppercaseLetters: z.boolean().default(false),
 	hintFontFamily: zSafeString.default(
@@ -125,4 +125,4 @@ function isWithinRange(value: number, min: number, max: number) {
 	return value >= min && value <= max;
 }
 
-export type Settings = z.infer<typeof zSettings>;
+export type Settings = z.infer<typeof settingsSchema>;
