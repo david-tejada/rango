@@ -9,6 +9,10 @@ const zCustomSelector = z.object({
 
 export type CustomSelector = z.infer<typeof zCustomSelector>;
 
+/**
+ * Strings used to be serialized so it resulted in a double string like `""`. We
+ * need to make sure we don't accept those values.
+ */
 const zSafeString = z
 	.string()
 	.refine((value) => !(value.startsWith('"') && value.endsWith('"')));
