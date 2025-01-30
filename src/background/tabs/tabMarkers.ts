@@ -7,15 +7,15 @@ import { UnreachableContentScriptError } from "../messaging/UnreachableContentSc
 
 export async function getTabMarker(tabId: number) {
 	const { assigned } = await store.waitFor("tabMarkers");
-	return assigned.get(tabId);
+	return assigned[tabId];
 }
 
 export async function getTabIdForMarker(marker: string) {
 	const { assigned } = await store.waitFor("tabMarkers");
 
-	for (const [tabId, currentMarker] of assigned.entries()) {
-		if (currentMarker === marker) {
-			return tabId;
+	for (const tabId in assigned) {
+		if (assigned[tabId] === marker) {
+			return Number(tabId);
 		}
 	}
 
@@ -83,7 +83,7 @@ export async function refreshTabMarkers() {
 
 			for (const tab of tabWithIds) {
 				const marker = free.pop();
-				if (marker) assigned.set(tab.id, marker);
+				if (marker) assigned[tab.id] = marker;
 			}
 
 			return [tabMarkers];
@@ -139,10 +139,10 @@ async function releaseTabMarker(tabId: number) {
 	return store.withLock("tabMarkers", async (tabMarkers) => {
 		const { free, assigned } = tabMarkers;
 
-		const marker = assigned.get(tabId);
+		const marker = assigned[tabId];
 		if (!marker) return [tabMarkers];
 
-		assigned.delete(tabId);
+		delete assigned[tabId];
 		free.push(marker);
 		free.sort((a, b) => b.length - a.length || b.localeCompare(a));
 
@@ -166,13 +166,13 @@ function assignMarkerToTab(
 	if (preferredMarker && tabMarkers.free.includes(preferredMarker)) {
 		const markerIndex = tabMarkers.free.indexOf(preferredMarker);
 		tabMarkers.free.splice(markerIndex, 1);
-		tabMarkers.assigned.set(tabId, preferredMarker);
+		tabMarkers.assigned[tabId] = preferredMarker;
 		return preferredMarker;
 	}
 
 	const newMarker = tabMarkers.free.pop();
 	if (newMarker) {
-		tabMarkers.assigned.set(tabId, newMarker);
+		tabMarkers.assigned[tabId] = newMarker;
 		return newMarker;
 	}
 
@@ -182,7 +182,7 @@ function assignMarkerToTab(
 function createTabMarkers(): TabMarkers {
 	return {
 		free: [...letterLabels],
-		assigned: new Map(),
+		assigned: {},
 	};
 }
 
