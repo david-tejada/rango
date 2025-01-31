@@ -1,3 +1,4 @@
+import { onDocumentVisible } from "../dom/whenVisible";
 import { getSetting, onSettingChange } from "../settings/settingsManager";
 import { refresh } from "../wrappers/refresh";
 
@@ -71,7 +72,11 @@ export function matchesExtraSelector(target: Element) {
 	return target.matches(extraSelector);
 }
 
-onSettingChange("customSelectors", async () => {
+async function handleCustomSelectorsChange() {
 	updateCustomSelectors();
-	return refresh({ isHintable: true });
+	await refresh({ isHintable: true });
+}
+
+onSettingChange("customSelectors", async () => {
+	onDocumentVisible(handleCustomSelectorsChange);
 });

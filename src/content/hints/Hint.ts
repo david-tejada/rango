@@ -3,7 +3,7 @@ import { debounce } from "lodash";
 import { setStyleProperties } from "../dom/setStyleProperties";
 import { getFirstTextNodeDescendant } from "../dom/textNode";
 import { isEditable } from "../dom/utils";
-import { getAllSettings, getSetting } from "../settings/settingsManager";
+import { getSetting } from "../settings/settingsManager";
 import { getToggles } from "../settings/toggles";
 import { refresh } from "../wrappers/refresh";
 import {
@@ -775,14 +775,12 @@ export class Hint {
 	}
 
 	applyDefaultStyle() {
-		const {
-			hintFontFamily,
-			hintFontSize,
-			hintWeight,
-			hintBorderWidth,
-			hintBorderRadius,
-			hintUppercaseLetters,
-		} = getAllSettings();
+		const hintFontFamily = getSetting("hintFontFamily");
+		const hintFontSize = getSetting("hintFontSize");
+		const hintWeight = getSetting("hintWeight");
+		const hintBorderWidth = getSetting("hintBorderWidth");
+		const hintBorderRadius = getSetting("hintBorderRadius");
+		const hintUppercaseLetters = getSetting("hintUppercaseLetters");
 
 		this.computeColors();
 

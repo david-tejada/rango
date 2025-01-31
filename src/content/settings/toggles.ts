@@ -1,5 +1,5 @@
 import { getTabId } from "../setup/contentScriptContext";
-import { getAllSettings } from "./settingsManager";
+import { getSetting } from "./settingsManager";
 
 let navigationToggle: boolean | undefined;
 
@@ -8,12 +8,10 @@ export function setNavigationToggle(enable: boolean | undefined) {
 }
 
 export function getToggles() {
-	const {
-		hintsToggleGlobal,
-		hintsToggleHosts,
-		hintsTogglePaths,
-		hintsToggleTabs,
-	} = getAllSettings();
+	const hintsToggleGlobal = getSetting("hintsToggleGlobal");
+	const hintsToggleHosts = getSetting("hintsToggleHosts");
+	const hintsTogglePaths = getSetting("hintsTogglePaths");
+	const hintsToggleTabs = getSetting("hintsToggleTabs");
 
 	const tabSwitch = hintsToggleTabs[getTabId()];
 	const hostSwitch = hintsToggleHosts[location.host];

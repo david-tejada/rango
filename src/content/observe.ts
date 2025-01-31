@@ -1,3 +1,4 @@
+import { onDocumentVisible } from "./dom/whenVisible";
 import { getSetting, onSettingChange } from "./settings/settingsManager";
 import { getToggles } from "./settings/toggles";
 import {
@@ -72,5 +73,7 @@ onSettingChange(
 		"hintsToggleTabs",
 		"alwaysComputeHintables",
 	],
-	updateHintsEnabled
+	() => {
+		onDocumentVisible(updateHintsEnabled);
+	}
 );
