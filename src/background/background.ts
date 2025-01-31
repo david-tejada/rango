@@ -136,9 +136,9 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 		}
 	}
 
-	// If this is an update the content scrips either reload (Firefox) or stop
-	// completely (Chrome), either way we need to reset the local storage
-	await store.remove(["tabsByRecency"]);
+	await store.clearTransientData({
+		skip: reason === "update" ? ["tabsByRecency"] : [],
+	});
 
 	await initializeAndReconcileTabMarkers();
 });
@@ -147,10 +147,10 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 // EXTENSION STARTUP
 // =============================================================================
 browser.runtime.onStartup.addListener(async () => {
-	await store.remove(["tabsByRecency"]);
+	await store.clearTransientData();
 	await initializeAndReconcileTabMarkers();
 	await setBrowserActionIcon();
-	await settings.remove("hintsToggleTabs");
+
 	// In Safari we need to create the menus every time the browser starts.
 	if (isSafari()) await createContextMenus();
 

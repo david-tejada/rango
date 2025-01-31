@@ -17,6 +17,9 @@ export type Store = Settings & ExtensionState;
 
 const settingKeys = new Set(settingsSchema.keyof().options);
 const localStorageSettings = new Set<keyof Settings>(["hintsToggleTabs"]);
+const persistentLocalStorageKeys = new Set<keyof ExtensionState>([
+	"showWhatsNewPageNextStartup",
+]);
 
 /**
  * A map of cached values in the store when the key uses the `useCache` option.
@@ -146,6 +149,23 @@ async function remove<T extends keyof Store>(keys: T | T[]) {
 	);
 }
 
+async function clearTransientData(options?: {
+	skip: Array<keyof ExtensionState>;
+}) {
+	const record = await browser.storage.local.get();
+
+	await Promise.all(
+		Object.entries(record).map(async ([key]) => {
+			if (
+				!persistentLocalStorageKeys.has(key as keyof ExtensionState) &&
+				!options?.skip.includes(key as keyof ExtensionState)
+			) {
+				await browser.storage.local.remove(key);
+			}
+		})
+	);
+}
+
 /**
  * Executes a callback with exclusive access to a stored value.
  *
@@ -243,4 +263,11 @@ function getStorageOptions(key: keyof Store) {
 	};
 }
 
-export const store = { get, set, remove, waitFor, withLock };
+export const store = {
+	get,
+	set,
+	remove,
+	waitFor,
+	withLock,
+	clearTransientData,
+};
