@@ -1,6 +1,10 @@
+import Emittery from "emittery";
 import { isEqual } from "lodash";
+import browser from "webextension-polyfill";
 import { type Store, store } from "../storage/store";
 import { type Settings, settingsSchema } from "./settingsSchema";
+
+const emitter = new Emittery<Settings>();
 
 async function get<T extends keyof Settings>(key: T): Promise<Settings[T]> {
 	const value = await store.get(key);
@@ -135,6 +139,35 @@ function parseLegacySetting(value: string) {
 	return JSON.parse(value, reviver) as unknown;
 }
 
+function isSettingKey(key: string): key is keyof Settings {
+	return settingsSchema.keyof().options.includes(key as keyof Settings);
+}
+
+browser.storage.onChanged.addListener(async (changes) => {
+	try {
+		const settingChangeEntries = Object.entries(changes).filter(([key]) =>
+			isSettingKey(key)
+		) as Array<[keyof Settings, browser.Storage.StorageChange]>;
+
+		if (settingChangeEntries.length === 0) return;
+
+		await Promise.all(
+			settingChangeEntries.map(async ([key, change]) => {
+				if (change && change.oldValue !== change.newValue) {
+					const validated = settingsSchema.shape[key].safeParse(
+						change.newValue
+					);
+					if (!validated.success) return;
+
+					await emitter.emit(key, validated.data);
+				}
+			})
+		);
+	} catch (error) {
+		console.error(error);
+	}
+});
+
 export const settings = {
 	get,
 	getAll,
@@ -143,4 +176,6 @@ export const settings = {
 	remove,
 	isValid,
 	defaults,
+	onChange: emitter.on.bind(emitter),
+	onAnyChange: emitter.onAny.bind(emitter),
 };

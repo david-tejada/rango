@@ -1,7 +1,6 @@
 import Color from "color";
-import { useEffect, useState } from "react";
-import browser from "webextension-polyfill";
-import { hasMatchingKeys } from "../../common/hasMatchingKeys";
+import { debounce } from "lodash";
+import { useCallback, useEffect, useState } from "react";
 import { settings } from "../../common/settings/settings";
 import { type Settings } from "../../common/settings/settingsSchema";
 import { Alert } from "./Alert";
@@ -24,7 +23,16 @@ export function SettingsComponent() {
 	const [dirtySettings, setDirtySettings] = useState(defaultSettings);
 	const [loading, setLoading] = useState(true);
 
-	// Using useEffect so it only runs once
+	const debounceUpdateSettings = useCallback(() => {
+		const update = debounce(() => {
+			void settings.getAll().then((settings) => {
+				setStoredSettings(settings);
+				setDirtySettings(settings);
+			});
+		}, 10);
+		update();
+	}, [setStoredSettings, setDirtySettings]);
+
 	useEffect(() => {
 		void settings.getAll().then((settings) => {
 			setStoredSettings(settings);
@@ -32,15 +40,14 @@ export function SettingsComponent() {
 			setLoading(false);
 		});
 
-		browser.storage.onChanged.addListener((changes) => {
-			if (hasMatchingKeys(defaultSettings, changes) && !justSaved) {
-				void settings.getAll().then((settings) => {
-					setStoredSettings(settings);
-					setDirtySettings(settings);
-				});
-			}
+		const unsubscribe = settings.onAnyChange(() => {
+			if (!justSaved) debounceUpdateSettings();
 		});
-	}, []);
+
+		return () => {
+			unsubscribe();
+		};
+	}, [debounceUpdateSettings]);
 
 	const handleChange = <T extends keyof Settings>(
 		key: T,

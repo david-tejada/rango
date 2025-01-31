@@ -1,4 +1,5 @@
 import browser from "webextension-polyfill";
+import { settings } from "../../common/settings/settings";
 import { sendMessage } from "../messaging/sendMessage";
 
 export async function refreshHints() {
@@ -35,19 +36,16 @@ async function refreshHintsInTab(tabId: number) {
 	await Promise.allSettled(sending);
 }
 
-const settingsAffectingLabels = [
-	"keyboardClicking",
-	"includeSingleLetterHints",
-	"useNumberHints",
-	"hintsToExclude",
-	"keysToExclude",
-] as const;
-
-browser.storage.onChanged.addListener(async (changes) => {
-	if (settingsAffectingLabels.some((setting) => setting in changes)) {
-		await refreshHints();
-	}
-});
+settings.onChange(
+	[
+		"keyboardClicking",
+		"includeSingleLetterHints",
+		"useNumberHints",
+		"hintsToExclude",
+		"keysToExclude",
+	],
+	refreshHints
+);
 
 function isTabWithId(tab: { id?: number }): tab is { id: number } {
 	return tab.id !== undefined;
