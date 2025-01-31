@@ -129,7 +129,6 @@ export const settingsSchema = z.object({
 	newTabPosition: z
 		.enum(["relatedAfterCurrent", "afterCurrent", "atEnd"])
 		.default("relatedAfterCurrent"),
-	hasSeenSettingsPage: z.boolean().default(false),
 	directClickWithNoFocusedDocument: z.boolean().default(false),
 	directClickWhenEditing: z.boolean().default(true),
 });

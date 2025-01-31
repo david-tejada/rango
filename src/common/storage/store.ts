@@ -11,6 +11,7 @@ type ExtensionState = LabelStacks & {
 	tabsByRecency: number[];
 	tabMarkers: TabMarkers;
 	showWhatsNewPageNextStartup: boolean;
+	hasSeenSettingsPage: boolean;
 };
 
 export type Store = Settings & ExtensionState;

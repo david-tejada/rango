@@ -1,5 +1,5 @@
 import { createRoot } from "react-dom/client";
-import { settings } from "../../common/settings/settings";
+import { store } from "../../common/storage/store";
 import { App } from "./App";
 import "./index.css";
 
@@ -7,7 +7,7 @@ const container = document.querySelector("#app")!;
 const root = createRoot(container);
 
 (async () => {
-	const hasSeenSettingsPage = await settings.get("hasSeenSettingsPage");
-	root.render(<App hasSeenSettingsPage={hasSeenSettingsPage} />);
-	await settings.set("hasSeenSettingsPage", true);
+	const hasSeenSettingsPage = await store.get("hasSeenSettingsPage");
+	root.render(<App hasSeenSettingsPage={hasSeenSettingsPage ?? false} />);
+	if (!hasSeenSettingsPage) await store.set("hasSeenSettingsPage", true);
 })();
