@@ -3,7 +3,7 @@ import { getHostPattern } from "../../common/getHostPattern";
 import { settings } from "../../common/settings/settings";
 import { getActiveElement } from "../dom/utils";
 import { showTooltip } from "../feedback/tooltip/showTooltip";
-import { getSetting } from "../settings/settingsManager";
+import { settingsSync } from "../settings/settingsSync";
 import {
 	type ElementWrapper,
 	getOrCreateWrapper,
@@ -67,7 +67,7 @@ export async function showReferences() {
 
 export async function getReferences() {
 	const hostPattern = getHostPattern(location.href);
-	const references = getSetting("references");
+	const references = settingsSync.get("references");
 	const hostReferences = references[hostPattern] ?? {};
 
 	return { hostPattern, references, hostReferences };

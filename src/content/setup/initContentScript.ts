@@ -1,7 +1,7 @@
 import { initKeyboardClicking } from "../actions/keyboardClicking";
 import { updateCustomSelectors } from "../hints/selectors";
 import observe from "../observe";
-import { getSetting, initSettingsManager } from "../settings/settingsManager";
+import { settingsSync } from "../settings/settingsSync";
 import { loadContentScriptContext } from "./contentScriptContext";
 import { updateTitleDecorations } from "./decorateTitle";
 import { loadDevtoolsUtils } from "./devtoolsUtils";
@@ -12,9 +12,9 @@ import { loadDevtoolsUtils } from "./devtoolsUtils";
 export async function initContentScript() {
 	loadDevtoolsUtils();
 	await loadContentScriptContext();
-	await initSettingsManager();
+	await settingsSync.initialize();
 	updateCustomSelectors();
 	await updateTitleDecorations();
 	await observe();
-	if (getSetting("keyboardClicking")) initKeyboardClicking();
+	if (settingsSync.get("keyboardClicking")) initKeyboardClicking();
 }

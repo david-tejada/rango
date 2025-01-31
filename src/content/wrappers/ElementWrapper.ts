@@ -17,7 +17,7 @@ import { cacheLabels } from "../hints/labels/labelCache";
 import { cacheLayout, clearLayoutCache } from "../hints/layoutCache";
 import { matchesCustomExclude, matchesCustomInclude } from "../hints/selectors";
 import { sendMessage } from "../messaging/messageHandler";
-import { getSetting } from "../settings/settingsManager";
+import { settingsSync } from "../settings/settingsSync";
 import { BoundedIntersectionObserver } from "./BoundedIntersectionObserver";
 import { refresh } from "./refresh";
 import {
@@ -396,7 +396,7 @@ export class ElementWrapper {
 
 		const options: IntersectionObserverInit = {
 			root,
-			rootMargin: `${getSetting("viewportMargin")}px`,
+			rootMargin: `${settingsSync.get("viewportMargin")}px`,
 			threshold: 0,
 		};
 

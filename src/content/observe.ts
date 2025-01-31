@@ -1,5 +1,5 @@
 import { onDocumentVisible } from "./dom/whenVisible";
-import { getSetting, onSettingChange } from "./settings/settingsManager";
+import { settingsSync } from "./settings/settingsSync";
 import { getToggles } from "./settings/toggles";
 import {
 	addWrappersFrom,
@@ -17,7 +17,7 @@ const config = { attributes: true, childList: true, subtree: true };
 
 export async function updateHintsEnabled() {
 	const newEnabled = getToggles().computed;
-	const alwaysComputeHintables = getSetting("alwaysComputeHintables");
+	const alwaysComputeHintables = settingsSync.get("alwaysComputeHintables");
 
 	// Here we assume that just one change of state takes place. That is, in the
 	// same call to this function, either the hints have been switched or the
@@ -56,7 +56,7 @@ export async function updateHintsEnabled() {
 
 export default async function observe() {
 	enabled = getToggles().computed;
-	if (enabled || getSetting("alwaysComputeHintables")) {
+	if (enabled || settingsSync.get("alwaysComputeHintables")) {
 		// We observe all the initial elements before any mutation
 		if (document.body) addWrappersFrom(document.body);
 
@@ -65,7 +65,7 @@ export default async function observe() {
 	}
 }
 
-onSettingChange(
+settingsSync.onChange(
 	[
 		"hintsToggleGlobal",
 		"hintsToggleHosts",

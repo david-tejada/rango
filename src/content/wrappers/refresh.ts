@@ -1,6 +1,6 @@
 import { debounce } from "lodash";
 import { onDocumentVisible } from "../dom/whenVisible";
-import { onSettingChange } from "../settings/settingsManager";
+import { settingsSync } from "../settings/settingsSync";
 import { getAllWrappers, getHintedWrappers } from "./wrappers";
 
 type Options = {
@@ -156,7 +156,7 @@ async function handleHintStyleChange() {
 	await refresh({ hintsStyle: true, hintsPosition: true });
 }
 
-onSettingChange(
+settingsSync.onChange(
 	[
 		"hintUppercaseLetters",
 		"hintFontFamily",

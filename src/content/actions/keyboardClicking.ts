@@ -2,7 +2,7 @@ import { getActiveElement, isEditable } from "../dom/utils";
 import { onDocumentVisible } from "../dom/whenVisible";
 import { notify } from "../feedback/notify";
 import { sendMessage } from "../messaging/messageHandler";
-import { onSettingChange } from "../settings/settingsManager";
+import { settingsSync } from "../settings/settingsSync";
 import { getHintedWrappers } from "../wrappers/wrappers";
 
 let keysPressedBuffer = "";
@@ -107,7 +107,7 @@ async function handleKeyboardClickingChange(keyboardClicking: boolean) {
 	}
 }
 
-onSettingChange("keyboardClicking", async (keyboardClicking) => {
+settingsSync.onChange("keyboardClicking", async (keyboardClicking) => {
 	onDocumentVisible(handleKeyboardClickingChange, keyboardClicking);
 
 	const status = keyboardClicking ? "enabled" : "disabled";

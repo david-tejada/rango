@@ -7,7 +7,7 @@ const emitter = new Emittery<Settings>();
 
 const cache = new Map<keyof Settings, Settings[keyof Settings]>();
 
-export async function initSettingsManager() {
+async function initialize() {
 	const allSettings = await settings.getAll();
 
 	for (const [key, value] of Object.entries(allSettings)) {
@@ -25,11 +25,17 @@ export async function initSettingsManager() {
  * storage but from a cached settings object that updates every time the stored
  * value changes.
  */
-export function getSetting<T extends keyof Settings>(key: T): Settings[T] {
+function get<T extends keyof Settings>(key: T): Settings[T] {
 	const value = cache.get(key);
 	assertDefined(value, `Attempting to retrieve setting before initialization.`);
 
 	return value as Settings[T];
 }
 
-export const onSettingChange = emitter.on.bind(emitter);
+const onChange = emitter.on.bind(emitter);
+
+export const settingsSync = {
+	initialize,
+	get,
+	onChange,
+};
