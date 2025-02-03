@@ -61,7 +61,7 @@
 		"@parcel/optimizer-terser": "^2.12.0",
 		"@parcel/transformer-inline-string": "^2.13.2",
 		"@sindresorhus/tsconfig": "^2.0.0",
-		"@types/chrome": "^0.0.300",
+		"@types/chrome": "^0.0.301",
 		"@types/color": "^4.0.0",
 		"@types/combinations": "^1.0.0",
 		"@types/intersect": "^1.0.0",
