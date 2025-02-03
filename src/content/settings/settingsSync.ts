@@ -7,7 +7,7 @@ const emitter = new Emittery<Settings>();
 
 const cache = new Map<keyof Settings, Settings[keyof Settings]>();
 
-async function initialize() {
+async function init() {
 	const allSettings = await settings.getAll();
 
 	for (const [key, value] of Object.entries(allSettings)) {
@@ -35,7 +35,7 @@ function get<T extends keyof Settings>(key: T): Settings[T] {
 const onChange = emitter.on.bind(emitter);
 
 export const settingsSync = {
-	initialize,
+	init,
 	get,
 	onChange,
 };

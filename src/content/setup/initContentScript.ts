@@ -12,7 +12,7 @@ import { loadDevtoolsUtils } from "./devtoolsUtils";
 export async function initContentScript() {
 	loadDevtoolsUtils();
 	await loadContentScriptContext();
-	await settingsSync.initialize();
+	await settingsSync.init();
 	updateCustomSelectors();
 	await updateTitleDecorations();
 	await observe();
