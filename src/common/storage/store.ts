@@ -17,7 +17,7 @@ type ExtensionState = LabelStacks & {
 export type Store = Settings & ExtensionState;
 
 const settingKeys = new Set(settingsSchema.keyof().options);
-const localStorageSettings = new Set<keyof Settings>(["hintsToggleTabs"]);
+const localStorageSettingKeys = new Set<keyof Settings>(["hintsToggleTabs"]);
 const persistentLocalStorageKeys = new Set<keyof ExtensionState>([
 	"showWhatsNewPageNextStartup",
 ]);
@@ -253,7 +253,7 @@ function getMutex(key: keyof Store) {
 function getStorageOptions(key: keyof Store) {
 	const isSetting = settingKeys.has(key as keyof Settings);
 	const isLocalSetting =
-		isSetting && localStorageSettings.has(key as keyof Settings);
+		isSetting && localStorageSettingKeys.has(key as keyof Settings);
 
 	return {
 		storageArea:
