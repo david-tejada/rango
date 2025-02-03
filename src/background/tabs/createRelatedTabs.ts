@@ -1,5 +1,5 @@
 import browser, { type Tabs } from "webextension-polyfill";
-import { retrieve } from "../../common/storage/storage";
+import { settings } from "../../common/settings/settings";
 import { getRequiredCurrentTabId } from "./getCurrentTab";
 
 /**
@@ -26,7 +26,7 @@ export async function createRelatedTabs(
 
 async function getNewTabIndex(tabId: number) {
 	const tab = await browser.tabs.get(tabId);
-	const newTabPosition = await retrieve("newTabPosition");
+	const newTabPosition = await settings.get("newTabPosition");
 
 	switch (newTabPosition) {
 		case "relatedAfterCurrent": {

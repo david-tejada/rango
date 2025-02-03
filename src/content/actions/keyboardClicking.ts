@@ -1,7 +1,8 @@
 import { getActiveElement, isEditable } from "../dom/utils";
+import { onDocumentVisible } from "../dom/whenVisible";
 import { notify } from "../feedback/notify";
 import { sendMessage } from "../messaging/messageHandler";
-import { onSettingChange } from "../settings/settingsManager";
+import { settingsSync } from "../settings/settingsSync";
 import { getHintedWrappers } from "../wrappers/wrappers";
 
 let keysPressedBuffer = "";
@@ -98,14 +99,17 @@ function stopKeyboardClicking() {
 	removeEventListener("keydown", keydownHandler, true);
 }
 
-onSettingChange("keyboardClicking", async (keyboardClicking) => {
+async function handleKeyboardClickingChange(keyboardClicking: boolean) {
 	if (keyboardClicking) {
 		initKeyboardClicking();
 	} else {
 		stopKeyboardClicking();
 	}
+}
+
+settingsSync.onChange("keyboardClicking", async (keyboardClicking) => {
+	onDocumentVisible(handleKeyboardClickingChange, keyboardClicking);
 
 	const status = keyboardClicking ? "enabled" : "disabled";
-
 	await notify[status](`Keyboard clicking ${status}`, "keyboardToggle");
 });

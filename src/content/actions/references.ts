@@ -1,9 +1,9 @@
 import { getCssSelector } from "css-selector-generator";
 import { getHostPattern } from "../../common/getHostPattern";
-import { store } from "../../common/storage/storage";
+import { settings } from "../../common/settings/settings";
 import { getActiveElement } from "../dom/utils";
 import { showTooltip } from "../feedback/tooltip/showTooltip";
-import { getSetting } from "../settings/settingsManager";
+import { settingsSync } from "../settings/settingsSync";
 import {
 	type ElementWrapper,
 	getOrCreateWrapper,
@@ -20,9 +20,9 @@ export async function saveReference(wrapper: ElementWrapper, name: string) {
 	});
 
 	const { hostPattern, references, hostReferences } = await getReferences();
-	hostReferences.set(name, uniqueSelector);
-	references.set(hostPattern, hostReferences);
-	await store("references", references);
+	hostReferences[name] = uniqueSelector;
+	references[hostPattern] = hostReferences;
+	await settings.set("references", references);
 
 	showTooltip(wrapper, name);
 }
@@ -58,7 +58,7 @@ export async function showReferences() {
 
 	console.log("Rango references for the current host:");
 
-	for (const [name, selector] of hostReferences.entries()) {
+	for (const [name, selector] of Object.entries(hostReferences)) {
 		const wrapper = getWrapperFromUniqueSelector(selector);
 		if (wrapper) showTooltip(wrapper, name);
 		console.log(`%c  ${name}:%c "${selector}"`, "font-weight: bold");
@@ -67,9 +67,8 @@ export async function showReferences() {
 
 export async function getReferences() {
 	const hostPattern = getHostPattern(location.href);
-	const references = getSetting("references");
-	const hostReferences =
-		references.get(hostPattern) ?? new Map<string, string>();
+	const references = settingsSync.get("references");
+	const hostReferences = references[hostPattern] ?? {};
 
 	return { hostPattern, references, hostReferences };
 }

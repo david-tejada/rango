@@ -1,7 +1,7 @@
 import Fuse from "fuse.js";
-import { store } from "../../common/storage/storage";
+import { settings } from "../../common/settings/settings";
 import { notify } from "../feedback/notify";
-import { getSetting } from "../settings/settingsManager";
+import { settingsSync } from "../settings/settingsSync";
 import { getMainScrollable, getScrollBehavior } from "./scroll";
 
 export async function storeScrollPosition(name: string) {
@@ -14,18 +14,16 @@ export async function storeScrollPosition(name: string) {
 
 	const { scrollTop } = scrollContainer;
 
-	const scrollPositions = getSetting("customScrollPositions");
+	const scrollPositions = settingsSync.get("customScrollPositions");
 	const scrollPositionsForCurrentPage =
-		scrollPositions.get(location.origin + location.pathname) ??
-		new Map<string, number>();
+		scrollPositions[location.origin + location.pathname] ?? {};
 
-	scrollPositionsForCurrentPage.set(name, scrollTop);
+	scrollPositionsForCurrentPage[name] = scrollTop;
 
-	scrollPositions.set(
-		location.origin + location.pathname,
-		scrollPositionsForCurrentPage
-	);
-	await store("customScrollPositions", scrollPositions);
+	scrollPositions[location.origin + location.pathname] =
+		scrollPositionsForCurrentPage;
+
+	await settings.set("customScrollPositions", scrollPositions);
 
 	await notify.success(`Scroll position "${name}" saved`);
 }
@@ -33,14 +31,13 @@ export async function storeScrollPosition(name: string) {
 export async function scrollToPosition(name: string) {
 	const scrollContainer = getMainScrollable("vertical");
 
-	const scrollPositions = getSetting("customScrollPositions");
+	const scrollPositions = settingsSync.get("customScrollPositions");
 	const scrollPositionsForCurrentPage =
-		scrollPositions.get(location.origin + location.pathname) ??
-		new Map<string, number>();
+		scrollPositions[location.origin + location.pathname] ?? {};
 
-	const scrollPositionsArray = [...scrollPositionsForCurrentPage].map(
-		([name, number]) => ({ name, number })
-	);
+	const scrollPositionsArray = Object.entries(
+		scrollPositionsForCurrentPage
+	).map(([name, number]) => ({ name, number }));
 
 	const fuse = new Fuse(scrollPositionsArray, {
 		keys: ["name"],

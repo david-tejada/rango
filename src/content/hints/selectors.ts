@@ -1,4 +1,5 @@
-import { getSetting, onSettingChange } from "../settings/settingsManager";
+import { onDocumentVisible } from "../dom/whenVisible";
+import { settingsSync } from "../settings/settingsSync";
 import { refresh } from "../wrappers/refresh";
 
 const defaultSelector =
@@ -22,7 +23,7 @@ let excludeSelectorAll = "";
  * used when checking if an element should be hinted.
  */
 export function updateCustomSelectors() {
-	const customSelectors = getSetting("customSelectors");
+	const customSelectors = settingsSync.get("customSelectors");
 
 	const include: string[] = [];
 	const exclude: string[] = [];
@@ -71,7 +72,11 @@ export function matchesExtraSelector(target: Element) {
 	return target.matches(extraSelector);
 }
 
-onSettingChange("customSelectors", async () => {
+async function handleCustomSelectorsChange() {
 	updateCustomSelectors();
-	return refresh({ isHintable: true });
+	await refresh({ isHintable: true });
+}
+
+settingsSync.onChange("customSelectors", async () => {
+	onDocumentVisible(handleCustomSelectorsChange);
 });

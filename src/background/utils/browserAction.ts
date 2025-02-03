@@ -1,7 +1,6 @@
 import browser from "webextension-polyfill";
-import { retrieve } from "../../common/storage/storage";
+import { settings } from "../../common/settings/settings";
 import { urls } from "../../common/urls";
-
 /**
  * `browser.browserAction` for MV2 and `browser.action` for MV3.
  */
@@ -11,7 +10,7 @@ export const browserAction = browser.action ?? browser.browserAction;
  * Set the browserAction icon depending on wether keyboardClicking is enabled.
  */
 export async function setBrowserActionIcon() {
-	const keyboardClicking = await retrieve("keyboardClicking");
+	const keyboardClicking = await settings.get("keyboardClicking");
 	const iconPath = keyboardClicking
 		? urls.iconKeyboard48.pathname
 		: urls.icon48.pathname;

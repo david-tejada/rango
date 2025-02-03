@@ -1,13 +1,8 @@
 import Color from "color";
-import { useEffect, useState } from "react";
-import browser from "webextension-polyfill";
-import { hasMatchingKeys } from "../../common/hasMatchingKeys";
-import {
-	defaultSettingsMutable,
-	isValidSetting,
-} from "../../common/settings/settings";
-import { retrieveSettings, store } from "../../common/storage/storage";
-import { type StorageSchema } from "../../typings/StorageSchema";
+import { debounce } from "lodash";
+import { useCallback, useEffect, useState } from "react";
+import { settings } from "../../common/settings/settings";
+import { type Settings } from "../../common/settings/settingsSchema";
 import { Alert } from "./Alert";
 import { CustomHintsSetting } from "./CustomHintsSetting";
 import { ExcludeKeysSetting } from "./ExcludeKeysSetting";
@@ -21,36 +16,49 @@ import { Toggle } from "./Toggle";
 
 let justSaved = false;
 
+const defaultSettings = settings.defaults();
+
 export function SettingsComponent() {
-	const [storedSettings, setStoredSettings] = useState(defaultSettingsMutable);
-	const [settings, setSettings] = useState(defaultSettingsMutable);
+	const [storedSettings, setStoredSettings] = useState(defaultSettings);
+	const [dirtySettings, setDirtySettings] = useState(defaultSettings);
 	const [loading, setLoading] = useState(true);
 
-	// Using useEffect so it only runs once
+	const debounceUpdateSettings = useCallback(() => {
+		const update = debounce(() => {
+			void settings.getAll().then((settings) => {
+				setStoredSettings(settings);
+				setDirtySettings(settings);
+			});
+		}, 10);
+		update();
+	}, [setStoredSettings, setDirtySettings]);
+
 	useEffect(() => {
-		void retrieveSettings().then((settings) => {
+		void settings.getAll().then((settings) => {
 			setStoredSettings(settings);
-			setSettings(settings);
+			setDirtySettings(settings);
 			setLoading(false);
 		});
 
-		browser.storage.onChanged.addListener((changes) => {
-			if (hasMatchingKeys(defaultSettingsMutable, changes) && !justSaved) {
-				void retrieveSettings().then((settings) => {
-					setStoredSettings(settings);
-					setSettings(settings);
-				});
-			}
+		const unsubscribe = settings.onAnyChange(() => {
+			if (!justSaved) debounceUpdateSettings();
 		});
-	}, []);
 
-	const handleChange = <T extends keyof StorageSchema>(
+		return () => {
+			unsubscribe();
+		};
+	}, [debounceUpdateSettings]);
+
+	const handleChange = <T extends keyof Settings>(
 		key: T,
-		value: StorageSchema[T]
+		value: Settings[T]
 	) => {
-		setSettings((previousSettings) => ({ ...previousSettings, [key]: value }));
+		setDirtySettings((previousSettings) => ({
+			...previousSettings,
+			[key]: value,
+		}));
 
-		if (isValidSetting(key, value)) {
+		if (settings.isValid(key, value)) {
 			setStoredSettings((previousSettings) => ({
 				...previousSettings,
 				[key]: value,
@@ -60,12 +68,12 @@ export function SettingsComponent() {
 			setTimeout(() => {
 				justSaved = false;
 			}, 1000);
-			void store(key, value);
+			void settings.set(key, value);
 		}
 	};
 
 	const handleBlur = () => {
-		setSettings(storedSettings);
+		setDirtySettings(storedSettings);
 	};
 
 	if (loading) return <div />;
@@ -76,11 +84,11 @@ export function SettingsComponent() {
 				<SettingRow>
 					<Toggle
 						label="Always compute hintable elements"
-						isPressed={settings.alwaysComputeHintables}
+						isPressed={dirtySettings.alwaysComputeHintables}
 						onClick={() => {
 							handleChange(
 								"alwaysComputeHintables",
-								!settings.alwaysComputeHintables
+								!dirtySettings.alwaysComputeHintables
 							);
 						}}
 					>
@@ -93,11 +101,11 @@ export function SettingsComponent() {
 				<SettingRow>
 					<Toggle
 						label="Show What's New page after updating"
-						isPressed={settings.showWhatsNewPageOnUpdate}
+						isPressed={dirtySettings.showWhatsNewPageOnUpdate}
 						onClick={() => {
 							handleChange(
 								"showWhatsNewPageOnUpdate",
-								!settings.showWhatsNewPageOnUpdate
+								!dirtySettings.showWhatsNewPageOnUpdate
 							);
 						}}
 					/>
@@ -106,7 +114,7 @@ export function SettingsComponent() {
 					<RadioGroup
 						label="New tab position"
 						name="newTabPosition"
-						defaultValue={settings.newTabPosition}
+						defaultValue={dirtySettings.newTabPosition}
 						onChange={(value) => {
 							handleChange("newTabPosition", value);
 						}}
@@ -135,11 +143,11 @@ export function SettingsComponent() {
 				<SettingRow>
 					<Toggle
 						label="Direct clicking available with no focused document"
-						isPressed={settings.directClickWithNoFocusedDocument}
+						isPressed={dirtySettings.directClickWithNoFocusedDocument}
 						onClick={() => {
 							handleChange(
 								"directClickWithNoFocusedDocument",
-								!settings.directClickWithNoFocusedDocument
+								!dirtySettings.directClickWithNoFocusedDocument
 							);
 						}}
 					>
@@ -153,11 +161,11 @@ export function SettingsComponent() {
 				<SettingRow>
 					<Toggle
 						label="Direct clicking available when editing text"
-						isPressed={settings.directClickWhenEditing}
+						isPressed={dirtySettings.directClickWhenEditing}
 						onClick={() => {
 							handleChange(
 								"directClickWhenEditing",
-								!settings.directClickWhenEditing
+								!dirtySettings.directClickWhenEditing
 							);
 						}}
 					>
@@ -173,9 +181,9 @@ export function SettingsComponent() {
 				<SettingRow>
 					<Toggle
 						label="Keyboard clicking"
-						isPressed={settings.keyboardClicking}
+						isPressed={dirtySettings.keyboardClicking}
 						onClick={() => {
-							handleChange("keyboardClicking", !settings.keyboardClicking);
+							handleChange("keyboardClicking", !dirtySettings.keyboardClicking);
 						}}
 					>
 						<p className="explanation">
@@ -185,7 +193,7 @@ export function SettingsComponent() {
 				</SettingRow>
 				<SettingRow>
 					<ExcludeKeysSetting
-						value={settings.keysToExclude}
+						value={dirtySettings.keysToExclude}
 						onChange={(value) => {
 							handleChange("keysToExclude", value);
 						}}
@@ -197,9 +205,9 @@ export function SettingsComponent() {
 				<SettingRow>
 					<Toggle
 						label="Include URL in title"
-						isPressed={settings.urlInTitle}
+						isPressed={dirtySettings.urlInTitle}
 						onClick={() => {
-							handleChange("urlInTitle", !settings.urlInTitle);
+							handleChange("urlInTitle", !dirtySettings.urlInTitle);
 						}}
 					/>
 				</SettingRow>
@@ -207,9 +215,12 @@ export function SettingsComponent() {
 				<SettingRow>
 					<Toggle
 						label="Include tab marker in title"
-						isPressed={settings.includeTabMarkers}
+						isPressed={dirtySettings.includeTabMarkers}
 						onClick={() => {
-							handleChange("includeTabMarkers", !settings.includeTabMarkers);
+							handleChange(
+								"includeTabMarkers",
+								!dirtySettings.includeTabMarkers
+							);
 						}}
 					/>
 				</SettingRow>
@@ -217,11 +228,11 @@ export function SettingsComponent() {
 				<SettingRow>
 					<Toggle
 						label="Hide tab markers with global hints toggle off"
-						isPressed={settings.hideTabMarkersWithGlobalHintsOff}
+						isPressed={dirtySettings.hideTabMarkersWithGlobalHintsOff}
 						onClick={() => {
 							handleChange(
 								"hideTabMarkersWithGlobalHintsOff",
-								!settings.hideTabMarkersWithGlobalHintsOff
+								!dirtySettings.hideTabMarkersWithGlobalHintsOff
 							);
 						}}
 					/>
@@ -230,12 +241,12 @@ export function SettingsComponent() {
 				<SettingRow>
 					<Toggle
 						label="Use uppercase tab markers"
-						isPressed={settings.uppercaseTabMarkers}
-						isDisabled={!settings.includeTabMarkers}
+						isPressed={dirtySettings.uppercaseTabMarkers}
+						isDisabled={!dirtySettings.includeTabMarkers}
 						onClick={() => {
 							handleChange(
 								"uppercaseTabMarkers",
-								!settings.uppercaseTabMarkers
+								!dirtySettings.uppercaseTabMarkers
 							);
 						}}
 					/>
@@ -246,7 +257,7 @@ export function SettingsComponent() {
 				<SettingRow>
 					<TextInput
 						label="Hints to exclude"
-						defaultValue={settings.hintsToExclude}
+						defaultValue={dirtySettings.hintsToExclude}
 						onChange={(value) => {
 							handleChange("hintsToExclude", value);
 						}}
@@ -256,13 +267,13 @@ export function SettingsComponent() {
 				<SettingRow>
 					<Toggle
 						label="Use numbers for hints"
-						isPressed={settings.useNumberHints}
-						isDisabled={settings.keyboardClicking}
+						isPressed={dirtySettings.useNumberHints}
+						isDisabled={dirtySettings.keyboardClicking}
 						onClick={() => {
-							handleChange("useNumberHints", !settings.useNumberHints);
+							handleChange("useNumberHints", !dirtySettings.useNumberHints);
 						}}
 					>
-						{settings.keyboardClicking && (
+						{dirtySettings.keyboardClicking && (
 							<p className="explanation">
 								This setting is disabled while keyboard clicking is enabled.
 							</p>
@@ -272,41 +283,46 @@ export function SettingsComponent() {
 				<SettingRow>
 					<Toggle
 						label="Include single letter hints"
-						isPressed={settings.includeSingleLetterHints}
-						isDisabled={settings.keyboardClicking || settings.useNumberHints}
+						isPressed={dirtySettings.includeSingleLetterHints}
+						isDisabled={
+							dirtySettings.keyboardClicking || dirtySettings.useNumberHints
+						}
 						onClick={() => {
 							handleChange(
 								"includeSingleLetterHints",
-								!settings.includeSingleLetterHints
+								!dirtySettings.includeSingleLetterHints
 							);
 						}}
 					>
-						{settings.keyboardClicking && (
+						{dirtySettings.keyboardClicking && (
 							<p className="explanation">
 								This setting is disabled while keyboard clicking is enabled.
 								Hints must consist of two letters so all are keyboard reachable.
 							</p>
 						)}
-						{settings.useNumberHints && !settings.keyboardClicking && (
-							<p className="explanation">
-								This setting is disabled when using numbered hints.
-							</p>
-						)}
+						{dirtySettings.useNumberHints &&
+							!dirtySettings.keyboardClicking && (
+								<p className="explanation">
+									This setting is disabled when using numbered hints.
+								</p>
+							)}
 					</Toggle>
 				</SettingRow>
 				<SettingRow>
 					<Toggle
 						label="Use uppercase letters"
-						isPressed={settings.hintUppercaseLetters}
-						isDisabled={settings.useNumberHints && !settings.keyboardClicking}
+						isPressed={dirtySettings.hintUppercaseLetters}
+						isDisabled={
+							dirtySettings.useNumberHints && !dirtySettings.keyboardClicking
+						}
 						onClick={() => {
 							handleChange(
 								"hintUppercaseLetters",
-								!settings.hintUppercaseLetters
+								!dirtySettings.hintUppercaseLetters
 							);
 						}}
 					/>
-					{settings.useNumberHints && !settings.keyboardClicking && (
+					{dirtySettings.useNumberHints && !dirtySettings.keyboardClicking && (
 						<p className="explanation">
 							This setting is disabled when using numbered hints.
 						</p>
@@ -315,10 +331,13 @@ export function SettingsComponent() {
 				<SettingRow>
 					<NumberInput
 						label="Viewport margin (px)"
-						defaultValue={settings.viewportMargin}
+						defaultValue={dirtySettings.viewportMargin}
 						min={0}
 						max={2000}
-						isValid={isValidSetting("viewportMargin", settings.viewportMargin)}
+						isValid={settings.isValid(
+							"viewportMargin",
+							dirtySettings.viewportMargin
+						)}
 						onChange={(value) => {
 							handleChange("viewportMargin", value);
 						}}
@@ -334,7 +353,7 @@ export function SettingsComponent() {
 				<SettingRow>
 					<TextInput
 						label="Font family"
-						defaultValue={settings.hintFontFamily}
+						defaultValue={dirtySettings.hintFontFamily}
 						onChange={(value) => {
 							handleChange("hintFontFamily", value);
 						}}
@@ -345,10 +364,13 @@ export function SettingsComponent() {
 				<SettingRow>
 					<NumberInput
 						label="Font size (px)"
-						defaultValue={settings.hintFontSize}
+						defaultValue={dirtySettings.hintFontSize}
 						min={1}
 						max={72}
-						isValid={isValidSetting("hintFontSize", settings.hintFontSize)}
+						isValid={settings.isValid(
+							"hintFontSize",
+							dirtySettings.hintFontSize
+						)}
 						onChange={(value) => {
 							handleChange("hintFontSize", value);
 						}}
@@ -359,7 +381,7 @@ export function SettingsComponent() {
 					<RadioGroup
 						label="Font weight"
 						name="hintWeight"
-						defaultValue={settings.hintWeight}
+						defaultValue={dirtySettings.hintWeight}
 						onChange={(value) => {
 							handleChange("hintWeight", value);
 						}}
@@ -378,13 +400,13 @@ export function SettingsComponent() {
 				<SettingRow>
 					<NumberInput
 						label="Minimum contrast ratio"
-						defaultValue={settings.hintMinimumContrastRatio}
+						defaultValue={dirtySettings.hintMinimumContrastRatio}
 						min={2.5}
 						max={21}
 						step={0.5}
-						isValid={isValidSetting(
+						isValid={settings.isValid(
 							"hintMinimumContrastRatio",
-							settings.hintMinimumContrastRatio
+							dirtySettings.hintMinimumContrastRatio
 						)}
 						onChange={(value) => {
 							handleChange("hintMinimumContrastRatio", value);
@@ -401,10 +423,10 @@ export function SettingsComponent() {
 				<SettingRow>
 					<TextInput
 						label="Background color"
-						defaultValue={settings.hintBackgroundColor}
-						isValid={isValidSetting(
+						defaultValue={dirtySettings.hintBackgroundColor}
+						isValid={settings.isValid(
 							"hintBackgroundColor",
-							settings.hintBackgroundColor
+							dirtySettings.hintBackgroundColor
 						)}
 						onChange={(value) => {
 							handleChange("hintBackgroundColor", value);
@@ -429,18 +451,22 @@ export function SettingsComponent() {
 				<SettingRow>
 					<TextInput
 						label="Font/border color"
-						defaultValue={settings.hintFontColor}
-						isValid={isValidSetting("hintFontColor", settings.hintFontColor)}
+						defaultValue={dirtySettings.hintFontColor}
+						isValid={settings.isValid(
+							"hintFontColor",
+							dirtySettings.hintFontColor
+						)}
 						onChange={(value) => {
 							handleChange("hintFontColor", value);
 						}}
 						onBlur={handleBlur}
 					>
-						{!storedSettings.hintBackgroundColor && settings.hintFontColor && (
-							<Alert type="warning">
-								No background color set. This value will be ignored.
-							</Alert>
-						)}
+						{!storedSettings.hintBackgroundColor &&
+							dirtySettings.hintFontColor && (
+								<Alert type="warning">
+									No background color set. This value will be ignored.
+								</Alert>
+							)}
 						<p className="small show-on-focus">
 							Use a{" "}
 							<a
@@ -460,13 +486,13 @@ export function SettingsComponent() {
 				<SettingRow>
 					<NumberInput
 						label="Background opacity"
-						defaultValue={settings.hintBackgroundOpacity}
+						defaultValue={dirtySettings.hintBackgroundOpacity}
 						min={0}
 						max={1}
 						step={0.05}
-						isValid={isValidSetting(
+						isValid={settings.isValid(
 							"hintBackgroundOpacity",
-							settings.hintBackgroundOpacity
+							dirtySettings.hintBackgroundOpacity
 						)}
 						isDisabled={
 							Boolean(storedSettings.hintBackgroundColor) &&
@@ -492,12 +518,12 @@ export function SettingsComponent() {
 				<SettingRow>
 					<NumberInput
 						label="Border width (px)"
-						defaultValue={settings.hintBorderWidth}
+						defaultValue={dirtySettings.hintBorderWidth}
 						min={0}
 						max={72}
-						isValid={isValidSetting(
+						isValid={settings.isValid(
 							"hintBorderWidth",
-							settings.hintBorderWidth
+							dirtySettings.hintBorderWidth
 						)}
 						onChange={(value) => {
 							handleChange("hintBorderWidth", value);
@@ -508,12 +534,12 @@ export function SettingsComponent() {
 				<SettingRow>
 					<NumberInput
 						label="Border radius (px)"
-						defaultValue={settings.hintBorderRadius}
+						defaultValue={dirtySettings.hintBorderRadius}
 						min={0}
 						max={72}
-						isValid={isValidSetting(
+						isValid={settings.isValid(
 							"hintBorderRadius",
-							settings.hintBorderRadius
+							dirtySettings.hintBorderRadius
 						)}
 						onChange={(value) => {
 							handleChange("hintBorderRadius", value);
@@ -531,7 +557,7 @@ export function SettingsComponent() {
 				</p>
 				<SettingRow>
 					<CustomHintsSetting
-						value={settings.customSelectors}
+						value={dirtySettings.customSelectors}
 						onChange={(value) => {
 							handleChange("customSelectors", value);
 						}}
@@ -544,7 +570,7 @@ export function SettingsComponent() {
 					<RadioGroup
 						label="Scroll behavior"
 						name="scrollBehavior"
-						defaultValue={settings.scrollBehavior}
+						defaultValue={dirtySettings.scrollBehavior}
 						onChange={(value) => {
 							handleChange("scrollBehavior", value);
 						}}
@@ -571,11 +597,11 @@ export function SettingsComponent() {
 				<SettingRow>
 					<Toggle
 						label="Enable notifications"
-						isPressed={settings.enableNotifications}
+						isPressed={dirtySettings.enableNotifications}
 						onClick={() => {
 							handleChange(
 								"enableNotifications",
-								!settings.enableNotifications
+								!dirtySettings.enableNotifications
 							);
 						}}
 					/>
@@ -583,12 +609,12 @@ export function SettingsComponent() {
 				<SettingRow>
 					<Toggle
 						label="Show notification when toggling hints"
-						isPressed={settings.notifyWhenTogglingHints}
-						isDisabled={!settings.enableNotifications}
+						isPressed={dirtySettings.notifyWhenTogglingHints}
+						isDisabled={!dirtySettings.enableNotifications}
 						onClick={() => {
 							handleChange(
 								"notifyWhenTogglingHints",
-								!settings.notifyWhenTogglingHints
+								!dirtySettings.notifyWhenTogglingHints
 							);
 						}}
 					/>
@@ -596,8 +622,8 @@ export function SettingsComponent() {
 				<SettingRow>
 					<Select
 						label="Position"
-						defaultValue={settings.toastPosition}
-						isDisabled={!settings.enableNotifications}
+						defaultValue={dirtySettings.toastPosition}
+						isDisabled={!dirtySettings.enableNotifications}
 						onChange={(value) => {
 							handleChange("toastPosition", value);
 						}}
@@ -614,8 +640,11 @@ export function SettingsComponent() {
 				<SettingRow>
 					<NumberInput
 						label="Duration (ms)"
-						defaultValue={settings.toastDuration}
-						isValid={isValidSetting("toastDuration", settings.toastDuration)}
+						defaultValue={dirtySettings.toastDuration}
+						isValid={settings.isValid(
+							"toastDuration",
+							dirtySettings.toastDuration
+						)}
 						onChange={(value) => {
 							handleChange("toastDuration", value);
 						}}
@@ -627,8 +656,8 @@ export function SettingsComponent() {
 					<RadioGroup
 						label="Transition"
 						name="toastTransition"
-						defaultValue={settings.toastTransition}
-						isDisabled={!settings.enableNotifications}
+						defaultValue={dirtySettings.toastTransition}
+						isDisabled={!dirtySettings.enableNotifications}
 						onChange={(value) => {
 							handleChange("toastTransition", value);
 						}}

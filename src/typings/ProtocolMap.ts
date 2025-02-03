@@ -1,7 +1,8 @@
 import { type Tabs } from "webextension-polyfill";
 import { type NotificationType } from "../common/createNotifier";
+import { type CustomSelector } from "../common/settings/settingsSchema";
 import { type Direction } from "./Direction";
-import { type CustomSelector, type LabelStack } from "./StorageSchema";
+import { type LabelStack } from "./LabelStack";
 import { type ElementMark, type Target } from "./Target/Target";
 
 type FirstParameter<T> = T extends (...args: infer P) => any ? P[0] : never;

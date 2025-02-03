@@ -1,5 +1,5 @@
 import { Bounce, Flip, Slide, ToastContainer, Zoom } from "react-toastify";
-import { getSetting } from "../../settings/settingsManager";
+import { settingsSync } from "../../settings/settingsSync";
 
 const transitions = {
 	slide: Slide,
@@ -20,8 +20,8 @@ export function Toast() {
 			newestOnTop={false}
 			rtl={false}
 			theme="light"
-			position={getSetting("toastPosition")}
-			transition={transitions[getSetting("toastTransition")]}
+			position={settingsSync.get("toastPosition")}
+			transition={transitions[settingsSync.get("toastTransition")]}
 		/>
 	);
 }

@@ -3,7 +3,7 @@ import { debounce } from "lodash";
 import { setStyleProperties } from "../dom/setStyleProperties";
 import { getFirstTextNodeDescendant } from "../dom/textNode";
 import { isEditable } from "../dom/utils";
-import { getAllSettings, getSetting } from "../settings/settingsManager";
+import { settingsSync } from "../settings/settingsSync";
 import { getToggles } from "../settings/toggles";
 import { refresh } from "../wrappers/refresh";
 import {
@@ -300,7 +300,7 @@ export class Hint {
 	constructor(public target: Element) {
 		this.isActive = false;
 
-		this.borderWidth = getSetting("hintBorderWidth");
+		this.borderWidth = settingsSync.get("hintBorderWidth");
 
 		this.shadowHost = document.createElement("div");
 		this.shadowHost.className = "rango-hint";
@@ -435,9 +435,9 @@ export class Hint {
 				outline: "none",
 			});
 
-			const customBackgroundColor = getSetting("hintBackgroundColor");
-			const customFontColor = getSetting("hintFontColor");
-			const backgroundOpacity = getSetting("hintBackgroundOpacity");
+			const customBackgroundColor = settingsSync.get("hintBackgroundColor");
+			const customFontColor = settingsSync.get("hintFontColor");
+			const backgroundOpacity = settingsSync.get("hintBackgroundOpacity");
 
 			this.firstTextNodeDescendant = getFirstTextNodeDescendant(this.target);
 
@@ -478,7 +478,7 @@ export class Hint {
 
 			if (
 				backgroundColor.contrast(color) <
-					getSetting("hintMinimumContrastRatio") &&
+					settingsSync.get("hintMinimumContrastRatio") &&
 				!customFontColor
 			) {
 				color = backgroundColor.isLight()
@@ -486,7 +486,7 @@ export class Hint {
 					: new Color("white");
 			}
 
-			this.borderWidth = getSetting("hintBorderWidth");
+			this.borderWidth = settingsSync.get("hintBorderWidth");
 			this.borderColor = new Color(color).alpha(0.3);
 		}
 
@@ -775,14 +775,12 @@ export class Hint {
 	}
 
 	applyDefaultStyle() {
-		const {
-			hintFontFamily,
-			hintFontSize,
-			hintWeight,
-			hintBorderWidth,
-			hintBorderRadius,
-			hintUppercaseLetters,
-		} = getAllSettings();
+		const hintFontFamily = settingsSync.get("hintFontFamily");
+		const hintFontSize = settingsSync.get("hintFontSize");
+		const hintWeight = settingsSync.get("hintWeight");
+		const hintBorderWidth = settingsSync.get("hintBorderWidth");
+		const hintBorderRadius = settingsSync.get("hintBorderRadius");
+		const hintUppercaseLetters = settingsSync.get("hintUppercaseLetters");
 
 		this.computeColors();
 
@@ -813,7 +811,7 @@ export class Hint {
 
 	clearKeyHighlight() {
 		this.keyEmphasis = false;
-		this.borderWidth = getSetting("hintBorderWidth");
+		this.borderWidth = settingsSync.get("hintBorderWidth");
 		this.updateColors();
 	}
 }

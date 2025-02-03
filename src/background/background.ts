@@ -1,6 +1,7 @@
 import browser from "webextension-polyfill";
 import { getHostPattern } from "../common/getHostPattern";
-import { retrieve, store } from "../common/storage/storage";
+import { settings } from "../common/settings/settings";
+import { store } from "../common/storage/store";
 import { urls } from "../common/urls";
 import { addCommandListeners } from "./commands/commandListeners";
 import { handleIncomingCommand } from "./commands/handleIncomingCommand";
@@ -14,7 +15,10 @@ import { toggleKeyboardClicking } from "./settings/keyboardClicking";
 import { trackRecentTabs } from "./tabs/focusPreviousTab";
 import { setTabLastSounded } from "./tabs/focusTabBySound";
 import { getCurrentTab, getRequiredCurrentTab } from "./tabs/getCurrentTab";
-import { addTabMarkerListeners, initTabMarkers } from "./tabs/tabMarkers";
+import {
+	addTabMarkerListeners,
+	initializeAndReconcileTabMarkers,
+} from "./tabs/tabMarkers";
 import { browserAction, setBrowserActionIcon } from "./utils/browserAction";
 import { isSafari } from "./utils/isSafari";
 import { notify } from "./utils/notify";
@@ -125,36 +129,33 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 		];
 
 		if (currentMajor > previousMajor || currentMinor > previousMinor) {
-			await store("showWhatsNewPageNextStartup", true);
+			await store.set("showWhatsNewPageNextStartup", true);
 			await notify.info(
 				`Rango has been updated to version ${currentVersion}. Click "What's New" in the context menu to see the changes.`
 			);
 		}
 	}
 
-	// If this is an update the content scrips either reload (Firefox) or stop
-	// completely (Chrome), either way we need to reset the label stacks
-	await store("labelStacks", new Map());
-	// This has been renamed to `labelStacks`. Free up space in the storage area.
-	await browser.storage.local.remove("hintStacks");
+	await store.clearTransientData({
+		skip: reason === "update" ? ["tabsByRecency"] : [],
+	});
 
-	if (reason === "install") await initTabMarkers();
+	await initializeAndReconcileTabMarkers();
 });
 
 // =============================================================================
 // EXTENSION STARTUP
 // =============================================================================
 browser.runtime.onStartup.addListener(async () => {
-	await initTabMarkers();
+	await store.clearTransientData();
+	await initializeAndReconcileTabMarkers();
 	await setBrowserActionIcon();
-	await store("labelStacks", new Map());
-	await store("hintsToggleTabs", new Map());
-	await store("tabsByRecency", []);
+
 	// In Safari we need to create the menus every time the browser starts.
 	if (isSafari()) await createContextMenus();
 
-	const showWhatsNewPageOnUpdate = await retrieve("showWhatsNewPageOnUpdate");
-	const showWhatsNewPageNextStartup = await retrieve(
+	const showWhatsNewPageOnUpdate = await store.get("showWhatsNewPageOnUpdate");
+	const showWhatsNewPageNextStartup = await store.get(
 		"showWhatsNewPageNextStartup"
 	);
 
@@ -162,7 +163,7 @@ browser.runtime.onStartup.addListener(async () => {
 		await browser.tabs.create({ url: urls.whatsNewPage.href });
 		// The flag is cleared after the What's New page loads but we also clear it
 		// here to be extra safe.
-		await store("showWhatsNewPageNextStartup", false);
+		await store.remove("showWhatsNewPageNextStartup");
 	}
 });
 
@@ -238,7 +239,7 @@ async function resetBookmarkTitle(
 // CONTEXT MENUS
 // =============================================================================
 async function createContextMenus() {
-	const keyboardClicking = await retrieve("keyboardClicking");
+	const keyboardClicking = await settings.get("keyboardClicking");
 
 	const contexts: browser.Menus.ContextType[] = browser.browserAction
 		? ["browser_action"]
@@ -299,7 +300,7 @@ async function contextMenusOnClicked({
 	}
 
 	if (menuItemId === "add-keys-to-exclude") {
-		const keysToExclude = await retrieve("keysToExclude");
+		const keysToExclude = await settings.get("keysToExclude");
 		const tab = await getRequiredCurrentTab();
 		const hostPattern = tab.url && getHostPattern(tab.url);
 		const keysToExcludeForHost = keysToExclude.find(
@@ -308,7 +309,7 @@ async function contextMenusOnClicked({
 
 		if (!keysToExcludeForHost && hostPattern) {
 			keysToExclude.push([hostPattern, ""]);
-			await store("keysToExclude", keysToExclude);
+			await settings.set("keysToExclude", keysToExclude);
 		}
 
 		await browser.runtime.openOptionsPage();

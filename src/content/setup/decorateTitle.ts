@@ -1,5 +1,5 @@
 import { onMessage, sendMessage } from "../messaging/messageHandler";
-import { getSetting, onSettingChange } from "../settings/settingsManager";
+import { settingsSync } from "../settings/settingsSync";
 import { getToggles } from "../settings/toggles";
 import { isCurrentTab, isMainFrame } from "./contentScriptContext";
 
@@ -87,7 +87,7 @@ async function getTitlePrefix() {
 	const tabMarker = await sendMessage("getTabMarker");
 	if (!tabMarker) return "";
 
-	const marker = getSetting("uppercaseTabMarkers")
+	const marker = settingsSync.get("uppercaseTabMarkers")
 		? tabMarker.toUpperCase()
 		: tabMarker;
 
@@ -95,7 +95,7 @@ async function getTitlePrefix() {
 }
 
 function getTitleSuffix() {
-	if (getSetting("urlInTitle")) {
+	if (settingsSync.get("urlInTitle")) {
 		return ` - ${location.href}`;
 	}
 
@@ -107,10 +107,10 @@ export function getTitleBeforeDecoration() {
 }
 
 async function shouldIncludeTabMarkers() {
-	if (!getSetting("includeTabMarkers")) return false;
+	if (!settingsSync.get("includeTabMarkers")) return false;
 
 	const globalHintsDisabled = !getToggles().global;
-	const hideMarkersWhenHintsOff = getSetting(
+	const hideMarkersWhenHintsOff = settingsSync.get(
 		"hideTabMarkersWithGlobalHintsOff"
 	);
 
@@ -130,7 +130,7 @@ onMessage("currentTabChanged", async () => {
 	await updateTitleDecorations();
 });
 
-onSettingChange(
+settingsSync.onChange(
 	[
 		"urlInTitle",
 		"includeTabMarkers",
@@ -140,8 +140,8 @@ onSettingChange(
 	updateTitleDecorations
 );
 
-onSettingChange("hintsToggleGlobal", async () => {
-	if (getSetting("hideTabMarkersWithGlobalHintsOff")) {
+settingsSync.onChange("hintsToggleGlobal", async () => {
+	if (settingsSync.get("hideTabMarkersWithGlobalHintsOff")) {
 		await updateTitleDecorations();
 	}
 });

@@ -1,5 +1,6 @@
 import { debounce } from "lodash";
-import { onSettingChange } from "../settings/settingsManager";
+import { onDocumentVisible } from "../dom/whenVisible";
+import { settingsSync } from "../settings/settingsSync";
 import { getAllWrappers, getHintedWrappers } from "./wrappers";
 
 type Options = {
@@ -151,7 +152,11 @@ export async function refresh(options?: Options) {
 	await debouncedRefresh();
 }
 
-onSettingChange(
+async function handleHintStyleChange() {
+	await refresh({ hintsStyle: true, hintsPosition: true });
+}
+
+settingsSync.onChange(
 	[
 		"hintUppercaseLetters",
 		"hintFontFamily",
@@ -166,6 +171,6 @@ onSettingChange(
 		"hintBorderWidth",
 	],
 	async () => {
-		await refresh({ hintsStyle: true, hintsPosition: true });
+		onDocumentVisible(handleHintStyleChange);
 	}
 );

@@ -1,6 +1,7 @@
-import browser from "webextension-polyfill";
+import { store } from "../../../common/storage/store";
+import { sendMessage } from "../../messaging/sendMessage";
 import { getAllFrames } from "../../utils/getAllFrames";
-import { resetStack, withStack } from "./labelStack";
+import { createStack } from "./labelStack";
 import { navigationOccurred } from "./webNavigation";
 
 export async function claimLabels(
@@ -8,19 +9,22 @@ export async function claimLabels(
 	frameId: number,
 	amount: number
 ): Promise<string[]> {
-	return withStack(tabId, async (stack) => {
-		if (await navigationOccurred(tabId)) {
-			await resetStack(stack, tabId);
-		}
+	return store.withLock(
+		`labelStack:${tabId}`,
+		async (stack) => {
+			if (await navigationOccurred(tabId)) {
+				stack = await createStack(tabId);
+			}
 
-		const labelsClaimed = stack.free.splice(-amount, amount);
+			const labelsClaimed = stack.free.splice(-amount, amount);
+			for (const label of labelsClaimed) {
+				stack.assigned[label] = frameId;
+			}
 
-		for (const label of labelsClaimed) {
-			stack.assigned.set(label, frameId);
-		}
-
-		return labelsClaimed;
-	});
+			return [stack, labelsClaimed];
+		},
+		async () => createStack(tabId)
+	);
 }
 
 export async function reclaimLabelsFromOtherFrames(
@@ -28,7 +32,7 @@ export async function reclaimLabelsFromOtherFrames(
 	frameId: number,
 	amount: number
 ) {
-	return withStack(tabId, async (stack) => {
+	return store.withLock(`labelStack:${tabId}`, async (stack) => {
 		const frames = await getAllFrames(tabId);
 		const otherFramesIds = frames
 			.map((frame) => frame.frameId)
@@ -37,12 +41,11 @@ export async function reclaimLabelsFromOtherFrames(
 		const reclaimed: string[] = [];
 
 		for (const frameId of otherFramesIds) {
-			// I'm not using our sendMessage to avoid dependency cycle.
 			// eslint-disable-next-line no-await-in-loop
-			const reclaimedFromFrame: string[] = await browser.tabs.sendMessage(
-				tabId,
-				{ type: "reclaimLabels", amount: amount - reclaimed.length },
-				{ frameId }
+			const reclaimedFromFrame = await sendMessage(
+				"reclaimLabels",
+				{ amount: amount - reclaimed.length },
+				{ tabId, frameId }
 			);
 
 			reclaimed.push(...reclaimedFromFrame);
@@ -52,13 +55,11 @@ export async function reclaimLabelsFromOtherFrames(
 			if (reclaimed.length === amount) break;
 		}
 
-		if (reclaimed.length === 0) return [];
-
 		for (const label of reclaimed) {
-			stack.assigned.set(label, frameId);
+			stack.assigned[label] = frameId;
 		}
 
-		return reclaimed;
+		return [stack, reclaimed];
 	});
 }
 
@@ -69,24 +70,28 @@ export async function storeLabelsInFrame(
 	frameId: number,
 	labels: string[]
 ) {
-	await withStack(tabId, async (stack) => {
+	return store.withLock(`labelStack:${tabId}`, async (stack) => {
 		stack.free = stack.free.filter((value) => !labels.includes(value));
 
 		for (const label of labels) {
-			stack.assigned.set(label, frameId);
+			stack.assigned[label] = frameId;
 		}
+
+		return [stack];
 	});
 }
 
 export async function releaseLabels(tabId: number, labels: string[]) {
-	await withStack(tabId, async (stack) => {
+	return store.withLock(`labelStack:${tabId}`, async (stack) => {
 		// We make sure the labels to release are actually assigned
-		const filteredLabels = labels.filter((label) => stack.assigned.has(label));
+		const filteredLabels = labels.filter((label) => label in stack.assigned);
 		stack.free.push(...filteredLabels);
 		stack.free.sort((a, b) => b.length - a.length || b.localeCompare(a));
 
 		for (const label of filteredLabels) {
-			stack.assigned.delete(label);
+			delete stack.assigned[label];
 		}
+
+		return [stack];
 	});
 }

@@ -8,7 +8,7 @@ import {
 	type NotificationType,
 } from "../../common/createNotifier";
 import { createElement } from "../dom/utils";
-import { getSetting } from "../settings/settingsManager";
+import { settingsSync } from "../settings/settingsSync";
 import { isCurrentTab, isMainFrame } from "../setup/contentScriptContext";
 import { Toast } from "./toast/Toast";
 import { ToastIcon } from "./toast/ToastIcon";
@@ -23,7 +23,7 @@ export const notify = createNotifier(
 		if (!(await shouldNotify())) return;
 
 		renderToast();
-		const autoClose = getSetting("toastDuration");
+		const autoClose = settingsSync.get("toastDuration");
 
 		const icon = <ToastIcon iconType={type} />;
 
@@ -89,7 +89,7 @@ function renderToast() {
 async function shouldNotify() {
 	if (
 		document.visibilityState !== "visible" ||
-		!getSetting("enableNotifications") ||
+		!settingsSync.get("enableNotifications") ||
 		!isMainFrame() ||
 		!(await isCurrentTab())
 	) {
@@ -108,14 +108,14 @@ async function shouldNotify() {
 export async function notifyTogglesStatus(force = false) {
 	if (
 		!force &&
-		!((await shouldNotify()) && getSetting("notifyWhenTogglingHints"))
+		!((await shouldNotify()) && settingsSync.get("notifyWhenTogglingHints"))
 	) {
 		return;
 	}
 
 	renderToast();
 
-	const autoClose = getSetting("toastDuration");
+	const autoClose = settingsSync.get("toastDuration");
 
 	if (toast.isActive("toggles")) {
 		toast.update("toggles");

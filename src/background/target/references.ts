@@ -1,5 +1,5 @@
 import { getHostPattern } from "../../common/getHostPattern";
-import { retrieve } from "../../common/storage/storage";
+import { settings } from "../../common/settings/settings";
 import { getAllFrames } from "../utils/getAllFrames";
 
 export async function assertReferencesInCurrentTab(referenceNames: string[]) {
@@ -12,11 +12,11 @@ export async function assertReferencesInCurrentTab(referenceNames: string[]) {
 
 export async function assertReferenceInCurrentTab(referenceName: string) {
 	const frames = await getAllFrames();
-	const references = await retrieve("references");
+	const references = await settings.get("references");
 
 	const found = frames
 		.map(({ url }) => getHostPattern(url))
-		.some((hostPattern) => references.get(hostPattern)?.has(referenceName));
+		.some((hostPattern) => references[hostPattern]?.[referenceName]);
 
 	if (!found) {
 		throw new Error(`Reference "${referenceName}" not found in current tab.`);

@@ -5,7 +5,7 @@ import { getIntersectingElements } from "../dom/getIntersectingElements";
 import { isHintable } from "../dom/isHintable";
 import { isVisible } from "../dom/isVisible";
 import { getHintableSelector } from "../hints/selectors";
-import { getSetting } from "../settings/settingsManager";
+import { settingsSync } from "../settings/settingsSync";
 import { getToggles } from "../settings/toggles";
 import { getAllWrappers } from "../wrappers/wrappers";
 
@@ -92,7 +92,7 @@ const batchMatchingStrategy: MatchingStrategy = async (text, elements) => {
  */
 export async function matchElementByText(text: string, viewportOnly: boolean) {
 	const isComputingHintables =
-		getToggles().computed || getSetting("alwaysComputeHintables");
+		getToggles().computed || settingsSync.get("alwaysComputeHintables");
 	const isLargePage = document.querySelectorAll("*").length > 25_000;
 
 	const collector = isLargePage

@@ -1,78 +1,26 @@
-import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
 import { letterLabels, numberLabels } from "../../../common/labels";
-import { retrieve, store } from "../../../common/storage/storage";
-import { type LabelStack } from "../../../typings/StorageSchema";
+import { settings } from "../../../common/settings/settings";
+import { store } from "../../../common/storage/store";
+import { type LabelStack } from "../../../typings/LabelStack";
 
-const mutex = new Mutex();
-
-/**
- * Execute a callback with the label stack for a tab. The execution is locked
- * with a mutex to prevent race conditions.
- *
- * Make sure of not reassigning the stack in the callback as it will not be
- * saved.
- */
-export async function withStack<T>(
-	tabId: number,
-	callback: (stack: LabelStack) => Promise<T>
-): Promise<T> {
-	return mutex.runExclusive(async () => {
-		const stack = await getStack(tabId);
-		const result = await callback(stack);
-		await saveStack(tabId, stack);
-		return result;
-	});
-}
-
-/**
- * Initialize the label stack for a tab.
- */
 export async function initStack(tabId: number) {
-	await withStack(tabId, async (stack) => {
-		await resetStack(stack, tabId);
-	});
-}
-
-/**
- * Retrieve the label stack for a tab.
- *
- * @throws If no stack is found for the tab.
- */
-export async function getRequiredStack(tabId: number) {
-	const stack = await getStack(tabId);
-
-	if (!stack) {
-		throw new Error(`No label stack found for tab with id ${tabId}`);
-	}
-
+	const stack = await createStack(tabId);
+	await store.set(`labelStack:${tabId}`, stack);
 	return stack;
 }
 
-/**
- * Reset the label stack for a tab. It resets the stack in place.
- */
-export async function resetStack(stack: LabelStack, tabId: number) {
-	const emptyStack = await getEmptyStack(tabId);
-	stack.free = emptyStack.free;
-	stack.assigned = emptyStack.assigned;
+export async function getStack(tabId: number) {
+	const stack = await store.get(`labelStack:${tabId}`);
+	return stack ?? initStack(tabId);
 }
 
-async function getStack(tabId: number) {
-	const stacks = await retrieve("labelStacks");
-	return stacks.get(tabId) ?? getEmptyStack(tabId);
-}
-
-async function saveStack(tabId: number, stack: LabelStack) {
-	const stacks = await retrieve("labelStacks");
-	stacks.set(tabId, stack);
-	await store("labelStacks", stacks);
-}
-
-async function getEmptyStack(tabId: number): Promise<LabelStack> {
-	const includeSingleLetterHints = await retrieve("includeSingleLetterHints");
-	const keyboardClicking = await retrieve("keyboardClicking");
-	const useNumberHints = await retrieve("useNumberHints");
+export async function createStack(tabId: number): Promise<LabelStack> {
+	const includeSingleLetterHints = await settings.get(
+		"includeSingleLetterHints"
+	);
+	const keyboardClicking = await settings.get("keyboardClicking");
+	const useNumberHints = await settings.get("useNumberHints");
 
 	// To make all hints reachable via keyboard clicking, we exclude single-letter
 	// hints when keyboard clicking is active.
@@ -87,7 +35,7 @@ async function getEmptyStack(tabId: number): Promise<LabelStack> {
 	// an excluded key for the current url.
 	const tab = await browser.tabs.get(tabId);
 	const keysToExclude = await getKeysToExclude(tab.url!);
-	const labelsToExclude = await retrieve("hintsToExclude");
+	const labelsToExclude = await settings.get("hintsToExclude");
 
 	const filteredLabels = possibleLabels.filter(
 		(label) =>
@@ -102,18 +50,22 @@ async function getEmptyStack(tabId: number): Promise<LabelStack> {
 
 	return {
 		free: filteredLabels,
-		assigned: new Map(),
+		assigned: {},
 	};
+}
+
+async function removeStack(tabId: number) {
+	await store.remove(`labelStack:${tabId}`);
 }
 
 /**
  * Get a set of keys to exclude for a given url according to the user settings.
  */
 async function getKeysToExclude(url: string) {
-	const keyboardClicking = await retrieve("keyboardClicking");
+	const keyboardClicking = await settings.get("keyboardClicking");
 	if (!keyboardClicking) return new Set<string>();
 
-	const keysToExclude = await retrieve("keysToExclude");
+	const keysToExclude = await settings.get("keysToExclude");
 
 	// Get all matching patterns and map to their keys, then join with commas
 	const allKeysToExclude = keysToExclude
@@ -129,3 +81,19 @@ async function getKeysToExclude(url: string) {
 			.filter(Boolean)
 	);
 }
+
+browser.tabs.onRemoved.addListener(async (tabId) => {
+	try {
+		await removeStack(tabId);
+	} catch (error) {
+		console.error(error);
+	}
+});
+
+browser.tabs.onUpdated.addListener(async (tabId, changeInfo) => {
+	try {
+		if (changeInfo.discarded) await removeStack(tabId);
+	} catch (error) {
+		console.error(error);
+	}
+});

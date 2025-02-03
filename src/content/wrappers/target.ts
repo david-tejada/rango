@@ -70,7 +70,7 @@ async function getWrappersForTarget(target: Target<ElementMark>) {
 			const wrappers = await Promise.all(
 				values.map(async (name) => {
 					const { hostReferences } = await getReferences();
-					const selector = hostReferences.get(name);
+					const selector = hostReferences[name];
 					if (!selector) return;
 
 					const element = await getElementFromSelector(selector);

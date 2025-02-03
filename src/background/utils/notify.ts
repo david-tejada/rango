@@ -3,7 +3,7 @@ import {
 	createNotifier,
 	type NotificationType,
 } from "../../common/createNotifier";
-import { retrieve } from "../../common/storage/storage";
+import { settings } from "../../common/settings/settings";
 import { urls } from "../../common/urls";
 import { sendMessage } from "../messaging/sendMessage";
 
@@ -15,7 +15,7 @@ import { sendMessage } from "../messaging/sendMessage";
  */
 export const notify = createNotifier(
 	async (text: string, type: NotificationType, toastId?: string) => {
-		if (!(await retrieve("enableNotifications"))) return;
+		if (!(await settings.get("enableNotifications"))) return;
 
 		try {
 			await sendMessage("displayToastNotification", {

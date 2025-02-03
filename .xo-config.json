@@ -12,6 +12,7 @@
 		"jestPuppeteer": true
 	},
 	"rules": {
+		"@typescript-eslint/no-dynamic-delete": "off",
 		"n/prefer-global/process": "off",
 		"unicorn/prefer-top-level-await": "off",
 		"capitalized-comments": "off",

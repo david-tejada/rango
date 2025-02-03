@@ -15,7 +15,7 @@ import {
 	type Target,
 	type TextSearchElementMark,
 } from "../../typings/Target/Target";
-import { getRequiredStack } from "../hints/labels/labelStack";
+import { getStack } from "../hints/labels/labelStack";
 import { sendMessage } from "../messaging/sendMessage";
 import { getAllFrames } from "../utils/getAllFrames";
 import { promiseAllSettledGrouped } from "../utils/promises";
@@ -57,17 +57,17 @@ async function splitElementHintTargetByFrame(
 	target: Target<ElementHintMark>
 ) {
 	const hints = getTargetValues(target);
-	const stack = await getRequiredStack(tabId);
+	const stack = await getStack(tabId);
 
 	if (target.type === "range") {
-		const anchorFrameId = stack.assigned.get(target.anchor.mark.value);
+		const anchorFrameId = stack.assigned[target.anchor.mark.value];
 		if (anchorFrameId === undefined) {
 			throw new TargetError(
 				`Couldn't find mark "${target.anchor.mark.value}".`
 			);
 		}
 
-		const activeFrameId = stack.assigned.get(target.active.mark.value);
+		const activeFrameId = stack.assigned[target.active.mark.value];
 		if (activeFrameId === undefined) {
 			throw new TargetError(
 				`Couldn't find mark "${target.active.mark.value}".`
@@ -86,7 +86,7 @@ async function splitElementHintTargetByFrame(
 	const hintsByFrame = new Map<number, string[]>();
 
 	for (const hint of hints) {
-		const frameId = stack.assigned.get(hint);
+		const frameId = stack.assigned[hint];
 		if (frameId === undefined) {
 			throw new TargetError(`Couldn't find mark "${hint}".`);
 		}
