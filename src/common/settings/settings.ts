@@ -4,8 +4,14 @@ import browser from "webextension-polyfill";
 import { type Store, store } from "../storage/store";
 import { type Settings, settingsSchema } from "./settingsSchema";
 
+type IndexedSettingKey = `${keyof Settings}_${number}`;
+
 const emitter = new Emittery<Settings>();
 
+/**
+ * Gets and validates a setting. If the setting is invalid, it will be removed
+ * from storage and the default value will be returned.
+ */
 async function get<T extends keyof Settings>(key: T): Promise<Settings[T]> {
 	const value = await store.get(key);
 	const validated = settingsSchema.shape[key].safeParse(value);
@@ -120,6 +126,9 @@ async function resetSettingToDefault<T extends keyof Settings>(
 	return settingsSchema.shape[key].parse(undefined) as Settings[T];
 }
 
+/**
+ * Parses a legacy setting value. Returns `undefined` if the parsing fails.
+ */
 function parseLegacySetting(value: string) {
 	function reviver(_key: string, value: any) {
 		if (
@@ -136,30 +145,48 @@ function parseLegacySetting(value: string) {
 		return value as unknown;
 	}
 
-	return JSON.parse(value, reviver) as unknown;
+	try {
+		return JSON.parse(value, reviver) as unknown;
+	} catch {
+		return undefined;
+	}
 }
 
 function isSettingKey(key: string): key is keyof Settings {
 	return settingsSchema.keyof().options.includes(key as keyof Settings);
 }
 
+function isIndexedSettingKey(key: string): key is IndexedSettingKey {
+	const [settingKey, index] = key.split("_");
+
+	if (!settingKey || !index) return false;
+
+	return isSettingKey(settingKey) && !Number.isNaN(Number(index));
+}
+
+function getBaseSettingKey(key: keyof Settings | IndexedSettingKey) {
+	return key.split("_")[0] as keyof Settings;
+}
+
 browser.storage.onChanged.addListener(async (changes) => {
 	try {
-		const settingChangeEntries = Object.entries(changes).filter(([key]) =>
-			isSettingKey(key)
-		) as Array<[keyof Settings, browser.Storage.StorageChange]>;
+		const settingChangeEntries = Object.entries(changes).filter(
+			([key]) => isSettingKey(key) || isIndexedSettingKey(key)
+		) as Array<
+			[keyof Settings | IndexedSettingKey, browser.Storage.StorageChange]
+		>;
 
 		if (settingChangeEntries.length === 0) return;
 
 		await Promise.all(
 			settingChangeEntries.map(async ([key, change]) => {
 				if (change && change.oldValue !== change.newValue) {
-					const validated = settingsSchema.shape[key].safeParse(
-						change.newValue
-					);
-					if (!validated.success) return;
+					const settingKey = getBaseSettingKey(key);
+					// We get the value again to ensure it's valid and, in case it was an
+					// indexed key value change, we get the actual value of the setting
+					const value = await get(settingKey);
 
-					await emitter.emit(key, validated.data);
+					await emitter.emit(settingKey, value);
 				}
 			})
 		);

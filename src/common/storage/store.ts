@@ -4,6 +4,7 @@ import browser from "webextension-polyfill";
 import { type LabelStack } from "../../typings/LabelStack";
 import { type TabMarkers } from "../../typings/TabMarkers";
 import { settingsSchema, type Settings } from "../settings/settingsSchema";
+import { syncStorage } from "./syncStorage";
 
 type LabelStacks = Record<`labelStack:${number}`, LabelStack>;
 
@@ -257,9 +258,7 @@ function getStorageOptions(key: keyof Store) {
 
 	return {
 		storageArea:
-			isSetting && !isLocalSetting
-				? browser.storage.sync
-				: browser.storage.local,
+			isSetting && !isLocalSetting ? syncStorage : browser.storage.local,
 		useCache: !isSetting,
 	};
 }
