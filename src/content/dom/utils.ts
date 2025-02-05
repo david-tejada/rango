@@ -40,7 +40,7 @@ export function getActiveElement() {
 }
 
 const focusableSelector =
-	":is(a[href], area[href], input, select, textarea, button, iframe, object, summary, [tabindex]):not(:is([disabled], [tabindex='-1'], [contenteditable='false']))";
+	":is(a[href], area[href], input, select, textarea, button, iframe, object, summary, [tabindex]):not(:is([disabled], [contenteditable='false']))";
 
 /**
  * Returns the element itself if it's focusable. If not, the closest focusable
