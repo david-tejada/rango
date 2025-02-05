@@ -81,6 +81,7 @@ export type ActionMap = {
 		colors: [number, number, number, number];
 	};
 	removeLocatePattern: void;
+	focusAndActivateElement: { target: Target<ElementMark> };
 	focusAndDeleteContents: void;
 	focusElement: { target: Target<ElementMark> };
 	focusFirstInput: void;
