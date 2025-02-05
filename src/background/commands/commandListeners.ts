@@ -342,6 +342,19 @@ export function addCommandListeners() {
 		}
 	});
 
+	onCommand("focusAndActivateElement", async ({ target }) => {
+		assertPrimitiveTarget(target);
+		const { results } = await sendMessageToTargetFrames(
+			"focusAndGetActivationKey",
+			{ target }
+		);
+
+		const key = results[0];
+		if (!key) return;
+
+		return [{ name: "key", key }];
+	});
+
 	onCommand("drawLocatePattern", async ({ target, colors }) => {
 		assertPrimitiveTarget(target);
 		await sendMessageToTargetFrames("drawLocatePattern", {
@@ -407,6 +420,8 @@ export function addCommandListeners() {
 		const { results } = await sendMessageToTargetFrames("focusElement", {
 			target,
 		});
+
+		console.log(results);
 
 		return results[0]?.focusPage ? { name: "focusPage" } : undefined;
 	});

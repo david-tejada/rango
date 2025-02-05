@@ -61,6 +61,9 @@ export type ContentBoundMessageMap = {
 		isSelect?: boolean;
 		focusPage?: boolean;
 	} | void;
+	focusAndGetActivationKey: (data: {
+		target: Target<ElementMark>;
+	}) => "enter" | "space" | undefined;
 	getElementTextContent: (data: { target: Target<ElementMark> }) => string[];
 	getElementMarkdownLink: (data: { target: Target<ElementMark> }) => string[];
 	tryToFocusElementAndCheckIsEditable: (data: {

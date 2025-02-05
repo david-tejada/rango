@@ -6,6 +6,7 @@ import {
 	storeScrollPosition,
 } from "../actions/customScrollPositions";
 import { blur, focus, focusFirstInput } from "../actions/focus";
+import { focusAndGetActivationKey } from "../actions/focusAndGetActivationKey";
 import {
 	getAnchorHref,
 	getElementTextContent,
@@ -134,6 +135,11 @@ export function addMessageListeners() {
 	onMessage("clickElement", async ({ target }) => {
 		const wrappers = await getTargetedWrappers(target);
 		return clickElement(wrappers);
+	});
+
+	onMessage("focusAndGetActivationKey", async ({ target }) => {
+		const firstWrapper = await getFirstWrapper(target);
+		return focusAndGetActivationKey(firstWrapper);
 	});
 
 	onMessage("drawLocatePattern", async ({ target, colors }) => {
