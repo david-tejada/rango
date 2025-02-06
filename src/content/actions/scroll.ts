@@ -68,7 +68,9 @@ export function snapScroll(
 	target: ElementWrapper,
 	position: "top" | "center" | "bottom"
 ) {
-	const scrollContainer = target.userScrollableContainer;
+	const scrollContainer =
+		target.userScrollableContainer ??
+		getUserScrollableContainer(target.element, "vertical");
 
 	if (!scrollContainer) {
 		throw new Error("Couldn't find userScrollableContainer for element");
