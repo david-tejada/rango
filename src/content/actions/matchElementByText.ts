@@ -178,7 +178,7 @@ export function getTextMatchedElement(text: string) {
 
 function getNormalizedTextContent(element: Element) {
 	return getTextContent(element)
-		.replaceAll(/[^a-zA-Z\s]/g, "")
+		.replaceAll(/[^a-zA-Z\s]/g, " ")
 		.replaceAll(/\s+/g, " ")
 		.trim();
 }
