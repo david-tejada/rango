@@ -159,10 +159,14 @@ async function splitTextSearchTargetByFrame(
 		// frame. So if the match is not excellent we will send the message to all
 		// frames with a timeout to prevent the slow frames from making the command
 		// too slow.
-		const mainFrameResult = await sendMessage("matchElementByText", {
-			text,
-			viewportOnly,
-		});
+		const mainFrameResult = await sendMessage(
+			"matchElementByText",
+			{
+				text,
+				viewportOnly,
+			},
+			{ maxWait: 1000 }
+		);
 		const mainFrameMatch = { frameId: 0, text, match: mainFrameResult };
 
 		// If we have an excellent hintable match in the main frame (score < 0.1),
