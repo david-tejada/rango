@@ -36,8 +36,10 @@ const collectFromWrappers: ElementCollector = async (viewportOnly) => {
 	return viewportOnly ? getIntersectingElements(elements) : elements;
 };
 
-const collectHintablesFromLightDom: ElementCollector = async (viewportOnly) => {
-	const hintableElements = document.querySelectorAll(getHintableSelector());
+const collectFromLightDom: ElementCollector = async (viewportOnly) => {
+	// We want to search also in these elements to use with snap scroll.
+	const selector = `${getHintableSelector()}, p, h1, h2, h3, h4, h5, h6, li, td, th`;
+	const hintableElements = document.querySelectorAll(selector);
 	return viewportOnly
 		? getIntersectingElements(hintableElements)
 		: hintableElements;
@@ -76,7 +78,7 @@ const batchMatchingStrategy: MatchingStrategy = async (text, elements) => {
 
 	// If we weren't able to find an excellent match, search also in the viewport
 
-	const viewportElements = await collectHintablesFromLightDom(true);
+	const viewportElements = await collectFromLightDom(true);
 	const viewportMatches = fuzzySearchElements(text, viewportElements);
 
 	return [...bestMatches, ...viewportMatches];
@@ -96,7 +98,7 @@ export async function matchElementByText(text: string, viewportOnly: boolean) {
 	const isLargePage = document.querySelectorAll("*").length > 25_000;
 
 	const collector = isLargePage
-		? collectHintablesFromLightDom
+		? collectFromLightDom
 		: isComputingHintables
 			? collectFromWrappers
 			: collectWithDeepGetElements;
@@ -136,26 +138,26 @@ function fuzzySearchElements(
 	text: string,
 	elements: Element[] | NodeListOf<Element>
 ) {
-	const maxTextLengthToSearch = 200;
+	// This value is a bit arbitrary, but it seems to work well. The important
+	// thing is that elements that contain the exact text should have a lower
+	// score.
+	const includesTextMultiplier = 0.5;
+
 	const elementArray = Array.isArray(elements)
 		? elements
 		: Array.from(elements);
+
 	const textMatchables = elementArray
 		.map((element) => ({
 			element,
 			normalizedTextContent: getNormalizedTextContent(element),
 		}))
-		.filter(
-			(matchable) =>
-				matchable.normalizedTextContent.length > 0 &&
-				matchable.normalizedTextContent.length < maxTextLengthToSearch
-		);
+		.filter((matchable) => matchable.normalizedTextContent.length > 0);
 
 	const fuse = new Fuse(textMatchables, {
 		keys: ["normalizedTextContent"],
 		ignoreLocation: true,
 		includeScore: true,
-		threshold: 0.4,
 	});
 
 	return fuse
@@ -163,7 +165,9 @@ function fuzzySearchElements(
 		.map((result) => ({
 			element: result.item.element,
 			match: {
-				score: result.score!,
+				score: result.item.normalizedTextContent.includes(text)
+					? result.score! * includesTextMultiplier
+					: result.score!,
 				isHintable: isHintable(result.item.element),
 			},
 		}))
@@ -178,7 +182,7 @@ export function getTextMatchedElement(text: string) {
 
 function getNormalizedTextContent(element: Element) {
 	return getTextContent(element)
-		.replaceAll(/[^a-zA-Z\s]/g, "")
+		.replaceAll(/[^a-zA-Z\s]/g, " ")
 		.replaceAll(/\s+/g, " ")
 		.trim();
 }
