@@ -182,6 +182,7 @@ export function getTextMatchedElement(text: string) {
 
 function getNormalizedTextContent(element: Element) {
 	return getTextContent(element)
+		.toLowerCase()
 		.replaceAll(/[^a-zA-Z\s]/g, " ")
 		.replaceAll(/\s+/g, " ")
 		.trim();
