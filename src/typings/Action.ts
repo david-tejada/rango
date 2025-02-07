@@ -158,7 +158,10 @@ export type ActionMap = {
 	// Settings
 	decreaseHintSize: void;
 	increaseHintSize: void;
+
+	// Pages
 	openSettingsPage: void;
+	openWhatsNewPage: void;
 
 	// Helpers
 	checkActiveElementIsEditable: void; // Not used anymore. Only necessary for warning user.

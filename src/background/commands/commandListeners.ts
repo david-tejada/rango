@@ -2,6 +2,7 @@ import browser from "webextension-polyfill";
 import { getHostPattern } from "../../common/getHostPattern";
 import { settings } from "../../common/settings/settings";
 import { isTargetError } from "../../common/target/TargetError";
+import { urls } from "../../common/urls";
 import { type TalonAction } from "../../typings/TalonAction";
 import { assertPrimitiveTarget } from "../../typings/Target/Target";
 import { refreshHints } from "../hints/refreshHints";
@@ -679,8 +680,15 @@ export function addCommandListeners() {
 		await settings.set("hintFontSize", hintFontSize + 1);
 	});
 
+	// ===========================================================================
+	// OPEN PAGES
+	// ===========================================================================
 	onCommand("openSettingsPage", async () => {
 		await browser.runtime.openOptionsPage();
+	});
+
+	onCommand("openWhatsNewPage", async () => {
+		await browser.tabs.create({ url: urls.whatsNewPage.href });
 	});
 
 	// ===========================================================================
