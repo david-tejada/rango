@@ -15,8 +15,6 @@
 		"package:safari": "cross-env BROWSER=safari npm run _package",
 		"package:chrome": "cross-env BROWSER=chrome npm run _package",
 		"package": "run-p package:*",
-		"predev": "rimraf dist/firefox && mkdir -p dist/firefox && cp src/manifests/firefox/manifest.json dist/firefox/manifest.json",
-		"dev": "run-p watch:firefox start:firefox",
 		"start:firefox": "web-ext run --source-dir dist/firefox",
 		"start:chrome": "web-ext run --source-dir dist/chrome --target chromium",
 		"build-and-package": "run-s build package",
