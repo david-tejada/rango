@@ -64,6 +64,11 @@ export function trackRecentTabs() {
 				tabsByRecency = tabsByRecency.filter((id) => id !== tabId);
 				tabsByRecency.unshift(tabId);
 
+				// Prevent the array from getting too large.
+				if (tabsByRecency.length > 1000) {
+					tabsByRecency = tabsByRecency.slice(0, 1000);
+				}
+
 				return [tabsByRecency];
 			},
 			() => []
