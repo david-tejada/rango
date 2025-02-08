@@ -26,18 +26,27 @@ npm install
 
 ### Run the extension for development
 
-The following command will build the extension for development and launch a
-Firefox instance using [mozilla/web-ext](https://github.com/mozilla/web-ext).
+It is recommended to use Firefox for development as content scripts reload
+automatically:
+
+First, build the extension in watch mode.
 
 ```bash
-npm run dev
+npm run watch:firefox
+```
+
+Then, in another terminal, launch a Firefox instance using
+[mozilla/web-ext](https://github.com/mozilla/web-ext).
+
+```bash
+npm run start:firefox
 ```
 
 You can also run the extension in Chrome. Note that in Chrome content scripts
 don't reload when the extension changes, so you need to refresh the page every
 time there is a change in the extension's code:
 
-First build the extension in watch mode:
+First, build the extension in watch mode:
 
 ```bash
 npm run watch:chrome
