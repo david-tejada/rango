@@ -33,7 +33,7 @@ async function findPreviouslyActiveTab(windowId: number) {
 	const tabsByRecency = (await store.get("tabsByRecency")) ?? [];
 
 	for (const tabId of tabsByRecency) {
-		const tab = tabsInWindow.find((tab) => tab.id === tabId && !tab.active);
+		const tab = tabsInWindow.findLast((tab) => tab.id === tabId && !tab.active);
 		if (tab) return tab;
 	}
 
@@ -58,11 +58,11 @@ export function trackRecentTabs() {
 				// `previousTabId` here too.
 				if (previousTabId) {
 					tabsByRecency = tabsByRecency.filter((id) => id !== previousTabId);
-					tabsByRecency.unshift(previousTabId);
+					tabsByRecency.push(previousTabId);
 				}
 
 				tabsByRecency = tabsByRecency.filter((id) => id !== tabId);
-				tabsByRecency.unshift(tabId);
+				tabsByRecency.push(tabId);
 
 				return [tabsByRecency];
 			},
