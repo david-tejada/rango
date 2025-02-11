@@ -132,9 +132,9 @@ export function addMessageListeners() {
 
 	onMessage("refreshTitleDecorations", updateTitleDecorations);
 
-	onMessage("clickElement", async ({ target }) => {
+	onMessage("clickElement", async ({ target, isSingleTarget }) => {
 		const wrappers = await getTargetedWrappers(target);
-		return clickElement(wrappers);
+		return clickElement(wrappers, isSingleTarget);
 	});
 
 	onMessage("focusAndGetActivationKey", async ({ target }) => {

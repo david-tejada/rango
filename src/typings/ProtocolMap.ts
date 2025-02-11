@@ -57,9 +57,13 @@ export type BackgroundBoundMessageMap = {
 
 export type ContentBoundMessageMap = {
 	// Elements
-	clickElement: (data: { target: Target<ElementMark> }) => {
-		isSelect?: boolean;
-		focusPage?: boolean;
+	clickElement: (data: {
+		target: Target<ElementMark>;
+		isSingleTarget?: boolean;
+	}) => {
+		focusPage: boolean;
+		isSelect: boolean;
+		isCopyToClipboardButton: boolean;
 	} | void;
 	focusAndGetActivationKey: (data: {
 		target: Target<ElementMark>;

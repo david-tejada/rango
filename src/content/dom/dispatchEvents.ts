@@ -41,9 +41,7 @@ function pointerEvent(type: string, clientX: number, clientY: number) {
 	});
 }
 
-export function dispatchClick(element: Element): boolean {
-	let shouldFocusPage = false;
-
+export function dispatchClick(element: Element) {
 	if (lastClicked) dispatchUnhover(lastClicked);
 	const { x: clientX, y: clientY } = getElementCenter(element);
 
@@ -63,8 +61,6 @@ export function dispatchClick(element: Element): boolean {
 		if (selection && !element.contains(selection.anchorNode)) {
 			setSelectionAtEdge(element, true);
 		}
-
-		if (!document.hasFocus()) shouldFocusPage = true;
 	}
 
 	element.dispatchEvent(pointerEvent("pointerup", clientX, clientY));
@@ -73,8 +69,6 @@ export function dispatchClick(element: Element): boolean {
 	element.dispatchEvent(mouseEvent("click", clientX, clientY));
 
 	lastClicked = element;
-
-	return shouldFocusPage;
 }
 
 export function dispatchHover(element: Element) {

@@ -283,12 +283,23 @@ export function addCommandListeners() {
 				key: "alt-down",
 			});
 
+		if (results.length === 1 && results[0]?.isCopyToClipboardButton) {
+			actions.push(
+				{ name: "sleep", ms: 50 },
+				{
+					name: "key",
+					key: "enter",
+				}
+			);
+		}
+
 		return actions;
 	}
 
 	onCommand("clickElement", async ({ target }) => {
 		const { results } = await sendMessageToTargetFrames("clickElement", {
 			target,
+			isSingleTarget: target.type === "primitive",
 		});
 
 		return handleClickResults(results);
@@ -328,6 +339,7 @@ export function addCommandListeners() {
 		try {
 			const { results } = await sendMessageToTargetFrames("clickElement", {
 				target,
+				isSingleTarget: target.type === "primitive",
 			});
 
 			return handleClickResults(results);

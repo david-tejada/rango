@@ -445,7 +445,7 @@ export class ElementWrapper {
 		}
 	}
 
-	async click(): Promise<boolean> {
+	async click() {
 		const pointerTarget = this.getPointerTarget();
 
 		if (this.hint?.inner.isConnected) {
@@ -484,14 +484,13 @@ export class ElementWrapper {
 						active: true,
 					})),
 				});
-				return false;
 			}
 		}
 
 		// Some pages expect a some hover event prior to the click and if there
 		// isn't one we can't click at all. For example, Slack search suggestions.
 		dispatchHover(pointerTarget);
-		return dispatchClick(pointerTarget);
+		dispatchClick(pointerTarget);
 	}
 
 	flashElement() {
