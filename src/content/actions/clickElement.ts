@@ -93,7 +93,7 @@ export async function clickElement(
  * Returns true if the document needs to be focused in order to be able to
  * interact with the element after activation.
  */
-export function shouldFocusDocumentOnActivation(element: Element) {
+function shouldFocusDocumentOnActivation(element: Element) {
 	if (document.hasFocus()) return false;
 
 	// There's probably more cases but here we just handle the most common ones.
