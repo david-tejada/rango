@@ -76,5 +76,9 @@
 	"browser_action": {
 		"default_icon": "../../assets/icon48.png",
 		"default_title": "Rango"
-	}
+	},
+	"web_accessible_resources": [
+		"../../content/actions/clipboardWriteInterceptor.js",
+		"clipboardWriteInterceptor.js"
+	]
 }

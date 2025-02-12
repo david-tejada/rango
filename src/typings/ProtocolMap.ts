@@ -53,13 +53,20 @@ export type BackgroundBoundMessageMap = {
 	clickHintInFrame: (data: { hint: string }) => void;
 	markHintsAsKeyboardReachable: (data: { letter: string }) => void;
 	restoreKeyboardReachableHints: () => void;
+
+	// Other
+	getClipboardWriteInterceptorPath: () => string;
 };
 
 export type ContentBoundMessageMap = {
 	// Elements
-	clickElement: (data: { target: Target<ElementMark> }) => {
-		isSelect?: boolean;
-		focusPage?: boolean;
+	clickElement: (data: {
+		target: Target<ElementMark>;
+		isSingleTarget?: boolean;
+	}) => {
+		focusPage: boolean;
+		isSelect: boolean;
+		isCopyToClipboardButton: boolean;
 	} | void;
 	focusAndGetActivationKey: (data: {
 		target: Target<ElementMark>;
