@@ -67,7 +67,7 @@ export async function directClickElement(
 	}
 }
 
-export function handleClickResults(
+function handleClickResults(
 	results: Awaited<
 		ReturnType<typeof sendMessageToTargetFrames<"clickElement">>
 	>["results"]
