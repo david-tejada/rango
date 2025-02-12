@@ -91,24 +91,39 @@ function injectClipboardWriteInterceptor() {
  * a clipboard write operation was detected.
  */
 async function clickAndDetectClipboardWrite(wrapper: ElementWrapper) {
-	await setUpClipboardWriteInterceptor();
+	try {
+		await setUpClipboardWriteInterceptor();
+	} catch (error) {
+		console.error(error);
+		await wrapper.click();
+		return false;
+	}
+
 	const clipboardWritePromise = listenForClipboardWrite();
 	await wrapper.click();
 	return clipboardWritePromise;
 }
 
 async function setUpClipboardWriteInterceptor() {
+	const origin = globalThis.location.origin;
+
 	window.postMessage({ type: "RANGO_ADD_CLIPBOARD_WRITE_INTERCEPTOR" }, origin);
 
-	return new Promise<void>((resolve) => {
+	return new Promise<void>((resolve, reject) => {
 		const readyHandler = async (event: MessageEvent) => {
 			if (event.origin !== origin) return;
 
 			if (event.data.type === "RANGO_CLIPBOARD_WRITE_INTERCEPTOR_READY") {
 				removeEventListener("message", readyHandler);
+				clearTimeout(timeout);
 				resolve();
 			}
 		};
+
+		const timeout = setTimeout(() => {
+			removeEventListener("message", readyHandler);
+			reject(new Error("Unable to set up clipboard write interceptor"));
+		}, 50);
 
 		addEventListener("message", readyHandler);
 	});
