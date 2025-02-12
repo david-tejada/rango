@@ -7,25 +7,25 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		63828E962D52246D00AF7301 /* whatsNew.d2011382.js in Resources */ = {isa = PBXBuildFile; fileRef = 63828E952D52246D00AF7301 /* whatsNew.d2011382.js */; };
-		63828E972D52246D00AF7301 /* icon-keyboard-clicking48.f52f8f73.png in Resources */ = {isa = PBXBuildFile; fileRef = 63828E852D52246D00AF7301 /* icon-keyboard-clicking48.f52f8f73.png */; };
-		63828E982D52246D00AF7301 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 63828E892D52246D00AF7301 /* manifest.json */; };
-		63828E992D52246D00AF7301 /* onboarding.7e0e0aee.html in Resources */ = {isa = PBXBuildFile; fileRef = 63828E8C2D52246D00AF7301 /* onboarding.7e0e0aee.html */; };
-		63828E9A2D52246D00AF7301 /* offscreen.194ee590.js in Resources */ = {isa = PBXBuildFile; fileRef = 63828E8B2D52246D00AF7301 /* offscreen.194ee590.js */; };
-		63828E9B2D52246D00AF7301 /* content.cbff2145.js in Resources */ = {isa = PBXBuildFile; fileRef = 63828E842D52246D00AF7301 /* content.cbff2145.js */; };
-		63828E9C2D52246D00AF7301 /* settings.568e3504.js in Resources */ = {isa = PBXBuildFile; fileRef = 63828E8E2D52246D00AF7301 /* settings.568e3504.js */; };
-		63828E9D2D52246D00AF7301 /* whatsNew.56dca317.js in Resources */ = {isa = PBXBuildFile; fileRef = 63828E922D52246D00AF7301 /* whatsNew.56dca317.js */; };
-		63828E9E2D52246D00AF7301 /* whatsNew.b4149b1c.css in Resources */ = {isa = PBXBuildFile; fileRef = 63828E932D52246D00AF7301 /* whatsNew.b4149b1c.css */; };
-		63828E9F2D52246D00AF7301 /* icon48.278694fa.png in Resources */ = {isa = PBXBuildFile; fileRef = 63828E872D52246D00AF7301 /* icon48.278694fa.png */; };
-		63828EA02D52246D00AF7301 /* whatsNew.be4538c5.js in Resources */ = {isa = PBXBuildFile; fileRef = 63828E942D52246D00AF7301 /* whatsNew.be4538c5.js */; };
-		63828EA12D52246D00AF7301 /* offscreen.51e76c43.html in Resources */ = {isa = PBXBuildFile; fileRef = 63828E8A2D52246D00AF7301 /* offscreen.51e76c43.html */; };
-		63828EA22D52246D00AF7301 /* tippy.824e9ef4.css in Resources */ = {isa = PBXBuildFile; fileRef = 63828E902D52246D00AF7301 /* tippy.824e9ef4.css */; };
-		63828EA32D52246D00AF7301 /* icon128.2388c3de.png in Resources */ = {isa = PBXBuildFile; fileRef = 63828E882D52246D00AF7301 /* icon128.2388c3de.png */; };
-		63828EA42D52246D00AF7301 /* settings.398e83d0.css in Resources */ = {isa = PBXBuildFile; fileRef = 63828E8D2D52246D00AF7301 /* settings.398e83d0.css */; };
-		63828EA52D52246D00AF7301 /* background.59f71d38.js in Resources */ = {isa = PBXBuildFile; fileRef = 63828E832D52246D00AF7301 /* background.59f71d38.js */; };
-		63828EA62D52246D00AF7301 /* icon.cb5b9b17.svg in Resources */ = {isa = PBXBuildFile; fileRef = 63828E862D52246D00AF7301 /* icon.cb5b9b17.svg */; };
-		63828EA72D52246D00AF7301 /* settings.fb59ded2.html in Resources */ = {isa = PBXBuildFile; fileRef = 63828E8F2D52246D00AF7301 /* settings.fb59ded2.html */; };
-		63828EA82D52246D00AF7301 /* whatsNew.20ddf957.html in Resources */ = {isa = PBXBuildFile; fileRef = 63828E912D52246D00AF7301 /* whatsNew.20ddf957.html */; };
+		63A9CC1F2D5CE79B00037863 /* icon-keyboard-clicking48.f52f8f73.png in Resources */ = {isa = PBXBuildFile; fileRef = 63A9CC0F2D5CE79B00037863 /* icon-keyboard-clicking48.f52f8f73.png */; };
+		63A9CC202D5CE79B00037863 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 63A9CC132D5CE79B00037863 /* manifest.json */; };
+		63A9CC212D5CE79B00037863 /* background.59f71d38.js in Resources */ = {isa = PBXBuildFile; fileRef = 63A9CC0C2D5CE79B00037863 /* background.59f71d38.js */; };
+		63A9CC222D5CE79B00037863 /* settings.398e83d0.css in Resources */ = {isa = PBXBuildFile; fileRef = 63A9CC172D5CE79B00037863 /* settings.398e83d0.css */; };
+		63A9CC232D5CE79B00037863 /* clipboardWriteInterceptor.4f63cab8.js in Resources */ = {isa = PBXBuildFile; fileRef = 63A9CC0D2D5CE79B00037863 /* clipboardWriteInterceptor.4f63cab8.js */; };
+		63A9CC242D5CE79B00037863 /* whatsNew.be4538c5.js in Resources */ = {isa = PBXBuildFile; fileRef = 63A9CC1E2D5CE79B00037863 /* whatsNew.be4538c5.js */; };
+		63A9CC252D5CE79B00037863 /* offscreen.194ee590.js in Resources */ = {isa = PBXBuildFile; fileRef = 63A9CC152D5CE79B00037863 /* offscreen.194ee590.js */; };
+		63A9CC262D5CE79B00037863 /* icon48.278694fa.png in Resources */ = {isa = PBXBuildFile; fileRef = 63A9CC112D5CE79B00037863 /* icon48.278694fa.png */; };
+		63A9CC272D5CE79B00037863 /* icon128.2388c3de.png in Resources */ = {isa = PBXBuildFile; fileRef = 63A9CC122D5CE79B00037863 /* icon128.2388c3de.png */; };
+		63A9CC282D5CE79B00037863 /* whatsNew.20ddf957.html in Resources */ = {isa = PBXBuildFile; fileRef = 63A9CC1B2D5CE79B00037863 /* whatsNew.20ddf957.html */; };
+		63A9CC292D5CE79B00037863 /* whatsNew.56dca317.js in Resources */ = {isa = PBXBuildFile; fileRef = 63A9CC1C2D5CE79B00037863 /* whatsNew.56dca317.js */; };
+		63A9CC2A2D5CE79B00037863 /* whatsNew.b4149b1c.css in Resources */ = {isa = PBXBuildFile; fileRef = 63A9CC1D2D5CE79B00037863 /* whatsNew.b4149b1c.css */; };
+		63A9CC2B2D5CE79B00037863 /* settings.568e3504.js in Resources */ = {isa = PBXBuildFile; fileRef = 63A9CC182D5CE79B00037863 /* settings.568e3504.js */; };
+		63A9CC2C2D5CE79B00037863 /* settings.fb59ded2.html in Resources */ = {isa = PBXBuildFile; fileRef = 63A9CC192D5CE79B00037863 /* settings.fb59ded2.html */; };
+		63A9CC2D2D5CE79B00037863 /* offscreen.51e76c43.html in Resources */ = {isa = PBXBuildFile; fileRef = 63A9CC142D5CE79B00037863 /* offscreen.51e76c43.html */; };
+		63A9CC2E2D5CE79B00037863 /* tippy.824e9ef4.css in Resources */ = {isa = PBXBuildFile; fileRef = 63A9CC1A2D5CE79B00037863 /* tippy.824e9ef4.css */; };
+		63A9CC2F2D5CE79B00037863 /* icon.cb5b9b17.svg in Resources */ = {isa = PBXBuildFile; fileRef = 63A9CC102D5CE79B00037863 /* icon.cb5b9b17.svg */; };
+		63A9CC302D5CE79B00037863 /* onboarding.7e0e0aee.html in Resources */ = {isa = PBXBuildFile; fileRef = 63A9CC162D5CE79B00037863 /* onboarding.7e0e0aee.html */; };
+		63A9CC312D5CE79B00037863 /* content.cbff2145.js in Resources */ = {isa = PBXBuildFile; fileRef = 63A9CC0E2D5CE79B00037863 /* content.cbff2145.js */; };
 		E17BC8F8285E2315007EB9C6 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17BC8F7285E2315007EB9C6 /* Application.swift */; };
 		E1AEB977284D1D7800154974 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AEB976284D1D7800154974 /* AppDelegate.swift */; };
 		E1AEB97A284D1D7800154974 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E1AEB978284D1D7800154974 /* Main.storyboard */; };
@@ -64,25 +64,25 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		63828E832D52246D00AF7301 /* background.59f71d38.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = background.59f71d38.js; path = ../dist/safari/background.59f71d38.js; sourceTree = SOURCE_ROOT; };
-		63828E842D52246D00AF7301 /* content.cbff2145.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = content.cbff2145.js; path = ../dist/safari/content.cbff2145.js; sourceTree = SOURCE_ROOT; };
-		63828E852D52246D00AF7301 /* icon-keyboard-clicking48.f52f8f73.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-keyboard-clicking48.f52f8f73.png"; path = "../dist/safari/icon-keyboard-clicking48.f52f8f73.png"; sourceTree = SOURCE_ROOT; };
-		63828E862D52246D00AF7301 /* icon.cb5b9b17.svg */ = {isa = PBXFileReference; lastKnownFileType = text; name = icon.cb5b9b17.svg; path = ../dist/safari/icon.cb5b9b17.svg; sourceTree = SOURCE_ROOT; };
-		63828E872D52246D00AF7301 /* icon48.278694fa.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon48.278694fa.png; path = ../dist/safari/icon48.278694fa.png; sourceTree = SOURCE_ROOT; };
-		63828E882D52246D00AF7301 /* icon128.2388c3de.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon128.2388c3de.png; path = ../dist/safari/icon128.2388c3de.png; sourceTree = SOURCE_ROOT; };
-		63828E892D52246D00AF7301 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = manifest.json; path = ../dist/safari/manifest.json; sourceTree = SOURCE_ROOT; };
-		63828E8A2D52246D00AF7301 /* offscreen.51e76c43.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = offscreen.51e76c43.html; path = ../dist/safari/offscreen.51e76c43.html; sourceTree = SOURCE_ROOT; };
-		63828E8B2D52246D00AF7301 /* offscreen.194ee590.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = offscreen.194ee590.js; path = ../dist/safari/offscreen.194ee590.js; sourceTree = SOURCE_ROOT; };
-		63828E8C2D52246D00AF7301 /* onboarding.7e0e0aee.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = onboarding.7e0e0aee.html; path = ../dist/safari/onboarding.7e0e0aee.html; sourceTree = SOURCE_ROOT; };
-		63828E8D2D52246D00AF7301 /* settings.398e83d0.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = settings.398e83d0.css; path = ../dist/safari/settings.398e83d0.css; sourceTree = SOURCE_ROOT; };
-		63828E8E2D52246D00AF7301 /* settings.568e3504.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = settings.568e3504.js; path = ../dist/safari/settings.568e3504.js; sourceTree = SOURCE_ROOT; };
-		63828E8F2D52246D00AF7301 /* settings.fb59ded2.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = settings.fb59ded2.html; path = ../dist/safari/settings.fb59ded2.html; sourceTree = SOURCE_ROOT; };
-		63828E902D52246D00AF7301 /* tippy.824e9ef4.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = tippy.824e9ef4.css; path = ../dist/safari/tippy.824e9ef4.css; sourceTree = SOURCE_ROOT; };
-		63828E912D52246D00AF7301 /* whatsNew.20ddf957.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = whatsNew.20ddf957.html; path = ../dist/safari/whatsNew.20ddf957.html; sourceTree = SOURCE_ROOT; };
-		63828E922D52246D00AF7301 /* whatsNew.56dca317.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = whatsNew.56dca317.js; path = ../dist/safari/whatsNew.56dca317.js; sourceTree = SOURCE_ROOT; };
-		63828E932D52246D00AF7301 /* whatsNew.b4149b1c.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = whatsNew.b4149b1c.css; path = ../dist/safari/whatsNew.b4149b1c.css; sourceTree = SOURCE_ROOT; };
-		63828E942D52246D00AF7301 /* whatsNew.be4538c5.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = whatsNew.be4538c5.js; path = ../dist/safari/whatsNew.be4538c5.js; sourceTree = SOURCE_ROOT; };
-		63828E952D52246D00AF7301 /* whatsNew.d2011382.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = whatsNew.d2011382.js; path = ../dist/safari/whatsNew.d2011382.js; sourceTree = SOURCE_ROOT; };
+		63A9CC0C2D5CE79B00037863 /* background.59f71d38.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = background.59f71d38.js; path = ../dist/safari/background.59f71d38.js; sourceTree = SOURCE_ROOT; };
+		63A9CC0D2D5CE79B00037863 /* clipboardWriteInterceptor.4f63cab8.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = clipboardWriteInterceptor.4f63cab8.js; path = ../dist/safari/clipboardWriteInterceptor.4f63cab8.js; sourceTree = SOURCE_ROOT; };
+		63A9CC0E2D5CE79B00037863 /* content.cbff2145.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = content.cbff2145.js; path = ../dist/safari/content.cbff2145.js; sourceTree = SOURCE_ROOT; };
+		63A9CC0F2D5CE79B00037863 /* icon-keyboard-clicking48.f52f8f73.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-keyboard-clicking48.f52f8f73.png"; path = "../dist/safari/icon-keyboard-clicking48.f52f8f73.png"; sourceTree = SOURCE_ROOT; };
+		63A9CC102D5CE79B00037863 /* icon.cb5b9b17.svg */ = {isa = PBXFileReference; lastKnownFileType = text; name = icon.cb5b9b17.svg; path = ../dist/safari/icon.cb5b9b17.svg; sourceTree = SOURCE_ROOT; };
+		63A9CC112D5CE79B00037863 /* icon48.278694fa.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon48.278694fa.png; path = ../dist/safari/icon48.278694fa.png; sourceTree = SOURCE_ROOT; };
+		63A9CC122D5CE79B00037863 /* icon128.2388c3de.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon128.2388c3de.png; path = ../dist/safari/icon128.2388c3de.png; sourceTree = SOURCE_ROOT; };
+		63A9CC132D5CE79B00037863 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = manifest.json; path = ../dist/safari/manifest.json; sourceTree = SOURCE_ROOT; };
+		63A9CC142D5CE79B00037863 /* offscreen.51e76c43.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = offscreen.51e76c43.html; path = ../dist/safari/offscreen.51e76c43.html; sourceTree = SOURCE_ROOT; };
+		63A9CC152D5CE79B00037863 /* offscreen.194ee590.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = offscreen.194ee590.js; path = ../dist/safari/offscreen.194ee590.js; sourceTree = SOURCE_ROOT; };
+		63A9CC162D5CE79B00037863 /* onboarding.7e0e0aee.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = onboarding.7e0e0aee.html; path = ../dist/safari/onboarding.7e0e0aee.html; sourceTree = SOURCE_ROOT; };
+		63A9CC172D5CE79B00037863 /* settings.398e83d0.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = settings.398e83d0.css; path = ../dist/safari/settings.398e83d0.css; sourceTree = SOURCE_ROOT; };
+		63A9CC182D5CE79B00037863 /* settings.568e3504.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = settings.568e3504.js; path = ../dist/safari/settings.568e3504.js; sourceTree = SOURCE_ROOT; };
+		63A9CC192D5CE79B00037863 /* settings.fb59ded2.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = settings.fb59ded2.html; path = ../dist/safari/settings.fb59ded2.html; sourceTree = SOURCE_ROOT; };
+		63A9CC1A2D5CE79B00037863 /* tippy.824e9ef4.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = tippy.824e9ef4.css; path = ../dist/safari/tippy.824e9ef4.css; sourceTree = SOURCE_ROOT; };
+		63A9CC1B2D5CE79B00037863 /* whatsNew.20ddf957.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = whatsNew.20ddf957.html; path = ../dist/safari/whatsNew.20ddf957.html; sourceTree = SOURCE_ROOT; };
+		63A9CC1C2D5CE79B00037863 /* whatsNew.56dca317.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = whatsNew.56dca317.js; path = ../dist/safari/whatsNew.56dca317.js; sourceTree = SOURCE_ROOT; };
+		63A9CC1D2D5CE79B00037863 /* whatsNew.b4149b1c.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = whatsNew.b4149b1c.css; path = ../dist/safari/whatsNew.b4149b1c.css; sourceTree = SOURCE_ROOT; };
+		63A9CC1E2D5CE79B00037863 /* whatsNew.be4538c5.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = whatsNew.be4538c5.js; path = ../dist/safari/whatsNew.be4538c5.js; sourceTree = SOURCE_ROOT; };
 		E17BC8F7285E2315007EB9C6 /* Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
 		E18784B1298EEFB50028A679 /* UserSpecific.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = UserSpecific.xcconfig; sourceTree = "<group>"; };
 		E18784B2298EEFB50028A679 /* RangoVersion.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = RangoVersion.xcconfig; sourceTree = "<group>"; };
@@ -135,25 +135,25 @@
 		E18A7D4A298ED9B7000801AD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				63828E832D52246D00AF7301 /* background.59f71d38.js */,
-				63828E842D52246D00AF7301 /* content.cbff2145.js */,
-				63828E852D52246D00AF7301 /* icon-keyboard-clicking48.f52f8f73.png */,
-				63828E862D52246D00AF7301 /* icon.cb5b9b17.svg */,
-				63828E872D52246D00AF7301 /* icon48.278694fa.png */,
-				63828E882D52246D00AF7301 /* icon128.2388c3de.png */,
-				63828E892D52246D00AF7301 /* manifest.json */,
-				63828E8A2D52246D00AF7301 /* offscreen.51e76c43.html */,
-				63828E8B2D52246D00AF7301 /* offscreen.194ee590.js */,
-				63828E8C2D52246D00AF7301 /* onboarding.7e0e0aee.html */,
-				63828E8D2D52246D00AF7301 /* settings.398e83d0.css */,
-				63828E8E2D52246D00AF7301 /* settings.568e3504.js */,
-				63828E8F2D52246D00AF7301 /* settings.fb59ded2.html */,
-				63828E902D52246D00AF7301 /* tippy.824e9ef4.css */,
-				63828E912D52246D00AF7301 /* whatsNew.20ddf957.html */,
-				63828E922D52246D00AF7301 /* whatsNew.56dca317.js */,
-				63828E932D52246D00AF7301 /* whatsNew.b4149b1c.css */,
-				63828E942D52246D00AF7301 /* whatsNew.be4538c5.js */,
-				63828E952D52246D00AF7301 /* whatsNew.d2011382.js */,
+				63A9CC0C2D5CE79B00037863 /* background.59f71d38.js */,
+				63A9CC0D2D5CE79B00037863 /* clipboardWriteInterceptor.4f63cab8.js */,
+				63A9CC0E2D5CE79B00037863 /* content.cbff2145.js */,
+				63A9CC0F2D5CE79B00037863 /* icon-keyboard-clicking48.f52f8f73.png */,
+				63A9CC102D5CE79B00037863 /* icon.cb5b9b17.svg */,
+				63A9CC112D5CE79B00037863 /* icon48.278694fa.png */,
+				63A9CC122D5CE79B00037863 /* icon128.2388c3de.png */,
+				63A9CC132D5CE79B00037863 /* manifest.json */,
+				63A9CC142D5CE79B00037863 /* offscreen.51e76c43.html */,
+				63A9CC152D5CE79B00037863 /* offscreen.194ee590.js */,
+				63A9CC162D5CE79B00037863 /* onboarding.7e0e0aee.html */,
+				63A9CC172D5CE79B00037863 /* settings.398e83d0.css */,
+				63A9CC182D5CE79B00037863 /* settings.568e3504.js */,
+				63A9CC192D5CE79B00037863 /* settings.fb59ded2.html */,
+				63A9CC1A2D5CE79B00037863 /* tippy.824e9ef4.css */,
+				63A9CC1B2D5CE79B00037863 /* whatsNew.20ddf957.html */,
+				63A9CC1C2D5CE79B00037863 /* whatsNew.56dca317.js */,
+				63A9CC1D2D5CE79B00037863 /* whatsNew.b4149b1c.css */,
+				63A9CC1E2D5CE79B00037863 /* whatsNew.be4538c5.js */,
 			);
 			name = Resources;
 			path = "../../dist-mv2-safari";
@@ -325,25 +325,25 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				63828E962D52246D00AF7301 /* whatsNew.d2011382.js in Resources */,
-				63828E972D52246D00AF7301 /* icon-keyboard-clicking48.f52f8f73.png in Resources */,
-				63828E982D52246D00AF7301 /* manifest.json in Resources */,
-				63828E992D52246D00AF7301 /* onboarding.7e0e0aee.html in Resources */,
-				63828E9A2D52246D00AF7301 /* offscreen.194ee590.js in Resources */,
-				63828E9B2D52246D00AF7301 /* content.cbff2145.js in Resources */,
-				63828E9C2D52246D00AF7301 /* settings.568e3504.js in Resources */,
-				63828E9D2D52246D00AF7301 /* whatsNew.56dca317.js in Resources */,
-				63828E9E2D52246D00AF7301 /* whatsNew.b4149b1c.css in Resources */,
-				63828E9F2D52246D00AF7301 /* icon48.278694fa.png in Resources */,
-				63828EA02D52246D00AF7301 /* whatsNew.be4538c5.js in Resources */,
-				63828EA12D52246D00AF7301 /* offscreen.51e76c43.html in Resources */,
-				63828EA22D52246D00AF7301 /* tippy.824e9ef4.css in Resources */,
-				63828EA32D52246D00AF7301 /* icon128.2388c3de.png in Resources */,
-				63828EA42D52246D00AF7301 /* settings.398e83d0.css in Resources */,
-				63828EA52D52246D00AF7301 /* background.59f71d38.js in Resources */,
-				63828EA62D52246D00AF7301 /* icon.cb5b9b17.svg in Resources */,
-				63828EA72D52246D00AF7301 /* settings.fb59ded2.html in Resources */,
-				63828EA82D52246D00AF7301 /* whatsNew.20ddf957.html in Resources */,
+				63A9CC1F2D5CE79B00037863 /* icon-keyboard-clicking48.f52f8f73.png in Resources */,
+				63A9CC202D5CE79B00037863 /* manifest.json in Resources */,
+				63A9CC212D5CE79B00037863 /* background.59f71d38.js in Resources */,
+				63A9CC222D5CE79B00037863 /* settings.398e83d0.css in Resources */,
+				63A9CC232D5CE79B00037863 /* clipboardWriteInterceptor.4f63cab8.js in Resources */,
+				63A9CC242D5CE79B00037863 /* whatsNew.be4538c5.js in Resources */,
+				63A9CC252D5CE79B00037863 /* offscreen.194ee590.js in Resources */,
+				63A9CC262D5CE79B00037863 /* icon48.278694fa.png in Resources */,
+				63A9CC272D5CE79B00037863 /* icon128.2388c3de.png in Resources */,
+				63A9CC282D5CE79B00037863 /* whatsNew.20ddf957.html in Resources */,
+				63A9CC292D5CE79B00037863 /* whatsNew.56dca317.js in Resources */,
+				63A9CC2A2D5CE79B00037863 /* whatsNew.b4149b1c.css in Resources */,
+				63A9CC2B2D5CE79B00037863 /* settings.568e3504.js in Resources */,
+				63A9CC2C2D5CE79B00037863 /* settings.fb59ded2.html in Resources */,
+				63A9CC2D2D5CE79B00037863 /* offscreen.51e76c43.html in Resources */,
+				63A9CC2E2D5CE79B00037863 /* tippy.824e9ef4.css in Resources */,
+				63A9CC2F2D5CE79B00037863 /* icon.cb5b9b17.svg in Resources */,
+				63A9CC302D5CE79B00037863 /* onboarding.7e0e0aee.html in Resources */,
+				63A9CC312D5CE79B00037863 /* content.cbff2145.js in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

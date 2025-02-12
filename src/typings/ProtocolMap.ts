@@ -53,6 +53,9 @@ export type BackgroundBoundMessageMap = {
 	clickHintInFrame: (data: { hint: string }) => void;
 	markHintsAsKeyboardReachable: (data: { letter: string }) => void;
 	restoreKeyboardReachableHints: () => void;
+
+	// Other
+	getClipboardWriteInterceptorPath: () => string;
 };
 
 export type ContentBoundMessageMap = {

@@ -98,4 +98,11 @@ export function addMessageListeners() {
 	onMessage("getTabMarker", async (_, { tabId }) => {
 		return getTabMarker(tabId);
 	});
+
+	onMessage("getClipboardWriteInterceptorPath", () => {
+		return new URL(
+			"../../content/actions/clipboardWriteInterceptor.js",
+			import.meta.url
+		).href;
+	});
 }

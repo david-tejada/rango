@@ -1,9 +1,35 @@
-import { urls } from "../../common/urls";
 import { createElement, isEditable } from "../dom/utils";
 import { sendMessage } from "../messaging/messageHandler";
 import { type ElementWrapper } from "../wrappers/ElementWrapper";
 
-injectClipboardWriteInterceptor();
+let clipboardWriteInterceptorPath: string;
+
+// For whatever reason, I think related to Parcel, `new URL("...",
+// import.meta.url);` doesn't work in Safari in content scripts and throws an
+// error `TypeError: "..." cannot be parsed as a URL.` On the other hand,
+// getting the path from the background script doesn't work in Chrome. For this
+// reason we need to have the two variants. This creates two assets for the same
+// file (`clipboardWriteInterceptor.(hash).js`) in Chrome but it looks like it
+// uses the right one.
+try {
+	// This doesn't work in Chrome build in some circumstances. If I put it within
+	// `injectClipboardWriteInterceptor` it throws an error. That's why we have it
+	// here at the top level.
+	clipboardWriteInterceptorPath = new URL(
+		"clipboardWriteInterceptor.js",
+		import.meta.url
+	).href;
+	void injectClipboardWriteInterceptor();
+} catch {
+	sendMessage("getClipboardWriteInterceptorPath")
+		.then((path) => {
+			clipboardWriteInterceptorPath = path;
+			void injectClipboardWriteInterceptor();
+		})
+		.catch((error: unknown) => {
+			console.error(error);
+		});
+}
 
 export async function clickElement(
 	wrappers: ElementWrapper[],
@@ -77,13 +103,17 @@ export function shouldFocusDocumentOnActivation(element: Element) {
 	return false;
 }
 
-function injectClipboardWriteInterceptor() {
-	const script = createElement("script", {
-		id: "rango-clipboard-write-interceptor",
-	});
-	script.src = urls.clipboardWriteInterceptor.toString();
+async function injectClipboardWriteInterceptor() {
+	try {
+		const script = createElement("script", {
+			id: "rango-clipboard-write-interceptor",
+			src: clipboardWriteInterceptorPath,
+		});
 
-	document.head.append(script);
+		document.head.append(script);
+	} catch (error: unknown) {
+		console.error(error);
+	}
 }
 
 /**

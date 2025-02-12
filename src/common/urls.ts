@@ -12,8 +12,4 @@ export const urls = {
 	),
 	whatsNewPage: new URL("../pages/whatsNew/index.html", import.meta.url),
 	onboarding: new URL("../pages/onboarding/index.html", import.meta.url),
-	clipboardWriteInterceptor: new URL(
-		"../content/actions/clipboardWriteInterceptor.js",
-		import.meta.url
-	),
 } as const;
