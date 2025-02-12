@@ -1,9 +1,7 @@
 import browser from "webextension-polyfill";
 import { getHostPattern } from "../../common/getHostPattern";
 import { settings } from "../../common/settings/settings";
-import { isTargetError } from "../../common/target/TargetError";
 import { urls } from "../../common/urls";
-import { type TalonAction } from "../../typings/TalonAction";
 import { assertPrimitiveTarget } from "../../typings/Target/Target";
 import { refreshHints } from "../hints/refreshHints";
 import { toggleHintsGlobal, updateHintsToggle } from "../hints/toggleHints";
@@ -42,7 +40,7 @@ import { assertReferenceInCurrentTab } from "../target/references";
 import { getTabIdsFromTarget } from "../target/tabMarkers";
 import { getAllFrames } from "../utils/getAllFrames";
 import { notify, notifyTogglesStatus } from "../utils/notify";
-import { promiseWrap } from "../utils/promises";
+import { clickElement, directClickElement } from "./clickElement";
 import { onCommand } from "./commandHandler";
 import { discardNextResponse } from "./requestAndResponse";
 import { tryToFocusDocument } from "./tryToFocusDocument";
@@ -264,95 +262,13 @@ export function addCommandListeners() {
 	// ===========================================================================
 	// ELEMENTS
 	// ===========================================================================
-	function handleClickResults(
-		results: Awaited<
-			ReturnType<typeof sendMessageToTargetFrames<"clickElement">>
-		>["results"]
-	) {
-		const focusPage = results.find((value) => value?.focusPage);
-
-		// We can't open multiple selects and I don't think it's safe to press keys
-		// if there have been multiple things clicked.
-		const isSelect = results.length === 1 && results[0]?.isSelect;
-
-		const actions: TalonAction[] = [];
-		if (focusPage) actions.push({ name: "focusPage" });
-		if (isSelect)
-			actions.push({
-				name: "key",
-				key: "alt-down",
-			});
-
-		if (results.length === 1 && results[0]?.isCopyToClipboardButton) {
-			actions.push(
-				{ name: "sleep", ms: 50 },
-				{
-					name: "key",
-					key: "enter",
-				}
-			);
-		}
-
-		return actions;
-	}
 
 	onCommand("clickElement", async ({ target }) => {
-		const { results } = await sendMessageToTargetFrames("clickElement", {
-			target,
-			isSingleTarget: target.type === "primitive",
-		});
-
-		return handleClickResults(results);
+		return clickElement(target);
 	});
 
 	onCommand("directClickElement", async ({ target }) => {
-		// Handle the possibility that the user might have intended to type those
-		// characters.
-		if (target.type === "primitive") {
-			const directClickWithNoFocusedDocument = await settings.get(
-				"directClickWithNoFocusedDocument"
-			);
-
-			if (!directClickWithNoFocusedDocument) {
-				const [focusedDocument] = await promiseWrap(
-					sendMessage("checkIfDocumentHasFocus")
-				);
-
-				if (!focusedDocument) {
-					return { name: "typeTargetCharacters" };
-				}
-			}
-
-			const directClickWhenEditing = await settings.get(
-				"directClickWhenEditing"
-			);
-
-			if (!directClickWhenEditing) {
-				const { results } = await sendMessageToAllFrames(
-					"hasActiveEditableElement"
-				);
-
-				if (results.includes(true)) return { name: "typeTargetCharacters" };
-			}
-		}
-
-		try {
-			const { results } = await sendMessageToTargetFrames("clickElement", {
-				target,
-				isSingleTarget: target.type === "primitive",
-			});
-
-			return handleClickResults(results);
-		} catch (error: unknown) {
-			if (
-				target.type === "primitive" &&
-				(error instanceof UnreachableContentScriptError || isTargetError(error))
-			) {
-				return { name: "typeTargetCharacters" };
-			}
-
-			throw error;
-		}
+		return directClickElement(target);
 	});
 
 	onCommand("focusAndActivateElement", async ({ target }) => {
