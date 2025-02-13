@@ -117,10 +117,22 @@ async function injectClipboardWriteInterceptor() {
 }
 
 /**
- * This function clicks an element and returns a promise that resolves to true if
- * a clipboard write operation was detected.
+ * This function clicks an element and returns a promise that resolves to true
+ * if a clipboard write operation was detected.
  */
 async function clickAndDetectClipboardWrite(wrapper: ElementWrapper) {
+	// A few elements we know can't be copy to clipboard buttons. Most of the
+	// times the elements that copy to the clipboard are buttons, maybe
+	// input:button or divs in some rare cases. In any way, we just avoid checking
+	// if they are copy to clipboard buttons for the most common elements.
+	const notClipboardButtonSelector =
+		"input:not([type='button']), textarea, [contenteditable], select, p, h1, h2, h3, h4, h5, h6, li, td, th";
+
+	if (wrapper.element.matches(notClipboardButtonSelector)) {
+		await wrapper.click();
+		return false;
+	}
+
 	try {
 		await setUpClipboardWriteInterceptor();
 	} catch (error) {
