@@ -32,7 +32,7 @@ function addClipboardWriteInterceptor() {
 			return;
 		}
 
-		originalDocumentExecCommand(...args);
+		originalDocumentExecCommand.apply(document, args);
 	};
 
 	window.postMessage(
