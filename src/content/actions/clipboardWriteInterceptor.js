@@ -1,4 +1,5 @@
 const originalDocumentExecCommand = document.execCommand;
+const originalClipboardWrite = window.navigator.clipboard.write;
 const originalClipboardWriteText = window.navigator.clipboard.writeText;
 
 window.addEventListener("message", (event) => {
@@ -14,9 +15,14 @@ window.addEventListener("message", (event) => {
 });
 
 function addClipboardWriteInterceptor() {
+	window.navigator.clipboard.write = async () => {
+		postMessageClipboardWriteIntercepted();
+		removeClipboardWriteInterceptor();
+	};
+
 	window.navigator.clipboard.writeText = async () => {
 		postMessageClipboardWriteIntercepted();
-		window.navigator.clipboard.writeText = originalClipboardWriteText;
+		removeClipboardWriteInterceptor();
 	};
 
 	document.execCommand = (...args) => {
@@ -26,7 +32,7 @@ function addClipboardWriteInterceptor() {
 			return;
 		}
 
-		originalDocumentExecCommand(...args);
+		originalDocumentExecCommand.apply(document, args);
 	};
 
 	window.postMessage(
@@ -36,8 +42,9 @@ function addClipboardWriteInterceptor() {
 }
 
 function removeClipboardWriteInterceptor() {
-	window.navigator.clipboard.writeText = originalClipboardWriteText;
 	document.execCommand = originalDocumentExecCommand;
+	window.navigator.clipboard.write = originalClipboardWrite;
+	window.navigator.clipboard.writeText = originalClipboardWriteText;
 }
 
 function postMessageClipboardWriteIntercepted() {

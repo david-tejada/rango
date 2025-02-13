@@ -117,10 +117,22 @@ async function injectClipboardWriteInterceptor() {
 }
 
 /**
- * This function clicks an element and returns a promise that resolves to true if
- * a clipboard write operation was detected.
+ * This function clicks an element and returns a promise that resolves to true
+ * if a clipboard write operation was detected.
  */
 async function clickAndDetectClipboardWrite(wrapper: ElementWrapper) {
+	// A few elements we know can't be copy to clipboard buttons. Most of the
+	// times the elements that copy to the clipboard are buttons, maybe
+	// input:button or divs in some rare cases. In any way, we just avoid checking
+	// if they are copy to clipboard buttons for the most common elements.
+	const notClipboardButtonSelector =
+		"input:not([type='button']), textarea, [contenteditable], select, p, h1, h2, h3, h4, h5, h6, li, td, th";
+
+	if (wrapper.element.matches(notClipboardButtonSelector)) {
+		await wrapper.click();
+		return false;
+	}
+
 	try {
 		await setUpClipboardWriteInterceptor();
 	} catch (error) {
@@ -160,7 +172,10 @@ async function setUpClipboardWriteInterceptor() {
 }
 
 async function listenForClipboardWrite() {
-	const timeoutMs = 50;
+	// This can be slow in some cases, depending on the code being executed by
+	// the page. Especially, when copying images or other media. I have seen it
+	// taking more than 500ms.
+	const timeoutMs = 1000;
 	const origin = globalThis.location.origin;
 
 	return new Promise<boolean>((resolve) => {
@@ -179,11 +194,12 @@ async function listenForClipboardWrite() {
 				origin
 			);
 			removeEventListener("message", messageHandler);
+			clearTimeout(timeout);
 		};
 
 		addEventListener("message", messageHandler);
 
-		setTimeout(() => {
+		const timeout = setTimeout(() => {
 			cleanup();
 			resolve(false);
 		}, timeoutMs);
