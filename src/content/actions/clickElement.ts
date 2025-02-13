@@ -160,7 +160,10 @@ async function setUpClipboardWriteInterceptor() {
 }
 
 async function listenForClipboardWrite() {
-	const timeoutMs = 50;
+	// This can be slow in some cases, depending on the code being executed by
+	// the page. Especially, when copying images or other media. I have seen it
+	// taking more than 500ms.
+	const timeoutMs = 1000;
 	const origin = globalThis.location.origin;
 
 	return new Promise<boolean>((resolve) => {
@@ -179,11 +182,12 @@ async function listenForClipboardWrite() {
 				origin
 			);
 			removeEventListener("message", messageHandler);
+			clearTimeout(timeout);
 		};
 
 		addEventListener("message", messageHandler);
 
-		setTimeout(() => {
+		const timeout = setTimeout(() => {
 			cleanup();
 			resolve(false);
 		}, timeoutMs);
