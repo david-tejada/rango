@@ -71,10 +71,15 @@ function hasSignificantTextNodeChild(target: Element) {
 	);
 }
 
-// Returns true if the element is an image or an element that we think is an icon
-function isImage(element: Element) {
+/**
+ * Returns `true` if the element might be an icon.
+ */
+function isPossibleIcon(element: Element) {
+	const maxSizeForIcon = 100;
+	const maxAspectRatioForIcon = 1.5;
+
 	const isImageElement =
-		element instanceof HTMLImageElement || element instanceof SVGSVGElement;
+		element.localName === "img" || element.localName === "svg";
 
 	const { backgroundImage, maskImage } = getCachedStyle(element);
 	const hasOnlyBackgroundImage =
@@ -82,11 +87,27 @@ function isImage(element: Element) {
 		(backgroundImage !== "none" ||
 			(Boolean(maskImage) && maskImage !== "none"));
 
-	const { content } = getComputedStyle(element, ":before");
-	const isFontIcon =
-		element.tagName === "I" && content !== "none" && content !== "normal";
+	if (isImageElement || hasOnlyBackgroundImage) {
+		const { width, height } = getCachedStyle(element);
+		const widthPx = Number.parseFloat(width);
+		const heightPx = Number.parseFloat(height);
+		return (
+			widthPx < maxSizeForIcon &&
+			heightPx < maxSizeForIcon &&
+			getAspectRatio(widthPx, heightPx) < maxAspectRatioForIcon
+		);
+	}
 
-	return isImageElement || hasOnlyBackgroundImage || isFontIcon;
+	if (element.localName === "i") {
+		const { content } = getComputedStyle(element, ":before");
+		return content !== "none" && content !== "normal";
+	}
+
+	return false;
+}
+
+function getAspectRatio(width: number, height: number) {
+	return Math.max(width, height) / Math.min(width, height);
 }
 
 function getFirstSignificantTextNode(element: Element): Text | undefined {
@@ -124,17 +145,13 @@ function withinDifferentHintable(node: Element, hintable: Element) {
 	return false;
 }
 
-function getFirstIconOrTextElement(
+function getFirstTextElementOrPossibleIcon(
 	target: Element
 ): Element | Text | undefined {
-	const elements = deepGetElements(target, true).filter(
-		(element) =>
-			!element.matches(".rango-hint") &&
-			!(element instanceof SVGElement && !(element instanceof SVGSVGElement))
-	);
+	const elements = deepGetElements(target, true, ":not(.rango-hint, svg *)");
 
 	let firstTextBlockElement: Element | undefined;
-	let firstImage;
+	let firstPossibleIcon;
 
 	for (const element of elements) {
 		const { opacity } = getCachedStyle(element);
@@ -147,7 +164,7 @@ function getFirstIconOrTextElement(
 			continue;
 		}
 
-		if (isImage(element)) firstImage ??= element;
+		if (isPossibleIcon(element)) firstPossibleIcon ??= element;
 
 		if (!firstTextBlockElement && hasSignificantTextNodeChild(element)) {
 			firstTextBlockElement = element;
@@ -158,17 +175,17 @@ function getFirstIconOrTextElement(
 		? getFirstSignificantTextNode(firstTextBlockElement)
 		: undefined;
 
-	// If there is both a first image and a first text we return the one that
-	// comes first in the document
-	if (firstImage && firstText) {
-		// 4: firstText follows firstImage. Since firstImage can't contain firstText
-		// we don't need to worry about other cases
-		return firstImage.compareDocumentPosition(firstText) === 4
-			? firstImage
+	// If there is both a first possible icon and a first text we return the one
+	// that comes first in the document
+	if (firstPossibleIcon && firstText) {
+		// 4: firstText follows firstPossibleIcon. Since firstPossibleIcon can't
+		// contain firstText we don't need to worry about other cases
+		return firstPossibleIcon.compareDocumentPosition(firstText) === 4
+			? firstPossibleIcon
 			: firstText;
 	}
 
-	return firstImage ?? firstText;
+	return firstPossibleIcon ?? firstText;
 }
 
 // This functions returns the element where the hint should be positioned
@@ -182,7 +199,7 @@ export function getElementToPositionHint(target: Element) {
 		return target;
 	}
 
-	const result = getFirstIconOrTextElement(target) ?? target;
+	const result = getFirstTextElementOrPossibleIcon(target) ?? target;
 
 	// This addresses situations like in issue #112 were the hint for a
 	// contenteditable element is positioned relative to another element that is
