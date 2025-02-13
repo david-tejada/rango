@@ -13,6 +13,92 @@ import {
 	getFirstCharacterRect,
 } from "../layoutCache";
 
+/**
+ * Returns the element where the hint should be positioned.
+ */
+export function getElementToPositionHint(target: Element) {
+	if (
+		target instanceof HTMLInputElement ||
+		target instanceof HTMLTextAreaElement ||
+		target instanceof HTMLSelectElement ||
+		target instanceof HTMLOptionElement
+	) {
+		return target;
+	}
+
+	const result = getFirstTextElementOrPossibleIcon(target) ?? target;
+
+	// This addresses situations like in issue #112 were the hint for a
+	// contenteditable element is positioned relative to another element that is
+	// within a contenteditable="false" element, sometimes resulting in
+	// overlapping hints
+	if (target instanceof HTMLElement && target.isContentEditable) {
+		const closestHtmlElement = getClosestHtmlElement(result);
+		if (closestHtmlElement && !closestHtmlElement.isContentEditable) {
+			return target;
+		}
+	}
+
+	return result;
+}
+
+function getFirstTextElementOrPossibleIcon(
+	target: Element
+): Element | Text | undefined {
+	const elements = deepGetElements(target, true, ":not(.rango-hint, svg *)");
+
+	let firstTextBlockElement: Element | undefined;
+	let firstPossibleIcon;
+
+	for (const element of elements) {
+		const { opacity } = getCachedStyle(element);
+
+		if (
+			opacity === "0" ||
+			withinDifferentHintable(element, target) ||
+			!elementsAreNear(target, element)
+		) {
+			continue;
+		}
+
+		if (isPossibleIcon(element)) firstPossibleIcon ??= element;
+
+		if (!firstTextBlockElement && hasSignificantTextNodeChild(element)) {
+			firstTextBlockElement = element;
+		}
+	}
+
+	const firstText = firstTextBlockElement
+		? getFirstSignificantTextNode(firstTextBlockElement)
+		: undefined;
+
+	// If there is both a first possible icon and a first text we return the one
+	// that comes first in the document
+	if (firstPossibleIcon && firstText) {
+		// 4: firstText follows firstPossibleIcon. Since firstPossibleIcon can't
+		// contain firstText we don't need to worry about other cases
+		return firstPossibleIcon.compareDocumentPosition(firstText) === 4
+			? firstPossibleIcon
+			: firstText;
+	}
+
+	return firstPossibleIcon ?? firstText;
+}
+
+function withinDifferentHintable(node: Element, hintable: Element) {
+	let current: Element | null = node;
+
+	while (current && current !== hintable) {
+		if (getWrapperForElement(current)?.isHintable) {
+			return true;
+		}
+
+		current = current.parentElement;
+	}
+
+	return false;
+}
+
 function elementsAreNear(a: Element, b: Element) {
 	const aRect = getBoundingClientRect(a);
 	const bRect = getBoundingClientRect(b);
@@ -40,17 +126,10 @@ function elementsAreNear(a: Element, b: Element) {
 	return true;
 }
 
-// Returns true if the Text element is not all white space
-function hasSignificantText(element: Text): boolean {
-	if (element.textContent && /\S/.test(element.textContent)) {
-		const rect = getFirstCharacterRect(element);
-		return rect.width !== 0 && rect.height !== 0;
-	}
-
-	return false;
-}
-
-// Returns true if any of the children is a Text node that is not all white space
+/**
+ * Returns `true` if any of the children is a Text node that is not all white
+ * space.
+ */
 function hasSignificantTextNodeChild(target: Element) {
 	const { textIndent } = getCachedStyle(target);
 	const textIndentNumber = Number.parseInt(textIndent, 10);
@@ -71,10 +150,25 @@ function hasSignificantTextNodeChild(target: Element) {
 	);
 }
 
-// Returns true if the element is an image or an element that we think is an icon
-function isImage(element: Element) {
+// Returns true if the Text element is not all white space
+function hasSignificantText(element: Text): boolean {
+	if (element.textContent && /\S/.test(element.textContent)) {
+		const rect = getFirstCharacterRect(element);
+		return rect.width !== 0 && rect.height !== 0;
+	}
+
+	return false;
+}
+
+/**
+ * Returns `true` if the element might be an icon.
+ */
+function isPossibleIcon(element: Element) {
+	const maxSizeForIcon = 100;
+	const maxAspectRatioForIcon = 1.5;
+
 	const isImageElement =
-		element instanceof HTMLImageElement || element instanceof SVGSVGElement;
+		element.localName === "img" || element.localName === "svg";
 
 	const { backgroundImage, maskImage } = getCachedStyle(element);
 	const hasOnlyBackgroundImage =
@@ -82,11 +176,27 @@ function isImage(element: Element) {
 		(backgroundImage !== "none" ||
 			(Boolean(maskImage) && maskImage !== "none"));
 
-	const { content } = getComputedStyle(element, ":before");
-	const isFontIcon =
-		element.tagName === "I" && content !== "none" && content !== "normal";
+	if (isImageElement || hasOnlyBackgroundImage) {
+		const { width, height } = getCachedStyle(element);
+		const widthPx = Number.parseFloat(width);
+		const heightPx = Number.parseFloat(height);
+		return (
+			widthPx < maxSizeForIcon &&
+			heightPx < maxSizeForIcon &&
+			getAspectRatio(widthPx, heightPx) < maxAspectRatioForIcon
+		);
+	}
 
-	return isImageElement || hasOnlyBackgroundImage || isFontIcon;
+	if (element.localName === "i") {
+		const { content } = getComputedStyle(element, ":before");
+		return content !== "none" && content !== "normal";
+	}
+
+	return false;
+}
+
+function getAspectRatio(width: number, height: number) {
+	return Math.max(width, height) / Math.min(width, height);
 }
 
 function getFirstSignificantTextNode(element: Element): Text | undefined {
@@ -108,92 +218,4 @@ function getFirstSignificantTextNode(element: Element): Text | undefined {
 	}
 
 	return undefined;
-}
-
-function withinDifferentHintable(node: Element, hintable: Element) {
-	let current: Element | null = node;
-
-	while (current && current !== hintable) {
-		if (getWrapperForElement(current)?.isHintable) {
-			return true;
-		}
-
-		current = current.parentElement;
-	}
-
-	return false;
-}
-
-function getFirstIconOrTextElement(
-	target: Element
-): Element | Text | undefined {
-	const elements = deepGetElements(target, true).filter(
-		(element) =>
-			!element.matches(".rango-hint") &&
-			!(element instanceof SVGElement && !(element instanceof SVGSVGElement))
-	);
-
-	let firstTextBlockElement: Element | undefined;
-	let firstImage;
-
-	for (const element of elements) {
-		const { opacity } = getCachedStyle(element);
-
-		if (
-			opacity === "0" ||
-			withinDifferentHintable(element, target) ||
-			!elementsAreNear(target, element)
-		) {
-			continue;
-		}
-
-		if (isImage(element)) firstImage ??= element;
-
-		if (!firstTextBlockElement && hasSignificantTextNodeChild(element)) {
-			firstTextBlockElement = element;
-		}
-	}
-
-	const firstText = firstTextBlockElement
-		? getFirstSignificantTextNode(firstTextBlockElement)
-		: undefined;
-
-	// If there is both a first image and a first text we return the one that
-	// comes first in the document
-	if (firstImage && firstText) {
-		// 4: firstText follows firstImage. Since firstImage can't contain firstText
-		// we don't need to worry about other cases
-		return firstImage.compareDocumentPosition(firstText) === 4
-			? firstImage
-			: firstText;
-	}
-
-	return firstImage ?? firstText;
-}
-
-// This functions returns the element where the hint should be positioned
-export function getElementToPositionHint(target: Element) {
-	if (
-		target instanceof HTMLInputElement ||
-		target instanceof HTMLTextAreaElement ||
-		target instanceof HTMLSelectElement ||
-		target instanceof HTMLOptionElement
-	) {
-		return target;
-	}
-
-	const result = getFirstIconOrTextElement(target) ?? target;
-
-	// This addresses situations like in issue #112 were the hint for a
-	// contenteditable element is positioned relative to another element that is
-	// within a contenteditable="false" element, sometimes resulting in
-	// overlapping hints
-	if (target instanceof HTMLElement && target.isContentEditable) {
-		const closestHtmlElement = getClosestHtmlElement(result);
-		if (closestHtmlElement && !closestHtmlElement.isContentEditable) {
-			return target;
-		}
-	}
-
-	return result;
 }
