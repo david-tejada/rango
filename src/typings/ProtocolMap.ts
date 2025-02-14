@@ -67,6 +67,7 @@ export type ContentBoundMessageMap = {
 		focusPage: boolean;
 		isSelect: boolean;
 		isCopyToClipboardButton: boolean;
+		textToCopy?: string;
 	} | void;
 	focusAndGetActivationKey: (data: {
 		target: Target<ElementMark>;

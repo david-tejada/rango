@@ -19,12 +19,10 @@ try {
 		"clipboardWriteInterceptor.js",
 		import.meta.url
 	).href;
-	void injectClipboardWriteInterceptor();
 } catch {
 	sendMessage("getClipboardWriteInterceptorPath")
 		.then((path) => {
 			clipboardWriteInterceptorPath = path;
-			void injectClipboardWriteInterceptor();
 		})
 		.catch((error: unknown) => {
 			console.error(error);
@@ -73,13 +71,16 @@ export async function clickElement(
 	if (isSingleTarget) {
 		const wrapper = wrappers[0]!;
 
-		const isCopyToClipboardButton = await clickAndDetectClipboardWrite(wrapper);
+		const { isCopyToClipboardButton, textToCopy } =
+			await handlePotentialCopyButton(wrapper);
+
 		const focusPage =
-			(isCopyToClipboardButton && !document.hasFocus()) ||
+			(isCopyToClipboardButton && !textToCopy && !document.hasFocus()) ||
 			shouldFocusDocumentOnActivation(wrapper.element);
+
 		const isSelect = wrapper.element.localName === "select";
 
-		return { focusPage, isCopyToClipboardButton, isSelect };
+		return { focusPage, isSelect, isCopyToClipboardButton, textToCopy };
 	}
 
 	// Here we don't check if we need to focus the page because it doesn't make
@@ -103,24 +104,13 @@ function shouldFocusDocumentOnActivation(element: Element) {
 	return false;
 }
 
-async function injectClipboardWriteInterceptor() {
-	try {
-		const script = createElement("script", {
-			id: "rango-clipboard-write-interceptor",
-			src: clipboardWriteInterceptorPath,
-		});
-
-		document.head.append(script);
-	} catch (error: unknown) {
-		console.error(error);
-	}
-}
-
 /**
- * This function clicks an element and returns a promise that resolves to true
- * if a clipboard write operation was detected.
+ * This function clicks an element and returns a promise that resolves to
  */
-async function clickAndDetectClipboardWrite(wrapper: ElementWrapper) {
+async function handlePotentialCopyButton(wrapper: ElementWrapper): Promise<{
+	isCopyToClipboardButton: boolean;
+	textToCopy?: string;
+}> {
 	// A few elements we know can't be copy to clipboard buttons. Most of the
 	// times the elements that copy to the clipboard are buttons, maybe
 	// input:button or divs in some rare cases. In any way, we just avoid checking
@@ -130,32 +120,39 @@ async function clickAndDetectClipboardWrite(wrapper: ElementWrapper) {
 
 	if (wrapper.element.matches(notClipboardButtonSelector)) {
 		await wrapper.click();
-		return false;
+		return { isCopyToClipboardButton: false };
 	}
 
 	try {
-		await setUpClipboardWriteInterceptor();
+		await initializeClipboardWriteInterceptor();
 	} catch (error) {
 		console.error(error);
 		await wrapper.click();
-		return false;
+		return { isCopyToClipboardButton: false };
 	}
 
 	const clipboardWritePromise = listenForClipboardWrite();
 	await wrapper.click();
-	return clipboardWritePromise;
+	const { clipboardWriteIntercepted, textToCopy } = await clipboardWritePromise;
+
+	return { isCopyToClipboardButton: clipboardWriteIntercepted, textToCopy };
 }
 
-async function setUpClipboardWriteInterceptor() {
+async function initializeClipboardWriteInterceptor() {
+	await injectClipboardWriteInterceptor();
+
 	const origin = globalThis.location.origin;
 
-	window.postMessage({ type: "RANGO_ADD_CLIPBOARD_WRITE_INTERCEPTOR" }, origin);
+	window.postMessage(
+		{ type: "RANGO_START_CLIPBOARD_WRITE_INTERCEPTION" },
+		origin
+	);
 
 	return new Promise<void>((resolve, reject) => {
 		const readyHandler = async (event: MessageEvent) => {
 			if (event.origin !== origin) return;
 
-			if (event.data.type === "RANGO_CLIPBOARD_WRITE_INTERCEPTOR_READY") {
+			if (event.data.type === "RANGO_CLIPBOARD_WRITE_INTERCEPTION_READY") {
 				removeEventListener("message", readyHandler);
 				clearTimeout(timeout);
 				resolve();
@@ -164,11 +161,39 @@ async function setUpClipboardWriteInterceptor() {
 
 		const timeout = setTimeout(() => {
 			removeEventListener("message", readyHandler);
-			reject(new Error("Unable to set up clipboard write interceptor"));
+			reject(new Error("Unable to initialize clipboard write interceptor."));
 		}, 50);
 
 		addEventListener("message", readyHandler);
 	});
+}
+
+async function injectClipboardWriteInterceptor() {
+	try {
+		const script = createElement("script", {
+			id: "rango-clipboard-write-interceptor",
+			src: clipboardWriteInterceptorPath,
+		});
+
+		document.head.append(script);
+
+		await new Promise<void>((resolve) => {
+			window.addEventListener("message", (event) => {
+				if (event.origin !== globalThis.location.origin) return;
+
+				if (event.data.type === "RANGO_INTERCEPTOR_LOADED") {
+					resolve();
+				}
+			});
+
+			window.postMessage(
+				{ type: "RANGO_CHECK_INTERCEPTOR_LOADED" },
+				globalThis.location.origin
+			);
+		});
+	} catch (error: unknown) {
+		console.error(error);
+	}
 }
 
 async function listenForClipboardWrite() {
@@ -178,19 +203,23 @@ async function listenForClipboardWrite() {
 	const timeoutMs = 1000;
 	const origin = globalThis.location.origin;
 
-	return new Promise<boolean>((resolve) => {
+	return new Promise<{
+		clipboardWriteIntercepted: boolean;
+		textToCopy?: string;
+	}>((resolve) => {
 		const messageHandler = (event: MessageEvent) => {
 			if (event.origin !== origin) return;
 
 			if (event.data.type === "RANGO_CLIPBOARD_WRITE_INTERCEPTED") {
+				const text = event.data.text as string | undefined;
 				cleanup();
-				resolve(true);
+				resolve({ clipboardWriteIntercepted: true, textToCopy: text });
 			}
 		};
 
 		const cleanup = () => {
 			window.postMessage(
-				{ type: "RANGO_REMOVE_CLIPBOARD_WRITE_INTERCEPTOR" },
+				{ type: "RANGO_STOP_CLIPBOARD_WRITE_INTERCEPTION" },
 				origin
 			);
 			removeEventListener("message", messageHandler);
@@ -201,7 +230,7 @@ async function listenForClipboardWrite() {
 
 		const timeout = setTimeout(() => {
 			cleanup();
-			resolve(false);
+			resolve({ clipboardWriteIntercepted: false });
 		}, timeoutMs);
 	});
 }

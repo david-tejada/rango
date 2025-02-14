@@ -87,13 +87,13 @@ function handleClickResults(
 		});
 
 	if (results.length === 1 && results[0]?.isCopyToClipboardButton) {
-		actions.push(
-			{ name: "sleep", ms: 50 },
-			{
-				name: "key",
-				key: "enter",
-			}
-		);
+		const { textToCopy } = results[0];
+
+		if (textToCopy) {
+			actions.push({ name: "copyToClipboard", textToCopy });
+		} else {
+			actions.push({ name: "sleep", ms: 50 }, { name: "key", key: "enter" });
+		}
 	}
 
 	return actions;

@@ -5,30 +5,37 @@ const originalClipboardWriteText = window.navigator.clipboard.writeText;
 window.addEventListener("message", (event) => {
 	if (event.origin !== window.location.origin) return;
 
-	if (event.data.type === "RANGO_ADD_CLIPBOARD_WRITE_INTERCEPTOR") {
-		addClipboardWriteInterceptor();
+	if (event.data.type === "RANGO_START_CLIPBOARD_WRITE_INTERCEPTION") {
+		startClipboardWriteInterception();
 	}
 
-	if (event.data.type === "RANGO_REMOVE_CLIPBOARD_WRITE_INTERCEPTOR") {
-		removeClipboardWriteInterceptor();
+	if (event.data.type === "RANGO_STOP_CLIPBOARD_WRITE_INTERCEPTION") {
+		stopClipboardWriteInterception();
+	}
+
+	if (event.data.type === "RANGO_CHECK_INTERCEPTOR_LOADED") {
+		window.postMessage(
+			{ type: "RANGO_INTERCEPTOR_LOADED" },
+			window.location.origin
+		);
 	}
 });
 
-function addClipboardWriteInterceptor() {
+function startClipboardWriteInterception() {
 	window.navigator.clipboard.write = async () => {
 		postMessageClipboardWriteIntercepted();
-		removeClipboardWriteInterceptor();
+		stopClipboardWriteInterception();
 	};
 
-	window.navigator.clipboard.writeText = async () => {
-		postMessageClipboardWriteIntercepted();
-		removeClipboardWriteInterceptor();
+	window.navigator.clipboard.writeText = async (text) => {
+		postMessageClipboardWriteIntercepted(text);
+		stopClipboardWriteInterception();
 	};
 
 	document.execCommand = (...args) => {
 		if (args[0] === "copy") {
-			document.execCommand = originalDocumentExecCommand;
-			postMessageClipboardWriteIntercepted();
+			postMessageClipboardWriteIntercepted(window.getSelection()?.toString());
+			stopClipboardWriteInterception();
 			return;
 		}
 
@@ -36,22 +43,27 @@ function addClipboardWriteInterceptor() {
 	};
 
 	window.postMessage(
-		{ type: "RANGO_CLIPBOARD_WRITE_INTERCEPTOR_READY" },
+		{ type: "RANGO_CLIPBOARD_WRITE_INTERCEPTION_READY" },
 		window.location.origin
 	);
 }
 
-function removeClipboardWriteInterceptor() {
+function stopClipboardWriteInterception() {
 	document.execCommand = originalDocumentExecCommand;
 	window.navigator.clipboard.write = originalClipboardWrite;
 	window.navigator.clipboard.writeText = originalClipboardWriteText;
 }
 
-function postMessageClipboardWriteIntercepted() {
+function postMessageClipboardWriteIntercepted(text) {
 	window.postMessage(
-		{ type: "RANGO_CLIPBOARD_WRITE_INTERCEPTED" },
+		{ type: "RANGO_CLIPBOARD_WRITE_INTERCEPTED", text },
 		window.location.origin
 	);
 }
 
 document.querySelector("#rango-clipboard-write-interceptor").remove();
+
+window.postMessage(
+	{ type: "RANGO_INTERCEPTOR_LOADED" },
+	window.location.origin
+);
