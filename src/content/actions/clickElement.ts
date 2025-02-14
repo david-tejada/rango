@@ -71,13 +71,16 @@ export async function clickElement(
 	if (isSingleTarget) {
 		const wrapper = wrappers[0]!;
 
-		const isCopyToClipboardButton = await clickAndDetectClipboardWrite(wrapper);
+		const { isCopyToClipboardButton, textToCopy } =
+			await handlePotentialCopyButton(wrapper);
+
 		const focusPage =
-			(isCopyToClipboardButton && !document.hasFocus()) ||
+			(isCopyToClipboardButton && !textToCopy && !document.hasFocus()) ||
 			shouldFocusDocumentOnActivation(wrapper.element);
+
 		const isSelect = wrapper.element.localName === "select";
 
-		return { focusPage, isCopyToClipboardButton, isSelect };
+		return { focusPage, isSelect, isCopyToClipboardButton, textToCopy };
 	}
 
 	// Here we don't check if we need to focus the page because it doesn't make
@@ -102,10 +105,12 @@ function shouldFocusDocumentOnActivation(element: Element) {
 }
 
 /**
- * This function clicks an element and returns a promise that resolves to true
- * if a clipboard write operation was detected.
+ * This function clicks an element and returns a promise that resolves to
  */
-async function clickAndDetectClipboardWrite(wrapper: ElementWrapper) {
+async function handlePotentialCopyButton(wrapper: ElementWrapper): Promise<{
+	isCopyToClipboardButton: boolean;
+	textToCopy?: string;
+}> {
 	// A few elements we know can't be copy to clipboard buttons. Most of the
 	// times the elements that copy to the clipboard are buttons, maybe
 	// input:button or divs in some rare cases. In any way, we just avoid checking
@@ -115,7 +120,7 @@ async function clickAndDetectClipboardWrite(wrapper: ElementWrapper) {
 
 	if (wrapper.element.matches(notClipboardButtonSelector)) {
 		await wrapper.click();
-		return false;
+		return { isCopyToClipboardButton: false };
 	}
 
 	try {
@@ -123,12 +128,14 @@ async function clickAndDetectClipboardWrite(wrapper: ElementWrapper) {
 	} catch (error) {
 		console.error(error);
 		await wrapper.click();
-		return false;
+		return { isCopyToClipboardButton: false };
 	}
 
 	const clipboardWritePromise = listenForClipboardWrite();
 	await wrapper.click();
-	return clipboardWritePromise;
+	const { clipboardWriteIntercepted, textToCopy } = await clipboardWritePromise;
+
+	return { isCopyToClipboardButton: clipboardWriteIntercepted, textToCopy };
 }
 
 async function setUpClipboardWriteInterceptor() {
@@ -193,13 +200,17 @@ async function listenForClipboardWrite() {
 	const timeoutMs = 1000;
 	const origin = globalThis.location.origin;
 
-	return new Promise<boolean>((resolve) => {
+	return new Promise<{
+		clipboardWriteIntercepted: boolean;
+		textToCopy?: string;
+	}>((resolve) => {
 		const messageHandler = (event: MessageEvent) => {
 			if (event.origin !== origin) return;
 
 			if (event.data.type === "RANGO_CLIPBOARD_WRITE_INTERCEPTED") {
+				const text = event.data.text as string | undefined;
 				cleanup();
-				resolve(true);
+				resolve({ clipboardWriteIntercepted: true, textToCopy: text });
 			}
 		};
 
@@ -216,7 +227,7 @@ async function listenForClipboardWrite() {
 
 		const timeout = setTimeout(() => {
 			cleanup();
-			resolve(false);
+			resolve({ clipboardWriteIntercepted: false });
 		}, timeoutMs);
 	});
 }

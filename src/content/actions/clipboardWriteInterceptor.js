@@ -27,15 +27,15 @@ function addClipboardWriteInterceptor() {
 		removeClipboardWriteInterceptor();
 	};
 
-	window.navigator.clipboard.writeText = async () => {
-		postMessageClipboardWriteIntercepted();
+	window.navigator.clipboard.writeText = async (text) => {
+		postMessageClipboardWriteIntercepted(text);
 		removeClipboardWriteInterceptor();
 	};
 
 	document.execCommand = (...args) => {
 		if (args[0] === "copy") {
-			document.execCommand = originalDocumentExecCommand;
-			postMessageClipboardWriteIntercepted();
+			postMessageClipboardWriteIntercepted(window.getSelection()?.toString());
+			removeClipboardWriteInterceptor();
 			return;
 		}
 
@@ -54,9 +54,9 @@ function removeClipboardWriteInterceptor() {
 	window.navigator.clipboard.writeText = originalClipboardWriteText;
 }
 
-function postMessageClipboardWriteIntercepted() {
+function postMessageClipboardWriteIntercepted(text) {
 	window.postMessage(
-		{ type: "RANGO_CLIPBOARD_WRITE_INTERCEPTED" },
+		{ type: "RANGO_CLIPBOARD_WRITE_INTERCEPTED", text },
 		window.location.origin
 	);
 }
