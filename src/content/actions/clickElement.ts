@@ -124,7 +124,7 @@ async function handlePotentialCopyButton(wrapper: ElementWrapper): Promise<{
 	}
 
 	try {
-		await setUpClipboardWriteInterceptor();
+		await initializeClipboardWriteInterceptor();
 	} catch (error) {
 		console.error(error);
 		await wrapper.click();
@@ -138,18 +138,21 @@ async function handlePotentialCopyButton(wrapper: ElementWrapper): Promise<{
 	return { isCopyToClipboardButton: clipboardWriteIntercepted, textToCopy };
 }
 
-async function setUpClipboardWriteInterceptor() {
+async function initializeClipboardWriteInterceptor() {
 	await injectClipboardWriteInterceptor();
 
 	const origin = globalThis.location.origin;
 
-	window.postMessage({ type: "RANGO_ADD_CLIPBOARD_WRITE_INTERCEPTOR" }, origin);
+	window.postMessage(
+		{ type: "RANGO_START_CLIPBOARD_WRITE_INTERCEPTION" },
+		origin
+	);
 
 	return new Promise<void>((resolve, reject) => {
 		const readyHandler = async (event: MessageEvent) => {
 			if (event.origin !== origin) return;
 
-			if (event.data.type === "RANGO_CLIPBOARD_WRITE_INTERCEPTOR_READY") {
+			if (event.data.type === "RANGO_CLIPBOARD_WRITE_INTERCEPTION_READY") {
 				removeEventListener("message", readyHandler);
 				clearTimeout(timeout);
 				resolve();
@@ -158,7 +161,7 @@ async function setUpClipboardWriteInterceptor() {
 
 		const timeout = setTimeout(() => {
 			removeEventListener("message", readyHandler);
-			reject(new Error("Unable to set up clipboard write interceptor"));
+			reject(new Error("Unable to initialize clipboard write interceptor."));
 		}, 50);
 
 		addEventListener("message", readyHandler);
@@ -216,7 +219,7 @@ async function listenForClipboardWrite() {
 
 		const cleanup = () => {
 			window.postMessage(
-				{ type: "RANGO_REMOVE_CLIPBOARD_WRITE_INTERCEPTOR" },
+				{ type: "RANGO_STOP_CLIPBOARD_WRITE_INTERCEPTION" },
 				origin
 			);
 			removeEventListener("message", messageHandler);
