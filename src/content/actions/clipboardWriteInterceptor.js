@@ -12,6 +12,13 @@ window.addEventListener("message", (event) => {
 	if (event.data.type === "RANGO_REMOVE_CLIPBOARD_WRITE_INTERCEPTOR") {
 		removeClipboardWriteInterceptor();
 	}
+
+	if (event.data.type === "RANGO_CHECK_INTERCEPTOR_LOADED") {
+		window.postMessage(
+			{ type: "RANGO_INTERCEPTOR_LOADED" },
+			window.location.origin
+		);
+	}
 });
 
 function addClipboardWriteInterceptor() {
@@ -55,3 +62,8 @@ function postMessageClipboardWriteIntercepted() {
 }
 
 document.querySelector("#rango-clipboard-write-interceptor").remove();
+
+window.postMessage(
+	{ type: "RANGO_INTERCEPTOR_LOADED" },
+	window.location.origin
+);

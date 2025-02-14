@@ -19,12 +19,10 @@ try {
 		"clipboardWriteInterceptor.js",
 		import.meta.url
 	).href;
-	void injectClipboardWriteInterceptor();
 } catch {
 	sendMessage("getClipboardWriteInterceptorPath")
 		.then((path) => {
 			clipboardWriteInterceptorPath = path;
-			void injectClipboardWriteInterceptor();
 		})
 		.catch((error: unknown) => {
 			console.error(error);
@@ -103,19 +101,6 @@ function shouldFocusDocumentOnActivation(element: Element) {
 	return false;
 }
 
-async function injectClipboardWriteInterceptor() {
-	try {
-		const script = createElement("script", {
-			id: "rango-clipboard-write-interceptor",
-			src: clipboardWriteInterceptorPath,
-		});
-
-		document.head.append(script);
-	} catch (error: unknown) {
-		console.error(error);
-	}
-}
-
 /**
  * This function clicks an element and returns a promise that resolves to true
  * if a clipboard write operation was detected.
@@ -147,6 +132,8 @@ async function clickAndDetectClipboardWrite(wrapper: ElementWrapper) {
 }
 
 async function setUpClipboardWriteInterceptor() {
+	await injectClipboardWriteInterceptor();
+
 	const origin = globalThis.location.origin;
 
 	window.postMessage({ type: "RANGO_ADD_CLIPBOARD_WRITE_INTERCEPTOR" }, origin);
@@ -169,6 +156,34 @@ async function setUpClipboardWriteInterceptor() {
 
 		addEventListener("message", readyHandler);
 	});
+}
+
+async function injectClipboardWriteInterceptor() {
+	try {
+		const script = createElement("script", {
+			id: "rango-clipboard-write-interceptor",
+			src: clipboardWriteInterceptorPath,
+		});
+
+		document.head.append(script);
+
+		await new Promise<void>((resolve) => {
+			window.addEventListener("message", (event) => {
+				if (event.origin !== globalThis.location.origin) return;
+
+				if (event.data.type === "RANGO_INTERCEPTOR_LOADED") {
+					resolve();
+				}
+			});
+
+			window.postMessage(
+				{ type: "RANGO_CHECK_INTERCEPTOR_LOADED" },
+				globalThis.location.origin
+			);
+		});
+	} catch (error: unknown) {
+		console.error(error);
+	}
 }
 
 async function listenForClipboardWrite() {
