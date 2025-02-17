@@ -42,6 +42,14 @@ h1 {
 
 a {
 	color: #34495e;
+	text-decoration: underline wavy #d91656;
+	text-underline-offset: 4px;
+	text-decoration-thickness: 2px;
+	font-weight: 700;
+
+	&:hover {
+		color: #d91656;
+	}
 }
 
 .cta {
@@ -110,15 +118,4 @@ kbd::before {
 footer {
 	padding: 4rem;
 	text-align: center;
-}
-
-a {
-	text-decoration: underline wavy #d91656;
-	text-underline-offset: 4px;
-	text-decoration-thickness: 2px;
-	font-weight: 700;
-
-	&:hover {
-		color: #d91656;
-	}
 }
