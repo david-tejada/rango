@@ -1,0 +1,121 @@
+body {
+	font-family: Nunito, sans-serif;
+	font-size: 1.1rem;
+	color: #2c3e50;
+	margin: 0;
+	padding: 0;
+}
+
+.container {
+	max-width: 70ch;
+	margin: 0 auto;
+	padding: 1rem;
+}
+
+p,
+li {
+	line-height: 1.75;
+}
+
+li + li {
+	margin-top: 0.6em;
+}
+
+code {
+	border-radius: 4px;
+	background-color: #e2e8f0;
+	padding: 0.2em 0.4em;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	margin-top: 1.6em;
+}
+
+h1 {
+	text-align: center;
+}
+
+a {
+	color: #34495e;
+	text-decoration: underline wavy #d91656;
+	text-underline-offset: 4px;
+	text-decoration-thickness: 2px;
+	font-weight: 700;
+
+	&:hover {
+		color: #d91656;
+	}
+}
+
+.cta {
+	display: block;
+	text-align: center;
+	margin: 1em auto;
+	width: max-content;
+	background-image: linear-gradient(
+		320deg,
+		hsl(177deg 94% 38%) 0%,
+		hsl(178deg 83% 40%) 11%,
+		hsl(179deg 76% 42%) 22%,
+		hsl(180deg 69% 43%) 33%,
+		hsl(182deg 64% 45%) 44%,
+		hsl(183deg 60% 46%) 56%,
+		hsl(184deg 56% 48%) 67%,
+		hsl(185deg 52% 49%) 78%,
+		hsl(186deg 49% 50%) 89%,
+		hsl(187deg 48% 52%) 100%
+	);
+	color: rgb(0 0 0 / 75%);
+	font-size: 1.6em;
+	padding: 0.75em 2em;
+	text-decoration: none;
+	border-radius: 8px;
+	box-shadow: 1px 1px 0 1px rgb(0 0 0 / 75%);
+	transition:
+		translate 0.1s ease-in-out,
+		box-shadow 0.1s ease-in-out;
+	translate: -2px -2px;
+
+	&:hover {
+		color: white;
+	}
+
+	&:active {
+		translate: 0 0;
+		box-shadow: none;
+	}
+}
+
+#version {
+	display: inline-block;
+	font-family: "iA Writer Mono", monospace;
+	background: #fb4785;
+	color: white;
+	padding: 0.5rem 1rem;
+	box-shadow: 1px 1px 0 1px black;
+	transform: skewY(-2deg);
+}
+
+kbd {
+	color: midnightblue;
+	background: aliceblue;
+	border-radius: 4px;
+	padding: 2px 4px;
+	border: 1px solid lightsteelblue;
+	margin-inline-end: 0.25ch;
+}
+
+kbd::before {
+	content: "🗣️";
+	padding-inline-end: 0.5ch;
+}
+
+footer {
+	padding: 4rem;
+	text-align: center;
+}
