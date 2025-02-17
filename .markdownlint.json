@@ -1,4 +1,7 @@
 {
 	"no-inline-html": false,
-	"first-line-h1": false
+	"first-line-h1": false,
+	"no-duplicate-heading": {
+		"siblings_only": true
+	}
 }

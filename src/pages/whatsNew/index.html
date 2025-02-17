@@ -4,7 +4,7 @@
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
 		<title>What's new - Rango</title>
-		<link rel="stylesheet" href="../styles.css" />
+		<link rel="stylesheet" href="styles.css" />
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
@@ -16,40 +16,59 @@
 			href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;700&family=Quicksand:wght@300;400;500;600;700&display=swap"
 			rel="stylesheet"
 		/>
-		<script src="main.ts" type="module"></script>
+		<script src="main.ts" type="module" defer></script>
 	</head>
 	<body>
 		<div class="container">
-			<h1>Rango has been updated to version 0.7.0</h1>
+			<h1>
+				Release notes for Rango
+				<span id="version">v0.8.0</span>
+			</h1>
 			<section>
-				<h2>What's new?</h2>
 				<p>
-					Hello! I hope you are doing well. Here I bring you a new Rango update
-					to make your web browsing life a bit easier. I hope you appreciate it.
-					This release brings us the ability to target elements by their text
-					content using fuzzy search. This functionality can also be used for
-					scripting. We now also have the ability to edit custom selectors from
-					the settings page. Besides that this release brings more improvements
-					and bug fixes.
+					This release brings major performance improvements, better error
+					handling, range targets, improvements to fuzzy search functionality,
+					new mouse-based commands and a lot more.
 				</p>
 			</section>
 			<section>
-				<h2>Update rango-talon</h2>
+				<h2>Update <em>rango-talon</em></h2>
 				<p>
-					You need to update rango-talon to be able to use the new commands.
+					You need to update <em>rango-talon</em> to be able to use the new
+					commands. Note that this update changes how actions are called in
+					<em>rango-talon</em>, now using specific actions instead of "stringy"
+					ones (for example,
+					<code>user.rango_click_element(rango_target)</code> instead of
+					<code
+						>user.rango_command_with_target("clickElement", rango_target)</code
+					>). If you have defined your own commands outside of rango-talon, you
+					should update them to use the new actions. The old ones will still
+					work but will be deprecated in the future.
 				</p>
 			</section>
 
 			<section>
-				<h2>Become a sponsor</h2>
+				<h2>Your support is appreciated</h2>
 				<p>
-					There is still a lot of work to do, features to add and bugs to fix. I
-					would like to be able to continue working on Rango to bring you all
-					those goodies. To be able to do that I need your support. If Rango
-					makes your life easier when navigating the web and has become an
-					essential tool for you, please consider becoming a sponsor. You just
-					have to click this big button below or use the command
-					<code>rango open sponsor</code>.
+					I have spent a lot of time on this update. I want Rango to feel and
+					work as good as possible. I am very appreciative of all the support I
+					get. Especially of those who have been supporting me for a long time.
+					But the thing is that, after a certain point, the more I work on
+					Rango, the better it becomes, and the more users it has, the less
+					money from sponsors I get. Probably from those who remember how it was
+					to navigate the web by voice before Rango.
+				</p>
+				<p>
+					Think of how many extensions you know with a single developer that are
+					published to four different extension stores. Including Safari, for
+					which I have to pay the Apple Developer Program, costing me almost an
+					entire month of my sponsor money. It is a considerable effort. I
+					understand that people who rely on assistive technology aren't always
+					in the best financial situation. I am on that same boat too. For this
+					reason I ask you that, if you can afford it, you consider sponsoring
+					me. All you have to do is click this big button below or use the
+					command
+					<kbd>rango open sponsor</kbd>.
 				</p>
 				<a
 					href="https://github.com/sponsors/david-tejada"
@@ -60,50 +79,164 @@
 			</section>
 
 			<section>
-				<h2>Changelog for v0.7.0</h2>
+				<h2>Changelog for v0.8.0</h2>
+
+				<h3>Changed</h3>
+				<ul>
+					<li>Lots of refactoring and repository maintenance.</li>
+					<li>Improve error handling and error notifications.</li>
+					<li>
+						Avoid executing the command if part of the target is invalid.
+						Display error message explaining why the target is invalid.
+					</li>
+					<li>
+						Improve tab marker assignment. Now all tabs receive a tab marker
+						even if we can't display it in the title. The tab markers are also
+						assigned in the tab opening order.
+					</li>
+					<li>
+						Make fuzzy search work also on non hintables when a good hintable
+						match isn't found.
+					</li>
+					<li>
+						Change command <kbd>copy text &lt;target&gt;</kbd> to
+						<kbd>copy content &lt;target&gt;</kbd> to avoid collisions with
+						fuzzy search targets.
+					</li>
+					<li>
+						Improve focus, supporting elements with
+						<code>tabindex="-1"</code> and retrying when the first focus doesn't
+						actually focus the targeted element.
+					</li>
+					<li>
+						Change reference commands to accept multiple words instead of just
+						one.
+					</li>
+					<li>
+						Show <strong>What's New</strong> page only on startup to avoid
+						disrupting the user.
+					</li>
+					<li>
+						Update rango-talon to use specific actions instead of "stringy"
+						ones. For example,
+						<code>user.rango_click_element(rango_target)</code> instead of
+						<code
+							>user.rango_command_with_target("clickElement",
+							rango_target)</code
+						>.
+					</li>
+					<li>
+						Change <kbd>follow &lt;target&gt;</kbd> command to exclusively take
+						into account elements within the viewport.
+					</li>
+					<li>
+						Improve positioning of hints for elements that contain images.
+					</li>
+				</ul>
 
 				<h3>Added</h3>
 				<ul>
-					<li>Add setting to always compute hintables.</li>
 					<li>
-						Add command for performing action on an element fuzzy searching its
-						text.
+						Add command <kbd>tab close &lt;target&gt;</kbd> for closing tabs by
+						their tab marker.
 					</li>
 					<li>
-						Add ability to customize custom selectors from the settings page.
+						Add range target for elements and tab markers. For example,
+						<kbd>[click] &lt;target&gt; until &lt;target&gt;</kbd> or
+						<kbd>tab close &lt;target&gt; until &lt;target&gt;</kbd>.
 					</li>
-					<li>Add setting for notifying or not when toggling hints.</li>
-					<li>Add command for hiding a specific hint.</li>
-					<li>Add command to save a reference to the active element.</li>
+					<li>
+						Add targets for fuzzy search <kbd>text &lt;user.text&gt;</kbd> and
+						references <kbd>mark &lt;user.text&gt;</kbd> that can be used with
+						any command that receives a target.
+					</li>
+					<li>
+						Add commands for focusing audible/muted tabs and for muting/unmuting
+						tabs. Commands like <kbd>mute this</kbd>, <kbd>mute all</kbd>,
+						<kbd>go sound</kbd> and more.
+					</li>
+					<li>
+						Add command <kbd>move to &lt;target&gt;</kbd> for moving the mouse
+						pointer to an element.
+					</li>
+					<li>
+						Add command <kbd>mouse click &lt;target&gt;</kbd> for clicking an
+						element with the mouse.
+					</li>
+					<li>
+						Add command <kbd>menu &lt;target&gt;</kbd> for right clicking an
+						element with the mouse.
+					</li>
+					<li>
+						Add menu item and command <kbd>rango what's new</kbd> to show the
+						<strong>What's New</strong> page.
+					</li>
+					<li>
+						Add ability to snap scroll arbitrary text using
+						<kbd>crown &lt;text&gt;</kbd>, <kbd>center &lt;text&gt;</kbd> and
+						<kbd>bottom &lt;text&gt;</kbd>.
+					</li>
+					<li>
+						Show notification when direct clicking fails with TimeoutError to
+						warn users that might be trying to insert characters without the
+						browser extension installed.
+					</li>
 				</ul>
 
 				<h3>Fixed</h3>
 				<ul>
 					<li>
-						Fix issue with elements not triggering intersection when within
-						<code>positioned: fixed</code> element.
+						Fix clicking elements that copy text to the clipboard not working.
+						Making no longer necessary to use
+						<kbd>flick &lt;target&gt;</kbd> for those cases.
 					</li>
 					<li>
-						Fix hints being read out when using Microsoft Edge Read Aloud
-						function.
+						Fix hint characters of child frames not refreshing when using the
+						command
+						<kbd>hints refresh</kbd>.
 					</li>
-					<li>Make hints and keys to exclude settings case insensitive.</li>
 					<li>
-						Fix crown not taking account sticky headers with smooth scrolling.
+						Fix <kbd>pre &lt;target&gt;</kbd> and
+						<kbd>post &lt;target&gt;</kbd> not working for some input element
+						types.
 					</li>
-					<li>Fix Discord's internal links opening in a new tab.</li>
-					<li>Fix <code>go input</code> not working when the hints are off.</li>
 					<li>
-						Fix slowness on startup caused by having to reload discarded tabs
-						for refreshing tab markers.
+						Fix custom hints outline persisting after the element is no longer
+						marked.
 					</li>
-				</ul>
-
-				<h3>Changed</h3>
-				<ul>
-					<li>Allow smaller hint font size.</li>
+					<li>
+						Fix command <kbd>toggle show</kbd> not working when notifications
+						are disabled.
+					</li>
+					<li>
+						Fix keyboard clicking not ignoring hints outside of the viewport.
+					</li>
+					<li>Fix limitation of 8192 bytes per item in sync storage.</li>
+					<li>
+						Fix slowness displaying hints after multiple tabs have been opened.
+					</li>
+					<li>
+						Fix decorations not being removed when saving multiple bookmarks.
+					</li>
+					<li>
+						Fix command <kbd>flick &lt;target&gt;</kbd> not working with some
+						elements like checkboxes and radio buttons.
+					</li>
+					<li>
+						Fix some issues caused by displaying tab markers on non-HTML tabs.
+					</li>
 				</ul>
 			</section>
+			<footer>
+				<p>
+					You can find the changelog for previous releases in the
+					<a
+						href="https://github.com/david-tejada/rango/releases"
+						target="_blank"
+						>releases page</a
+					>.
+				</p>
+			</footer>
 		</div>
 	</body>
 </html>

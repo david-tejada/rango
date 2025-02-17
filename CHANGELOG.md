@@ -2,6 +2,69 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.8.0](https://github.com/david-tejada/rango/releases/tag/v0.8.0) - 2025-02-07
+
+### Changed
+
+- Lots of refactoring and repository maintenance.
+- Improve error handling and error notifications.
+- Avoid executing the command if part of the target is invalid. Display error
+  message explaining why the target is invalid.
+- Improve tab marker assignment. Now all tabs receive a tab marker even if we
+  can't display it in the title. The tab markers are also assigned in the tab
+  opening order.
+- Make fuzzy search work also on non hintables when a good hintable match isn't
+  found.
+- Change command `copy text <target>` to `copy content <target>` to avoid
+  collisions with fuzzy search targets.
+- Improve focus, supporting elements with `tabindex="-1"` and retrying when the
+  first focus doesn't actually focus the targeted element.
+- Change reference commands to accept multiple words instead of just one.
+- Show **What's New** page only on startup to avoid disrupting the user.
+- Update rango-talon to use specific actions instead of "stringy" ones. For
+  example, `user.rango_click_element(rango_target)` instead of
+  `user.rango_command_with_target("clickElement", rango_target)`.
+- Change `follow <target>` command to exclusively take into account elements
+  within the viewport.
+- Improve positioning of hints for elements that contain images.
+
+### Added
+
+- Add command `tab close <target>` for closing tabs by their tab marker.
+- Add range target for elements and tab markers. For example,
+  `[click] <target> until <target>` or `tab close <target> until <target>`.
+- Add targets for fuzzy search `text <user.text>` and references
+  `mark <user.text>` that can be used with any command that receives a target.
+- Add commands for focusing audible/muted tabs and for muting/unmuting tabs.
+  Commands like `mute this`, `mute all`, `go sound` and more.
+- Add command `move to <target>` for moving the mouse pointer to an element.
+- Add command `mouse click <target>` for clicking an element with the mouse.
+- Add command `menu <target>` for right clicking an element with the mouse.
+- Add menu item and command `rango what's new` to show the **What's New** page.
+- Add ability to snap scroll arbitrary text using `crown <text>`,
+  `center <text>` and `bottom <text>`.
+- Show notification when direct clicking fails with TimeoutError to warn users
+  that might be trying to insert characters without the browser extension
+  installed.
+
+### Fixed
+
+- Fix clicking elements that copy text to the clipboard not working. Making no
+  longer necessary to use `flick <target>` for those cases.
+- Fix hint characters of child frames not refreshing when using the command
+  `hints refresh`.
+- Fix `pre <target>` and `post <target>` not working for some input element
+  types.
+- Fix custom hints outline persisting after the element is no longer marked.
+- Fix command `toggle show` not working when notifications are disabled.
+- Fix keyboard clicking not ignoring hints outside of the viewport.
+- Fix limitation of 8192 bytes per item in sync storage.
+- Fix slowness displaying hints after multiple tabs have been opened.
+- Fix decorations not being removed when saving multiple bookmarks.
+- Fix command `flick <target>` not working with some elements like checkboxes
+  and radio buttons.
+- Fix some issues caused by displaying tab markers on non-HTML tabs.
+
 ## [0.7.0](https://github.com/david-tejada/rango/releases/tag/v0.7.0) - 2024-06-17
 
 ### Added
@@ -40,7 +103,7 @@ All notable changes to the Rango extension will be documented in this file.
 - Fix some reference not working when the unique selector uses `href`.
 - Fix some instances of hints within tables breaking layout.
 - Fix weird behavior displaying hints in contenteditable in
-  https://pad.cogneon.io/.
+  <https://pad.cogneon.io/>.
 
 ## [0.6.2](https://github.com/david-tejada/rango/releases/tag/v0.6.2) - 2023-12-8
 
