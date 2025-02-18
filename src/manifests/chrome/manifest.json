@@ -80,11 +80,5 @@
 			"48": "../../assets/icon48.png"
 		},
 		"default_title": "Rango"
-	},
-	"web_accessible_resources": [
-		{
-			"resources": ["../../content/actions/clipboardWriteInterceptor.js"],
-			"matches": ["<all_urls>"]
-		}
-	]
+	}
 }
