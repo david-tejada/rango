@@ -12,7 +12,7 @@ that helps you control your browser by voice.<br>🦎 It blends in! </p>
 ## Introduction
 
 Rango is a cross browser extension that helps you interact with web pages using
-your voice and [talon](https://talonvoice.com/). It does this by drawing hints
+your voice and [Talon](https://talonvoice.com/). It does this by drawing hints
 with letters next to elements that you can use to click, hover, copy or show
 link adresses. It also helps you scroll, open multiple links in new tabs, close
 multiple tabs and more.
@@ -76,16 +76,17 @@ app: chrome
 tag(): user.rango_disabled
 ```
 
-## Settings
+## Basic Usage
 
-There are several settings you can adjust to change the appearance of the hints
-and the overall behavior of the extension. To open the settings page you just
-need to use the command <kbd>rango settings</kbd>. You can also open them by
-right clicking the extension icon and clicking the menu item `Settings`.
+Rango decorates elements with labels. To click an element simply say the letters
+for that element. For example, <kbd>air whale</kbd> will click the element with
+the label `aw`.
 
-## Usage
+Similarly, you can activate a tab using the keywords <kbd>go tab</kbd> or
+<kbd>slot</kbd>. For example, <kbd>go tab air</kbd> or <kbd>slot air</kbd> will
+activate the tab with the tab marker `a`.
 
-### Targets
+## Targets
 
 Some commands accept targets. There are two types of targets depending if the
 command acts on elements or tabs. In this documentation the targets are denoted
@@ -95,12 +96,12 @@ shorthands used in this documentation. They represent the captures
 <kbd>&lt;user.rango_target&gt;</kbd> and
 <kbd>&lt;user.rango_tab_target&gt;</kbd> in rango-talon.
 
-#### Element Targets
+### Element Targets
 
 There are three types of element targets: **hint targets**, **reference
 targets** and **text search targets**.
 
-##### Hint Targets
+#### Hint Targets
 
 Hints are labels with letters (or numbers when
 [using number hints](#using-number-for-hints)) that are placed at the top left
@@ -119,7 +120,7 @@ If you want to know how to use number for hints, which elements receive hints
 and what to do if an element you want to click doesn't have a hint, take a look
 at the section [More on hints](#more-on-hints).
 
-##### Reference Targets
+#### Reference Targets
 
 References are a way to refer to an element on a particular webpage by a
 previously saved name. You can learn how to create references and use them for
@@ -128,7 +129,7 @@ scripting in the section [Custom References](#custom-references).
 To refer to a previously saved reference we use the formula <kbd>mark
 &lt;text&gt;</kbd>. For example, <kbd>click mark main menu</kbd>.
 
-##### Text Search Targets
+#### Text Search Targets
 
 We can also refer to an element by its text content. For this we use the formula
 <kbd>text &lt;text&gt;</kbd>. For example, <kbd>click text submit</kbd> will
@@ -136,7 +137,7 @@ click the element on the viewport whose text context better matches the text
 `submit`. To learn more about fuzzy text search take a look at the section
 [Fuzzy Text Search](#fuzzy-search-elements).
 
-#### Tab Targets
+### Tab Targets
 
 Tab targets are a way to reference tabs by their tab marker. Tab markers are
 letters displayed at the start of a tab title. Rango prepends the tab marker to
@@ -144,7 +145,7 @@ the title of the tab if the setting `Include tab marker in title` is on
 (default). To target a tab you simply have to say the letters of the tab marker.
 For example, <kbd>tab close air</kbd>.
 
-#### Primitive, List and Range Targets
+### Primitive, List and Range Targets
 
 Targets can be primitive, list or range depending if they act on a single
 element, a list of elements or a range of elements.
@@ -152,20 +153,20 @@ element, a list of elements or a range of elements.
 Most Rango commands accept any of the three types of targets. Although, some of
 them, for example `crown <target>`, only accept primitive targets.
 
-##### Primitive Targets
+#### Primitive Targets
 
 Primitive targets are single targets. They are used by referring to the letters
 or numbers with which elements or tabs are labeled. For example, <kbd>air</kbd>,
 <kbd>gust harp</kbd> or <kbd>seventeen</kbd>.
 
-##### List targets
+#### List targets
 
 List targets are created by chaining primitive targets with the word
 <kbd>and</kbd> (or <kbd>plus</kbd> when using
 [number hints](#using-number-for-hints)). For example, <kbd>air and bat</kbd> or
 <kbd>seven plus twenty one</kbd>.
 
-##### Range targets
+#### Range targets
 
 Range targets are created by chaining primitive targets with the word
 <kbd>until</kbd>. For example, <kbd>air until cap drum</kbd>.
@@ -174,14 +175,14 @@ When targeting elements, range targets will select only similar elements. For
 example, if both the start and end of the range are checkbox elements only the
 checkbox elements between them (including them) will be targeted.
 
-### Click
+## Clicking on Elements
 
-#### Direct and Explicit Clicking
+### Direct and Explicit Clicking
 
 When using hints to click on elements there are two modes: direct and explicit
 clicking. By default direct mode is enabled.
 
-##### Direct Clicking
+#### Direct Clicking
 
 This is the default mode. With it enabled you just have to say the characters
 displayed on the hint to click an element. To avoid misclicks it only listens to
@@ -199,7 +200,7 @@ Here are some examples of how to click or type keys using direct clicking:
 - <kbd>air bat cap</kbd>: Types the characters `abc`.
 - <kbd>press air</kbd>: Types the character `a`.
 
-##### Explicit Clicking
+#### Explicit Clicking
 
 With explicit clicking you have to precede every hint with the word
 <kbd>click</kbd>. This mode prevents any misclicks at the expense of being a bit
@@ -218,14 +219,14 @@ tag(): user.rango_explicit_clicking
 You can temporarily activate one or other mode by using the commands <kbd>rango
 direct</kbd> or <kbd>rango explicit</kbd>.
 
-#### Focus Clicking
+### Focus Clicking
 
 If clicking with Rango fails for some particular element you can try with the
 command <kbd>flick &lt;target&gt;</kbd>. This command will focus the element and
 then press the appropriate key (<kbd>enter</kbd> or <kbd>space</kbd>) to
 activate the element.
 
-#### Mouse Clicking
+### Mouse Clicking
 
 If all of the above fails you can try with the command <kbd>mouse click
 &lt;target&gt;</kbd>. This command will actually move the mouse pointer to the
@@ -235,7 +236,7 @@ If what you want to do is right click an element to open the context menu you
 can use the command <kbd>menu &lt;target&gt;</kbd>. This command will move the
 mouse pointer to the element and click the right button.
 
-#### Open in a New Tab
+### Open in a New Tab
 
 - <kbd>blank &lt;target&gt;</kbd>: Opens the link in a new tab. If you use
   multiple targets all the links will open in new tabs and the first one will
@@ -245,7 +246,7 @@ mouse pointer to the element and click the right button.
   example, <kbd>air bat and air drum</kbd> will open the links with the hints
   `ah` and `ad` in a new background tab.
 
-#### Keyboard Clicking
+### Keyboard Clicking
 
 Apart from using your voice for clicking you can also use your keyboard for
 that.
@@ -257,21 +258,11 @@ can set by default. You'll see the toolbar icon shows a little orange dot when
 keyboard clicking is on. To allow typing text in pages, keyboard clicking will
 be off whenever the element in focus accepts text input.
 
-##### Excluding Keys
-
-When using keyboard clicking you might want to have the ability to use certain
-keys as shortcuts for specific websites. For example, you might want to be able
-to use the key <kbd>c</kbd> in YouTube to toggle captions. The easy way to do
-this is to right click on the extension icon and select the menu
-`Add Keys to Exclude`. This will add an entry to the keys to exclude setting
-with the URL pattern for the current URL and will open the settings so you can
-easily add the keys you want to exclude.
-
-### Focus
+## Focus
 
 - <kbd>focus &lt;target&gt;</kbd>: Focus the target element.
 
-### Hover
+## Hover
 
 - <kbd>hover &lt;target&gt;</kbd>: Dispatches a hover event to the selected
   element. Sometimes this command doesn't have a visible result if the current
@@ -283,21 +274,21 @@ easily add the keys you want to exclude.
 - <kbd>dismiss</kbd>: Clears any previously hovered element. If there is a
   focused element it would also remove the focus from that element.
 
-### Show Element Information
+## Show Element Information
 
 - <kbd>show &lt;target&gt;</kbd>: Shows a tooltip with the element title and url
   if the element is a link.
 
-  ### Copy Element Information to the Clipboard
+## Copy Element Information to the Clipboard
 
-- <kbd>copy &lt;target&gt;</kbd>: If the element is a link it copies the url to
-  the clipboard.
+- <kbd>copy [link] &lt;target&gt;</kbd>: If the element is a link it copies the
+  url to the clipboard.
 - <kbd>copy mark &lt;target&gt;</kbd>: If the element is a link it copies the
   link in markdown format to the clipboard.
 - <kbd>copy content &lt;target&gt;</kbd>: Copies the text content of the element
   to the clipboard.
 
-### Input Fields
+## Edit Input Fields
 
 **Note**: "Input field" here refers to any element with editable content. It
 doesn't need to be an `<input>` element.
@@ -316,13 +307,13 @@ doesn't need to be an `<input>` element.
 - <kbd>post &lt;target&gt;</kbd>: Places the cursor at the end of an input
   field.
 
-### Navigation
+## Page Navigation
 
 - <kbd>go root</kbd>: Navigate to the root of the current page.
 - <kbd>page next</kbd>: Navigate to the next page in paginated pages.
 - <kbd>page last</kbd>: Navigate to the previous page in paginated pages.
 
-### Copy Current URL Information
+## Copy Current URL Information
 
 - <kbd>copy page (address | host name | host | origin | path | port |
   protocol)</kbd>: Copies the information relative to the current URL to the
@@ -330,7 +321,7 @@ doesn't need to be an `<input>` element.
 - <kbd>copy mark address</kbd>: Copies the current URL in markdown format to the
   clipboard.
 
-### Scroll
+## Scroll
 
 The default behavior for scrolling in Rango is "smooth". The behavior will be
 "instant" if you have configured your OS to prefer reduced motion. You can
@@ -339,7 +330,7 @@ follow the instructions
 if you want to know how to do that. You can also configure the preferred
 scrolling behavior in the settings.
 
-#### Page Scrolling
+### Page Scrolling
 
 These commands scroll the page, that is, the html or body elements, or the
 scroll container at the center of the page if those elements don't scroll.
@@ -353,7 +344,7 @@ scroll container at the center of the page if those elements don't scroll.
 - <kbd>scroll left/right all</kbd>: Scroll all the way to the left/right.
 - <kbd>tiny left/right</kbd>: Scroll to the left/right a factor of 0.2.
 
-#### Sidebar Scrolling
+### Sidebar Scrolling
 
 You can easily scroll the left or right sidebar of a page with these commands:
 
@@ -362,7 +353,7 @@ You can easily scroll the left or right sidebar of a page with these commands:
 - <kbd>upper/downer left/right all</kbd>: Scroll the left/right sidebar to the
   top/bottom.
 
-#### Scrolling the Container That Includes a Hinted Element
+### Scrolling the Container That Includes a Hinted Element
 
 Sometimes we want to scroll a container that is not the main page or a sidebar.
 An example for that could be a popup with links. For that we need to refer to
@@ -377,8 +368,6 @@ one of the hints inside said container and use one of the following commands:
 - <kbd>tiny left/right &lt;target&gt;</kbd>: Scroll the container with the
   hinted element to the left/right a factor of 0.2.
 
-#### Scrolling the Same Container Repeated Times
-
 Once you have scrolled a container by referring to a hint inside it, you can
 keep scrolling the same container with these commands without needing to refer
 to a hint within it again. It will also use the same amount of scroll last used:
@@ -386,7 +375,7 @@ to a hint within it again. It will also use the same amount of scroll last used:
 - <kbd>up/down/left/right again</kbd>: Scroll up/down/left/right the same factor
   a previously scrolled container.
 
-#### Scrolling an Element to the Top, Bottom or Center
+### Snap Scroll
 
 - <kbd>crown &lt;target&gt;</kbd>: Scrolls the element with the hint to the top
   of the page/container. It tries to take into account any sticky/fixed headers
@@ -406,7 +395,7 @@ content.
 - <kbd>bottom &lt;text&gt;</kbd>: Scrolls to the bottom the element with the
   text content.
 
-#### Custom Scroll Amounts
+### Custom Scroll Amounts
 
 You can change the scroll amount of these commands or create new scroll commands
 by adding/changing the last argument in the action call in your rango.talon
@@ -422,22 +411,36 @@ half down <user.rango_target>:
   user.rango_command_with_target("scrollDownAtElement", rango_target, 0.5)
 ```
 
-#### Save Scroll Positions
+### Save Scroll Positions
 
 You can save scroll positions within a webpage to later be able to scroll to
 that saved position.
 
-- <kbd>scroll save &lt;word&gt;</kbd>: Store the current scroll position and
-  assign it to the specified word.
-- <kbd>scroll to &lt;word&gt;</kbd>: Scroll to the saved position. This uses
+- <kbd>scroll save &lt;text&gt;</kbd>: Store the current scroll position and
+  assign it to the specified text.
+- <kbd>scroll to &lt;text&gt;</kbd>: Scroll to the saved position. This uses
   fuzzy search, so a command like <kbd>scroll to object</kbd> will also match
   the saved scroll position `objects` if no scroll position `object` was stored.
 
-### Tabs
+## Tab Commands
 
 - <kbd>tab clone</kbd>: Duplicates the current tab.
-- <kbd>tab back</kbd>: Switches to the previously focused tab.
 - <kbd>tab split</kbd>: Move the current tab to a new window.
+- <kbd>visit {user.website}</kbd>: This uses the websites defined in
+  _websites.csv_ within _talonhub/community_. It will focus the first tab
+  matching the website or open it in a new tab if there's no match.
+- <kbd>tab marker refresh</kbd>: Refreshes the tab markers for the existing
+  tabs. Note that this command will refresh all unloaded tabs as otherwise we
+  are unable to change the tab markers.
+
+### Focus Tabs
+
+- <kbd>(go tab | slot) &lt;tab_target&gt;</kbd>: Focuses the targeted tab or
+  tabs (if they are in different windows).
+- <kbd>tab back</kbd>: Focuses the previously active tab.
+
+You can also focus tabs by searching their title or URL.
+
 - <kbd>tab hunt &lt;text&gt;</kbd>: Focuses the tab that matches the text in its
   URL or title. It uses fuzzy search and focuses the tab that better matches the
   text.
@@ -445,11 +448,8 @@ that saved position.
   hunt</kbd>, it focuses the next tab (by match score).
 - <kbd>tab behind</kbd>: If there are multiple results after using <kbd>tab
   hunt</kbd>, it focuses the previous tab (by match score).
-- <kbd>visit {user.website}</kbd>: This uses the websites defined in
-  _websites.csv_ within _talonhub/community_. It will focus the first tab
-  matching the website or open it in a new tab if there's no match.
 
-#### Close Tabs
+### Close Tabs
 
 - <kbd>tab close &lt;tab_target&gt;</kbd>: Closes the targeted tab or tabs.
 - <kbd>tab close other</kbd>: Closes all the tabs in the window except the
@@ -467,25 +467,19 @@ that saved position.
 - <kbd>tab close next [&lt;number&gt;]</kbd>: Closes the amount of tabs
   specified (or one if no number is given) to the right of the current tab.
 
-#### Focus Tabs Using Tab Markers
+## Opening Rango Related Pages
 
-If you have the setting `Include tab markers in title` enabled (default) you can
-refer to those markers to quickly focus a specific tab.
+- The command <kbd>rango open {page}</kbd> opens a Rango related page in a new
+  tab. The pages are: sponsor, readme, issues, new issue and changelog.
 
-- <kbd>(go tab | slot) &lt;marker&gt;</kbd>: Focus the tab with the specified
-  tab marker.
-- <kbd>tab marker refresh</kbd>: Refreshes the tab markers for the existing
-  tabs. Note that this command will refresh all unloaded tabs as otherwise we
-  are unable to change the tab markers.
-
-### Custom References
+## Custom References
 
 Custom references are a way to store references to hints and their underlying
 element for later use either directly or in scripting. Once created references
 will work even when the hints are off. Once saved, references can be used in any
 command that accepts element targets using <kbd>mark &lt;text&gt;</kbd>.
 
-#### Save References
+### Save References
 
 - <kbd>mark &lt;target&gt; as &lt;text&gt;</kbd>: Saves a reference to the
   targeted element and assigns it to the specified text.
@@ -496,7 +490,7 @@ command that accepts element targets using <kbd>mark &lt;text&gt;</kbd>.
 - <kbd>mark clear &lt;text&gt;</kbd>: Remove the reference corresponding to the
   specified text.
 
-#### Use References in Scripting
+### Use References in Scripting
 
 In order to use the saved references in scripting you need to use the talon
 action `user.rango_run_action_on_reference`. This action accept two arguments:
@@ -516,7 +510,7 @@ use references. These will be active when editing `.talon` files.
 - <kbd>focus rango mark &lt;text&gt;</kbd>
 - <kbd>hover rango mark &lt;text&gt;</kbd>
 
-### Fuzzy Search Elements
+## Fuzzy Search Elements
 
 Similar to custom references you can also target elements by their text content
 using fuzzy search. This can also be used for scripting purposes with the
@@ -524,7 +518,7 @@ advantage that there is no need to previously save a reference to the element.
 To create a fuzzy search target we use the formula <kbd>text &lt;text&gt;</kbd>.
 Fuzzy text targets only act on the elements visible in the viewport.
 
-#### Fuzzy Search Commands
+### Fuzzy Search Commands
 
 All commands that accept element targets also accept fuzzy search targets. The
 following two commands are a convenient way to click on elements using fuzzy
@@ -536,7 +530,7 @@ search.
 - <kbd>button &lt;text&gt;</kbd>: Similar to the previous command but it will
   search in the entire document, not just the viewport.
 
-#### Scripting Using Fuzzy Search
+### Scripting Using Fuzzy Search
 
 In order to use fuzzy search in scripting you need to use the talon action
 `user.rango_run_action_on_text_matched_element`. This action accepts three
@@ -557,60 +551,15 @@ using fuzzy search. These will be active when editing `.talon` files.
 - <kbd>focus rango text &lt;text&gt;</kbd>
 - <kbd>hover rango text &lt;text&gt;</kbd>
 
-### Modify Hints Size
+## Hiding a Particular Hint
 
-- <kbd>hint bigger</kbd>: Increase the size of the hints.
-- <kbd>hint smaller</kbd>: Decrease the size of the hints.
+On occasions a hint might be obscured by another hint that is stacked on top of
+the first one. For those occasions you can use the command <kbd>hide
+&lt;target&gt;</kbd> to hide the hint on top.
 
-### Show and Hide the Hints
+## Custom Hints
 
-- <kbd>hints refresh</kbd>: Refreshes the hints without needing to reload the
-  page.
-- <kbd>hints toggle</kbd>: Toggles the hints on and off.
-- <kbd>hints on/off [now | page | host | tab]</kbd>: Turns on/off the hints with
-  an optional priority level.
-  - <kbd>now</kbd>: This is the highest level of priority. The hints will be
-    toggled on/off for the current page until the page is reloaded or the user
-    navigates to another page.
-  - <kbd>page</kbd>: The hints will always be on/off for the current page.
-  - <kbd>host</kbd>: The hints will always be on/off for the current host.
-  - <kbd>tab</kbd>: The hints will always be on/off for the current tab.
-  - <kbd>global</kbd>: The hints will be on/off globally.
-  - If we just say <kbd>hints on</kbd> the hints are toggled globally in all
-    tabs and in all windows. This is the lowest level of priority, if any of the
-    previous toggles are set they will take precedence over this one.
-- <kbd>hints reset (page | host | tab | global | everywhere)</kbd>: clears the
-  toggles for the selected level.
-
-#### Other ways to toggle the hints on and off
-
-- Using the keyboard shortcut <kbd>ctrl</kbd>+<kbd>shift</kbd>+<kbd>space</kbd>
-- Clicking on the Rango icon in the toolbar.
-
-### Opening Rango Related Pages
-
-- The command <kbd>rango open {page}</kbd> opens a Rango related page in a new
-  tab. The pages are: sponsor, readme, issues, new issue and changelog.
-
-### More on Hints
-
-#### Using Number for Hints
-
-If you prefer to use numbers instead of letters for hints there are two steps
-you need to take:
-
-- Enable the setting `Use number for hints` in the extension.
-- Add the tag `user.rango_number_hints` in _rango.talon_ within _rango-talon_ in
-  your Talon user folder.
-
-One thing to consider is that Rango draws hints outside of the viewport for a
-better scrolling experience. When using number hints this might often result in
-three digit numbers being used. These high numbers might be longer to pronounce.
-If you want to minimize this you can modify the margin around the viewport where
-Rango draws hints. For that you can use the setting `Viewport margin`. A value
-of 0 will make that only the elements within the viewport receive hints.
-
-#### Which Elements Receive Hints
+### Which Elements Receive Hints
 
 By default, only certain elements receive hints. If the element is clickable it
 should receive a hint. Most of the time it does, but in some rare cases, it
@@ -633,7 +582,7 @@ get many duplicate hints and some unnecessary ones. Reducing those duplicates
 and unnecessary hints wasn't always possible and resulted in complicated and
 poorly performant code.
 
-#### Displaying Extra Hints
+### Displaying Extra Hints
 
 Moving away from that complicated logic resulted in better performance and
 cleaner ui. But now we need a way to display hints for those elements that are
@@ -642,7 +591,7 @@ we don't care so much about duplicates and we can use all those extra checks to
 see if an element might be clickable. The command <kbd>hint less</kbd> lets us
 go back to only displaying the default hints.
 
-#### Custom Hints
+#### Saving Custom Hints
 
 With the command <kbd>hint extra</kbd> now we have a way to show hints for those
 elements that don't receive them by default. But you might frequently use some
@@ -756,11 +705,76 @@ Here is a summary of all the commands for customizing hints:
 
 Custom hints can also be edited, added or removed from the settings page.
 
-#### Hiding a Particular Hint
+## Settings
 
-On occasions a hint might be obscured by another hint that is stacked on top of
-the first one. For those occasions you can use the command <kbd>hide
-&lt;target&gt;</kbd> to hide the hint on top.
+There are several settings you can adjust to change the appearance of the hints
+and the overall behavior of the extension. To open the settings page you just
+need to use the command <kbd>rango settings</kbd>. You can also open them by
+right clicking the extension icon and clicking the menu item `Settings`.
+
+### Modify Hints Size
+
+- <kbd>hint bigger</kbd>: Increase the size of the hints.
+- <kbd>hint smaller</kbd>: Decrease the size of the hints.
+
+### Show and Hide the Hints
+
+- <kbd>hints refresh</kbd>: Refreshes the hints without needing to reload the
+  page.
+- <kbd>hints toggle</kbd>: Toggles the hints on and off.
+- <kbd>hints on/off [now | page | host | tab]</kbd>: Turns on/off the hints with
+  an optional priority level.
+  - <kbd>now</kbd>: This is the highest level of priority. The hints will be
+    toggled on/off for the current page until the page is reloaded or the user
+    navigates to another page.
+  - <kbd>page</kbd>: The hints will always be on/off for the current page.
+  - <kbd>host</kbd>: The hints will always be on/off for the current host.
+  - <kbd>tab</kbd>: The hints will always be on/off for the current tab.
+  - <kbd>global</kbd>: The hints will be on/off globally.
+  - If we just say <kbd>hints on</kbd> the hints are toggled globally in all
+    tabs and in all windows. This is the lowest level of priority, if any of the
+    previous toggles are set they will take precedence over this one.
+- <kbd>hints reset (page | host | tab | global | everywhere)</kbd>: clears the
+  toggles for the selected level.
+
+#### Other ways to toggle the hints on and off
+
+- Using the keyboard shortcut <kbd>ctrl</kbd>+<kbd>shift</kbd>+<kbd>space</kbd>
+- Clicking on the Rango icon in the toolbar.
+
+### Using Number for Hints
+
+If you prefer to use numbers instead of letters for hints there are two steps
+you need to take:
+
+- Enable the setting `Use number for hints` in the extension.
+- Activate the tag `user.rango_number_hints`. This can be done in _rango.talon_
+  within _rango-talon_ in your Talon user folder. If you prefer not to modify
+  _rango-talon_ you can create a _.talon_ file anywhere in your Talon user
+  folder with the following contents.
+
+```talon
+tag: browser
+-
+tag(): user.rango_number_hints
+```
+
+One thing to consider is that Rango draws hints outside of the viewport for a
+better scrolling experience. When using number hints this might often result in
+three digit numbers being used. These high numbers might be longer to pronounce.
+If you want to minimize this you can modify the margin around the viewport where
+Rango draws hints. For that you can use the setting `Viewport margin`. A value
+of 0 will make that only the elements within the viewport receive hints.
+
+### Excluding Keys from Keyboard Clicking
+
+When using keyboard clicking you might want to have the ability to use certain
+keys as shortcuts for specific websites. For example, you might want to be able
+to use the key <kbd>c</kbd> in YouTube to toggle captions. The easy way to do
+this is to right click on the extension icon and select the menu
+`Add Keys to Exclude`. This will add an entry to the keys to exclude setting
+with the URL pattern for the current URL and will open the settings so you can
+easily add the keys you want to exclude.
 
 ## Troubleshooting
 
@@ -779,7 +793,7 @@ for Safari, where it is <kbd>ctrl</kbd>+<kbd>shift</kbd>+<kbd>3</kbd>. If Rango
 commands aren't working for you, make sure that the hotkey is properly set up.
 The shortcut that needs to be changed is `Get the talon request`.
 
-#### Where to Find the Extension Keyboard Shortcuts
+Here is how you can find the **extension keyboard shortcuts**:
 
 In Firefox, navigate to [about:addons](about:addons), click on the cog at the
 top right and then `Manage Extension Shortcuts`.
