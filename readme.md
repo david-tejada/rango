@@ -23,11 +23,11 @@ multiple tabs and more.
 
 ## Sponsorship
 
-Rango is mostly the work of one developer. I have spent hundreds of hours making
-sure Rango works and feels great. I would like to be able to continue working on
-Rango to make it even better. To be able to do that I need your support. If
-Rango makes your life easier when navigating the web or it has become an
-essential tool for you, please consider becoming a sponsor.
+Rango is almost entirely the work of one developer. I have spent thousands of
+hours making sure Rango works and feels great. I would like to be able to
+continue working on Rango to make it even better. To be able to do that I need
+your support. If Rango makes your life easier when navigating the web and has
+become an essential tool for you, please consider becoming a sponsor.
 [Click here](https://github.com/sponsors/david-tejada) or just say <kbd>rango
 open sponsor</kbd>.
 
@@ -50,7 +50,7 @@ files.
 - (Safari only) In order for Rango to work in Safari you need to first enable it
   in the Safari preferences. Go to Preferences -> Extensions and check Rango on
   the left sidebar. Then you need to click the extension icon in Safari and
-  select "Always Allow on Every Website".
+  select `Always Allow on Every Website`.
 
 - The talon files can be found in the
   [rango-talon](https://github.com/david-tejada/rango-talon) repository. Clone
@@ -60,7 +60,7 @@ files.
 It is also assumed that you have installed
 [talonhub/community](https://github.com/talonhub/community) to your talon user
 folder. If not you need at least to have the following captures defined:
-`<user.letter>`, `<user.word>`, `<user.number_small>`, `<user.number_string>`
+`<user.letter>`, `<user.text>`, `<user.number_small>`, `<user.number_string>`
 (only if you want to use number hints) and the list `{user.website}`.
 
 ### IMPORTANT: Disabling Rango on Some Browsers
@@ -70,8 +70,8 @@ active for all your browsers. If you haven't installed the extension itself in a
 specific browser, it's better to disable Rango for that browser to avoid
 unexpected behavior. The best way to do this is to activate the tag
 `user.rango_disabled` for that browser. For example, if you want to disable
-Rango in Brave and Chrome, you could have a _.talon_ file with the following
-contents anywhere in your talon user folder.
+Rango in Brave and Chrome, you could have a _.talon_ file anywhere in your talon
+user folder with the following contents.
 
 ```talon
 app: brave
@@ -87,15 +87,16 @@ tag(): user.rango_disabled
 If the hints are displayed but the commands don't work, most of the time it has
 to do with the configuration of the hotkey. In order to communicate with Rango,
 Talon presses a key combination to prompt Rango to read the command present on
-the clipboard. By default the key combination is <kbd>ctrl-shift-insert</kbd> in
-all the browsers except for Safari, where it is <kbd>ctrl-shift-3</kbd>. If
-Rango commands aren't working for you, make sure that the hotkey is properly set
-up. The shortcut that needs to be changed is `Get the talon request`.
+the clipboard. By default the key combination is
+<kbd>ctrl</kbd>+<kbd>shift</kbd>+<kbd>insert</kbd> in all the browsers except
+for Safari, where it is <kbd>ctrl</kbd>+<kbd>shift</kbd>+<kbd>3</kbd>. If Rango
+commands aren't working for you, make sure that the hotkey is properly set up.
+The shortcut that needs to be changed is `Get the talon request`.
 
 #### Where to Find the Extension Keyboard Shortcuts
 
 In Firefox, navigate to [about:addons](about:addons), click on the cog at the
-top right and then "Manage Extension Shortcuts".
+top right and then `Manage Extension Shortcuts`.
 
 In Chrome, navigate to
 [chrome://extensions/shortcuts](chrome://extensions/shortcuts).
@@ -123,55 +124,165 @@ right clicking the extension icon and clicking the menu item `Settings`.
 
 ## Usage
 
-**Note**: The notation <kbd>&lt;target&gt;</kbd> in this readme can refer to a
-single or multiple hints chained with the word <kbd>and</kbd> (or the word
-<kbd>plus</kbd> if you use number hints). For example, the command <kbd>click
-any and bat</kbd> would click on the elements marked with the hints `a` and `b`.
-Most Rango commands accept multiple hints as target.
+### Targets
 
-### Hints
+Some commands accept targets. There are two types of targets depending if the
+command acts on elements or tabs. In this documentation the targets are denoted
+with <kbd>&lt;target&gt;</kbd> for targeting elements on a page and
+<kbd>&lt;tab_target&gt;</kbd> for targeting tabs. These are convenience
+shorthands used in this documentation. They represent the captures
+<kbd>&lt;user.rango_target&gt;</kbd> and
+<kbd>&lt;user.rango_tab_target&gt;</kbd> in rango-talon.
 
-Hints are marks with letters (or numbers if you toggle the setting
-`Use number for hints`) that appear next to elements and that we can use to
-refer to the element to click, hover, copy its text content, etc.
+#### Element Targets
+
+There are three types of element targets: **hint targets**, **reference
+targets** and **text search targets**.
+
+##### Hint Targets
+
+Hints are labels with letters (or numbers when
+[using number hints](#using-number-for-hints)) that are placed at the top left
+of elements. It is the easiest way to refer to an element and the one you will
+use most of the time.
 
 <p align="left">
   <img src="images/screenshot-hint.png" height=60px">
 </p>
 
+To refer to an element by its hint you simply have to say the letters or numbers
+of the hint. For example, to refer to the first link in the above image you
+would use <kbd>air gust</kbd>.
+
 If you want to know how to use number for hints, which elements receive hints
 and what to do if an element you want to click doesn't have a hint, take a look
 at the section [More on hints](#more-on-hints).
 
+##### Reference Targets
+
+References are a way to refer to an element on a particular webpage by a
+previously saved name. You can learn how to create references and use them for
+scripting in the section [Custom References](#custom-references).
+
+To refer to a previously saved reference we use the formula <kbd>mark
+&lt;text&gt;</kbd>. For example, <kbd>click mark main menu</kbd>.
+
+##### Text Search Targets
+
+We can also refer to an element by its text content. For this we use the formula
+<kbd>text &lt;text&gt;</kbd>. For example, <kbd>click text submit</kbd> will
+click the element on the viewport whose text context better matches the text
+`submit`. To learn more about fuzzy text search take a look at the section
+[Fuzzy Text Search](#fuzzy-search-elements).
+
+#### Tab Targets
+
+Tab targets are a way to reference tabs by their tab marker. Tab markers are
+letters displayed at the start of a tab title. Rango prepends the tab marker to
+the title of the tab if the setting `Include tab marker in title` is on
+(default). To target a tab you simply have to say the letters of the tab marker.
+For example, <kbd>tab close air</kbd>.
+
+#### Primitive, List and Range Targets
+
+Targets can be primitive, list or range depending if they act on a single
+element, a list of elements or a range of elements.
+
+Most Rango commands accept any of the three types of targets. Although, some of
+them, for example `crown <target>`, only accept primitive targets.
+
+##### Primitive Targets
+
+Primitive targets are single targets. They are used by referring to the letters
+or numbers with which elements or tabs are labeled. For example, <kbd>air</kbd>,
+<kbd>gust harp</kbd> or <kbd>seventeen</kbd>.
+
+##### List targets
+
+List targets are created by chaining primitive targets with the word
+<kbd>and</kbd> (or <kbd>plus</kbd> when using
+[number hints](#using-number-for-hints)). For example, <kbd>air and bat</kbd> or
+<kbd>seven plus twenty one</kbd>.
+
+##### Range targets
+
+Range targets are created by chaining primitive targets with the word
+<kbd>until</kbd>. For example, <kbd>air until cap drum</kbd>.
+
+When targeting elements, range targets will select only similar elements. For
+example, if both the start and end of the range are checkbox elements only the
+checkbox elements between them (including them) will be targeted.
+
 ### Click
 
-There are two modes: direct and explicit clicking. By default direct mode is
-enabled. To use explicit clicking you need to delete the tag
-`user.rango_direct_clicking` in _rango.talon_.
+#### Direct and Explicit Clicking
 
-#### Direct Clicking
+When using hints to click on elements there are two modes: direct and explicit
+clicking. By default direct mode is enabled.
+
+##### Direct Clicking
 
 This is the default mode. With it enabled you just have to say the characters
 displayed on the hint to click an element. To avoid misclicks it only listens to
-a pause, one or two letters, followed by another pause. If there is no hint with
-those letters it will type them. If you actually want to enter one or two
-characters the are part of a hint you have to use the _talonhub/community_
-command <kbd>press</kbd>.
+a pause, one or two letters (or numbers when using
+[number hints](#using-number-for-hints)), followed by another pause. If there is
+no hint with those letters it will type them. If you actually want to enter one
+or two characters that are part of a hint you have to use the
+[talonhub/community](https://github.com/talonhub/community) command
+<kbd>press</kbd>.
 
-##### Examples
-
-Assuming default talon letters:
+Here are some examples of how to click or type keys using direct clicking:
 
 - <kbd>air</kbd>: Clicks on the element with the hint `a`.
 - <kbd>gust harp</kbd>: Clicks on the element with the hint `gh`.
-- <kbd>air bat cap</kbd>: Enters the characters `abc`.
-- <kbd>press air</kbd>: Enters the character `a`.
+- <kbd>air bat cap</kbd>: Types the characters `abc`.
+- <kbd>press air</kbd>: Types the character `a`.
 
-#### Explicit Clicking
+##### Explicit Clicking
 
 With explicit clicking you have to precede every hint with the word
 <kbd>click</kbd>. This mode prevents any misclicks at the expense of being a bit
 more tedious.
+
+To use explicit clicking you need to activate the tag
+`user.rango_explicit_clicking`. You can do that by creating a _.talon_ file
+anywhere in your talon user folder with the following contents:
+
+```talon
+tag: browser
+-
+tag(): user.rango_explicit_clicking
+```
+
+You can temporarily activate one or other mode by using the commands <kbd>rango
+direct</kbd> or <kbd>rango explicit</kbd>.
+
+#### Focus Clicking
+
+If clicking with Rango fails for some particular element you can try with the
+command <kbd>flick &lt;target&gt;</kbd>. This command will focus the element and
+then press the appropriate key (<kbd>enter</kbd> or <kbd>space</kbd>) to
+activate the element.
+
+#### Mouse Clicking
+
+If all of the above fails you can try with the command <kbd>mouse click
+&lt;target&gt;</kbd>. This command will actually move the mouse pointer to the
+element and click it.
+
+If what you want to do is right click an element to open the context menu you
+can use the command <kbd>menu &lt;target&gt;</kbd>. This command will move the
+mouse pointer to the element and click the right button.
+
+#### Open in a New Tab
+
+- <kbd>blank &lt;target&gt;</kbd>: Opens the link in a new tab. If you use
+  multiple targets all the links will open in new tabs and the first one will
+  receive focus.
+- <kbd>stash &lt;target&gt;</kbd>: Opens the link in a new background tab. When
+  using direct clicking and multiple targets you can omit the word "stash". For
+  example, <kbd>air bat and air drum</kbd> will open the links with the hints
+  `ah` and `ad` in a new background tab.
 
 #### Keyboard Clicking
 
@@ -199,32 +310,31 @@ easily add the keys you want to exclude.
 
 - <kbd>focus &lt;target&gt;</kbd>: Focus the target element.
 
-#### Focus and Enter
+### Hover
 
-Clicking with Rango might fail on some elements. For example, clicking on
-elements that copy things to the clipboard almost always fails because the
-browser thinks there was no user interaction and disallows it. To avoid this
-pitfall you might use the following command.
+- <kbd>hover &lt;target&gt;</kbd>: Dispatches a hover event to the selected
+  element. Sometimes this command doesn't have a visible result if the current
+  page doesn't have a hover event handler for this element. One example of a
+  page that does have hover event handlers for links is the Wikipedia, where
+  you'll get a popup with a preview of the linked article.
+- <kbd>move to &lt;target&gt;</kbd>: Move the mouse pointer to an element.
+  Sometimes this is useful for things like opening pure CSS menus.
+- <kbd>dismiss</kbd>: Clears any previously hovered element. If there is a
+  focused element it would also remove the focus from that element.
 
-- <kbd>flick &lt;target&gt;</kbd>: Focus an element and then press enter with
-  talon.
+### Show Element Information
 
-### Open in a New Tab
+- <kbd>show &lt;target&gt;</kbd>: Shows a tooltip with the element title and url
+  if the element is a link.
 
-- <kbd>blank &lt;target&gt;</kbd>: Opens the link in a new tab. If you use
-  multiple targets all the links will open in new tabs and the first one will
-  receive focus.
-- <kbd>stash &lt;target&gt;</kbd>: Opens the link in a new tab without focusing
-  that tab. When using direct clicking and multiple targets you can omit the
-  word "stash". For example, <kbd>air bat and air drum</kbd> will open the links
-  with the hints "ah" and "ad" in a new tab without stealing focus from the
-  current one.
+  ### Copy Element Information to the Clipboard
 
-### Navigation
-
-- <kbd>go root</kbd>: Navigate to the root of the current page.
-- <kbd>page next</kbd>: Navigate to the next page in paginated pages.
-- <kbd>page last</kbd>: Navigate to the previous page in paginated pages.
+- <kbd>copy &lt;target&gt;</kbd>: If the element is a link it copies the url to
+  the clipboard.
+- <kbd>copy mark &lt;target&gt;</kbd>: If the element is a link it copies the
+  link in markdown format to the clipboard.
+- <kbd>copy content &lt;target&gt;</kbd>: Copies the text content of the element
+  to the clipboard.
 
 ### Input Fields
 
@@ -245,14 +355,11 @@ doesn't need to be an `<input>` element.
 - <kbd>post &lt;target&gt;</kbd>: Places the cursor at the end of an input
   field.
 
-### Copy to the Clipboard
+### Navigation
 
-- <kbd>copy &lt;target&gt;</kbd>: If the element is a link it copies the url to
-  the clipboard.
-- <kbd>copy mark &lt;target&gt;</kbd>: If the element is a link it copies the
-  link in markdown format to the clipboard.
-- <kbd>copy text &lt;target&gt;</kbd>: Copies the text content of the element to
-  the clipboard.
+- <kbd>go root</kbd>: Navigate to the root of the current page.
+- <kbd>page next</kbd>: Navigate to the next page in paginated pages.
+- <kbd>page last</kbd>: Navigate to the previous page in paginated pages.
 
 ### Copy Current URL Information
 
@@ -261,21 +368,6 @@ doesn't need to be an `<input>` element.
   clipboard.
 - <kbd>copy mark address</kbd>: Copies the current URL in markdown format to the
   clipboard.
-
-### Hover
-
-- <kbd>hover &lt;target&gt;</kbd>: Dispatches a hover event to the selected
-  element. Sometimes this command doesn't have a visible result if the current
-  page doesn't have a hover event handler for this element. One example of a
-  page that does have hover event handlers for links is the Wikipedia, where
-  you'll get a popup with a preview of the linked article.
-- <kbd>dismiss</kbd>: Clears any previously hovered element. If there is a
-  focused element it would also remove the focus from that element.
-
-### Show Element Information
-
-- <kbd>show &lt;target&gt;</kbd>: Shows a tooltip with the element title and url
-  if the element is a link.
 
 ### Scroll
 
@@ -300,18 +392,18 @@ scroll container at the center of the page if those elements don't scroll.
 - <kbd>scroll left/right all</kbd>: Scroll all the way to the left/right.
 - <kbd>tiny left/right</kbd>: Scroll to the left/right a factor of 0.2.
 
-#### Aside Scrolling
+#### Sidebar Scrolling
 
-You can easily scroll the left or right aside with these commands:
+You can easily scroll the left or right sidebar of a page with these commands:
 
-- <kbd>upper/downer left/right</kbd>: Scroll the left/right aside
+- <kbd>upper/downer left/right</kbd>: Scroll the left/right sidebar
   upwards/downwards.
-- <kbd>upper/downer left/right all</kbd>: Scroll the left/right aside to the
+- <kbd>upper/downer left/right all</kbd>: Scroll the left/right sidebar to the
   top/bottom.
 
 #### Scrolling the Container That Includes a Hinted Element
 
-Sometimes we want to scroll a container that is not the main page or an aside.
+Sometimes we want to scroll a container that is not the main page or a sidebar.
 An example for that could be a popup with links. For that we need to refer to
 one of the hints inside said container and use one of the following commands:
 
@@ -342,6 +434,16 @@ to a hint within it again. It will also use the same amount of scroll last used:
   page/container.
 - <kbd>bottom &lt;target&gt;</kbd>: Scrolls the element to the bottom of the
   page/container.
+
+These commands can also accept text to be able to scroll elements by their text
+content.
+
+- <kbd>crown &lt;text&gt;</kbd>: Scrolls to the top of the element with the text
+  content.
+- <kbd>center &lt;text&gt;</kbd>: Scrolls to the center the element with the
+  text content.
+- <kbd>bottom &lt;text&gt;</kbd>: Scrolls to the bottom the element with the
+  text content.
 
 #### Custom Scroll Amounts
 
@@ -388,6 +490,7 @@ that saved position.
 
 #### Close Tabs
 
+- <kbd>tab close &lt;tab_target&gt;</kbd>: Closes the targeted tab or tabs.
 - <kbd>tab close other</kbd>: Closes all the tabs in the window except the
   current one.
 - <kbd>tab close left</kbd>: Closes all the tabs in the window to the left of
@@ -418,26 +521,19 @@ refer to those markers to quickly focus a specific tab.
 
 Custom references are a way to store references to hints and their underlying
 element for later use either directly or in scripting. Once created references
-will work even when the hints are off.
+will work even when the hints are off. Once saved, references can be used in any
+command that accepts element targets using <kbd>mark &lt;text&gt;</kbd>.
 
 #### Save References
 
-- <kbd>mark &lt;target&gt; as &lt;word&gt;</kbd>: Saves a reference to the
-  element with the specified hint and assigns it to the specified word.
-- <kbd>mark this as &lt;word&gt;</kbd>: Saves a reference to the focused element
-  and assigns it to the specified word.
-- <kbd>mark show</kbd>: Shows the visible saved references current in the page.
-- <kbd>mark clear &lt;word&gt;</kbd>: Remove the reference corresponding to the
-  specified word.
-
-#### Use References Directly
-
-- <kbd>click mark &lt;word&gt;</kbd>: Clicks the element with the assigned
-  reference word.
-- <kbd>focus mark &lt;word&gt;</kbd>: Focuses the element with the assigned
-  reference word.
-- <kbd>hover mark &lt;word&gt;</kbd>: Hovers the element with the assigned
-  reference word.
+- <kbd>mark &lt;target&gt; as &lt;text&gt;</kbd>: Saves a reference to the
+  targeted element and assigns it to the specified text.
+- <kbd>mark this as &lt;text&gt;</kbd>: Saves a reference to the focused element
+  and assigns it to the specified text.
+- <kbd>mark show</kbd>: Displays the saved references in the viewport for the
+  current page.
+- <kbd>mark clear &lt;text&gt;</kbd>: Remove the reference corresponding to the
+  specified text.
 
 #### Use References in Scripting
 
@@ -455,30 +551,29 @@ edit this: user.rango_run_action_on_reference("clickElement", "edit")
 There are also a few talon helpers that will make easier to create commands that
 use references. These will be active when editing `.talon` files.
 
-- <kbd>click rango mark &lt;word&gt;</kbd>
-- <kbd>focus rango mark &lt;word&gt;</kbd>
-- <kbd>hover rango mark &lt;word&gt;</kbd>
+- <kbd>click rango mark &lt;text&gt;</kbd>
+- <kbd>focus rango mark &lt;text&gt;</kbd>
+- <kbd>hover rango mark &lt;text&gt;</kbd>
 
 ### Fuzzy Search Elements
 
 Similar to custom references you can also target elements by their text content
 using fuzzy search. This can also be used for scripting purposes with the
 advantage that there is no need to previously save a reference to the element.
+To create a fuzzy search target we use the formula <kbd>text &lt;text&gt;</kbd>.
+Fuzzy text targets only act on the elements visible in the viewport.
 
-#### Using Fuzzy Search Directly to Run Actions on Elements
+#### Fuzzy Search Commands
 
-- <kbd>follow &lt;text&gt;</kbd>: Click the element that better matches the
-  provided text. It prioritizes elements within the viewport. Any element within
-  the viewport will have priority over other elements outside of the viewport
-  with better fuzziness score.
-- <kbd>button &lt;text&gt;</kbd>: Click the element that better matches the
-  provided text. It doesn't take into account if the element is within or
-  outside the viewport. It will simply click the element in the document with
-  the best fuzziness score.
-- <kbd>focus text &lt;text&gt;</kbd>: Focus the element that better matches the
-  provided text. It prioritizes elements within the viewport.
-- <kbd>hover text &lt;text&gt;</kbd>: Hover the element that better matches the
-  provided text. It prioritizes elements within the viewport.
+All commands that accept element targets also accept fuzzy search targets. The
+following two commands are a convenient way to click on elements using fuzzy
+search.
+
+- <kbd>follow &lt;text&gt;</kbd>: This command is equivalent to <kbd>click text
+  &lt;text&gt;</kbd>. It will click the element on the viewport that better
+  matches the provided text.
+- <kbd>button &lt;text&gt;</kbd>: Similar to the previous command but it will
+  search in the entire document, not just the viewport.
 
 #### Scripting Using Fuzzy Search
 
