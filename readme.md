@@ -86,6 +86,11 @@ Similarly, you can activate a tab using the keywords <kbd>go tab</kbd> or
 <kbd>slot</kbd>. For example, <kbd>go tab air</kbd> or <kbd>slot air</kbd> will
 activate the tab with the tab marker `a`.
 
+You can scroll a page using the commands <kbd>upper</kbd> and <kbd>downer</kbd>.
+If you want to scroll a sidebar you can use the commands <kbd>upper left</kbd>
+and <kbd>downer left</kbd> for the left sidebar and <kbd>upper right</kbd> and
+<kbd>downer right</kbd> for the right sidebar.
+
 ## Targets
 
 Some commands accept targets. There are two types of targets depending if the
