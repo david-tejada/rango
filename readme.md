@@ -59,15 +59,13 @@ folder. If not you need at least to have the following captures defined:
 `<user.letter>`, `<user.text>`, `<user.number_small>`, `<user.number_string>`
 (only if you want to use number hints) and the list `{user.website}`.
 
-### IMPORTANT: Disabling Rango on Some Browsers
-
-Once **rango-talon** has been added to your talon user folder, Rango will be
-active for all your browsers. If you haven't installed the extension itself in a
-specific browser, it's better to disable Rango for that browser to avoid
-unexpected behavior. The best way to do this is to activate the tag
-`user.rango_disabled` for that browser. For example, if you want to disable
-Rango in Brave and Chrome, you could have a _.talon_ file anywhere in your talon
-user folder with the following contents.
+<strong style="color: red">IMPORTANT</strong>: Once **rango-talon** has been
+added to your talon user folder, Rango will be active for all your browsers. If
+you haven't installed the extension itself in a specific browser, it's better to
+disable Rango for that browser to avoid unexpected behavior. The best way to do
+this is to activate the tag `user.rango_disabled` for that browser. For example,
+if you want to disable Rango in Brave and Chrome, you could have a _.talon_ file
+anywhere in your talon user folder with the following contents.
 
 ```talon
 app: brave
