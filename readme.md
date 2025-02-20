@@ -1,5 +1,5 @@
 <p align="center">
-  <img width="100" height="100" src="images/icon.svg">
+  <img width="100" height="100" src="images/icon.svg" alt="">
 </p>
 
 <p align="center"><strong>Rango</strong></p>
@@ -18,7 +18,8 @@ link adresses. It also helps you scroll, open multiple links in new tabs, close
 multiple tabs and more.
 
 <p align="center">
-  <img src="images/screenshot.png">
+  <img src="images/screenshot.png" alt="Screenshot showing Rango hints overlaid
+  on a webpage">
 </p>
 
 ## Sponsorship
@@ -147,7 +148,7 @@ of elements. It is the easiest way to refer to an element and the one you will
 use most of the time.
 
 <p align="left">
-  <img src="images/screenshot-hint.png" height=60px">
+  <img src="images/screenshot-hint.png" height="60px" alt="Example of Rango hints">
 </p>
 
 To refer to an element by its hint you simply have to say the letters or numbers
@@ -715,13 +716,16 @@ In [this page](https://forvo.com/word/define/#en) we have this section which
 unfortunately doesn't show any hints.
 
 <p align="left">
-  <img src="images/screenshot-custom-hints-1.png" alt="">
+  <img src="images/screenshot-custom-hints-1.png" alt="Screenshot showing Rango
+  hints overlaid on a webpage">
+
 </p>
 
 Now we use the command <kbd>hint extra</kbd> to greedily display hints.
 
 <p align="left">
-  <img src="images/screenshot-custom-hints-2.png" alt="">
+  <img src="images/screenshot-custom-hints-2.png" alt="Screenshot showing Rango
+  hints after using the command 'hint extra'">
 </p>
 
 If we wanted to show hints for the gray links we can issue the command
@@ -729,21 +733,24 @@ If we wanted to show hints for the gray links we can issue the command
 will be included.
 
 <p align="left">
-  <img src="images/screenshot-custom-hints-3.png" alt="">
+  <img src="images/screenshot-custom-hints-3.png" alt="Screenshot showing Rango
+  hints after using the command 'include cap each and cap drum'">
 </p>
 
 Since the result is not exactly what we want and there are still hints missing
 we use the command <kbd>some more</kbd>.
 
 <p align="left">
-  <img src="images/screenshot-custom-hints-4.png" alt="">
+  <img src="images/screenshot-custom-hints-4.png" alt="Screenshot showing Rango
+  hints after using the command 'some more'">
 </p>
 
 Now there are more hints showing but they're not the ones we want. We issue the
 command <kbd>some more</kbd> again to see if that helps.
 
 <p align="left">
-  <img src="images/screenshot-custom-hints-5.png" alt="">
+  <img src="images/screenshot-custom-hints-5.png" alt="Screenshot showing Rango
+  hints after using the command 'some more'">
 </p>
 
 The hints marked for inclusion now are exactly the ones we want. We could
@@ -752,7 +759,8 @@ but for the moment we leave it like that and save with <kbd>custom hints
 save</kbd>.
 
 <p align="left">
-  <img src="images/screenshot-custom-hints-6.png" alt="">
+  <img src="images/screenshot-custom-hints-6.png" alt="Screenshot showing Rango
+  hints after using the command 'custom hints save'">
 </p>
 
 Now the extra hints disappear and we are left with the custom hints that we just
