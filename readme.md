@@ -472,6 +472,27 @@ You can also focus tabs by searching their title or URL.
 - <kbd>tab close next [&lt;number&gt;]</kbd>: Closes the amount of tabs
   specified (or one if no number is given) to the right of the current tab.
 
+### Focus Tabs With Sound
+
+- <kbd>go sound</kbd>: Focuses the next tab with sound.
+- <kbd>go playing</kbd>: Focuses the next audible tab. An audible tab is a tab
+  that is producing sound. However, the user will not hear the sound if the tab
+  is muted.
+- <kbd>go muted</kbd>: Focuses the next muted tab.
+- <kbd>go last sound</kbd>: Focuses the tab that last emitted sound. This can be
+  useful for focusing tabs that emit notification sounds.
+
+### Mute/Unmute Tabs
+
+- <kbd>mute this</kbd>: Mutes the current tab.
+- <kbd>unmute this</kbd>: Unmutes the current tab.
+- <kbd>mute next</kbd>: Mutes the next tab with sound.
+- <kbd>unmute next</kbd>: Unmutes the next tab with sound.
+- <kbd>mute &lt;tab_target&gt;</kbd>: Mutes the targeted tab or tabs.
+- <kbd>unmute &lt;tab_target&gt;</kbd>: Unmutes the targeted tab or tabs.
+- <kbd>mute all</kbd>: Mutes all tabs with sound.
+- <kbd>unmute all</kbd>: Unmutes all muted tabs.
+
 ## Opening Rango Related Pages
 
 - The command <kbd>rango open {page}</kbd> opens a Rango related page in a new
