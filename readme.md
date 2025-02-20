@@ -32,11 +32,6 @@ become an essential tool for you, please consider becoming a sponsor.
 [Click here](https://github.com/sponsors/david-tejada) or just say <kbd>rango
 open sponsor</kbd>.
 
-## Support
-
-If you have any question or need help, you can reach out in the channel
-**#ext-rango** of the [Talon Slack](https://talonvoice.com/chat).
-
 ## Installation
 
 In order to use the extension you need two pieces: the extension and the talon
@@ -768,6 +763,10 @@ the first one. For those occasions you can use the command <kbd>hide
 &lt;target&gt;</kbd> to hide the hint on top.
 
 ## Troubleshooting
+
+Here are some common issues and how to fix them. If you run into any other
+issue, need help, or have any other question, you can reach out in the channel
+**#ext-rango** of the [Talon Slack](https://talonvoice.com/chat).
 
 ### Commands Don't Work
 
