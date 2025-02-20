@@ -121,9 +121,8 @@ To refer to an element by its hint you simply have to say the letters or numbers
 of the hint. For example, to refer to the first link in the above image you
 would use <kbd>air gust</kbd>.
 
-If you want to know how to use number for hints, which elements receive hints
-and what to do if an element you want to click doesn't have a hint, take a look
-at the section [More on hints](#more-on-hints).
+If an element you want to click doesn't have a hint you can display
+[extra hints](#displaying-extra-hints).
 
 #### Reference Targets
 
@@ -602,44 +601,35 @@ But there won't be a hint for the following element:
 `<div class="btn">Click me!</div>`
 
 In earlier versions of the extension I would try to display more hints by
-default by looking at things like the element's class name, the onclick property
-or the css property `cursor: pointer`. The issue with this approach is we would
-get many duplicate hints and some unnecessary ones. Reducing those duplicates
-and unnecessary hints wasn't always possible and resulted in complicated and
-poorly performant code.
+default by looking at things like the element's class name, the `onclick`
+property or the css property `cursor: pointer`. The issue with this approach is
+we would get many duplicate hints and some unnecessary ones. Reducing those
+duplicates and unnecessary hints wasn't always possible and resulted in
+complicated and poorly performant code.
 
 ### Displaying Extra Hints
 
-Moving away from that complicated logic resulted in better performance and
-cleaner ui. But now we need a way to display hints for those elements that are
-not accessible. For that we use the command <kbd>hint extra</kbd>. At this point
-we don't care so much about duplicates and we can use all those extra checks to
-see if an element might be clickable. The command <kbd>hint less</kbd> lets us
-go back to only displaying the default hints.
+The command <kbd>hint extra</kbd> allows us to display hints for elements with
+poor accessibility that don't receive them by default. The command <kbd>hint
+less</kbd> lets us go back to only displaying the default hints.
 
 #### Saving Custom Hints
 
-With the command <kbd>hint extra</kbd> now we have a way to show hints for those
-elements that don't receive them by default. But you might frequently use some
-page where some elements that you want to click don't receive hints. Having to
-use the command <kbd>hint extra</kbd> every time you want to click one of those
-elements can become tedious. Custom hints are a way to indicate that you want
-some extra hints to always display by default.
+Custom hints are a way to indicate that you want some extra hints to be
+displayed by default.
 
-After having used the command <kbd>hint extra</kbd> you can use the command
-<kbd>include &lt;target&gt;</kbd> to indicate that you want some hints to always
-display. The hints selected for inclusion will be marked in green. The best
-approach is to use at least a couple of hints representing the same ui element.
-With those hints Rango calculates the css selector that includes both. It tries
-not to be greedy and use the selector that includes the least amount of hints
-possible. This is usually enough to include the desired ui element. In case it
-falls short and doesn't include all the elements you want, you can use the
-command <kbd>some more</kbd>. This will pick a different selector that matches
-more elements (not necessarily the same elements matched before). The command
-<kbd>some less</kbd> does the opposite. You can use the <kbd>include</kbd>
-command again if you need to add more hints representing different ui elements.
-Once you are happy with the result you can use the command <kbd>custom hints
-save</kbd> so that those hints appear by default the next time.
+After using <kbd>hint extra</kbd> you can use the command <kbd>include
+&lt;target&gt;</kbd>. The hints selected for inclusion will be marked in green.
+You will get the best results using at least a couple of hints representing the
+same type of element. With those hints Rango calculates what are these similar
+elements that should be included. If not all elements you wanted are included,
+you can use the command <kbd>some more</kbd>. This will pick a different
+selector that matches more elements (not necessarily the same elements matched
+before). The command <kbd>some less</kbd> does the opposite. You can use the
+<kbd>include</kbd> command again if you need to add more hints representing
+different ui elements. Once you are happy with the result the command
+<kbd>custom hints save</kbd> will save them so they appear by default the next
+time.
 
 If you want to exclude all the hints to later add only the ones you're
 interested in you can use the command <kbd>exclude all</kbd>. You will need to
