@@ -803,12 +803,6 @@ this feature won't be available in this browser.
 
 ## Known Issues and Limitations
 
-There is currently no way to open a pure CSS dropdown menu like the "hover" menu
-in
-[this example](https://www.tailwindtoolbox.com/components/megamenu-demo.php#).
-It is not possible to activate the `:hover` pseudo class in javascript and this
-will only be possible once I implement cursor moving/clicking.
-
 ### No Hints or Other Missing Functionality in Certain Pages
 
 Content scripts (the part of the extension that runs in the context of webpages)
