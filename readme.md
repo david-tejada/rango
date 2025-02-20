@@ -18,8 +18,11 @@ link adresses. It also helps you scroll, open multiple links in new tabs, close
 multiple tabs and more.
 
 <p align="center">
-  <img src="images/screenshot.png" alt="Screenshot showing Rango hints overlaid
-  on a webpage">
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="images/screenshot-dark.png">
+  <img src="images/screenshot.png" style="border-radius: 8px;" alt="Screenshot
+  showing Rango hints overlaid on a webpage">
+</picture>
 </p>
 
 ## Sponsorship
