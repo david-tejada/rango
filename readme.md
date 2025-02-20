@@ -81,41 +81,6 @@ app: chrome
 tag(): user.rango_disabled
 ```
 
-## Troubleshooting
-
-### Commands Don't Work
-
-If the hints are displayed but the commands don't work, most of the time it has
-to do with the configuration of the hotkey. In order to communicate with Rango,
-Talon presses a key combination to prompt Rango to read the command present on
-the clipboard. By default the key combination is
-<kbd>ctrl</kbd>+<kbd>shift</kbd>+<kbd>insert</kbd> in all the browsers except
-for Safari, where it is <kbd>ctrl</kbd>+<kbd>shift</kbd>+<kbd>3</kbd>. If Rango
-commands aren't working for you, make sure that the hotkey is properly set up.
-The shortcut that needs to be changed is `Get the talon request`.
-
-#### Where to Find the Extension Keyboard Shortcuts
-
-In Firefox, navigate to [about:addons](about:addons), click on the cog at the
-top right and then `Manage Extension Shortcuts`.
-
-In Chrome, navigate to
-[chrome://extensions/shortcuts](chrome://extensions/shortcuts).
-
-In Edge, navigate to [edge://extensions/shortcuts](edge://extensions/shortcuts).
-
-### No Hints Viewing Local Files
-
-In order for Rango to work within local files like
-`file:///Users/david/Code/my-page/index.html` when using a Chromium browser you
-will have to enable it. Navigate to the extension details and enable the setting
-`Allow access to file URLs`.
-
-In Firefox access to file URLs is always enabled.
-
-Unfortunately, Safari doesn't allow extensions to access file URLs at all, so
-this feature won't be available in this browser.
-
 ## Settings
 
 There are several settings you can adjust to change the appearance of the hints
@@ -801,6 +766,41 @@ Custom hints can also be edited, added or removed from the settings page.
 On occasions a hint might be obscured by another hint that is stacked on top of
 the first one. For those occasions you can use the command <kbd>hide
 &lt;target&gt;</kbd> to hide the hint on top.
+
+## Troubleshooting
+
+### Commands Don't Work
+
+If the hints are displayed but the commands don't work, most of the time it has
+to do with the configuration of the hotkey. In order to communicate with Rango,
+Talon presses a key combination to prompt Rango to read the command present on
+the clipboard. By default the key combination is
+<kbd>ctrl</kbd>+<kbd>shift</kbd>+<kbd>insert</kbd> in all the browsers except
+for Safari, where it is <kbd>ctrl</kbd>+<kbd>shift</kbd>+<kbd>3</kbd>. If Rango
+commands aren't working for you, make sure that the hotkey is properly set up.
+The shortcut that needs to be changed is `Get the talon request`.
+
+#### Where to Find the Extension Keyboard Shortcuts
+
+In Firefox, navigate to [about:addons](about:addons), click on the cog at the
+top right and then `Manage Extension Shortcuts`.
+
+In Chrome, navigate to
+[chrome://extensions/shortcuts](chrome://extensions/shortcuts).
+
+In Edge, navigate to [edge://extensions/shortcuts](edge://extensions/shortcuts).
+
+### No Hints Viewing Local Files
+
+In order for Rango to work within local files like
+`file:///Users/david/Code/my-page/index.html` when using a Chromium browser you
+will have to enable it. Navigate to the extension details and enable the setting
+`Allow access to file URLs`.
+
+In Firefox access to file URLs is always enabled.
+
+Unfortunately, Safari doesn't allow extensions to access file URLs at all, so
+this feature won't be available in this browser.
 
 ## Known Issues and Limitations
 
