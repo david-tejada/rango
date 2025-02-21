@@ -20,11 +20,7 @@ with letters next to elements that you can use to click, hover, copy or show
 link adresses. It also helps you scroll, open multiple links in new tabs, close
 multiple tabs and more.
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="images/screenshot-dark.png">
-  <img src="images/screenshot.png" style="border-radius: 8px;display: block" alt="Screenshot
-  showing Rango hints overlaid on a webpage">
-</picture>
+![Rango hints overlaid on a webpage](images/screenshot.png)
 
 ## Sponsorship
 
