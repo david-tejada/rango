@@ -5,9 +5,12 @@
 <p align="center"><strong>Rango</strong></p>
 
 <p align="center">
-<a href="http://rango.click">✨ rango.click ✨</a><br>
-The cross browser extension
-that helps you control your browser by voice.<br>🦎 It blends in! </p>
+  <a href="http://rango.click">✨ rango.click ✨</a>
+  <br>
+  The cross browser extension that helps you control your browser by voice.
+  <br>
+  🦎 It blends in!
+</p>
 
 ## Introduction
 
@@ -17,13 +20,11 @@ with letters next to elements that you can use to click, hover, copy or show
 link adresses. It also helps you scroll, open multiple links in new tabs, close
 multiple tabs and more.
 
-<p align="center">
 <picture>
   <source media="(prefers-color-scheme: dark)" srcset="images/screenshot-dark.png">
-  <img src="images/screenshot.png" style="border-radius: 8px;" alt="Screenshot
+  <img src="images/screenshot.png" style="border-radius: 8px;display: block" alt="Screenshot
   showing Rango hints overlaid on a webpage">
 </picture>
-</p>
 
 ## Sponsorship
 
@@ -116,13 +117,11 @@ Hints are labels with letters (or numbers when
 of elements. It is the easiest way to refer to an element and the one you will
 use most of the time.
 
-<p align="left">
-  <img src="images/screenshot-hint.png" height="60px" alt="Example of Rango hints">
-</p>
+![Example of Rango hints](images/screenshot-hint.png)
 
 To refer to an element by its hint you simply have to say the letters or numbers
-of the hint. For example, to refer to the first link in the above image you
-would use <kbd>air gust</kbd>.
+of the hint. For example, to refer to first link in the above image you would
+use <kbd>air cap</kbd>.
 
 If an element you want to click doesn't have a hint you can display
 [extra hints](#displaying-extra-hints).
@@ -643,53 +642,34 @@ Here is one example to illustrate this process:
 In [this page](https://forvo.com/word/define/#en) we have this section which
 unfortunately doesn't show any hints.
 
-<p align="left">
-  <img src="images/screenshot-custom-hints-1.png" alt="Screenshot showing Rango
-  hints overlaid on a webpage">
-
-</p>
+![Screenshot showing Rango hints overlaid on a webpage](images/screenshot-custom-hints-1.png)
 
 Now we use the command <kbd>hint extra</kbd> to greedily display hints.
 
-<p align="left">
-  <img src="images/screenshot-custom-hints-2.png" alt="Screenshot showing Rango
-  hints after using the command 'hint extra'">
-</p>
+![Screenshot showing Rango hints after using the command 'hint extra'](images/screenshot-custom-hints-2.png)
 
 If we wanted to show hints for the gray links we can issue the command
 <kbd>include cap each and cap drum</kbd>, which marks in green the hints that
 will be included.
 
-<p align="left">
-  <img src="images/screenshot-custom-hints-3.png" alt="Screenshot showing Rango
-  hints after using the command 'include cap each and cap drum'">
-</p>
+![Screenshot showing Rango hints after using the command 'include cap each and cap drum'](images/screenshot-custom-hints-3.png)
 
 Since the result is not exactly what we want and there are still hints missing
 we use the command <kbd>some more</kbd>.
 
-<p align="left">
-  <img src="images/screenshot-custom-hints-4.png" alt="Screenshot showing Rango
-  hints after using the command 'some more'">
-</p>
+![Screenshot showing Rango hints after using the command 'some more'](images/screenshot-custom-hints-4.png)
 
 Now there are more hints showing but they're not the ones we want. We issue the
 command <kbd>some more</kbd> again to see if that helps.
 
-<p align="left">
-  <img src="images/screenshot-custom-hints-5.png" alt="Screenshot showing Rango
-  hints after using the command 'some more'">
-</p>
+![Screenshot showing Rango hints after using the command 'some more'](images/screenshot-custom-hints-5.png)
 
 The hints marked for inclusion now are exactly the ones we want. We could
 continue including more custom hints using the <kbd>include</kbd> command again
 but for the moment we leave it like that and save with <kbd>custom hints
 save</kbd>.
 
-<p align="left">
-  <img src="images/screenshot-custom-hints-6.png" alt="Screenshot showing Rango
-  hints after using the command 'custom hints save'">
-</p>
+![Screenshot showing Rango hints after using the command 'custom hints save'](images/screenshot-custom-hints-6.png)
 
 Now the extra hints disappear and we are left with the custom hints that we just
 defined. We can see that similar elements also display hints. Next time we visit
