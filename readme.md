@@ -53,8 +53,9 @@ files.
 
 - The talon files can be found in the
   [rango-talon](https://github.com/david-tejada/rango-talon) repository. Clone
-  or download them to your talon user folder. **IMPORTANT**: Make sure to clone
-  or download the rango-talon repository and not this one.
+  or download them to your talon user folder.
+  <strong style="color: oklch(0.704 0.191 22.216)">IMPORTANT</strong>: Make sure
+  to clone or download the rango-talon repository and not this one.
 
 It is also assumed that you have installed
 [talonhub/community](https://github.com/talonhub/community) to your talon user
@@ -62,13 +63,14 @@ folder. If not you need at least to have the following captures defined:
 `<user.letter>`, `<user.text>`, `<user.number_small>`, `<user.number_string>`
 (only if you want to use number hints) and the list `{user.website}`.
 
-<strong style="color: red">IMPORTANT</strong>: Once **rango-talon** has been
-added to your talon user folder, Rango will be active for all your browsers. If
-you haven't installed the extension itself in a specific browser, it's better to
-disable Rango for that browser to avoid unexpected behavior. The best way to do
-this is to activate the tag `user.rango_disabled` for that browser. For example,
-if you want to disable Rango in Brave and Chrome, you could have a _.talon_ file
-anywhere in your talon user folder with the following contents.
+<strong style="color: oklch(0.704 0.191 22.216)">IMPORTANT</strong>: Once
+**rango-talon** has been added to your talon user folder, Rango will be active
+for all your browsers. If you haven't installed the extension itself in a
+specific browser, it's better to disable Rango for that browser to avoid
+unexpected behavior. The best way to do this is to activate the tag
+`user.rango_disabled` for that browser. For example, if you want to disable
+Rango in Brave and Chrome, you could have a _.talon_ file anywhere in your talon
+user folder with the following contents.
 
 ```talon
 app: brave
