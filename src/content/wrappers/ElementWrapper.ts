@@ -484,6 +484,7 @@ export class ElementWrapper {
 						active: true,
 					})),
 				});
+				return;
 			}
 		}
 
