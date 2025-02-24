@@ -9,20 +9,25 @@ import { UnreachableContentScriptError } from "../messaging/UnreachableContentSc
 import { promiseWrap } from "../utils/promises";
 
 export async function clickElement(target: Target<ElementMark>) {
+	const isSingleTarget = target.type === "primitive";
 	const { results } = await sendMessageToTargetFrames("clickElement", {
 		target,
-		isSingleTarget: target.type === "primitive",
+		isSingleTarget,
 	});
 
-	return handleClickResults(results);
+	// This is just to be extra safe since if there are multiple targets the
+	// result of each frame must be undefined.
+	return isSingleTarget ? results[0] : undefined;
 }
 
 export async function directClickElement(
 	target: Target<ElementMark>
-): Promise<TalonAction | TalonAction[]> {
+): Promise<TalonAction | TalonAction[] | undefined> {
+	const isSingleTarget = target.type === "primitive";
+
 	// Handle the possibility that the user might have intended to type those
 	// characters.
-	if (target.type === "primitive") {
+	if (isSingleTarget) {
 		const directClickWithNoFocusedDocument = await settings.get(
 			"directClickWithNoFocusedDocument"
 		);
@@ -51,10 +56,12 @@ export async function directClickElement(
 	try {
 		const { results } = await sendMessageToTargetFrames("clickElement", {
 			target,
-			isSingleTarget: target.type === "primitive",
+			isSingleTarget,
 		});
 
-		return handleClickResults(results);
+		// This is just to be extra safe since if there are multiple targets the
+		// result of each frame must be undefined.
+		return isSingleTarget ? results[0] : undefined;
 	} catch (error: unknown) {
 		if (
 			target.type === "primitive" &&
@@ -65,36 +72,4 @@ export async function directClickElement(
 
 		throw error;
 	}
-}
-
-function handleClickResults(
-	results: Awaited<
-		ReturnType<typeof sendMessageToTargetFrames<"clickElement">>
-	>["results"]
-) {
-	const focusPage = results.find((value) => value?.focusPage);
-
-	// We can't open multiple selects and I don't think it's safe to press keys
-	// if there have been multiple things clicked.
-	const isSelect = results.length === 1 && results[0]?.isSelect;
-
-	const actions: TalonAction[] = [];
-	if (focusPage) actions.push({ name: "focusPage" });
-	if (isSelect)
-		actions.push({
-			name: "key",
-			key: "alt-down",
-		});
-
-	if (results.length === 1 && results[0]?.isCopyToClipboardButton) {
-		const { textToCopy } = results[0];
-
-		if (textToCopy) {
-			actions.push({ name: "copyToClipboard", textToCopy });
-		} else {
-			actions.push({ name: "sleep", ms: 50 }, { name: "key", key: "enter" });
-		}
-	}
-
-	return actions;
 }
