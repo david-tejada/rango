@@ -2,7 +2,16 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
-## [0.8.0](https://github.com/david-tejada/rango/releases/tag/v0.8.0) - 2025-02-07
+## [0.8.1](https://github.com/david-tejada/rango/releases/tag/v0.8.1) - 2025-02-24
+
+### Fixed
+
+- Fix links with `target="_blank"` being opened twice.
+- Fix hints sometimes not working after going back in history.
+- Fix clicking on elements that open the system file picker not working.
+- Fix positioning of hints for elements that contain hidden text.
+
+## [0.8.0](https://github.com/david-tejada/rango/releases/tag/v0.8.0) - 2025-02-21
 
 ### Changed
 
