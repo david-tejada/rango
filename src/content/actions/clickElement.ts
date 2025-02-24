@@ -224,6 +224,7 @@ async function listenForClipboardWrite() {
 			);
 			removeEventListener("message", messageHandler);
 			clearTimeout(timeout);
+			document.querySelector("#rango-clipboard-write-interceptor")?.remove();
 		};
 
 		addEventListener("message", messageHandler);
