@@ -51,10 +51,16 @@ function getFirstTextElementOrPossibleIcon(
 	let firstPossibleIcon;
 
 	for (const element of elements) {
-		const { opacity } = getCachedStyle(element);
+		const { opacity, width, height } = getCachedStyle(element);
+		const widthPx = Number.parseFloat(width);
+		const heightPx = Number.parseFloat(height);
 
 		if (
 			opacity === "0" ||
+			// This catches instances of text being hidden with the
+			// .sr-only/.visually-hidden technique. This is more performant than
+			// calling isVisible()
+			(widthPx < 3 && heightPx < 3) ||
 			withinDifferentHintable(element, target) ||
 			!elementsAreNear(target, element)
 		) {
