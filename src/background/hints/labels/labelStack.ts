@@ -5,9 +5,10 @@ import { store } from "../../../common/storage/store";
 import { type LabelStack } from "../../../typings/LabelStack";
 
 export async function initStack(tabId: number) {
-	const stack = await createStack(tabId);
-	await store.set(`labelStack:${tabId}`, stack);
-	return stack;
+	return store.withLock(`labelStack:${tabId}`, async (stack) => {
+		stack = await createStack(tabId);
+		return [stack, stack];
+	});
 }
 
 export async function getStack(tabId: number) {
