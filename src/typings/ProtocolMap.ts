@@ -3,6 +3,7 @@ import { type NotificationType } from "../common/createNotifier";
 import { type CustomSelector } from "../common/settings/settingsSchema";
 import { type Direction } from "./Direction";
 import { type LabelStack } from "./LabelStack";
+import { type TalonAction } from "./TalonAction";
 import { type ElementMark, type Target } from "./Target/Target";
 
 type FirstParameter<T> = T extends (...args: infer P) => any ? P[0] : never;
@@ -63,12 +64,7 @@ export type ContentBoundMessageMap = {
 	clickElement: (data: {
 		target: Target<ElementMark>;
 		isSingleTarget?: boolean;
-	}) => {
-		focusPage: boolean;
-		isSelect: boolean;
-		isCopyToClipboardButton: boolean;
-		textToCopy?: string;
-	} | void;
+	}) => TalonAction[] | undefined;
 	focusAndGetActivationKey: (data: {
 		target: Target<ElementMark>;
 	}) => "enter" | "space" | undefined;

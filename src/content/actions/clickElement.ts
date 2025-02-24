@@ -1,6 +1,8 @@
+import { type TalonAction } from "../../typings/TalonAction";
 import { createElement, isEditable } from "../dom/utils";
 import { sendMessage } from "../messaging/messageHandler";
 import { type ElementWrapper } from "../wrappers/ElementWrapper";
+import { focus } from "./focus";
 
 let clipboardWriteInterceptorPath: string;
 
@@ -32,7 +34,7 @@ try {
 export async function clickElement(
 	wrappers: ElementWrapper[],
 	isSingleTarget?: boolean
-) {
+): Promise<TalonAction[] | undefined> {
 	if (isSingleTarget && wrappers.length !== 1) {
 		throw new Error(
 			'"isSingleTarget" can only be true when targeting a single element'
@@ -71,22 +73,38 @@ export async function clickElement(
 	if (isSingleTarget) {
 		const wrapper = wrappers[0]!;
 
-		const { isCopyToClipboardButton, textToCopy } =
-			await handlePotentialCopyButton(wrapper);
-
-		const focusPage =
-			(isCopyToClipboardButton && !textToCopy && !document.hasFocus()) ||
-			shouldFocusDocumentOnActivation(wrapper.element);
+		const { isCopyToClipboardButton, textToCopy, isFileOpenerButton } =
+			await handlePotentialUserInteractionRequiredButton(wrapper);
 
 		const isSelect = wrapper.element.localName === "select";
 
-		return { focusPage, isSelect, isCopyToClipboardButton, textToCopy };
+		if (isCopyToClipboardButton && textToCopy) {
+			return [{ name: "copyToClipboard", textToCopy }];
+		}
+
+		const focusPage =
+			isCopyToClipboardButton || isFileOpenerButton || isSelect
+				? !document.hasFocus()
+				: shouldFocusDocumentOnActivation(wrapper.element);
+
+		const actions: TalonAction[] = focusPage
+			? [{ name: "focusPage" }, { name: "sleep", ms: 50 }]
+			: [];
+
+		if (isCopyToClipboardButton || isFileOpenerButton) {
+			return [...actions, { name: "key", key: "enter" }];
+		}
+
+		if (isSelect) {
+			return [...actions, { name: "key", key: "alt-down" }];
+		}
+
+		return actions;
 	}
 
 	// Here we don't check if we need to focus the page because it doesn't make
 	// sense that the user clicked on more than one things that require focus.
 	await Promise.all(nonAnchorWrappers.map(async (wrapper) => wrapper.click()));
-
 	return undefined;
 }
 
@@ -107,20 +125,28 @@ function shouldFocusDocumentOnActivation(element: Element) {
 /**
  * This function clicks an element and returns a promise that resolves to
  */
-async function handlePotentialCopyButton(wrapper: ElementWrapper): Promise<{
+async function handlePotentialUserInteractionRequiredButton(
+	wrapper: ElementWrapper
+): Promise<{
 	isCopyToClipboardButton: boolean;
 	textToCopy?: string;
+	isFileOpenerButton: boolean;
 }> {
+	if (wrapper.element.matches("input[type='file']")) {
+		focus(wrapper);
+		return { isCopyToClipboardButton: false, isFileOpenerButton: true };
+	}
+
 	// A few elements we know can't be copy to clipboard buttons. Most of the
 	// times the elements that copy to the clipboard are buttons, maybe
 	// input:button or divs in some rare cases. In any way, we just avoid checking
 	// if they are copy to clipboard buttons for the most common elements.
 	const notClipboardButtonSelector =
-		"input:not([type='button']), textarea, [contenteditable], select, p, h1, h2, h3, h4, h5, h6, li, td, th";
+		"input:not([type='button'], [type='file']), textarea, [contenteditable], select, p, h1, h2, h3, h4, h5, h6, li, td, th";
 
 	if (wrapper.element.matches(notClipboardButtonSelector)) {
 		await wrapper.click();
-		return { isCopyToClipboardButton: false };
+		return { isCopyToClipboardButton: false, isFileOpenerButton: false };
 	}
 
 	try {
@@ -128,14 +154,25 @@ async function handlePotentialCopyButton(wrapper: ElementWrapper): Promise<{
 	} catch (error) {
 		console.error(error);
 		await wrapper.click();
-		return { isCopyToClipboardButton: false };
+		return { isCopyToClipboardButton: false, isFileOpenerButton: false };
 	}
 
 	const clipboardWritePromise = listenForClipboardWrite();
+	const fileOpenerPromise = listenForFileOpener();
 	await wrapper.click();
-	const { clipboardWriteIntercepted, textToCopy } = await clipboardWritePromise;
 
-	return { isCopyToClipboardButton: clipboardWriteIntercepted, textToCopy };
+	const result = await Promise.race([clipboardWritePromise, fileOpenerPromise]);
+
+	if (typeof result === "boolean") {
+		return { isCopyToClipboardButton: false, isFileOpenerButton: result };
+	}
+
+	const { clipboardWriteIntercepted, textToCopy } = result;
+	return {
+		isCopyToClipboardButton: clipboardWriteIntercepted,
+		textToCopy,
+		isFileOpenerButton: false,
+	};
 }
 
 async function initializeClipboardWriteInterceptor() {
@@ -233,5 +270,17 @@ async function listenForClipboardWrite() {
 			cleanup();
 			resolve({ clipboardWriteIntercepted: false });
 		}, timeoutMs);
+	});
+}
+
+async function listenForFileOpener() {
+	return new Promise<boolean>((resolve) => {
+		const fileInputs = document.querySelectorAll("input[type='file']");
+
+		for (const fileInput of fileInputs) {
+			fileInput.addEventListener("click", () => {
+				resolve(true);
+			});
+		}
 	});
 }
