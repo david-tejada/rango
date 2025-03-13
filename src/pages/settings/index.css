@@ -50,4 +50,5 @@ code {
 	background-color: var(--slate-200);
 	padding: 0.1em 0.25em;
 	border-radius: 0.1em;
+	color: var(--slate-700);
 }
