@@ -6,6 +6,7 @@
 // doesn't matter. I am going to leave this code as it is to avoid breaking the
 // extension for older versions of Safari.
 
+import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
 import { sendMessage } from "../../messaging/sendMessage";
 import { UnreachableContentScriptError } from "../../messaging/UnreachableContentScriptError";
@@ -26,51 +27,70 @@ async function preloadTabOnCompletedHandler() {
  * events so that we can initialize label stacks when necessary.
  */
 export function addWebNavigationListeners() {
+	const mutexes = new Map<number, Mutex>();
+
+	function getMutex(tabId: number) {
+		let mutex = mutexes.get(tabId);
+		if (!mutex) {
+			mutex = new Mutex();
+			mutexes.set(tabId, mutex);
+		}
+
+		return mutex;
+	}
+
 	browser.webNavigation.onCommitted.addListener(
 		async ({ tabId, frameId, url }) => {
 			// Frame 0 comes before any of the subframes.
 			if (frameId !== 0) return;
 
-			// We could simply check if the tabId is 0 since I don't think Firefox or
-			// Chrome use that id, but I think this is safer.
-			const isPreloadTab = !(await browser.tabs.get(tabId));
+			// We need to use a mutex here because even if onCommitted always comes
+			// before onCompleted it is not guaranteed that it will finish before
+			// onCompleted is called.
+			await getMutex(tabId).runExclusive(async () => {
+				// We could simply check if the tabId is 0 since I don't think Firefox or
+				// Chrome use that id, but I think this is safer.
+				const isPreloadTab = !(await browser.tabs.get(tabId));
 
-			if (isPreloadTab) {
-				await preloadTabCommitted(url);
-				const hasOnCompletedListener =
-					browser.webNavigation.onCompleted.hasListener(
+				if (isPreloadTab) {
+					await preloadTabCommitted(url);
+					const hasOnCompletedListener =
+						browser.webNavigation.onCompleted.hasListener(
+							preloadTabOnCompletedHandler
+						);
+
+					if (!hasOnCompletedListener) {
+						browser.webNavigation.onCompleted.addListener(
+							preloadTabOnCompletedHandler
+						);
+					}
+				} else {
+					browser.webNavigation.onCompleted.removeListener(
 						preloadTabOnCompletedHandler
 					);
-
-				if (!hasOnCompletedListener) {
-					browser.webNavigation.onCompleted.addListener(
-						preloadTabOnCompletedHandler
-					);
+					await initStack(tabId);
 				}
-			} else {
-				browser.webNavigation.onCompleted.removeListener(
-					preloadTabOnCompletedHandler
-				);
-				await initStack(tabId);
-			}
+			});
 		}
 	);
 
 	browser.webNavigation.onCompleted.addListener(async ({ tabId, frameId }) => {
-		const isPreloadTab = !(await browser.tabs.get(tabId));
-		if (isPreloadTab) return;
+		await getMutex(tabId).runExclusive(async () => {
+			const isPreloadTab = !(await browser.tabs.get(tabId));
+			if (isPreloadTab) return;
 
-		try {
-			await sendMessage("synchronizeLabels", undefined, { tabId, frameId });
-		} catch (error: unknown) {
-			// At this point the content script might not have yet loaded. This is ok
-			// and expected. This command is only used for synchronizing labels when
-			// navigating back and forward in history and the content script being
-			// restored.
-			if (!(error instanceof UnreachableContentScriptError)) {
-				throw error;
+			try {
+				await sendMessage("synchronizeLabels", undefined, { tabId, frameId });
+			} catch (error: unknown) {
+				// At this point the content script might not have yet loaded. This is ok
+				// and expected. This command is only used for synchronizing labels when
+				// navigating back and forward in history and the content script being
+				// restored.
+				if (!(error instanceof UnreachableContentScriptError)) {
+					throw error;
+				}
 			}
-		}
+		});
 	});
 }
 
