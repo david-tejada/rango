@@ -105,12 +105,9 @@ async function waitFor<T extends keyof Store>(key: T): Promise<Store[T]> {
 }
 
 /**
- * Set a value for a given key.
- *
- * @param key - The key to set the value for
- * @param value - The value to set
+ * Internal set implementation without mutex locking.
  */
-async function set<T extends keyof Store>(key: T, value: Store[T]) {
+async function _set<T extends keyof Store>(key: T, value: Store[T]) {
 	const { storageArea, useCache } = getStorageOptions(key);
 
 	const resolver = waitForResolvers.get(key);
@@ -131,6 +128,23 @@ async function set<T extends keyof Store>(key: T, value: Store[T]) {
 	} catch (error) {
 		cache.delete(key);
 		throw error;
+	}
+}
+
+/**
+ * Set a value for a given key with mutex protection.
+ *
+ * @param key - The key to set the value for
+ * @param value - The value to set
+ */
+async function set<T extends keyof Store>(key: T, value: Store[T]) {
+	const mutex = getMutex(key);
+	try {
+		await mutex.runExclusive(async () => {
+			await _set(key, value);
+		});
+	} finally {
+		if (!mutex.isLocked()) mutexes.delete(key);
 	}
 }
 
@@ -204,7 +218,7 @@ async function withLock<T extends keyof Store, U = void>(
 
 			const [updatedValue, result] = await callback(value);
 
-			await set(key, updatedValue);
+			await _set(key, updatedValue);
 			return result as U;
 		});
 	} finally {
