@@ -1,6 +1,6 @@
 import { settings } from "../../common/settings/settings";
 import { type ToggleLevel } from "../../typings/Action";
-import { sendMessage } from "../messaging/sendMessage";
+import { sendMessageToAllFrames } from "../messaging/sendMessageToAllFrames";
 import { getRequiredCurrentTab } from "../tabs/getCurrentTab";
 
 export async function toggleHintsGlobal() {
@@ -19,14 +19,14 @@ export async function updateHintsToggle(level: ToggleLevel, enable?: boolean) {
 				"hintsToggleHosts",
 				"hintsTogglePaths",
 			]);
-			await sendMessage("updateNavigationToggle", { enable });
+			await sendMessageToAllFrames("updateNavigationToggle", { enable });
 		}
 
 		return;
 	}
 
 	if (level === "now") {
-		await sendMessage("updateNavigationToggle", { enable });
+		await sendMessageToAllFrames("updateNavigationToggle", { enable });
 		return;
 	}
 
