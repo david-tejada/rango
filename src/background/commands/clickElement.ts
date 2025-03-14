@@ -15,6 +15,8 @@ export async function clickElement(target: Target<ElementMark>) {
 		isSingleTarget,
 	});
 
+	await sendMessageToAllFrames("updateNavigationToggle", {});
+
 	// This is just to be extra safe since if there are multiple targets the
 	// result of each frame must be undefined.
 	return isSingleTarget ? results[0] : undefined;
@@ -58,6 +60,8 @@ export async function directClickElement(
 			target,
 			isSingleTarget,
 		});
+
+		await sendMessageToAllFrames("updateNavigationToggle", {});
 
 		// This is just to be extra safe since if there are multiple targets the
 		// result of each frame must be undefined.

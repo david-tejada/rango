@@ -3,8 +3,14 @@ import { settingsSync } from "./settingsSync";
 
 let navigationToggle: boolean | undefined;
 
+/**
+ * Sets the navigation toggle and returns whether it changed.
+ */
 export function setNavigationToggle(enable: boolean | undefined) {
+	const previousValue = navigationToggle;
 	navigationToggle = enable;
+
+	return enable !== previousValue;
 }
 
 export function getToggles() {
