@@ -92,9 +92,11 @@ export function addMessageListeners() {
 	});
 
 	onMessage("updateNavigationToggle", async ({ enable }) => {
-		setNavigationToggle(enable);
-		await updateHintsEnabled();
-		await notifyTogglesStatus();
+		const changed = setNavigationToggle(enable);
+		if (changed) {
+			await updateHintsEnabled();
+			await notifyTogglesStatus();
+		}
 	});
 
 	onMessage("refreshHints", refreshHints);
