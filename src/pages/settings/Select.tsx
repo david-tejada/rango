@@ -1,4 +1,5 @@
 import { type ReactNode } from "react";
+import { useId } from "react";
 import "./Select.css";
 
 type OptionProps = {
@@ -25,10 +26,13 @@ export function Select<T extends string>({
 	onChange,
 	children,
 }: SelectProps<T>) {
+	const id = useId();
+	
 	return (
 		<div className={`Select ${isDisabled ? "disabled" : ""}`}>
-			{label}
+			<label htmlFor={id}>{label}</label>
 			<select
+				id={id}
 				value={defaultValue}
 				disabled={isDisabled}
 				onChange={(event) => {
