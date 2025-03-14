@@ -13,6 +13,7 @@ type ExtensionState = LabelStacks & {
 	tabMarkers: TabMarkers;
 	showWhatsNewPageNextStartup: boolean;
 	hasSeenSettingsPage: boolean;
+	extensionRecentlyUpdated: boolean;
 };
 
 export type Store = Settings & ExtensionState;
