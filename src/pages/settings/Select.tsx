@@ -1,5 +1,4 @@
-import { useId } from "react";
-import { type ReactNode } from "react";
+import { type ReactNode, useId } from "react";
 import "./Select.css";
 
 type OptionProps = {
