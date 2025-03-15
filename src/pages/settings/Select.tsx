@@ -1,5 +1,5 @@
-import { type ReactNode } from "react";
 import { useId } from "react";
+import { type ReactNode } from "react";
 import "./Select.css";
 
 type OptionProps = {
@@ -27,7 +27,7 @@ export function Select<T extends string>({
 	children,
 }: SelectProps<T>) {
 	const id = useId();
-	
+
 	return (
 		<div className={`Select ${isDisabled ? "disabled" : ""}`}>
 			<label htmlFor={id}>{label}</label>
