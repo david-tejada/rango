@@ -2,6 +2,25 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.8.2](https://github.com/david-tejada/rango/releases/tag/v0.8.1) - 2025-03-17
+
+### Changed
+
+- Associate label with select element on options page
+- Changed the behavior of the "now" to reset after clicking an element with
+  Rango.
+- Increase contrast for code font on settings page.
+
+### Fixed
+
+- Fix error typing keys where hints are off.
+- Fix the hints now toggle not working for all frames
+
+### Added
+
+- Add notification to restart the browser on content script error when the
+  extension recently updated.
+
 ## [0.8.1](https://github.com/david-tejada/rango/releases/tag/v0.8.1) - 2025-02-24
 
 ### Fixed
