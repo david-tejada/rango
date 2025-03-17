@@ -136,18 +136,22 @@ async function setTabMarker(tabId: number, preferredMarker?: string) {
  * @returns The released marker or undefined if the tab doesn't have a marker.
  */
 async function releaseTabMarker(tabId: number) {
-	return store.withLock("tabMarkers", async (tabMarkers) => {
-		const { free, assigned } = tabMarkers;
+	return store.withLock(
+		"tabMarkers",
+		async (tabMarkers) => {
+			const { free, assigned } = tabMarkers;
 
-		const marker = assigned[tabId];
-		if (!marker) return [tabMarkers];
+			const marker = assigned[tabId];
+			if (!marker) return [tabMarkers];
 
-		delete assigned[tabId];
-		free.push(marker);
-		free.sort((a, b) => b.length - a.length || b.localeCompare(a));
+			delete assigned[tabId];
+			free.push(marker);
+			free.sort((a, b) => b.length - a.length || b.localeCompare(a));
 
-		return [tabMarkers, marker];
-	});
+			return [tabMarkers, marker];
+		},
+		createTabMarkers
+	);
 }
 
 /**
