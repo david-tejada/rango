@@ -2,7 +2,7 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
-## [0.8.2](https://github.com/david-tejada/rango/releases/tag/v0.8.1) - 2025-03-17
+## [0.8.2](https://github.com/david-tejada/rango/releases/tag/v0.8.2) - 2025-03-17
 
 ### Changed
 
