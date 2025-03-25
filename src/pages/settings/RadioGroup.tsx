@@ -1,4 +1,10 @@
-import { createContext, type ReactNode, useContext, useMemo } from "react";
+import {
+	createContext,
+	type ReactNode,
+	useContext,
+	useMemo,
+	useId,
+} from "react";
 import "./RadioGroup.css";
 
 type TypeRadioContext = {
@@ -64,11 +70,16 @@ export function RadioGroup<T extends string>({
 		() => ({ name, selectedValue: defaultValue, isDisabled, onChange }),
 		[name, defaultValue, isDisabled, onChange]
 	);
+	const id = useId();
 
 	return (
 		<RadioContext.Provider value={contextValue}>
-			<div className={`RadioGroup ${isDisabled ? "disabled" : ""}`}>
-				{label}
+			<div
+				className={`RadioGroup ${isDisabled ? "disabled" : ""}`}
+				role="radiogroup"
+				aria-labelledby={id}
+			>
+				<label id={id}>{label}</label>
 				<div className="options">{children}</div>
 			</div>
 		</RadioContext.Provider>
