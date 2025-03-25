@@ -12,7 +12,7 @@ import {
 	getWrapperForElement,
 	setHintedWrapper,
 } from "../wrappers/wrappers";
-import { getEffectiveBackgroundColor } from "./color/getEffectiveBackgroundColor";
+import { resolveBackgroundColor } from "./color/resolveBackgroundColor";
 import { rgbaToRgb } from "./color/rgbaToRgb";
 import { matchesStagedSelector } from "./customHints/customSelectorsStaging";
 import { popLabel, pushLabel } from "./labels/labelCache";
@@ -379,7 +379,7 @@ export class Hint {
 	}
 
 	setBackgroundColor(color?: string) {
-		color ??= getEffectiveBackgroundColor(this.target);
+		color ??= resolveBackgroundColor(this.target);
 
 		setStyleProperties(this.inner, {
 			"background-color": color,
@@ -447,9 +447,9 @@ export class Hint {
 				backgroundColor =
 					alpha === 1 ? colorObject.alpha(backgroundOpacity) : colorObject;
 			} else {
-				backgroundColor = new Color(
-					getEffectiveBackgroundColor(this.target)
-				).alpha(backgroundOpacity);
+				backgroundColor = new Color(resolveBackgroundColor(this.target)).alpha(
+					backgroundOpacity
+				);
 			}
 
 			if (customFontColor && customBackgroundColor) {
