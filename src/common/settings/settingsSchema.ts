@@ -1,4 +1,4 @@
-import Color from "color";
+import Color from "colorjs.io";
 import { z } from "zod";
 import { isValidRegExp } from "../isValidRegExp";
 import { isValidSelector } from "../isValidSelector";
@@ -138,8 +138,7 @@ function isValidColor(colorString: string) {
 	if (!colorString) return true;
 
 	try {
-		// eslint-disable-next-line no-new
-		new Color(colorString);
+		Color.parse(colorString);
 	} catch {
 		return false;
 	}

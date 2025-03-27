@@ -1,4 +1,4 @@
-import Color from "color";
+import Color from "colorjs.io";
 import { debounce } from "lodash";
 import { useCallback, useEffect, useState } from "react";
 import { settings } from "../../common/settings/settings";
@@ -442,9 +442,7 @@ export function SettingsComponent() {
 							>
 								CSS color string
 							</a>
-							. Newer color formats like LCH might not be supported. Leaving the
-							field blank lets the color be determined based on the element
-							being hinted.
+							.
 						</p>
 					</TextInput>
 				</SettingRow>
@@ -476,9 +474,7 @@ export function SettingsComponent() {
 							>
 								CSS color string
 							</a>
-							. Newer color formats like LCH might not be supported. Leaving the
-							field blank lets the color be determined based on the element
-							being hinted and the background color.
+							.
 						</p>
 					</TextInput>
 				</SettingRow>
@@ -496,7 +492,8 @@ export function SettingsComponent() {
 						)}
 						isDisabled={
 							Boolean(storedSettings.hintBackgroundColor) &&
-							new Color(storedSettings.hintBackgroundColor).alpha() !== 1
+							new Color(storedSettings.hintBackgroundColor).alpha.valueOf() !==
+								1
 						}
 						onChange={(value) => {
 							handleChange("hintBackgroundOpacity", value);
@@ -507,7 +504,8 @@ export function SettingsComponent() {
 							Choose a value between 0 (fully transparent) and 1 (fully opaque).
 						</p>
 						{storedSettings.hintBackgroundColor &&
-							new Color(storedSettings.hintBackgroundColor).alpha() !== 1 && (
+							new Color(storedSettings.hintBackgroundColor).alpha.valueOf() !==
+								1 && (
 								<p className="small">
 									The chosen background color already has an alpha channel. This
 									value will be ignored.
