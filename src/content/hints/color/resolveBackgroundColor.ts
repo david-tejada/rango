@@ -1,4 +1,5 @@
 import Color from "colorjs.io";
+import { compositeColors } from "./compositeColors";
 
 /**
  * Resolves the background color of an element compositing its background
@@ -9,7 +10,7 @@ import Color from "colorjs.io";
  */
 export function resolveBackgroundColor(element: Element) {
 	const backgroundColors = getBackgroundColors(element);
-	return compositeColors(backgroundColors)?.to("srgb").toString();
+	return compositeColors(backgroundColors);
 }
 
 /**
@@ -28,11 +29,11 @@ function getBackgroundColors(element: Element): Color[] {
 			getComputedStyle(current).backgroundColor
 		);
 
-		if (backgroundColor.alpha.valueOf() !== 0) {
+		if (backgroundColor.alpha !== 0) {
 			colors.push(backgroundColor);
 		}
 
-		if (backgroundColor.alpha.valueOf() === 1) {
+		if (backgroundColor.alpha === 1) {
 			break;
 		}
 
@@ -40,36 +41,4 @@ function getBackgroundColors(element: Element): Color[] {
 	}
 
 	return colors.reverse();
-}
-
-/**
- * Composites a list of colors with different alphas together.
- *
- * @param colors - The list of colors to composite.
- * @returns The composite color or `white` if no colors are provided.
- */
-function compositeColors(colors: Color[]) {
-	if (colors.length < 2) {
-		return colors[0] ?? new Color("white");
-	}
-
-	// Start with the bottom color
-	let result = colors[0]!;
-
-	// Layer each subsequent color on top
-	for (let i = 1; i < colors.length; i++) {
-		const foreground = colors[i];
-		const alpha = foreground!.alpha;
-		const coords = result.to("srgb").coords;
-		const fcoords = foreground!.to("srgb").coords;
-
-		// Apply the "over" compositing formula
-		const r = fcoords[0] * alpha + coords[0] * (1 - alpha);
-		const g = fcoords[1] * alpha + coords[1] * (1 - alpha);
-		const b = fcoords[2] * alpha + coords[2] * (1 - alpha);
-
-		result = new Color("srgb", [r, g, b]);
-	}
-
-	return result;
 }

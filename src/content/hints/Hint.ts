@@ -1,4 +1,4 @@
-import Color from "color";
+import Color from "colorjs.io";
 import { debounce } from "lodash";
 import { setStyleProperties } from "../dom/setStyleProperties";
 import { getFirstTextNodeDescendant } from "../dom/textNode";
@@ -12,8 +12,9 @@ import {
 	getWrapperForElement,
 	setHintedWrapper,
 } from "../wrappers/wrappers";
+import { adjustColorsForContrast } from "./color/adjustColorsForContrast";
+import { compositeColors } from "./color/compositeColors";
 import { resolveBackgroundColor } from "./color/resolveBackgroundColor";
-import { rgbaToRgb } from "./color/rgbaToRgb";
 import { matchesStagedSelector } from "./customHints/customSelectorsStaging";
 import { popLabel, pushLabel } from "./labels/labelCache";
 import {
@@ -378,11 +379,10 @@ export class Hint {
 		this.applyDefaultStyle();
 	}
 
-	setBackgroundColor(color?: string) {
-		color ??= resolveBackgroundColor(this.target);
-
+	setBackgroundColor(colorString?: string) {
 		setStyleProperties(this.inner, {
-			"background-color": color,
+			"background-color":
+				colorString ?? resolveBackgroundColor(this.target).toString(),
 		});
 	}
 
@@ -442,56 +442,45 @@ export class Hint {
 			this.firstTextNodeDescendant = getFirstTextNodeDescendant(this.target);
 
 			if (customBackgroundColor) {
-				const colorObject = new Color(customBackgroundColor);
-				const alpha = colorObject.alpha();
-				backgroundColor =
-					alpha === 1 ? colorObject.alpha(backgroundOpacity) : colorObject;
+				backgroundColor = new Color(customBackgroundColor);
+
+				// If the custom background color is opaque we use the custom alpha,
+				// otherwise the color uses the custom background color opacity.
+				if (backgroundColor.alpha === 1) {
+					backgroundColor.alpha = backgroundOpacity;
+				}
 			} else {
-				backgroundColor = new Color(resolveBackgroundColor(this.target)).alpha(
-					backgroundOpacity
-				);
+				backgroundColor = resolveBackgroundColor(this.target);
+				backgroundColor.alpha = backgroundOpacity;
 			}
 
 			if (customFontColor && customBackgroundColor) {
 				color = new Color(customFontColor);
 			} else {
 				const elementToGetColorFrom =
-					this.firstTextNodeDescendant?.parentElement;
-				let colorString = getComputedStyle(
-					elementToGetColorFrom ?? this.target
-				).color;
-				colorString = colorString.startsWith("rgb")
-					? colorString
-					: "rgb(0, 0, 0)";
-				color = rgbaToRgb(new Color(colorString || "black"), backgroundColor);
-
-				if (!elementToGetColorFrom) {
-					if (backgroundColor.isDark() && color.isDark()) {
-						color = new Color("white");
-					}
-
-					if (backgroundColor.isLight() && color.isLight()) {
-						color = new Color("black");
-					}
+					this.firstTextNodeDescendant?.parentElement ?? this.target;
+				const colorString = getComputedStyle(elementToGetColorFrom).color;
+				color = new Color(colorString);
+				if (color.alpha === 0) {
+					color.alpha = 1;
 				}
+
+				color = compositeColors([backgroundColor, color]);
 			}
 
-			if (
-				backgroundColor.contrast(color) <
-					settingsSync.get("hintMinimumContrastRatio") &&
-				!customFontColor
-			) {
-				color = backgroundColor.isLight()
-					? new Color("black")
-					: new Color("white");
-			}
+			[color, backgroundColor] = adjustColorsForContrast(
+				color,
+				backgroundColor,
+				settingsSync.get("hintMinimumContrastRatio")
+			);
 
 			this.borderWidth = settingsSync.get("hintBorderWidth");
-			this.borderColor = new Color(color).alpha(0.3);
+			this.borderColor = color.clone();
+			this.borderColor.alpha = 0.3;
 		}
 
 		if (this.keyEmphasis) {
-			this.borderColor = new Color(this.color).alpha(0.7);
+			this.borderColor.alpha = 0.7;
 			this.borderWidth += 1;
 		}
 
@@ -504,9 +493,9 @@ export class Hint {
 
 		if (!this.freezeColors) {
 			setStyleProperties(this.inner, {
-				"background-color": this.backgroundColor.string(),
-				color: this.color.string(),
-				border: `${this.borderWidth}px solid ${this.borderColor.string()}`,
+				"background-color": this.backgroundColor.toString(),
+				color: this.color.toString(),
+				border: `${this.borderWidth}px solid ${this.borderColor.toString()}`,
 			});
 		}
 	}
@@ -666,8 +655,8 @@ export class Hint {
 
 	flash(ms = 300) {
 		setStyleProperties(this.inner, {
-			"background-color": this.color.string(),
-			color: this.backgroundColor.string(),
+			"background-color": this.color.toString(),
+			color: this.backgroundColor.toString(),
 		});
 
 		this.freezeColors = true;
@@ -680,8 +669,8 @@ export class Hint {
 
 	clearFlash() {
 		setStyleProperties(this.inner, {
-			"background-color": this.backgroundColor.string(),
-			color: this.color.string(),
+			"background-color": this.backgroundColor.toString(),
+			color: this.color.toString(),
 		});
 
 		this.freezeColors = false;
@@ -786,15 +775,16 @@ export class Hint {
 
 		const fontWeight =
 			hintWeight === "auto"
-				? this.backgroundColor.contrast(this.color) < 7 && hintFontSize < 14
+				? this.backgroundColor.contrastWCAG21(this.color) < 7 &&
+					hintFontSize < 14
 					? "bold"
 					: "normal"
 				: hintWeight;
 
 		setStyleProperties(this.inner, {
-			"background-color": this.backgroundColor.string(),
-			color: this.color.string(),
-			border: `${hintBorderWidth}px solid ${this.borderColor.string()}`,
+			"background-color": this.backgroundColor.toString(),
+			color: this.color.toString(),
+			border: `${hintBorderWidth}px solid ${this.borderColor.toString()}`,
 			"font-family": hintFontFamily,
 			"font-size": `${hintFontSize}px`,
 			"font-weight": fontWeight,
