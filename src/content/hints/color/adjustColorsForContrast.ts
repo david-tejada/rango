@@ -1,120 +1,125 @@
-import type Color from "colorjs.io";
+import Color from "colorjs.io";
+import { clamp } from "lodash";
 
-export function adjustColorsForContrast(
+const colorBlack = new Color("black");
+const colorBlackString = colorBlack.toString();
+const colorWhite = new Color("white");
+const colorWhiteString = colorWhite.toString();
+
+const cache = new Map<string, Color>();
+
+export function getAdjustedForegroundColor(
 	foreground: Color,
 	background: Color,
-	targetRatio: number
-): [Color, Color] {
-	if (background.contrastWCAG21(foreground) >= targetRatio) {
-		return [foreground, background];
+	targetContrast: number
+): Color {
+	const cacheKey = `${foreground.toString()}:${background.toString()}:${targetContrast}`;
+
+	if (cache.has(cacheKey)) {
+		return cache.get(cacheKey)!;
 	}
 
-	const fg = foreground.to("oklch");
-	const bg = background.to("oklch");
+	const initialContrast = background.contrastAPCA(foreground);
 
-	const extremeL = findBetterContrastingLightness(bg, fg);
-
-	// First check if pushing foreground to extreme is enough
-	fg.set("l", extremeL);
-
-	// If the contrast is enough we look for the point at which the contrast is
-	// just over the desired targetRatio
-	if (bg.contrastWCAG21(fg) >= targetRatio) {
-		const fgAdjusted = adjustLightnessForTargetContrast(bg, fg, targetRatio);
-		return [fgAdjusted, bg];
+	if (Math.abs(initialContrast) >= targetContrast) {
+		cache.set(cacheKey, foreground);
+		return foreground;
 	}
 
-	// If the contrast is not enough, we need to adjust the lightness of the
-	// background color to make it more contrasting.
-	const extremeBackgroundL = findBetterContrastingLightness(fg, bg);
+	// We can't lighten or darken pure black or white, so if that's the foreground
+	// color passed in we use the middle lightness value.
+	const foregroundString = foreground.toString();
+	const isPureBlackOrWhite =
+		foregroundString === colorBlackString ||
+		foregroundString === colorWhiteString;
+	const foregroundToUse = isPureBlackOrWhite
+		? foreground.to("oklch").set("l", 0.5)
+		: foreground;
 
-	bg.set("l", extremeBackgroundL);
+	const result = adjustLightnessForTargetContrast(
+		foregroundToUse,
+		background,
+		targetContrast
+	);
 
-	if (bg.contrastWCAG21(fg) >= targetRatio) {
-		const bgAdjusted = adjustLightnessForTargetContrast(fg, bg, targetRatio);
-		return [fg, bgAdjusted];
-	}
+	cache.set(cacheKey, result);
 
-	return [fg, bg];
+	return result;
 }
 
 /**
- * Finds the lightness value that makes the contrast between the reference color
- * and the color to adjust the highest.
- *
- * @param referenceColor - The color to compare against.
- * @param colorToAdjust - The color to adjust.
- * @returns The lightness value that makes the contrast the highest.
+ * Return a color based on the passed foreground color with the lightness
+ * adjusted until the desired contrast is reached or the foreground color can't
+ * be adjusted any further.
  */
-function findBetterContrastingLightness(
-	referenceColor: Color,
-	colorToAdjust: Color
-) {
-	const extremeLightnessValue = 0;
-	const extremeDarknessValue = 1;
-
-	const reference = referenceColor.to("oklch");
-	const adjustable = colorToAdjust.to("oklch");
-
-	const extremeLight = adjustable.clone().set("l", extremeLightnessValue);
-	const extremeDark = adjustable.clone().set("l", extremeDarknessValue);
-
-	const extremeLightContrast = reference.contrastWCAG21(extremeLight);
-	const extremeDarkContrast = reference.contrastWCAG21(extremeDark);
-
-	return extremeLightContrast > extremeDarkContrast
-		? extremeLightnessValue
-		: extremeDarknessValue;
-}
-
-function midpoint(a: number, b: number) {
-	const large = Math.max(a, b);
-	const small = Math.min(a, b);
-
-	return (large - small) / 2 + small;
-}
-
 function adjustLightnessForTargetContrast(
-	referenceColor: Color,
-	colorToAdjust: Color,
-	targetRatio: number
+	foregroundColor: Color,
+	backgroundColor: Color,
+	targetContrast: number
 ) {
-	const reference = referenceColor.to("oklch");
-	const adjustable = colorToAdjust.to("oklch");
+	const backgroundIsLight = isLight(backgroundColor);
 
-	let opposite = reference.get("l");
-	let valid = adjustable.get("l");
+	// We check if getting to an extreme lightness color still wouldn't give us
+	// the desired target contrast. In that case there's no point in checking
+	// further and we can use that extreme lightness color value.
+	const extremeLightnessColor = backgroundIsLight
+		? foregroundColor.to("oklch").set("l", 0)
+		: foregroundColor.to("oklch").set("l", 1);
 
-	const contrastTolerance = 1;
-	const maxIterations = 10;
-	let iteration = 0;
+	const extremeLightnessColorContrast = backgroundColor.contrastAPCA(
+		extremeLightnessColor
+	);
 
-	while (iteration < maxIterations) {
-		const mid = midpoint(opposite, valid);
-
-		adjustable.set("l", mid);
-
-		const midContrast = reference.contrastWCAG21(adjustable);
-
-		if (
-			midContrast >= targetRatio &&
-			midContrast <= targetRatio + contrastTolerance
-		) {
-			console.log("found valid lightness", mid);
-			valid = mid;
-			break;
-		}
-
-		if (midContrast >= targetRatio) {
-			valid = mid;
-		} else {
-			opposite = mid;
-		}
-
-		iteration++;
+	if (Math.abs(extremeLightnessColorContrast) < targetContrast) {
+		return extremeLightnessColor;
 	}
 
-	adjustable.set("l", valid);
+	// If the desired contrast can be achieved we lighten or darken the color
+	// in small steps until the desired contrast is reached.
+	const maxIterations = 20;
+	const step = 0.05;
+	let iterations = 0;
 
-	return adjustable;
+	while (
+		Math.abs(backgroundColor.contrastAPCA(foregroundColor)) < targetContrast &&
+		iterations < maxIterations
+	) {
+		if (backgroundIsLight) {
+			foregroundColor.darken(step);
+		} else {
+			foregroundColor.lighten(step);
+		}
+
+		foregroundColor = clampColorCoordinates(foregroundColor);
+
+		iterations++;
+	}
+
+	return foregroundColor;
+}
+
+/**
+ * Determines whether a color is light or dark based on its contrast with black
+ * and white.
+ */
+function isLight(backgroundColor: Color) {
+	const contrastWithBlack = backgroundColor.contrastAPCA(colorBlack);
+	const contrastWithWhite = backgroundColor.contrastAPCA(colorWhite);
+
+	return Math.abs(contrastWithBlack) > Math.abs(contrastWithWhite);
+}
+
+/**
+ * Clamps the rgb coordinates of a color to the range 0-1.
+ */
+function clampColorCoordinates(color: Color) {
+	const clone = color.to("srgb");
+
+	const [r, g, b] = clone.coords;
+
+	clone.set("r", clamp(r, 0, 1));
+	clone.set("g", clamp(g, 0, 1));
+	clone.set("b", clamp(b, 0, 1));
+
+	return clone;
 }

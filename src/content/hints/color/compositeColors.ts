@@ -7,7 +7,7 @@ import Color from "colorjs.io";
  * @returns The composite color or `white` if no colors are provided.
  */
 export function compositeColors(colors: Color[]) {
-	const filtered = colors.filter((color) => color.alpha !== 0);
+	const filtered = colors.filter((color) => color.alpha.valueOf() !== 0);
 
 	if (filtered.length < 2) {
 		return filtered[0] ?? new Color("white");

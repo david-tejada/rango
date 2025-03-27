@@ -12,7 +12,7 @@ import {
 	getWrapperForElement,
 	setHintedWrapper,
 } from "../wrappers/wrappers";
-import { adjustColorsForContrast } from "./color/adjustColorsForContrast";
+import { getAdjustedForegroundColor } from "./color/adjustColorsForContrast";
 import { compositeColors } from "./color/compositeColors";
 import { resolveBackgroundColor } from "./color/resolveBackgroundColor";
 import { matchesStagedSelector } from "./customHints/customSelectorsStaging";
@@ -446,7 +446,7 @@ export class Hint {
 
 				// If the custom background color is opaque we use the custom alpha,
 				// otherwise the color uses the custom background color opacity.
-				if (backgroundColor.alpha === 1) {
+				if (backgroundColor.alpha.valueOf() === 1) {
 					backgroundColor.alpha = backgroundOpacity;
 				}
 			} else {
@@ -461,18 +461,14 @@ export class Hint {
 					this.firstTextNodeDescendant?.parentElement ?? this.target;
 				const colorString = getComputedStyle(elementToGetColorFrom).color;
 				color = new Color(colorString);
-				if (color.alpha === 0) {
+				if (color.alpha.valueOf() === 0) {
 					color.alpha = 1;
 				}
 
 				color = compositeColors([backgroundColor, color]);
 			}
 
-			[color, backgroundColor] = adjustColorsForContrast(
-				color,
-				backgroundColor,
-				settingsSync.get("hintMinimumContrastRatio")
-			);
+			color = getAdjustedForegroundColor(color, backgroundColor, 60);
 
 			this.borderWidth = settingsSync.get("hintBorderWidth");
 			this.borderColor = color.clone();
@@ -775,7 +771,7 @@ export class Hint {
 
 		const fontWeight =
 			hintWeight === "auto"
-				? this.backgroundColor.contrastWCAG21(this.color) < 7 &&
+				? this.backgroundColor.contrastAPCA(this.color) < 70 &&
 					hintFontSize < 14
 					? "bold"
 					: "normal"

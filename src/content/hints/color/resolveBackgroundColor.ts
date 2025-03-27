@@ -29,11 +29,11 @@ function getBackgroundColors(element: Element): Color[] {
 			getComputedStyle(current).backgroundColor
 		);
 
-		if (backgroundColor.alpha !== 0) {
+		if (backgroundColor.alpha.valueOf() !== 0) {
 			colors.push(backgroundColor);
 		}
 
-		if (backgroundColor.alpha === 1) {
+		if (backgroundColor.alpha.valueOf() === 1) {
 			break;
 		}
 
