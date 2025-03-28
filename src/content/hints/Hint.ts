@@ -1,4 +1,4 @@
-import Color from "color";
+import type Color from "colorjs.io";
 import { debounce } from "lodash";
 import { setStyleProperties } from "../dom/setStyleProperties";
 import { getFirstTextNodeDescendant } from "../dom/textNode";
@@ -12,8 +12,12 @@ import {
 	getWrapperForElement,
 	setHintedWrapper,
 } from "../wrappers/wrappers";
-import { getEffectiveBackgroundColor } from "./color/getEffectiveBackgroundColor";
-import { rgbaToRgb } from "./color/rgbaToRgb";
+import { colors } from "./color/colors";
+import {
+	getHintBackgroundColor,
+	getHintForegroundColor,
+} from "./color/hintColors";
+import { resolveBackgroundColor } from "./color/resolveBackgroundColor";
 import { matchesStagedSelector } from "./customHints/customSelectorsStaging";
 import { popLabel, pushLabel } from "./labels/labelCache";
 import {
@@ -32,6 +36,9 @@ import {
 } from "./positioning/getContextForHint";
 import { getCustomNudge } from "./positioning/getCustomNudge";
 import { getElementToPositionHint } from "./positioning/getElementToPositionHint";
+
+const colorRedString = colors.red.toString();
+const colorGreenString = colors.green.toString();
 
 const hintQueue = new Set<Hint>();
 
@@ -291,7 +298,6 @@ export class Hint {
 	color!: Color;
 	backgroundColor!: Color;
 	borderColor!: Color;
-	borderWidth: number;
 	keyEmphasis?: boolean;
 	freezeColors?: boolean;
 	firstTextNodeDescendant?: Text;
@@ -299,8 +305,6 @@ export class Hint {
 
 	constructor(public target: Element) {
 		this.isActive = false;
-
-		this.borderWidth = settingsSync.get("hintBorderWidth");
 
 		this.shadowHost = document.createElement("div");
 		this.shadowHost.className = "rango-hint";
@@ -373,16 +377,15 @@ export class Hint {
 		this.toBeReattached = false;
 		this.wasReattached = false;
 
-		// Initial styles for inner
+		this.firstTextNodeDescendant = getFirstTextNodeDescendant(this.target);
 
 		this.applyDefaultStyle();
 	}
 
-	setBackgroundColor(color?: string) {
-		color ??= getEffectiveBackgroundColor(this.target);
-
+	setBackgroundColor(colorString?: string) {
 		setStyleProperties(this.inner, {
-			"background-color": color,
+			"background-color":
+				colorString ?? resolveBackgroundColor(this.target).toString(),
 		});
 	}
 
@@ -411,102 +414,41 @@ export class Hint {
 	}
 
 	computeColors() {
-		let backgroundColor;
-		let color;
-
-		if (matchesStagedSelector(this.target, false)) {
-			backgroundColor = new Color("red");
-			setStyleProperties(this.inner, {
-				outline: "2px dashed red",
-				"outline-offset": "1px",
-			});
-			color = new Color("white");
-			this.borderColor = color;
-		} else if (matchesStagedSelector(this.target, true)) {
-			backgroundColor = new Color("green");
-			setStyleProperties(this.inner, {
-				outline: "2px solid green",
-				"outline-offset": "1px",
-			});
-			color = new Color("white");
-			this.borderColor = new Color("white");
-		} else {
-			setStyleProperties(this.inner, {
-				outline: "none",
-			});
-
-			const customBackgroundColor = settingsSync.get("hintBackgroundColor");
-			const customFontColor = settingsSync.get("hintFontColor");
-			const backgroundOpacity = settingsSync.get("hintBackgroundOpacity");
-
-			this.firstTextNodeDescendant = getFirstTextNodeDescendant(this.target);
-
-			if (customBackgroundColor) {
-				const colorObject = new Color(customBackgroundColor);
-				const alpha = colorObject.alpha();
-				backgroundColor =
-					alpha === 1 ? colorObject.alpha(backgroundOpacity) : colorObject;
-			} else {
-				backgroundColor = new Color(
-					getEffectiveBackgroundColor(this.target)
-				).alpha(backgroundOpacity);
-			}
-
-			if (customFontColor && customBackgroundColor) {
-				color = new Color(customFontColor);
-			} else {
-				const elementToGetColorFrom =
-					this.firstTextNodeDescendant?.parentElement;
-				let colorString = getComputedStyle(
-					elementToGetColorFrom ?? this.target
-				).color;
-				colorString = colorString.startsWith("rgb")
-					? colorString
-					: "rgb(0, 0, 0)";
-				color = rgbaToRgb(new Color(colorString || "black"), backgroundColor);
-
-				if (!elementToGetColorFrom) {
-					if (backgroundColor.isDark() && color.isDark()) {
-						color = new Color("white");
-					}
-
-					if (backgroundColor.isLight() && color.isLight()) {
-						color = new Color("black");
-					}
-				}
-			}
-
-			if (
-				backgroundColor.contrast(color) <
-					settingsSync.get("hintMinimumContrastRatio") &&
-				!customFontColor
-			) {
-				color = backgroundColor.isLight()
-					? new Color("black")
-					: new Color("white");
-			}
-
-			this.borderWidth = settingsSync.get("hintBorderWidth");
-			this.borderColor = new Color(color).alpha(0.3);
-		}
-
-		if (this.keyEmphasis) {
-			this.borderColor = new Color(this.color).alpha(0.7);
-			this.borderWidth += 1;
-		}
-
-		this.backgroundColor = backgroundColor;
-		this.color = color;
+		this.backgroundColor = getHintBackgroundColor(this.target);
+		this.color = getHintForegroundColor(
+			this.target,
+			this.backgroundColor,
+			this.firstTextNodeDescendant
+		);
+		this.borderColor = this.color.clone();
+		this.borderColor.alpha = this.keyEmphasis ? 0.7 : 0.3;
 	}
 
 	updateColors() {
 		this.computeColors();
 
 		if (!this.freezeColors) {
+			const hintBorderWidth = settingsSync.get("hintBorderWidth");
+			const borderWidth = this.keyEmphasis
+				? hintBorderWidth + 1
+				: hintBorderWidth;
+			const border = `${borderWidth}px solid ${this.borderColor.toString()}`;
+
+			const isIncludeMarked = matchesStagedSelector(this.target, true);
+			const isExcludeMarked = matchesStagedSelector(this.target, false);
+
+			const outline = isIncludeMarked
+				? `2px solid ${colorGreenString}`
+				: isExcludeMarked
+					? `2px dashed ${colorRedString}`
+					: "none";
+
 			setStyleProperties(this.inner, {
-				"background-color": this.backgroundColor.string(),
-				color: this.color.string(),
-				border: `${this.borderWidth}px solid ${this.borderColor.string()}`,
+				"background-color": this.backgroundColor.toString(),
+				color: this.color.toString(),
+				margin: `${this.keyEmphasis ? -1 : 0}px`,
+				border,
+				outline,
 			});
 		}
 	}
@@ -534,6 +476,10 @@ export class Hint {
 	}
 
 	position() {
+		// We avoid repositioning while the key is emphasized to avoid small
+		// movements of the hint when adding the outline.
+		if (this.keyEmphasis) return;
+
 		// This guards against Hint.position being called before its context has
 		// been computed. For example, if it's
 		if (!this.container) return;
@@ -666,8 +612,8 @@ export class Hint {
 
 	flash(ms = 300) {
 		setStyleProperties(this.inner, {
-			"background-color": this.color.string(),
-			color: this.backgroundColor.string(),
+			"background-color": this.color.toString(),
+			color: this.backgroundColor.toString(),
 		});
 
 		this.freezeColors = true;
@@ -680,8 +626,8 @@ export class Hint {
 
 	clearFlash() {
 		setStyleProperties(this.inner, {
-			"background-color": this.backgroundColor.string(),
-			color: this.color.string(),
+			"background-color": this.backgroundColor.toString(),
+			color: this.color.toString(),
 		});
 
 		this.freezeColors = false;
@@ -777,30 +723,23 @@ export class Hint {
 	applyDefaultStyle() {
 		const hintFontFamily = settingsSync.get("hintFontFamily");
 		const hintFontSize = settingsSync.get("hintFontSize");
-		const hintWeight = settingsSync.get("hintWeight");
 		const hintBorderWidth = settingsSync.get("hintBorderWidth");
 		const hintBorderRadius = settingsSync.get("hintBorderRadius");
 		const hintUppercaseLetters = settingsSync.get("hintUppercaseLetters");
-
+		const hintFontBold = settingsSync.get("hintFontBold");
 		this.computeColors();
 
-		const fontWeight =
-			hintWeight === "auto"
-				? this.backgroundColor.contrast(this.color) < 7 && hintFontSize < 14
-					? "bold"
-					: "normal"
-				: hintWeight;
-
 		setStyleProperties(this.inner, {
-			"background-color": this.backgroundColor.string(),
-			color: this.color.string(),
-			border: `${hintBorderWidth}px solid ${this.borderColor.string()}`,
+			"background-color": this.backgroundColor.toString(),
+			color: this.color.toString(),
+			border: `${hintBorderWidth}px solid ${this.borderColor.toString()}`,
 			"font-family": hintFontFamily,
 			"font-size": `${hintFontSize}px`,
-			"font-weight": fontWeight,
+			"font-weight": hintFontBold ? "bold" : "normal",
 			"border-radius": `${hintBorderRadius}px`,
 			"text-transform": hintUppercaseLetters ? "uppercase" : "none",
-			outline: "none",
+			"outline-offset": "1px",
+			margin: `${this.keyEmphasis ? -1 : 0}px`,
 		});
 	}
 
@@ -811,7 +750,6 @@ export class Hint {
 
 	clearKeyHighlight() {
 		this.keyEmphasis = false;
-		this.borderWidth = settingsSync.get("hintBorderWidth");
 		this.updateColors();
 	}
 }

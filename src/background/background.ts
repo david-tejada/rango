@@ -115,7 +115,10 @@ browser.runtime.onInstalled.addListener(async ({ reason, previousVersion }) => {
 		await browser.tabs.create({ url: urls.onboarding.href });
 	}
 
-	if (reason === "update") await store.set("extensionRecentlyUpdated", true);
+	if (reason === "update") {
+		await store.set("extensionRecentlyUpdated", true);
+		await settings.upgrade();
+	}
 
 	if (reason === "update" && process.env["NODE_ENV"] === "production") {
 		const currentVersion = browser.runtime.getManifest().version;

@@ -1,4 +1,4 @@
-import Color from "color";
+import Color from "colorjs.io";
 import { z } from "zod";
 import { isValidRegExp } from "../isValidRegExp";
 import { isValidSelector } from "../isValidSelector";
@@ -29,17 +29,21 @@ export const settingsSchema = z.object({
 		.number()
 		.default(10)
 		.refine((value) => isWithinRange(value, 1, 72)),
+	// Deprecated in favour of hintFontBold. 2025-03-27
 	hintWeight: z.enum(["auto", "normal", "bold"]).default("auto"),
+	hintFontBold: z.boolean().default(true),
 	hintBackgroundColor: zSafeString.default("").refine(isValidColor),
 	hintBackgroundOpacity: z
 		.number()
 		.default(1)
 		.refine((value) => isWithinRange(value, 0, 1)),
 	hintFontColor: zSafeString.default("").refine(isValidColor),
+	// Deprecated in favour of hintEnhancedContrast. 2025-03-27
 	hintMinimumContrastRatio: z
 		.number()
 		.default(4)
 		.refine((value) => isWithinRange(value, 2.5, 21)),
+	hintEnhancedContrast: z.boolean().default(false),
 	hintBorderWidth: z
 		.number()
 		.default(1)
@@ -138,8 +142,7 @@ function isValidColor(colorString: string) {
 	if (!colorString) return true;
 
 	try {
-		// eslint-disable-next-line no-new
-		new Color(colorString);
+		Color.parse(colorString);
 	} catch {
 		return false;
 	}
