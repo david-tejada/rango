@@ -27,7 +27,7 @@ export const settingsSchema = z.object({
 	),
 	hintFontSize: z
 		.number()
-		.default(10)
+		.default(12)
 		.refine((value) => isWithinRange(value, 1, 72)),
 	// Deprecated in favour of hintFontBold. 2025-03-27
 	hintWeight: z.enum(["auto", "normal", "bold"]).default("auto"),
