@@ -34,6 +34,9 @@ import {
 import { getCustomNudge } from "./positioning/getCustomNudge";
 import { getElementToPositionHint } from "./positioning/getElementToPositionHint";
 
+const normalContrastThreshold = 60;
+const enhancedContrastThreshold = 80;
+
 const hintQueue = new Set<Hint>();
 
 function addToHintQueue(hint: Hint) {
@@ -468,7 +471,15 @@ export class Hint {
 				color = compositeColors([backgroundColor, color]);
 			}
 
-			color = getAdjustedForegroundColor(color, backgroundColor, 60);
+			const contrastThreshold = settingsSync.get("hintEnhancedContrast")
+				? enhancedContrastThreshold
+				: normalContrastThreshold;
+
+			color = getAdjustedForegroundColor(
+				color,
+				backgroundColor,
+				contrastThreshold
+			);
 
 			this.borderWidth = settingsSync.get("hintBorderWidth");
 			this.borderColor = color.clone();
@@ -762,20 +773,11 @@ export class Hint {
 	applyDefaultStyle() {
 		const hintFontFamily = settingsSync.get("hintFontFamily");
 		const hintFontSize = settingsSync.get("hintFontSize");
-		const hintWeight = settingsSync.get("hintWeight");
 		const hintBorderWidth = settingsSync.get("hintBorderWidth");
 		const hintBorderRadius = settingsSync.get("hintBorderRadius");
 		const hintUppercaseLetters = settingsSync.get("hintUppercaseLetters");
-
+		const hintFontBold = settingsSync.get("hintFontBold");
 		this.computeColors();
-
-		const fontWeight =
-			hintWeight === "auto"
-				? this.backgroundColor.contrastAPCA(this.color) < 70 &&
-					hintFontSize < 14
-					? "bold"
-					: "normal"
-				: hintWeight;
 
 		setStyleProperties(this.inner, {
 			"background-color": this.backgroundColor.toString(),
@@ -783,7 +785,7 @@ export class Hint {
 			border: `${hintBorderWidth}px solid ${this.borderColor.toString()}`,
 			"font-family": hintFontFamily,
 			"font-size": `${hintFontSize}px`,
-			"font-weight": fontWeight,
+			"font-weight": hintFontBold ? "bold" : "normal",
 			"border-radius": `${hintBorderRadius}px`,
 			"text-transform": hintUppercaseLetters ? "uppercase" : "none",
 			outline: "none",

@@ -378,47 +378,25 @@ export function SettingsComponent() {
 					/>
 				</SettingRow>
 				<SettingRow>
-					<RadioGroup
-						label="Font weight"
-						name="hintWeight"
-						defaultValue={dirtySettings.hintWeight}
-						onChange={(value) => {
-							handleChange("hintWeight", value);
+					<Toggle
+						label="Bold font"
+						isPressed={dirtySettings.hintFontBold}
+						onClick={() => {
+							handleChange("hintFontBold", !dirtySettings.hintFontBold);
 						}}
-					>
-						<Radio value="auto">
-							auto
-							<p className="small">
-								The font weight is automatically selected for each hint
-								depending on contrast and font size
-							</p>
-						</Radio>
-						<Radio value="normal">normal</Radio>
-						<Radio value="bold">bold</Radio>
-					</RadioGroup>
+					/>
 				</SettingRow>
 				<SettingRow>
-					<NumberInput
-						label="Minimum contrast ratio"
-						defaultValue={dirtySettings.hintMinimumContrastRatio}
-						min={2.5}
-						max={21}
-						step={0.5}
-						isValid={settings.isValid(
-							"hintMinimumContrastRatio",
-							dirtySettings.hintMinimumContrastRatio
-						)}
-						onChange={(value) => {
-							handleChange("hintMinimumContrastRatio", value);
+					<Toggle
+						label="Enhanced contrast"
+						isPressed={dirtySettings.hintEnhancedContrast}
+						onClick={() => {
+							handleChange(
+								"hintEnhancedContrast",
+								!dirtySettings.hintEnhancedContrast
+							);
 						}}
-						onBlur={handleBlur}
-					>
-						<p className="small show-on-focus">
-							Value between 2.5 and 21. Lower values will make hints match the
-							style of the page better while higher values provide improved
-							legibility.
-						</p>
-					</NumberInput>
+					/>
 				</SettingRow>
 				<SettingRow>
 					<TextInput

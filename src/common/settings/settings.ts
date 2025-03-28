@@ -97,6 +97,18 @@ async function getAll(): Promise<Settings> {
 	return Object.fromEntries(entries) as Settings;
 }
 
+async function upgrade() {
+	// Deprecated in favour of hintEnhancedContrast. 2025-03-27
+	const hintMinimumContrastRatio = await get("hintMinimumContrastRatio");
+	if (hintMinimumContrastRatio >= 7) await set("hintEnhancedContrast", true);
+	await remove("hintMinimumContrastRatio");
+
+	// Deprecated in favour of hintFontBold. 2025-03-27
+	const hintWeight = await get("hintWeight");
+	if (hintWeight === "normal") await set("hintFontBold", false);
+	await remove("hintWeight");
+}
+
 async function handleInvalidSetting<T extends keyof Settings>(
 	key: T,
 	value: unknown
@@ -203,6 +215,7 @@ export const settings = {
 	remove,
 	isValid,
 	defaults,
+	upgrade,
 	onChange: emitter.on.bind(emitter),
 	onAnyChange: emitter.onAny.bind(emitter),
 };
