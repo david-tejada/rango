@@ -1,4 +1,4 @@
-import Color from "colorjs.io";
+import type Color from "colorjs.io";
 import { debounce } from "lodash";
 import { setStyleProperties } from "../dom/setStyleProperties";
 import { getFirstTextNodeDescendant } from "../dom/textNode";
@@ -12,8 +12,11 @@ import {
 	getWrapperForElement,
 	setHintedWrapper,
 } from "../wrappers/wrappers";
-import { getAdjustedForegroundColor } from "./color/adjustColorsForContrast";
-import { compositeColors } from "./color/compositeColors";
+import { colors } from "./color/colors";
+import {
+	getHintBackgroundColor,
+	getHintForegroundColor,
+} from "./color/hintColors";
 import { resolveBackgroundColor } from "./color/resolveBackgroundColor";
 import { matchesStagedSelector } from "./customHints/customSelectorsStaging";
 import { popLabel, pushLabel } from "./labels/labelCache";
@@ -34,8 +37,8 @@ import {
 import { getCustomNudge } from "./positioning/getCustomNudge";
 import { getElementToPositionHint } from "./positioning/getElementToPositionHint";
 
-const normalContrastThreshold = 60;
-const enhancedContrastThreshold = 80;
+const colorRedString = colors.red.toString();
+const colorGreenString = colors.green.toString();
 
 const hintQueue = new Set<Hint>();
 
@@ -295,7 +298,6 @@ export class Hint {
 	color!: Color;
 	backgroundColor!: Color;
 	borderColor!: Color;
-	borderWidth: number;
 	keyEmphasis?: boolean;
 	freezeColors?: boolean;
 	firstTextNodeDescendant?: Text;
@@ -303,8 +305,6 @@ export class Hint {
 
 	constructor(public target: Element) {
 		this.isActive = false;
-
-		this.borderWidth = settingsSync.get("hintBorderWidth");
 
 		this.shadowHost = document.createElement("div");
 		this.shadowHost.className = "rango-hint";
@@ -377,7 +377,7 @@ export class Hint {
 		this.toBeReattached = false;
 		this.wasReattached = false;
 
-		// Initial styles for inner
+		this.firstTextNodeDescendant = getFirstTextNodeDescendant(this.target);
 
 		this.applyDefaultStyle();
 	}
@@ -414,95 +414,41 @@ export class Hint {
 	}
 
 	computeColors() {
-		let backgroundColor;
-		let color;
-
-		if (matchesStagedSelector(this.target, false)) {
-			backgroundColor = new Color("red");
-			setStyleProperties(this.inner, {
-				outline: "2px dashed red",
-				"outline-offset": "1px",
-			});
-			color = new Color("white");
-			this.borderColor = color;
-		} else if (matchesStagedSelector(this.target, true)) {
-			backgroundColor = new Color("green");
-			setStyleProperties(this.inner, {
-				outline: "2px solid green",
-				"outline-offset": "1px",
-			});
-			color = new Color("white");
-			this.borderColor = new Color("white");
-		} else {
-			setStyleProperties(this.inner, {
-				outline: "none",
-			});
-
-			const customBackgroundColor = settingsSync.get("hintBackgroundColor");
-			const customFontColor = settingsSync.get("hintFontColor");
-			const backgroundOpacity = settingsSync.get("hintBackgroundOpacity");
-
-			this.firstTextNodeDescendant = getFirstTextNodeDescendant(this.target);
-
-			if (customBackgroundColor) {
-				backgroundColor = new Color(customBackgroundColor);
-
-				// If the custom background color is opaque we use the custom alpha,
-				// otherwise the color uses the custom background color opacity.
-				if (backgroundColor.alpha.valueOf() === 1) {
-					backgroundColor.alpha = backgroundOpacity;
-				}
-			} else {
-				backgroundColor = resolveBackgroundColor(this.target);
-				backgroundColor.alpha = backgroundOpacity;
-			}
-
-			if (customFontColor && customBackgroundColor) {
-				color = new Color(customFontColor);
-			} else {
-				const elementToGetColorFrom =
-					this.firstTextNodeDescendant?.parentElement ?? this.target;
-				const colorString = getComputedStyle(elementToGetColorFrom).color;
-				color = new Color(colorString);
-				if (color.alpha.valueOf() === 0) {
-					color.alpha = 1;
-				}
-
-				color = compositeColors([backgroundColor, color]);
-			}
-
-			const contrastThreshold = settingsSync.get("hintEnhancedContrast")
-				? enhancedContrastThreshold
-				: normalContrastThreshold;
-
-			color = getAdjustedForegroundColor(
-				color,
-				backgroundColor,
-				contrastThreshold
-			);
-
-			this.borderWidth = settingsSync.get("hintBorderWidth");
-			this.borderColor = color.clone();
-			this.borderColor.alpha = 0.3;
-		}
-
-		if (this.keyEmphasis) {
-			this.borderColor.alpha = 0.7;
-			this.borderWidth += 1;
-		}
-
-		this.backgroundColor = backgroundColor;
-		this.color = color;
+		this.backgroundColor = getHintBackgroundColor(this.target);
+		this.color = getHintForegroundColor(
+			this.target,
+			this.backgroundColor,
+			this.firstTextNodeDescendant
+		);
+		this.borderColor = this.color.clone();
+		this.borderColor.alpha = this.keyEmphasis ? 0.7 : 0.3;
 	}
 
 	updateColors() {
 		this.computeColors();
 
 		if (!this.freezeColors) {
+			const hintBorderWidth = settingsSync.get("hintBorderWidth");
+			const borderWidth = this.keyEmphasis
+				? hintBorderWidth + 1
+				: hintBorderWidth;
+			const border = `${borderWidth}px solid ${this.borderColor.toString()}`;
+
+			const isIncludeMarked = matchesStagedSelector(this.target, true);
+			const isExcludeMarked = matchesStagedSelector(this.target, false);
+
+			const outline = isIncludeMarked
+				? `2px solid ${colorGreenString}`
+				: isExcludeMarked
+					? `2px dashed ${colorRedString}`
+					: "none";
+
 			setStyleProperties(this.inner, {
 				"background-color": this.backgroundColor.toString(),
 				color: this.color.toString(),
-				border: `${this.borderWidth}px solid ${this.borderColor.toString()}`,
+				margin: `${this.keyEmphasis ? -1 : 0}px`,
+				border,
+				outline,
 			});
 		}
 	}
@@ -530,6 +476,10 @@ export class Hint {
 	}
 
 	position() {
+		// We avoid repositioning while the key is emphasized to avoid small
+		// movements of the hint when adding the outline.
+		if (this.keyEmphasis) return;
+
 		// This guards against Hint.position being called before its context has
 		// been computed. For example, if it's
 		if (!this.container) return;
@@ -788,7 +738,8 @@ export class Hint {
 			"font-weight": hintFontBold ? "bold" : "normal",
 			"border-radius": `${hintBorderRadius}px`,
 			"text-transform": hintUppercaseLetters ? "uppercase" : "none",
-			outline: "none",
+			"outline-offset": "1px",
+			margin: `${this.keyEmphasis ? -1 : 0}px`,
 		});
 	}
 
@@ -799,7 +750,6 @@ export class Hint {
 
 	clearKeyHighlight() {
 		this.keyEmphasis = false;
-		this.borderWidth = settingsSync.get("hintBorderWidth");
 		this.updateColors();
 	}
 }
