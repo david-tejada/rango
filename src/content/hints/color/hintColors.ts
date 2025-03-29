@@ -6,9 +6,6 @@ import { colors } from "./colors";
 import { compositeColors } from "./compositeColors";
 import { resolveBackgroundColor } from "./resolveBackgroundColor";
 
-const normalContrastThreshold = 60;
-const enhancedContrastThreshold = 80;
-
 export function getHintBackgroundColor(target: Element) {
 	const isIncludeMarked = matchesStagedSelector(target, true);
 	const isExcludeMarked = matchesStagedSelector(target, false);
@@ -62,13 +59,5 @@ export function getHintForegroundColor(
 
 	const compositedColor = compositeColors([backgroundColor, rawColor]);
 
-	const contrastThreshold = settingsSync.get("hintEnhancedContrast")
-		? enhancedContrastThreshold
-		: normalContrastThreshold;
-
-	return getAdjustedForegroundColor(
-		compositedColor,
-		backgroundColor,
-		contrastThreshold
-	);
+	return getAdjustedForegroundColor(compositedColor, backgroundColor);
 }

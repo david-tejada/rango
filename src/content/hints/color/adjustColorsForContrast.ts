@@ -1,43 +1,41 @@
-import Color from "colorjs.io";
-import { clamp } from "lodash";
+import type Color from "colorjs.io";
+import { settingsSync } from "../../settings/settingsSync";
+import { colors } from "./colors";
 
-const colorBlack = new Color("black");
-const colorBlackString = colorBlack.toString();
-const colorWhite = new Color("white");
-const colorWhiteString = colorWhite.toString();
+const lowContrastThreshold = 30;
+const normalContrastThreshold = 60;
+const enhancedContrastThreshold = 80;
 
 const cache = new Map<string, Color>();
 
 export function getAdjustedForegroundColor(
 	foreground: Color,
-	background: Color,
-	targetContrast: number
+	background: Color
 ): Color {
-	const cacheKey = `${foreground.toString()}:${background.toString()}:${targetContrast}`;
+	const cacheKey = `${foreground.toString()}:${background.toString()}`;
+	if (cache.has(cacheKey)) return cache.get(cacheKey)!;
 
-	if (cache.has(cacheKey)) {
-		return cache.get(cacheKey)!;
-	}
+	const userContrast = settingsSync.get("hintEnhancedContrast")
+		? enhancedContrastThreshold
+		: normalContrastThreshold;
 
 	const initialContrast = background.contrastAPCA(foreground);
+
+	// A very low contrast indicates that probably the foreground color isn't
+	// being used. In that case we don't need to try to match the color to mimic
+	// the aesthetic of the element and can choose a higher contrast value.
+	const targetContrast =
+		Math.abs(initialContrast) < lowContrastThreshold
+			? enhancedContrastThreshold
+			: userContrast;
 
 	if (Math.abs(initialContrast) >= targetContrast) {
 		cache.set(cacheKey, foreground);
 		return foreground;
 	}
 
-	// We can't lighten or darken pure black or white, so if that's the foreground
-	// color passed in we use the middle lightness value.
-	const foregroundString = foreground.toString();
-	const isPureBlackOrWhite =
-		foregroundString === colorBlackString ||
-		foregroundString === colorWhiteString;
-	const foregroundToUse = isPureBlackOrWhite
-		? foreground.to("oklch").set("l", 0.5)
-		: foreground;
-
 	const result = adjustLightnessForTargetContrast(
-		foregroundToUse,
+		foreground,
 		background,
 		targetContrast
 	);
@@ -74,28 +72,45 @@ function adjustLightnessForTargetContrast(
 		return extremeLightnessColor;
 	}
 
-	// If the desired contrast can be achieved we lighten or darken the color
-	// in small steps until the desired contrast is reached.
-	const maxIterations = 20;
-	const step = 0.05;
-	let iterations = 0;
+	// `high` and `low` here doesn't refer to the value itself but to the value
+	// that achieves a low or high contrast. `low` itself might be higher than
+	// `high`.
+	let low = backgroundColor.to("oklch").get("l");
+	let high = extremeLightnessColor.get("l");
+
+	const currentForeground = foregroundColor.to("oklch");
+	let currentContrast = backgroundColor.contrastAPCA(currentForeground);
+	const contrastTolerance = 5;
+	// This is a failsafe to prevent infinite loops. We should get to our target
+	// value much earlier than this.
+	const maxIterations = 10;
+	let iteration = 0;
 
 	while (
-		Math.abs(backgroundColor.contrastAPCA(foregroundColor)) < targetContrast &&
-		iterations < maxIterations
+		iteration < maxIterations &&
+		!isSlightlyAbove(
+			Math.abs(currentContrast),
+			targetContrast,
+			contrastTolerance
+		)
 	) {
-		if (backgroundIsLight) {
-			foregroundColor.darken(step);
+		const mid = (low + high) / 2;
+		currentForeground.set("l", mid);
+
+		currentContrast = backgroundColor.contrastAPCA(currentForeground);
+
+		if (Math.abs(currentContrast) >= targetContrast) {
+			high = mid;
 		} else {
-			foregroundColor.lighten(step);
+			low = mid;
 		}
 
-		foregroundColor = clampColorCoordinates(foregroundColor);
-
-		iterations++;
+		iteration++;
 	}
 
-	return foregroundColor;
+	currentForeground.set("l", high);
+
+	return currentForeground;
 }
 
 /**
@@ -103,23 +118,16 @@ function adjustLightnessForTargetContrast(
  * and white.
  */
 function isLight(backgroundColor: Color) {
-	const contrastWithBlack = backgroundColor.contrastAPCA(colorBlack);
-	const contrastWithWhite = backgroundColor.contrastAPCA(colorWhite);
+	const contrastWithBlack = backgroundColor.contrastAPCA(colors.black);
+	const contrastWithWhite = backgroundColor.contrastAPCA(colors.white);
 
 	return Math.abs(contrastWithBlack) > Math.abs(contrastWithWhite);
 }
 
-/**
- * Clamps the rgb coordinates of a color to the range 0-1.
- */
-function clampColorCoordinates(color: Color) {
-	const clone = color.to("srgb");
-
-	const [r, g, b] = clone.coords;
-
-	clone.set("r", clamp(r, 0, 1));
-	clone.set("g", clamp(g, 0, 1));
-	clone.set("b", clamp(b, 0, 1));
-
-	return clone;
+function isSlightlyAbove(value: number, target: number, tolerance: number) {
+	return value > target && value < target + tolerance;
 }
+
+settingsSync.onChange("hintEnhancedContrast", () => {
+	cache.clear();
+});
