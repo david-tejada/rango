@@ -2,7 +2,6 @@ import type Color from "colorjs.io";
 import { settingsSync } from "../../settings/settingsSync";
 import { colors } from "./colors";
 
-const lowContrastThreshold = 30;
 const normalContrastThreshold = 60;
 const enhancedContrastThreshold = 80;
 
@@ -15,19 +14,11 @@ export function getAdjustedForegroundColor(
 	const cacheKey = `${foreground.toString()}:${background.toString()}`;
 	if (cache.has(cacheKey)) return cache.get(cacheKey)!;
 
-	const userContrast = settingsSync.get("hintEnhancedContrast")
+	const targetContrast = settingsSync.get("hintEnhancedContrast")
 		? enhancedContrastThreshold
 		: normalContrastThreshold;
 
 	const initialContrast = background.contrastAPCA(foreground);
-
-	// A very low contrast indicates that probably the foreground color isn't
-	// being used. In that case we don't need to try to match the color to mimic
-	// the aesthetic of the element and can choose a higher contrast value.
-	const targetContrast =
-		Math.abs(initialContrast) < lowContrastThreshold
-			? enhancedContrastThreshold
-			: userContrast;
 
 	if (Math.abs(initialContrast) >= targetContrast) {
 		cache.set(cacheKey, foreground);
