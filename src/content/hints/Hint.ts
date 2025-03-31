@@ -413,11 +413,16 @@ export class Hint {
 			? this.elementToPositionHint
 			: getElementToPositionHint(this.target);
 
-		this.backgroundColor = getHintBackgroundColor(this.target);
+		const referenceElement =
+			this.elementToPositionHint instanceof Text
+				? this.elementToPositionHint.parentElement!
+				: this.elementToPositionHint;
+
+		this.backgroundColor = getHintBackgroundColor(referenceElement);
 		this.color = getHintForegroundColor(
 			this.target,
 			this.backgroundColor,
-			this.elementToPositionHint
+			referenceElement
 		);
 	}
 

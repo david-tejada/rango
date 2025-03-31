@@ -7,9 +7,9 @@ import { colors } from "./colors";
 import { compositeColors } from "./compositeColors";
 import { resolveBackgroundColor } from "./resolveBackgroundColor";
 
-export function getHintBackgroundColor(target: Element) {
-	const isIncludeMarked = matchesStagedSelector(target, true);
-	const isExcludeMarked = matchesStagedSelector(target, false);
+export function getHintBackgroundColor(referenceElement: Element) {
+	const isIncludeMarked = matchesStagedSelector(referenceElement, true);
+	const isExcludeMarked = matchesStagedSelector(referenceElement, false);
 
 	if (isIncludeMarked) return colors.green;
 	if (isExcludeMarked) return colors.red;
@@ -29,7 +29,7 @@ export function getHintBackgroundColor(target: Element) {
 		return backgroundColor;
 	}
 
-	const backgroundColor = resolveBackgroundColor(target);
+	const backgroundColor = resolveBackgroundColor(referenceElement);
 	backgroundColor.alpha = customBackgroundOpacity;
 
 	return backgroundColor;
@@ -38,7 +38,7 @@ export function getHintBackgroundColor(target: Element) {
 export function getHintForegroundColor(
 	target: Element,
 	backgroundColor: Color,
-	elementToPositionHint: Element | SVGElement | Text
+	referenceElement: Element
 ) {
 	const isIncludeMarked = matchesStagedSelector(target, true);
 	const isExcludeMarked = matchesStagedSelector(target, false);
@@ -52,21 +52,18 @@ export function getHintForegroundColor(
 		return new Color(customFontColor);
 	}
 
-	const rawColor = getColorFromElement(elementToPositionHint);
+	const rawColor = getColorFromElement(referenceElement);
 	const compositedColor = compositeColors([backgroundColor, rawColor]);
 
 	return getAdjustedForegroundColor(compositedColor, backgroundColor);
 }
 
-function getColorFromElement(element: Element | SVGElement | Text) {
+function getColorFromElement(element: Element) {
 	if (element instanceof SVGElement) {
 		return getColorFromSvgElement(element);
 	}
 
-	const elementToGetColorFrom =
-		element instanceof Text ? element.parentElement! : element;
-
-	return new Color(getCachedStyle(elementToGetColorFrom).color);
+	return new Color(getCachedStyle(element).color);
 }
 
 function getColorFromSvgElement(element: SVGElement) {
