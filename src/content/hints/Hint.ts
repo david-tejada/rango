@@ -296,7 +296,6 @@ export class Hint {
 	wasReattached: boolean;
 	color!: Color;
 	backgroundColor!: Color;
-	borderColor!: Color;
 	keyEmphasis?: boolean;
 	freezeColors?: boolean;
 	label?: string;
@@ -420,19 +419,20 @@ export class Hint {
 			this.backgroundColor,
 			this.elementToPositionHint
 		);
-		this.borderColor = this.color.clone();
-		this.borderColor.alpha = this.keyEmphasis ? 0.7 : 0.3;
 	}
 
 	updateColors() {
 		this.computeColors();
 
 		if (!this.freezeColors) {
+			const borderColor = this.color.clone();
+			borderColor.alpha = this.keyEmphasis ? 0.7 : 0.3;
+
 			const hintBorderWidth = settingsSync.get("hintBorderWidth");
 			const borderWidth = this.keyEmphasis
 				? hintBorderWidth + 1
 				: hintBorderWidth;
-			const border = `${borderWidth}px solid ${this.borderColor.toString()}`;
+			const border = `${borderWidth}px solid ${borderColor.toString()}`;
 
 			const isIncludeMarked = matchesStagedSelector(this.target, true);
 			const isExcludeMarked = matchesStagedSelector(this.target, false);
@@ -729,10 +729,13 @@ export class Hint {
 		const hintFontBold = settingsSync.get("hintFontBold");
 		this.computeColors();
 
+		const borderColor = this.color.clone();
+		borderColor.alpha = this.keyEmphasis ? 0.7 : 0.3;
+
 		setStyleProperties(this.inner, {
 			"background-color": this.backgroundColor.toString(),
 			color: this.color.toString(),
-			border: `${hintBorderWidth}px solid ${this.borderColor.toString()}`,
+			border: `${hintBorderWidth}px solid ${borderColor.toString()}`,
 			"font-family": hintFontFamily,
 			"font-size": `${hintFontSize}px`,
 			"font-weight": hintFontBold ? "bold" : "normal",
