@@ -25,9 +25,7 @@ function getBackgroundColors(element: Element): Color[] {
 	const colors: Color[] = [];
 
 	while (current) {
-		const backgroundColor = new Color(
-			getComputedStyle(current).backgroundColor
-		);
+		const backgroundColor = getBackgroundColor(current);
 
 		if (backgroundColor.alpha.valueOf() !== 0) {
 			colors.push(backgroundColor);
@@ -41,4 +39,30 @@ function getBackgroundColors(element: Element): Color[] {
 	}
 
 	return colors.reverse();
+}
+
+function getBackgroundColor(element: Element) {
+	const backgroundColor = new Color(getComputedStyle(element).backgroundColor);
+	if (backgroundColor.alpha.valueOf() !== 0) {
+		return backgroundColor;
+	}
+
+	const backgroundImage = getComputedStyle(element).backgroundImage;
+	if (backgroundImage.includes("gradient(")) {
+		const colorString = extractColorFromGradient(backgroundImage);
+
+		if (colorString && CSS.supports("background-color", colorString)) {
+			return new Color(colorString);
+		}
+	}
+
+	return backgroundColor;
+}
+
+function extractColorFromGradient(gradientString: string) {
+	const colorRegex =
+		/(?:(?:rgb|rgba|hsl|hsla|oklch|lab|lch|color)\s*\([^)]+\))/g;
+
+	const matches = gradientString.match(colorRegex);
+	return matches?.[0];
 }
