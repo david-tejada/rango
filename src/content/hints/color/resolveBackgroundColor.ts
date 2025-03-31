@@ -1,6 +1,6 @@
 import Color from "colorjs.io";
+import { getCachedStyle } from "../layoutCache";
 import { compositeColors } from "./compositeColors";
-
 /**
  * Resolves the background color of an element compositing its background
  * colors together if it has multiple with different alphas.
@@ -42,12 +42,12 @@ function getBackgroundColors(element: Element): Color[] {
 }
 
 function getBackgroundColor(element: Element) {
-	const backgroundColor = new Color(getComputedStyle(element).backgroundColor);
+	const backgroundColor = new Color(getCachedStyle(element).backgroundColor);
 	if (backgroundColor.alpha.valueOf() !== 0) {
 		return backgroundColor;
 	}
 
-	const backgroundImage = getComputedStyle(element).backgroundImage;
+	const backgroundImage = getCachedStyle(element).backgroundImage;
 	if (backgroundImage.includes("gradient(")) {
 		const colorString = extractColorFromGradient(backgroundImage);
 
