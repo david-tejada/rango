@@ -1,7 +1,6 @@
 import type Color from "colorjs.io";
 import { debounce } from "lodash";
 import { setStyleProperties } from "../dom/setStyleProperties";
-import { getFirstTextNodeDescendant } from "../dom/textNode";
 import { isEditable } from "../dom/utils";
 import { settingsSync } from "../settings/settingsSync";
 import { getToggles } from "../settings/toggles";
@@ -300,7 +299,6 @@ export class Hint {
 	borderColor!: Color;
 	keyEmphasis?: boolean;
 	freezeColors?: boolean;
-	firstTextNodeDescendant?: Text;
 	label?: string;
 
 	constructor(public target: Element) {
@@ -377,8 +375,6 @@ export class Hint {
 		this.toBeReattached = false;
 		this.wasReattached = false;
 
-		this.firstTextNodeDescendant = getFirstTextNodeDescendant(this.target);
-
 		this.applyDefaultStyle();
 	}
 
@@ -414,11 +410,15 @@ export class Hint {
 	}
 
 	computeColors() {
+		this.elementToPositionHint = this.elementToPositionHint?.isConnected
+			? this.elementToPositionHint
+			: getElementToPositionHint(this.target);
+
 		this.backgroundColor = getHintBackgroundColor(this.target);
 		this.color = getHintForegroundColor(
 			this.target,
 			this.backgroundColor,
-			this.firstTextNodeDescendant
+			this.elementToPositionHint
 		);
 		this.borderColor = this.color.clone();
 		this.borderColor.alpha = this.keyEmphasis ? 0.7 : 0.3;
