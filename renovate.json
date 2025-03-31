@@ -5,6 +5,10 @@
 		{
 			"matchDepTypes": ["devDependencies"],
 			"automerge": true
+		},
+		{
+			"matchPackageNames": ["parcel", "/^@parcel/"],
+			"automerge": false
 		}
 	]
 }
