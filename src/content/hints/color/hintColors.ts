@@ -7,9 +7,12 @@ import { colors } from "./colors";
 import { compositeColors } from "./compositeColors";
 import { resolveBackgroundColor } from "./resolveBackgroundColor";
 
-export function getHintBackgroundColor(referenceElement: Element) {
-	const isIncludeMarked = matchesStagedSelector(referenceElement, true);
-	const isExcludeMarked = matchesStagedSelector(referenceElement, false);
+export function getHintBackgroundColor(
+	target: Element,
+	referenceElement: Element
+) {
+	const isIncludeMarked = matchesStagedSelector(target, true);
+	const isExcludeMarked = matchesStagedSelector(target, false);
 
 	if (isIncludeMarked) return colors.green;
 	if (isExcludeMarked) return colors.red;

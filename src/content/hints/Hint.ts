@@ -418,7 +418,10 @@ export class Hint {
 				? this.elementToPositionHint.parentElement!
 				: this.elementToPositionHint;
 
-		this.backgroundColor = getHintBackgroundColor(referenceElement);
+		this.backgroundColor = getHintBackgroundColor(
+			this.target,
+			referenceElement
+		);
 		this.color = getHintForegroundColor(
 			this.target,
 			this.backgroundColor,
