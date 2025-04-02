@@ -11,7 +11,7 @@ import {
 	getWrapperForElement,
 	setHintedWrapper,
 } from "../wrappers/wrappers";
-import { colors } from "./color/colors";
+import { green, red } from "./color/colors";
 import {
 	getHintBackgroundColor,
 	getHintForegroundColor,
@@ -36,8 +36,8 @@ import {
 import { getCustomNudge } from "./positioning/getCustomNudge";
 import { getElementToPositionHint } from "./positioning/getElementToPositionHint";
 
-const colorRedString = colors.red.toString();
-const colorGreenString = colors.green.toString();
+const colorRedString = red.toString();
+const colorGreenString = green.toString();
 
 const hintQueue = new Set<Hint>();
 

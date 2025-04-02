@@ -1,5 +1,6 @@
 import Color from "colorjs.io";
 import { getCachedStyle } from "../layoutCache";
+import { white } from "./colors";
 import { compositeColors } from "./compositeColors";
 /**
  * Resolves the background color of an element compositing its background
@@ -36,6 +37,12 @@ function getBackgroundColors(element: Element): Color[] {
 		}
 
 		current = current.parentElement;
+	}
+
+	// Add the browser default white background color if the last color is not
+	// opaque
+	if (colors.at(-1)?.alpha.valueOf() !== 1) {
+		colors.push(white);
 	}
 
 	return colors.reverse();

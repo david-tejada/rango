@@ -3,7 +3,7 @@ import { settingsSync } from "../../settings/settingsSync";
 import { matchesStagedSelector } from "../customHints/customSelectorsStaging";
 import { getCachedStyle } from "../layoutCache";
 import { getAdjustedForegroundColor } from "./adjustColorsForContrast";
-import { colors } from "./colors";
+import { green, red, white } from "./colors";
 import { compositeColors } from "./compositeColors";
 import { resolveBackgroundColor } from "./resolveBackgroundColor";
 
@@ -14,8 +14,8 @@ export function getHintBackgroundColor(
 	const isIncludeMarked = matchesStagedSelector(target, true);
 	const isExcludeMarked = matchesStagedSelector(target, false);
 
-	if (isIncludeMarked) return colors.green;
-	if (isExcludeMarked) return colors.red;
+	if (isIncludeMarked) return green;
+	if (isExcludeMarked) return red;
 
 	const customBackgroundColor = settingsSync.get("hintBackgroundColor");
 	const customBackgroundOpacity = settingsSync.get("hintBackgroundOpacity");
@@ -46,7 +46,7 @@ export function getHintForegroundColor(
 	const isIncludeMarked = matchesStagedSelector(target, true);
 	const isExcludeMarked = matchesStagedSelector(target, false);
 
-	if (isIncludeMarked || isExcludeMarked) return colors.white;
+	if (isIncludeMarked || isExcludeMarked) return white;
 
 	const customFontColor = settingsSync.get("hintFontColor");
 	const customBackgroundColor = settingsSync.get("hintBackgroundColor");

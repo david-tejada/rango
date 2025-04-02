@@ -1,6 +1,6 @@
 import type Color from "colorjs.io";
 import { settingsSync } from "../../settings/settingsSync";
-import { colors } from "./colors";
+import { black, white } from "./colors";
 
 const normalContrastThreshold = 60;
 const enhancedContrastThreshold = 80;
@@ -109,8 +109,8 @@ function adjustLightnessForTargetContrast(
  * and white.
  */
 function isLight(backgroundColor: Color) {
-	const contrastWithBlack = backgroundColor.contrastAPCA(colors.black);
-	const contrastWithWhite = backgroundColor.contrastAPCA(colors.white);
+	const contrastWithBlack = backgroundColor.contrastAPCA(black);
+	const contrastWithWhite = backgroundColor.contrastAPCA(white);
 
 	return Math.abs(contrastWithBlack) > Math.abs(contrastWithWhite);
 }
