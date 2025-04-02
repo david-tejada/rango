@@ -10,10 +10,12 @@
 	outline: none;
 	border: 1px solid var(--slate-500);
 	text-indent: 0.2em;
+	margin: 1px;
 }
 
 .Select select:focus {
 	border: 2px solid var(--blue-600);
+	margin: 0;
 }
 
 .Select.disabled {
@@ -23,5 +25,6 @@
 @media screen and (forced-colors: active) {
 	.Select select:focus {
 		border-color: ButtonText;
+		margin: 0;
 	}
 }
