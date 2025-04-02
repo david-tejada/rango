@@ -41,11 +41,8 @@ export function NumberInput({
 	};
 
 	let errorMessage = "";
-	let alertVisibility = "Alert.hidden";
 
 	if (!isValid) {
-		alertVisibility = "Alert.visible";
-
 		if (max && min) {
 			errorMessage = `Please enter a value between ${min} and ${max}`;
 		}
