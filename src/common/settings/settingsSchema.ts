@@ -93,7 +93,7 @@ export const settingsSchema = z.object({
 	toastTransition: z
 		.enum(["slide", "flip", "zoom", "bounce"])
 		.default("bounce"),
-	toastDuration: z.number().default(5000),
+	toastDuration: z.number().min(500).default(5000),
 
 	// Other settings
 	urlInTitle: z.boolean().default(true),
