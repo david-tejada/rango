@@ -418,7 +418,7 @@ export function SettingsComponent() {
 								target="_blank"
 								rel="noreferrer"
 							>
-								CSS color string
+								CSS color string (opens in new window)
 							</a>
 							.
 						</p>
@@ -450,7 +450,7 @@ export function SettingsComponent() {
 								target="_blank"
 								rel="noreferrer"
 							>
-								CSS color string
+								CSS color string (opens in new window)
 							</a>
 							.
 						</p>
@@ -560,8 +560,9 @@ export function SettingsComponent() {
 									target="_blank"
 									rel="noreferrer"
 								>
-									OS setting for reduced motion.
-								</a>{" "}
+									OS setting for reduced motion (opens in new window)
+								</a>
+								.{" "}
 							</p>
 						</Radio>
 						<Radio value="smooth">smooth</Radio>
@@ -616,6 +617,7 @@ export function SettingsComponent() {
 				<SettingRow>
 					<NumberInput
 						label="Duration (ms)"
+						min={500}
 						defaultValue={dirtySettings.toastDuration}
 						isValid={settings.isValid(
 							"toastDuration",
