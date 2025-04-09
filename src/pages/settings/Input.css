@@ -12,18 +12,22 @@
 	padding: 0.3em;
 	border: 1px solid var(--slate-500);
 	border-radius: 0.3em;
+	margin: 1px;
 }
 
 .Input input[data-is-valid="false"]:focus {
 	border: 2px solid var(--red-500);
+	margin: 0;
 }
 
 .Input input[data-is-valid="true"]:focus {
 	border: 2px solid var(--green-500);
+	margin: 0;
 }
 
 .Input input:focus {
 	border: 2px solid var(--blue-600);
+	margin: 0;
 }
 
 :not(:focus-within) .show-on-focus {
@@ -37,13 +41,16 @@
 @media screen and (forced-colors: active) {
 	.Input input:focus {
 		border: 2px solid ButtonText;
+		margin: 0;
 	}
 
 	.Input input[data-is-valid="true"]:focus {
 		border: 2px solid ButtonText;
+		margin: 0;
 	}
 
 	.Input input[data-is-valid="false"]:focus {
 		border: 2px dotted ButtonText;
+		margin: 0;
 	}
 }
