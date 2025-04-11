@@ -32,7 +32,9 @@ export function getHintBackgroundColor(
 		return backgroundColor;
 	}
 
-	const backgroundColor = resolveBackgroundColor(referenceElement);
+	const backgroundColor = resolveBackgroundColor(
+		referenceElement.isConnected ? referenceElement : target
+	);
 	backgroundColor.alpha = customBackgroundOpacity;
 
 	return backgroundColor;
@@ -55,7 +57,9 @@ export function getHintForegroundColor(
 		return new Color(customFontColor);
 	}
 
-	const rawColor = getColorFromElement(referenceElement);
+	const rawColor = getColorFromElement(
+		referenceElement.isConnected ? referenceElement : target
+	);
 	const compositedColor = compositeColors([backgroundColor, rawColor]);
 
 	return getAdjustedForegroundColor(compositedColor, backgroundColor);
