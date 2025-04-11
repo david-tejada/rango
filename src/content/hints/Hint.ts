@@ -430,6 +430,10 @@ export class Hint {
 	}
 
 	updateColors() {
+		if (!this.target.isConnected) {
+			return;
+		}
+
 		this.computeColors();
 
 		if (!this.freezeColors) {
