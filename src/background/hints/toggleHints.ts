@@ -2,11 +2,13 @@ import { settings } from "../../common/settings/settings";
 import { type ToggleLevel } from "../../typings/Action";
 import { sendMessageToAllFrames } from "../messaging/sendMessageToAllFrames";
 import { getRequiredCurrentTab } from "../tabs/getCurrentTab";
+import { notifyTogglesStatus } from "../utils/notify";
 
 export async function toggleHintsGlobal() {
 	const hintsToggleGlobal = await settings.get("hintsToggleGlobal");
 	const newStatus = !hintsToggleGlobal;
 	await settings.set("hintsToggleGlobal", newStatus);
+	await notifyTogglesStatus();
 	return newStatus;
 }
 
