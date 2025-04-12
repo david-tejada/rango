@@ -24,7 +24,7 @@
 		Oxygen,
 		Cantarell,
 		sans-serif !important;
-	color: var(--toastify-text-color-light) !important;
+	color: var(--toastify-color-dark) !important;
 }
 
 .Toastify__toast-body h2,
