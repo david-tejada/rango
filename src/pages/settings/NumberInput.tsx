@@ -79,8 +79,14 @@ export function NumberInput({
 						onBlur();
 					}}
 				/>
-				{!isValid && <Alert type="error">{errorMessage}</Alert>}
-				{children}
+				<div>
+					{!isValid && (
+						<Alert type="error" elementId={id}>
+							{errorMessage}
+						</Alert>
+					)}
+					{children}
+				</div>
 			</div>
 		</div>
 	);
