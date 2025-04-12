@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { faBan, faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { isValidRegExp } from "../../common/isValidRegExp";
@@ -14,6 +15,8 @@ export function CustomHintsSetting({
 	value,
 	onChange,
 }: CustomHintsSettingProps) {
+	const addSelectorIncludeButtonRef = useRef<HTMLButtonElement>(null);
+
 	function handleChange(
 		event: React.ChangeEvent<HTMLInputElement>,
 		key: "pattern" | "selector",
@@ -38,6 +41,7 @@ export function CustomHintsSetting({
 	function handleDeletion(index: number) {
 		const filtered = value.filter((_, i) => i !== index);
 		onChange(filtered);
+		addSelectorIncludeButtonRef.current?.focus();
 	}
 
 	return (
@@ -56,10 +60,10 @@ export function CustomHintsSetting({
 						<FontAwesomeIcon
 							icon={faPlus}
 							size="lg"
-							style={{ color: "#22c55e", marginRight: "0.25em" }}
+							style={{ color: "var(--green-500)", marginRight: "0.25em" }}
 						/>
 					) : (
-						<FontAwesomeIcon icon={faBan} style={{ color: "#ef4444" }} />
+						<FontAwesomeIcon icon={faBan} style={{ color: "var(--red-500)" }} />
 					)}
 					<input
 						autoFocus={
@@ -86,17 +90,22 @@ export function CustomHintsSetting({
 					/>
 					<button
 						type="button"
-						aria-label="delete"
+						aria-label={"Delete " + type + " pattern " + pattern}
 						onClick={() => {
 							handleDeletion(index);
 						}}
 					>
-						<FontAwesomeIcon icon={faTrash} style={{ color: "#ef4444" }} />
+						<FontAwesomeIcon
+							icon={faTrash}
+							size="lg"
+							style={{ color: "var(--red-500)" }}
+						/>
 					</button>
 				</div>
 			))}
 			<div className="row">
 				<button
+					ref={addSelectorIncludeButtonRef}
 					className="button-add"
 					type="button"
 					onClick={() => {
@@ -106,7 +115,7 @@ export function CustomHintsSetting({
 					<FontAwesomeIcon
 						icon={faPlus}
 						size="lg"
-						style={{ color: "#22c55e", marginRight: "0.25em" }}
+						style={{ color: "var(--green-500)", marginRight: "0.25em" }}
 					/>
 					Add selector to include
 				</button>
@@ -120,7 +129,7 @@ export function CustomHintsSetting({
 					<FontAwesomeIcon
 						icon={faBan}
 						size="lg"
-						style={{ color: "#ef4444", marginRight: "0.25em" }}
+						style={{ color: "var(--red-500)", marginRight: "0.25em" }}
 					/>
 					Add selector to exclude
 				</button>
