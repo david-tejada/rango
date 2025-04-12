@@ -9,14 +9,15 @@
 	--slate-100: #f1f5f9;
 	--slate-200: #e2e8f0;
 	--slate-300: #cbd5e1;
+	--slate-350: #5b779f;
 	--slate-400: #94a3b8;
 	--slate-500: #64748b;
 	--slate-600: #475569;
 	--slate-700: #334155;
 	--slate-800: #1e293b;
 	--slate-900: #0f172a;
-	--green-500: #22c55e;
-	--red-500: #ef4444;
+	--green-500: #178740;
+	--red-500: #eb1414;
 	--orange-500: #f97316;
 	--orange-600: #ea580c;
 	--orange-700: #c2410c;
@@ -39,7 +40,7 @@ label {
 }
 
 button {
-	font-size: 0.875rem;
+	font-size: 1rem;
 	text-align: center;
 	display: inline-flex;
 	align-items: center;
@@ -52,4 +53,16 @@ code {
 	padding: 0.1em 0.25em;
 	border-radius: 0.1em;
 	color: var(--slate-700);
+}
+
+.sr-only {
+	position: absolute;
+	width: 1px;
+	height: 1px;
+	padding: 0;
+	margin: -1px;
+	overflow: hidden;
+	clip: rect(0, 0, 0, 0);
+	white-space: nowrap;
+	border-width: 0;
 }
