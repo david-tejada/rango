@@ -9,5 +9,5 @@
 
 .ToggleStatus.set ~ .ToggleStatus.set,
 .ToggleStatus.unset {
-	opacity: 0.4;
+	opacity: 0.7;
 }
