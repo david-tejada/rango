@@ -1,6 +1,8 @@
 import Color from "colorjs.io";
 import { debounce } from "lodash";
 import { useCallback, useEffect, useState } from "react";
+import { faExternalLink } from "@fortawesome/free-solid-svg-icons";
+import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { settings } from "../../common/settings/settings";
 import { type Settings } from "../../common/settings/settingsSchema";
 import { Alert } from "./Alert";
@@ -17,6 +19,21 @@ import { Toggle } from "./Toggle";
 let justSaved = false;
 
 const defaultSettings = settings.defaults();
+
+function ExternalLink({
+	href,
+	children,
+}: {
+	readonly href: string;
+	readonly children: React.ReactNode;
+}) {
+	return (
+		<a href={href} target="_blank" rel="noreferrer">
+			{children} <FontAwesomeIcon icon={faExternalLink} aria-hidden="true" />
+			<span className="sr-only">Opens in new tab</span>
+		</a>
+	);
+}
 
 export function SettingsComponent() {
 	const [storedSettings, setStoredSettings] = useState(defaultSettings);
@@ -413,13 +430,9 @@ export function SettingsComponent() {
 					>
 						<p className="small show-on-focus">
 							Use a{" "}
-							<a
-								href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value"
-								target="_blank"
-								rel="noreferrer"
-							>
-								CSS color string (opens in new window)
-							</a>
+							<ExternalLink href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">
+								CSS color string
+							</ExternalLink>
 							.
 						</p>
 					</TextInput>
@@ -445,13 +458,9 @@ export function SettingsComponent() {
 							)}
 						<p className="small show-on-focus">
 							Use a{" "}
-							<a
-								href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value"
-								target="_blank"
-								rel="noreferrer"
-							>
-								CSS color string (opens in new window)
-							</a>
+							<ExternalLink href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">
+								CSS color string
+							</ExternalLink>
 							.
 						</p>
 					</TextInput>
@@ -555,13 +564,9 @@ export function SettingsComponent() {
 							auto
 							<p className="small">
 								Follows the{" "}
-								<a
-									href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion#user_preferences"
-									target="_blank"
-									rel="noreferrer"
-								>
-									OS setting for reduced motion (opens in new window)
-								</a>
+								<ExternalLink href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion#user_preferences">
+									OS setting for reduced motion
+								</ExternalLink>
 								.{" "}
 							</p>
 						</Radio>
