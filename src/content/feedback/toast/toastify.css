@@ -271,12 +271,12 @@
 
 .Toastify__toast-theme--light {
 	background: var(--toastify-color-light);
-	color: var(--toastify-text-color-light);
+	color: var(--toastify-color-dark);
 }
 
 .Toastify__toast-theme--colored.Toastify__toast--default {
 	background: var(--toastify-color-light);
-	color: var(--toastify-text-color-light);
+	color: var(--toastify-color-dark);
 }
 
 .Toastify__toast-theme--colored.Toastify__toast--info {
@@ -346,7 +346,7 @@
 
 .Toastify__close-button--light {
 	color: #000;
-	opacity: 0.3;
+	opacity: 0.6;
 }
 
 .Toastify__close-button > svg {

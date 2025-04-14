@@ -40,6 +40,26 @@ export function NumberInput({
 		onChange(numberValue);
 	};
 
+	let errorMessage = "";
+
+	if (!isValid) {
+		if (max && min) {
+			errorMessage = `Please enter a value between ${min} and ${max}`;
+		}
+
+		if (!max && min) {
+			errorMessage = `Please enter a value greater than or equal to ${min}`;
+		}
+
+		if (max && !min) {
+			errorMessage = `Please enter a value less than or equal to ${max}`;
+		}
+
+		if (!min && !max) {
+			errorMessage = "Please enter a valid number";
+		}
+	}
+
 	return (
 		<div className="Input">
 			<label htmlFor={id}>{label}</label>
@@ -53,17 +73,20 @@ export function NumberInput({
 					min={min}
 					disabled={isDisabled}
 					data-is-valid={isValid}
+					aria-invalid={!isValid}
 					onChange={onChangeHandler}
 					onBlur={() => {
 						onBlur();
 					}}
 				/>
-				{!isValid && (
-					<Alert type="error">
-						Select a value between {min} and {max}
-					</Alert>
-				)}
-				{children}
+				<div>
+					{!isValid && (
+						<Alert type="error" elementId={id}>
+							{errorMessage}
+						</Alert>
+					)}
+					{children}
+				</div>
 			</div>
 		</div>
 	);
