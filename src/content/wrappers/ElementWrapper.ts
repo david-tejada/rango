@@ -454,38 +454,25 @@ export class ElementWrapper {
 			this.flashElement();
 		}
 
-		if (this.element instanceof HTMLAnchorElement) {
-			const closestContentEditable = this.element.closest("[contenteditable]");
-			const isWithinContentEditable =
-				closestContentEditable instanceof HTMLElement &&
-				closestContentEditable.isContentEditable;
-
-			if (
-				(this.element.getAttribute("target") === "_blank" ||
-					isWithinContentEditable) &&
-				this.element.getAttribute("href") &&
-				// Issue #213: Open Discord's internal links in the same tab.
-				!(
-					location.host === "discord.com" &&
-					location.host === new URL(this.element.href).host
-				)
-			) {
-				// In Firefox if we click a link with target="_blank" we get a popup
-				// message saying "Firefox prevented this site from opening a popup". In
-				// order to avoid that we open a new tab with the url of the href of the
-				// link. Sometimes websites use links with target="_blank" but don't
-				// open a new tab. They probably prevent the default behavior with
-				// javascript. For example Slack has this for opening a thread in the
-				// side panel. So here we make sure that there is an href attribute
-				// before we open the link in a new tab.
-				await sendMessage("createTabs", {
-					createPropertiesArray: [this].map((wrapper) => ({
-						url: (wrapper.element as HTMLAnchorElement).href,
-						active: true,
-					})),
-				});
-				return;
-			}
+		if (
+			this.element instanceof HTMLAnchorElement &&
+			shouldOpenInNewTab(this.element)
+		) {
+			// In Firefox if we click a link with target="_blank" we get a popup
+			// message saying "Firefox prevented this site from opening a popup". In
+			// order to avoid that we open a new tab with the url of the href of the
+			// link. Sometimes websites use links with target="_blank" but don't
+			// open a new tab. They probably prevent the default behavior with
+			// javascript. For example Slack has this for opening a thread in the
+			// side panel. So here we make sure that there is an href attribute
+			// before we open the link in a new tab.
+			await sendMessage("createTabs", {
+				createPropertiesArray: [this].map((wrapper) => ({
+					url: (wrapper.element as HTMLAnchorElement).href,
+					active: true,
+				})),
+			});
+			return;
 		}
 
 		// Some pages expect a some hover event prior to the click and if there
@@ -601,4 +588,29 @@ export class ElementWrapper {
 
 		return element;
 	}
+}
+
+function shouldOpenInNewTab(element: HTMLAnchorElement) {
+	const closestContentEditable = element.closest("[contenteditable]");
+	const isWithinContentEditable =
+		closestContentEditable instanceof HTMLElement &&
+		closestContentEditable.isContentEditable;
+
+	const isTargetBlank = element.getAttribute("target") === "_blank";
+
+	// Issue #213: Open Discord's internal links in the same tab.
+	if (
+		location.host === "discord.com" &&
+		location.host === new URL(element.href).host
+	) {
+		return false;
+	}
+
+	// In some places, like GitHub projects, the links with role="button" are
+	// used to open a side panel.
+	if (element.getAttribute("role") === "button") {
+		return false;
+	}
+
+	return isTargetBlank || isWithinContentEditable;
 }
