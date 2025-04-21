@@ -606,8 +606,9 @@ function shouldOpenInNewTab(element: HTMLAnchorElement) {
 		return false;
 	}
 
-	// In GitHub projects the links with href="#" are used to open a side panel.
-	if (element.getAttribute("href") === "#") {
+	// In some places, like GitHub projects, the links with role="button" are
+	// used to open a side panel.
+	if (element.getAttribute("role") === "button") {
 		return false;
 	}
 
