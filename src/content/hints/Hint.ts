@@ -1,7 +1,6 @@
 import type Color from "colorjs.io";
 import { debounce } from "lodash";
 import { setStyleProperties } from "../dom/setStyleProperties";
-import { getFirstTextNodeDescendant } from "../dom/textNode";
 import { isEditable } from "../dom/utils";
 import { settingsSync } from "../settings/settingsSync";
 import { getToggles } from "../settings/toggles";
@@ -12,7 +11,7 @@ import {
 	getWrapperForElement,
 	setHintedWrapper,
 } from "../wrappers/wrappers";
-import { colors } from "./color/colors";
+import { green, red } from "./color/colors";
 import {
 	getHintBackgroundColor,
 	getHintForegroundColor,
@@ -37,8 +36,8 @@ import {
 import { getCustomNudge } from "./positioning/getCustomNudge";
 import { getElementToPositionHint } from "./positioning/getElementToPositionHint";
 
-const colorRedString = colors.red.toString();
-const colorGreenString = colors.green.toString();
+const colorRedString = red.toString();
+const colorGreenString = green.toString();
 
 const hintQueue = new Set<Hint>();
 
@@ -297,10 +296,8 @@ export class Hint {
 	wasReattached: boolean;
 	color!: Color;
 	backgroundColor!: Color;
-	borderColor!: Color;
 	keyEmphasis?: boolean;
 	freezeColors?: boolean;
-	firstTextNodeDescendant?: Text;
 	label?: string;
 
 	constructor(public target: Element) {
@@ -377,8 +374,6 @@ export class Hint {
 		this.toBeReattached = false;
 		this.wasReattached = false;
 
-		this.firstTextNodeDescendant = getFirstTextNodeDescendant(this.target);
-
 		this.applyDefaultStyle();
 	}
 
@@ -414,25 +409,42 @@ export class Hint {
 	}
 
 	computeColors() {
-		this.backgroundColor = getHintBackgroundColor(this.target);
+		this.elementToPositionHint = this.elementToPositionHint?.isConnected
+			? this.elementToPositionHint
+			: getElementToPositionHint(this.target);
+
+		const referenceElement =
+			this.elementToPositionHint instanceof Text
+				? this.elementToPositionHint.parentElement!
+				: this.elementToPositionHint;
+
+		this.backgroundColor = getHintBackgroundColor(
+			this.target,
+			referenceElement
+		);
 		this.color = getHintForegroundColor(
 			this.target,
 			this.backgroundColor,
-			this.firstTextNodeDescendant
+			referenceElement
 		);
-		this.borderColor = this.color.clone();
-		this.borderColor.alpha = this.keyEmphasis ? 0.7 : 0.3;
 	}
 
 	updateColors() {
+		if (!this.target.isConnected) {
+			return;
+		}
+
 		this.computeColors();
 
 		if (!this.freezeColors) {
+			const borderColor = this.color.clone();
+			borderColor.alpha = this.keyEmphasis ? 0.7 : 0.3;
+
 			const hintBorderWidth = settingsSync.get("hintBorderWidth");
 			const borderWidth = this.keyEmphasis
 				? hintBorderWidth + 1
 				: hintBorderWidth;
-			const border = `${borderWidth}px solid ${this.borderColor.toString()}`;
+			const border = `${borderWidth}px solid ${borderColor.toString()}`;
 
 			const isIncludeMarked = matchesStagedSelector(this.target, true);
 			const isExcludeMarked = matchesStagedSelector(this.target, false);
@@ -729,10 +741,13 @@ export class Hint {
 		const hintFontBold = settingsSync.get("hintFontBold");
 		this.computeColors();
 
+		const borderColor = this.color.clone();
+		borderColor.alpha = this.keyEmphasis ? 0.7 : 0.3;
+
 		setStyleProperties(this.inner, {
 			"background-color": this.backgroundColor.toString(),
 			color: this.color.toString(),
-			border: `${hintBorderWidth}px solid ${this.borderColor.toString()}`,
+			border: `${hintBorderWidth}px solid ${borderColor.toString()}`,
 			"font-family": hintFontFamily,
 			"font-size": `${hintFontSize}px`,
 			"font-weight": hintFontBold ? "bold" : "normal",

@@ -1,4 +1,5 @@
 import Color from "colorjs.io";
+import { white } from "./colors";
 
 /**
  * Composites a list of colors with different alphas together.
@@ -9,9 +10,7 @@ import Color from "colorjs.io";
 export function compositeColors(colors: Color[]) {
 	const filtered = colors.filter((color) => color.alpha.valueOf() !== 0);
 
-	if (filtered.length < 2) {
-		return filtered[0] ?? new Color("white");
-	}
+	if (filtered.length < 2) return filtered[0] ?? white;
 
 	// Start with the bottom color
 	let result = filtered[0]!;

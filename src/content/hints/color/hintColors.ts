@@ -1,20 +1,21 @@
 import Color from "colorjs.io";
 import { settingsSync } from "../../settings/settingsSync";
 import { matchesStagedSelector } from "../customHints/customSelectorsStaging";
+import { getCachedStyle } from "../layoutCache";
 import { getAdjustedForegroundColor } from "./adjustColorsForContrast";
-import { colors } from "./colors";
+import { green, red, white } from "./colors";
 import { compositeColors } from "./compositeColors";
 import { resolveBackgroundColor } from "./resolveBackgroundColor";
 
-const normalContrastThreshold = 60;
-const enhancedContrastThreshold = 80;
-
-export function getHintBackgroundColor(target: Element) {
+export function getHintBackgroundColor(
+	target: Element,
+	referenceElement: Element
+) {
 	const isIncludeMarked = matchesStagedSelector(target, true);
 	const isExcludeMarked = matchesStagedSelector(target, false);
 
-	if (isIncludeMarked) return colors.green;
-	if (isExcludeMarked) return colors.red;
+	if (isIncludeMarked) return green;
+	if (isExcludeMarked) return red;
 
 	const customBackgroundColor = settingsSync.get("hintBackgroundColor");
 	const customBackgroundOpacity = settingsSync.get("hintBackgroundOpacity");
@@ -31,7 +32,9 @@ export function getHintBackgroundColor(target: Element) {
 		return backgroundColor;
 	}
 
-	const backgroundColor = resolveBackgroundColor(target);
+	const backgroundColor = resolveBackgroundColor(
+		referenceElement.isConnected ? referenceElement : target
+	);
 	backgroundColor.alpha = customBackgroundOpacity;
 
 	return backgroundColor;
@@ -40,12 +43,12 @@ export function getHintBackgroundColor(target: Element) {
 export function getHintForegroundColor(
 	target: Element,
 	backgroundColor: Color,
-	firstTextNodeDescendant: Text | undefined
+	referenceElement: Element
 ) {
 	const isIncludeMarked = matchesStagedSelector(target, true);
 	const isExcludeMarked = matchesStagedSelector(target, false);
 
-	if (isIncludeMarked || isExcludeMarked) return colors.white;
+	if (isIncludeMarked || isExcludeMarked) return white;
 
 	const customFontColor = settingsSync.get("hintFontColor");
 	const customBackgroundColor = settingsSync.get("hintBackgroundColor");
@@ -54,21 +57,44 @@ export function getHintForegroundColor(
 		return new Color(customFontColor);
 	}
 
-	const elementToGetColorFrom =
-		firstTextNodeDescendant?.parentElement ?? target;
-
-	const rawColor = new Color(getComputedStyle(elementToGetColorFrom).color);
-	if (rawColor.alpha.valueOf() === 0) rawColor.alpha = 1;
-
+	const rawColor = getColorFromElement(
+		referenceElement.isConnected ? referenceElement : target
+	);
 	const compositedColor = compositeColors([backgroundColor, rawColor]);
 
-	const contrastThreshold = settingsSync.get("hintEnhancedContrast")
-		? enhancedContrastThreshold
-		: normalContrastThreshold;
+	return getAdjustedForegroundColor(compositedColor, backgroundColor);
+}
 
-	return getAdjustedForegroundColor(
-		compositedColor,
-		backgroundColor,
-		contrastThreshold
-	);
+function getColorFromElement(element: Element) {
+	if (element instanceof SVGElement) {
+		return getColorFromSvgElement(element);
+	}
+
+	return new Color(getCachedStyle(element).color);
+}
+
+function getColorFromSvgElement(element: SVGElement) {
+	const color = getStrokeOrFillColor(element);
+	if (color) return color;
+
+	const descendantWithStrokeOrFill: SVGElement | null =
+		element.querySelector("[stroke]:not([stroke='none'])") ??
+		element.querySelector("[fill]:not([fill='none'])");
+
+	if (descendantWithStrokeOrFill) {
+		const color = getStrokeOrFillColor(descendantWithStrokeOrFill);
+		if (color) return color;
+	}
+
+	return new Color(getCachedStyle(element).color);
+}
+
+function getStrokeOrFillColor(element: SVGElement) {
+	const stroke = getCachedStyle(element).stroke;
+	if (CSS.supports("color", stroke)) return new Color(stroke);
+
+	const fill = getCachedStyle(element).fill;
+	if (CSS.supports("color", fill)) return new Color(fill);
+
+	return undefined;
 }
