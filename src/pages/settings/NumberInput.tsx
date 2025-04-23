@@ -15,6 +15,7 @@ type InputProps = {
 	readonly max?: number;
 	readonly isDisabled?: boolean;
 	readonly isValid?: boolean;
+	readonly validationMessage?: string;
 	readonly children?: React.ReactNode;
 	onChange(value: number): void;
 	onBlur(): void;
@@ -28,6 +29,7 @@ export function NumberInput({
 	max,
 	isDisabled,
 	isValid,
+	validationMessage,
 	onChange,
 	onBlur,
 	children,
@@ -40,25 +42,10 @@ export function NumberInput({
 		onChange(numberValue);
 	};
 
-	let errorMessage = "";
-
-	if (!isValid) {
-		if (max && min) {
-			errorMessage = `Please enter a value between ${min} and ${max}`;
-		}
-
-		if (!max && min) {
-			errorMessage = `Please enter a value greater than or equal to ${min}`;
-		}
-
-		if (max && !min) {
-			errorMessage = `Please enter a value less than or equal to ${max}`;
-		}
-
-		if (!min && !max) {
-			errorMessage = "Please enter a valid number";
-		}
-	}
+	const errorMessage =
+		validationMessage === "Expected number, received nan"
+			? "This field can't be empty"
+			: validationMessage;
 
 	return (
 		<div className="Input">
@@ -73,20 +60,17 @@ export function NumberInput({
 					min={min}
 					disabled={isDisabled}
 					data-is-valid={isValid}
-					aria-invalid={!isValid}
 					onChange={onChangeHandler}
 					onBlur={() => {
 						onBlur();
 					}}
 				/>
-				<div>
-					{!isValid && (
-						<Alert type="error" elementId={id}>
-							{errorMessage}
-						</Alert>
-					)}
-					{children}
-				</div>
+				{!isValid && (
+					<Alert type="error" elementId={id}>
+						{errorMessage}
+					</Alert>
+				)}
+				{children}
 			</div>
 		</div>
 	);
