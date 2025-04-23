@@ -85,8 +85,16 @@ export function ExcludeKeysSetting({
 						type="button"
 						aria-label={
 							entry[0] === ""
-								? "Delete blank pattern"
-								: "Delete pattern " + entry[0]
+								? "Delete blank pattern on row " +
+									(index + 1) +
+									" of " +
+									value.length
+								: "Delete pattern '" +
+									entry[0] +
+									"' on row " +
+									(index + 1) +
+									" of " +
+									value.length
 						}
 						onClick={() => {
 							handleDeletion(index);
