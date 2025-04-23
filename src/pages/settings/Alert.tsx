@@ -32,9 +32,8 @@ export function Alert({ type, children, elementId }: AlertProps) {
 	return (
 		<div
 			className={`Alert ${type}`}
-			aria-labelledby={`${elementId}`}
-			role="alert"
-			aria-live="polite"
+			aria-labelledby={elementId}
+			role={`${type}` === "info" ? "status" : "alert"}
 		>
 			<FontAwesomeIcon className="icon" icon={faIcon} />
 			<p>{children}</p>
