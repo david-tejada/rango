@@ -13,10 +13,13 @@ type ToggleStatusProps = {
 };
 
 function ToggleStatus({ label, status }: ToggleStatusProps) {
+	const iconType = getIconType(status);
+
 	return (
 		<div className={`ToggleStatus ${status === undefined ? "unset" : "set"}`}>
 			{label}
-			<ToastIcon iconType={getIconType(status)} />
+			<span className="sr-only"> hints are{iconType}.</span>
+			<ToastIcon iconType={iconType} />
 		</div>
 	);
 }
