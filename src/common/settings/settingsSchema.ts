@@ -28,7 +28,10 @@ export const settingsSchema = z.object({
 	hintFontSize: z
 		.number()
 		.default(12)
-		.refine((value) => isWithinRange(value, 1, 72)),
+		.refine((value) => isWithinRange(value, 1, 72), {
+			message: "Choose a font size between 1 and 72. Default value is 12.",
+		}),
+
 	// Deprecated in favour of hintFontBold. 2025-03-27
 	hintWeight: z.enum(["auto", "normal", "bold"]).default("auto"),
 	hintFontBold: z.boolean().default(true),
@@ -36,22 +39,36 @@ export const settingsSchema = z.object({
 	hintBackgroundOpacity: z
 		.number()
 		.default(1)
-		.refine((value) => isWithinRange(value, 0, 1)),
+		.refine(
+			(value) => isWithinRange(value, 0, 1),
+			"Opacity must be between 0 and 1. Default value is 1."
+		),
+
 	hintFontColor: zSafeString.default("").refine(isValidColor),
 	// Deprecated in favour of hintEnhancedContrast. 2025-03-27
 	hintMinimumContrastRatio: z
 		.number()
 		.default(4)
-		.refine((value) => isWithinRange(value, 2.5, 21)),
+		.refine(
+			(value) => isWithinRange(value, 2.5, 21),
+			"Contrast must be between 2.5 and 21. Default value is 4."
+		),
 	hintEnhancedContrast: z.boolean().default(false),
 	hintBorderWidth: z
 		.number()
 		.default(1)
-		.refine((value) => isWithinRange(value, 0, 72)),
+		.refine(
+			(value) => isWithinRange(value, 0, 72),
+			"Border width must be less than 72. Default value is 1."
+		),
+
 	hintBorderRadius: z
 		.number()
 		.default(3)
-		.refine((value) => isWithinRange(value, 0, 72)),
+		.refine(
+			(value) => isWithinRange(value, 0, 72),
+			"Border radius must be less than 72. Default value is 3."
+		),
 
 	// Hint characters
 	includeSingleLetterHints: z.boolean().default(true),
@@ -62,7 +79,10 @@ export const settingsSchema = z.object({
 	viewportMargin: z
 		.number()
 		.default(1000)
-		.refine((value) => isWithinRange(value, 0, 2000)),
+		.refine(
+			(value) => isWithinRange(value, 0, 2000),
+			"Viewport margin must be less than 2000. Default value is 1000."
+		),
 
 	// Scroll
 	scrollBehavior: z.enum(["auto", "smooth", "instant"]).default("auto"),
@@ -93,7 +113,10 @@ export const settingsSchema = z.object({
 	toastTransition: z
 		.enum(["slide", "flip", "zoom", "bounce"])
 		.default("bounce"),
-	toastDuration: z.number().min(500).default(5000),
+	toastDuration: z
+		.number()
+		.min(500, "Duration must be greater than 500. Default value is 5000.")
+		.default(5000),
 
 	// Other settings
 	urlInTitle: z.boolean().default(true),
