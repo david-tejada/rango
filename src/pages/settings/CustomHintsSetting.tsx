@@ -90,7 +90,11 @@ export function CustomHintsSetting({
 					/>
 					<button
 						type="button"
-						aria-label={"Delete " + type + " pattern " + pattern}
+						aria-label={
+							pattern === ""
+								? "Delete blank " + type + " patttern."
+								: "Delete " + type + " pattern " + pattern + "."
+						}
 						onClick={() => {
 							handleDeletion(index);
 						}}
