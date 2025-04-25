@@ -25,11 +25,6 @@ export function TextInput({
 }: InputProps) {
 	const id = useId();
 
-	const errorMessage =
-		validationMessage === "Invalid input"
-			? "Incorrect color string. Use a CSS color string."
-			: validationMessage;
-
 	return (
 		<div className="Input">
 			<label htmlFor={id}>{label}</label>
@@ -50,7 +45,7 @@ export function TextInput({
 				/>
 				{!isValid && !isDisabled && (
 					<Alert type="error" elementId={id}>
-						{errorMessage}
+						{validationMessage}
 					</Alert>
 				)}
 				{children}
