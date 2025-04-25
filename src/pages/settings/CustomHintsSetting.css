@@ -76,6 +76,14 @@
 	border: 2px solid var(--green-500);
 }
 
+.CustomHintsSetting .Alert {
+	margin-bottom: 0.5em;
+	place-self: center center;
+	max-width: 90%;
+	text-wrap: wrap;
+	word-break: break-all;
+}
+
 @media screen and (forced-colors: active) {
 	.Input input:focus {
 		border: 2px solid ButtonText;
