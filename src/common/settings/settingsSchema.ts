@@ -28,14 +28,17 @@ export const settingsSchema = z.object({
 	hintFontSize: z
 		.number()
 		.default(12)
-		.refine((value) => isWithinRange(value, 1, 72), {
-			message: "Choose a font size between 1 and 72. Default value is 12.",
-		}),
+		.refine(
+			(value) => isWithinRange(value, 1, 72),
+			"Choose a font size between 1 and 72. Default value is 12."
+		),
 
 	// Deprecated in favour of hintFontBold. 2025-03-27
 	hintWeight: z.enum(["auto", "normal", "bold"]).default("auto"),
 	hintFontBold: z.boolean().default(true),
-	hintBackgroundColor: zSafeString.default("").refine(isValidColor),
+	hintBackgroundColor: zSafeString
+		.default("")
+		.refine(isValidColor, "Incorrect color string. Use a CSS color string."),
 	hintBackgroundOpacity: z
 		.number()
 		.default(1)
