@@ -3,7 +3,6 @@ import { debounce } from "lodash";
 import { useCallback, useEffect, useState } from "react";
 import { settings } from "../../common/settings/settings";
 import { type Settings } from "../../common/settings/settingsSchema";
-import { Alert } from "./Alert";
 import { CustomHintsSetting } from "./CustomHintsSetting";
 import { ExcludeKeysSetting } from "./ExcludeKeysSetting";
 import { NumberInput } from "./NumberInput";
@@ -495,10 +494,10 @@ export function SettingsComponent() {
 						onBlur={handleBlur}
 					>
 						{!storedSettings.hintBackgroundColor && (
-							<Alert type="warning">
+							<p className="explanation">
 								Background color needs to be set before font/border color can be
 								set.
-							</Alert>
+							</p>
 						)}
 						<p className="small">
 							Use a{" "}
