@@ -4,6 +4,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { isValidRegExp } from "../../common/isValidRegExp";
 import { isValidSelector } from "../../common/isValidSelector";
 import { type CustomSelector } from "../../common/settings/settingsSchema";
+import { Alert } from "./Alert";
 import "./CustomHintsSetting.css";
 
 type CustomHintsSettingProps = {
@@ -74,6 +75,7 @@ export function CustomHintsSetting({
 						aria-label="pattern"
 						value={pattern}
 						data-is-valid={isValidRegExp(pattern)}
+						aria-invalid={!isValidRegExp(pattern)}
 						onChange={(event) => {
 							handleChange(event, "pattern", index);
 						}}
@@ -119,6 +121,23 @@ export function CustomHintsSetting({
 					</button>
 				</div>
 			))}
+
+			{value.map(({ pattern, selector }, index) => (
+				// eslint-disable-next-line react/no-array-index-key
+				<div key={index}>
+					{pattern && !isValidRegExp(pattern) && (
+						<Alert type="error">
+							&quot;{pattern}&quot; is not a valid regular expression.
+						</Alert>
+					)}
+					{selector && !isValidSelector(selector) && (
+						<Alert type="error">
+							&quot;{selector}&quot; is not a valid selector.
+						</Alert>
+					)}
+				</div>
+			))}
+
 			<div className="row">
 				<button
 					ref={addSelectorIncludeButtonRef}
