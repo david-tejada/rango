@@ -56,75 +56,74 @@ export function CustomHintsSetting({
 
 			{value.map(({ type, pattern, selector }, index) => (
 				// eslint-disable-next-line react/no-array-index-key
-				<div key={index} className="row">
-					{type === "include" ? (
-						<FontAwesomeIcon
-							icon={faPlus}
-							size="lg"
-							style={{ color: "var(--green-500)", marginRight: "0.25em" }}
+				<div key={index} className="wrapper">
+					<div className="row">
+						{type === "include" ? (
+							<FontAwesomeIcon
+								icon={faPlus}
+								size="lg"
+								style={{ color: "var(--green-500)", marginRight: "0.25em" }}
+							/>
+						) : (
+							<FontAwesomeIcon
+								icon={faBan}
+								style={{ color: "var(--red-500)" }}
+							/>
+						)}
+						<input
+							autoFocus={
+								index === value.length - 1 && pattern === "" && selector === ""
+							}
+							type="text"
+							name="pattern"
+							aria-label="pattern"
+							value={pattern}
+							data-is-valid={isValidRegExp(pattern)}
+							aria-invalid={!isValidRegExp(pattern)}
+							onChange={(event) => {
+								handleChange(event, "pattern", index);
+							}}
 						/>
-					) : (
-						<FontAwesomeIcon icon={faBan} style={{ color: "var(--red-500)" }} />
-					)}
-					<input
-						autoFocus={
-							index === value.length - 1 && pattern === "" && selector === ""
-						}
-						type="text"
-						name="pattern"
-						aria-label="pattern"
-						value={pattern}
-						data-is-valid={isValidRegExp(pattern)}
-						aria-invalid={!isValidRegExp(pattern)}
-						onChange={(event) => {
-							handleChange(event, "pattern", index);
-						}}
-					/>
-					<input
-						type="text"
-						name="selector"
-						aria-label="selector"
-						value={selector}
-						data-is-valid={selector && isValidSelector(selector)}
-						onChange={(event) => {
-							handleChange(event, "selector", index);
-						}}
-					/>
-					<button
-						type="button"
-						aria-label={
-							pattern === ""
-								? "Delete blank " +
-									type +
-									" patttern on row " +
-									(index + 1) +
-									" of " +
-									value.length
-								: "Delete " +
-									type +
-									" pattern '" +
-									pattern +
-									"' on row " +
-									(index + 1) +
-									" of " +
-									value.length
-						}
-						onClick={() => {
-							handleDeletion(index);
-						}}
-					>
-						<FontAwesomeIcon
-							icon={faTrash}
-							size="lg"
-							style={{ color: "var(--red-500)" }}
+						<input
+							type="text"
+							name="selector"
+							aria-label="selector"
+							value={selector}
+							data-is-valid={selector && isValidSelector(selector)}
+							onChange={(event) => {
+								handleChange(event, "selector", index);
+							}}
 						/>
-					</button>
-				</div>
-			))}
-
-			{value.map(({ pattern, selector }, index) => (
-				// eslint-disable-next-line react/no-array-index-key
-				<div key={index}>
+						<button
+							type="button"
+							aria-label={
+								pattern === ""
+									? "Delete blank " +
+										type +
+										" patttern on row " +
+										(index + 1) +
+										" of " +
+										value.length
+									: "Delete " +
+										type +
+										" pattern '" +
+										pattern +
+										"' on row " +
+										(index + 1) +
+										" of " +
+										value.length
+							}
+							onClick={() => {
+								handleDeletion(index);
+							}}
+						>
+							<FontAwesomeIcon
+								icon={faTrash}
+								size="lg"
+								style={{ color: "var(--red-500)" }}
+							/>
+						</button>
+					</div>
 					{pattern && !isValidRegExp(pattern) && (
 						<Alert type="error">
 							&quot;{pattern}&quot; is not a valid regular expression.
