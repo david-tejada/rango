@@ -42,11 +42,6 @@ export function NumberInput({
 		onChange(numberValue);
 	};
 
-	const errorMessage =
-		validationMessage === "Expected number, received nan"
-			? "This field can't be empty"
-			: validationMessage;
-
 	return (
 		<div className="Input">
 			<label htmlFor={id}>{label}</label>
@@ -67,7 +62,7 @@ export function NumberInput({
 				/>
 				{!isValid && (
 					<Alert type="error" elementId={id}>
-						{errorMessage}
+						{validationMessage}
 					</Alert>
 				)}
 				{children}
