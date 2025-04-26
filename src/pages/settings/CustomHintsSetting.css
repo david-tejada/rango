@@ -34,6 +34,10 @@
 	margin-top: 0.25rem;
 }
 
+.CustomHintsSetting .wrapper > .row {
+	margin-top: 0.25rem;
+}
+
 .CustomHintsSetting p {
 	margin: 0;
 }
