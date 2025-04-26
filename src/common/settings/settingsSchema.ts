@@ -11,6 +11,34 @@ const zCustomSelector = z.object({
 
 export type CustomSelector = z.infer<typeof zCustomSelector>;
 
+const errors = {
+	hintFontSize: {
+		invalidType: "Choose a font size between 1 and 72. Default value is 12.",
+	},
+	hintBackgroundOpacity: {
+		invalidType: "Opacity must be between 0 and 1. Default value is 1.",
+	},
+	hintMinimumContrastRatio: {
+		invalidType: "Contrast must be between 2.5 and 21. Default value is 4.",
+	},
+	hintBorderWidth: {
+		invalidType: "Border width must be between 0 and 72. Default value is 1.",
+	},
+	hintBorderRadius: {
+		invalidType: "Border radius must be between 0 than 72. Default value is 3.",
+	},
+	viewportMargin: {
+		invalidType:
+			"Viewport margin must be between 0 and 2000. Default value is 1000.",
+	},
+	toastDuration: {
+		invalidType: "Duration must be greater than 500. Default value is 5000.",
+	},
+	invalidColorString: {
+		invalidColor: "Incorrect color string. Use a CSS color string.",
+	},
+};
+
 /**
  * Strings used to be serialized so it resulted in a double string like `""`. We
  * need to make sure we don't accept those values.
@@ -26,11 +54,11 @@ export const settingsSchema = z.object({
 		"source-code-pro, Menlo, Monaco, Consolas, 'Courier New', monospace"
 	),
 	hintFontSize: z
-		.number()
+		.number({ message: errors.hintFontSize.invalidType })
 		.default(12)
 		.refine(
 			(value) => isWithinRange(value, 1, 72),
-			"Choose a font size between 1 and 72. Default value is 12."
+			errors.hintFontSize.invalidType
 		),
 
 	// Deprecated in favour of hintFontBold. 2025-03-27
@@ -38,39 +66,41 @@ export const settingsSchema = z.object({
 	hintFontBold: z.boolean().default(true),
 	hintBackgroundColor: zSafeString
 		.default("")
-		.refine(isValidColor, "Incorrect color string. Use a CSS color string."),
+		.refine(isValidColor, errors.invalidColorString.invalidColor),
 	hintBackgroundOpacity: z
-		.number()
+		.number({ message: errors.hintBackgroundOpacity.invalidType })
 		.default(1)
 		.refine(
 			(value) => isWithinRange(value, 0, 1),
-			"Opacity must be between 0 and 1. Default value is 1."
+			errors.hintBackgroundOpacity.invalidType
 		),
 
-	hintFontColor: zSafeString.default("").refine(isValidColor),
+	hintFontColor: zSafeString
+		.default("")
+		.refine(isValidColor, errors.invalidColorString.invalidColor),
 	// Deprecated in favour of hintEnhancedContrast. 2025-03-27
 	hintMinimumContrastRatio: z
-		.number()
+		.number({ message: errors.hintMinimumContrastRatio.invalidType })
 		.default(4)
 		.refine(
 			(value) => isWithinRange(value, 2.5, 21),
-			"Contrast must be between 2.5 and 21. Default value is 4."
+			errors.hintMinimumContrastRatio.invalidType
 		),
 	hintEnhancedContrast: z.boolean().default(false),
 	hintBorderWidth: z
-		.number()
+		.number({ message: errors.hintBorderWidth.invalidType })
 		.default(1)
 		.refine(
 			(value) => isWithinRange(value, 0, 72),
-			"Border width must be less than 72. Default value is 1."
+			errors.hintBorderWidth.invalidType
 		),
 
 	hintBorderRadius: z
-		.number()
+		.number({ message: errors.hintBorderRadius.invalidType })
 		.default(3)
 		.refine(
 			(value) => isWithinRange(value, 0, 72),
-			"Border radius must be less than 72. Default value is 3."
+			errors.hintBorderRadius.invalidType
 		),
 
 	// Hint characters
@@ -80,11 +110,11 @@ export const settingsSchema = z.object({
 
 	// Hintable area
 	viewportMargin: z
-		.number()
+		.number({ message: errors.viewportMargin.invalidType })
 		.default(1000)
 		.refine(
 			(value) => isWithinRange(value, 0, 2000),
-			"Viewport margin must be less than 2000. Default value is 1000."
+			errors.viewportMargin.invalidType
 		),
 
 	// Scroll
@@ -117,8 +147,8 @@ export const settingsSchema = z.object({
 		.enum(["slide", "flip", "zoom", "bounce"])
 		.default("bounce"),
 	toastDuration: z
-		.number()
-		.min(500, "Duration must be greater than 500. Default value is 5000.")
+		.number({ message: errors.toastDuration.invalidType })
+		.min(500, errors.toastDuration.invalidType)
 		.default(5000),
 
 	// Other settings
