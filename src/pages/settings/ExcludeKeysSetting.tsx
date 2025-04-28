@@ -1,6 +1,6 @@
-import { useRef } from "react";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+import { useRef } from "react";
 import "./ExcludeKeysSetting.css";
 
 type ExcludeKeysSettingProps = {
@@ -63,7 +63,6 @@ export function ExcludeKeysSetting({
 				// eslint-disable-next-line react/no-array-index-key
 				<div key={index} className="row">
 					<input
-						autoFocus={index === value.length - 1 && !entry[0] && !entry[1]}
 						type="text"
 						name="pattern"
 						aria-label="pattern"
@@ -73,6 +72,7 @@ export function ExcludeKeysSetting({
 						}}
 					/>
 					<input
+						autoFocus={index === value.length - 1 && !entry[1]}
 						type="text"
 						name="keys"
 						aria-label="keys to exclude"
