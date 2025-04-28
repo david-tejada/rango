@@ -1,5 +1,6 @@
 import type Color from "colorjs.io";
 import { debounce } from "lodash";
+import { isFlippedWithScaleY } from "../dom/isFlippedWithScaleY";
 import { setStyleProperties } from "../dom/setStyleProperties";
 import { isEditable } from "../dom/utils";
 import { settingsSync } from "../settings/settingsSync";
@@ -618,6 +619,17 @@ export class Hint {
 			left: `${x}px`,
 			top: `${y}px`,
 		});
+
+		// Prevent the hint being flipped when the container is flipped with
+		// scaleY(-1).
+		if (
+			this.container instanceof HTMLElement &&
+			isFlippedWithScaleY(this.container)
+		) {
+			setStyleProperties(this.outer, {
+				transform: "scaleY(-1)",
+			});
+		}
 
 		this.positioned = true;
 	}
