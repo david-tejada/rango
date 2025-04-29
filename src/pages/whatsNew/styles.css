@@ -25,6 +25,7 @@ code {
 	border-radius: 4px;
 	background-color: #e2e8f0;
 	padding: 0.2em 0.4em;
+	word-break: break-all;
 }
 
 h1,
@@ -59,7 +60,7 @@ a {
 	width: max-content;
 	background-image: linear-gradient(
 		320deg,
-		hsl(177deg 94% 38%) 0%,
+		#06bcb3 0%,
 		hsl(178deg 83% 40%) 11%,
 		hsl(179deg 76% 42%) 22%,
 		hsl(180deg 69% 43%) 33%,
