@@ -35,3 +35,13 @@
 .Radio .body {
 	margin-left: 0.5rem;
 }
+
+@media screen and (forced-colors: active) {
+	.Radio:has(:checked) {
+		outline: 2px solid ButtonText;
+	}
+
+	.Radio:focus-within {
+		outline: 2px solid SelectedItem;
+	}
+}
