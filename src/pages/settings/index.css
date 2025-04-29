@@ -66,3 +66,9 @@ code {
 	white-space: nowrap;
 	border-width: 0;
 }
+
+@media screen and (forced-colors: active) {
+	code {
+		border: 1px solid ButtonText;
+	}
+}
