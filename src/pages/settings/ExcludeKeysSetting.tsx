@@ -1,6 +1,6 @@
+import { useRef } from "react";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
-import { useRef } from "react";
 import "./ExcludeKeysSetting.css";
 
 type ExcludeKeysSettingProps = {
@@ -46,12 +46,14 @@ export function ExcludeKeysSetting({
 	return (
 		<div className="ExcludeKeysSetting">
 			<p>Exclude keys</p>
+
 			<p className="explanation">
 				Exclude keys for certain patterns. Patterns are regular expression that
 				will be used to match against the URL of the page. You can easily add a
 				pattern for the current URL by right clicking on the extension icon and
 				selecting <code>Add Keys to Exclude</code>
 			</p>
+
 			{value.length > 0 && (
 				<div className="row header">
 					<p>Pattern</p>
@@ -63,6 +65,7 @@ export function ExcludeKeysSetting({
 				// eslint-disable-next-line react/no-array-index-key
 				<div key={index} className="row">
 					<input
+						autoFocus={index === value.length - 1 && !entry[0] && !entry[1]}
 						type="text"
 						name="pattern"
 						aria-label="pattern"
@@ -72,7 +75,6 @@ export function ExcludeKeysSetting({
 						}}
 					/>
 					<input
-						autoFocus={index === value.length - 1 && !entry[1]}
 						type="text"
 						name="keys"
 						aria-label="keys to exclude"
@@ -112,7 +114,6 @@ export function ExcludeKeysSetting({
 				ref={addExcludeKeyButtonRef}
 				className="button-add"
 				type="button"
-				aria-label="Add exclude keys pattern"
 				onClick={() => {
 					handleNewItem();
 				}}
@@ -122,7 +123,7 @@ export function ExcludeKeysSetting({
 					size="lg"
 					style={{ color: "var(--green-500)", marginRight: "0.25em" }}
 				/>
-				Add
+				Add keys to exclude
 			</button>
 		</div>
 	);
