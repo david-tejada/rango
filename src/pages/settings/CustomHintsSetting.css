@@ -82,8 +82,6 @@
 
 .CustomHintsSetting .Alert {
 	margin-bottom: 0.5em;
-	place-self: center center;
-	max-width: 90%;
 	text-wrap: wrap;
 	word-break: break-all;
 }
