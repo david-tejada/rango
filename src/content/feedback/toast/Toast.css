@@ -81,3 +81,13 @@
 	height: 1.2em !important;
 	width: 1.2em !important;
 }
+
+@media screen and (forced-colors: active) {
+	.Toastify__toast {
+		border: 2px solid ButtonText;
+	}
+
+	.Toastify__toast-body footer code {
+		border: 1px solid Buttontext;
+	}
+}
