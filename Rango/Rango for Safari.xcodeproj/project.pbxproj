@@ -7,27 +7,27 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		639497BE2D883028005C10AE /* whatsNew.8590a0cf.js in Resources */ = {isa = PBXBuildFile; fileRef = 639497BD2D883028005C10AE /* whatsNew.8590a0cf.js */; };
-		639497BF2D883028005C10AE /* onboarding.d13c229b.css in Resources */ = {isa = PBXBuildFile; fileRef = 639497B52D883028005C10AE /* onboarding.d13c229b.css */; };
-		639497C02D883028005C10AE /* settings.c59da232.html in Resources */ = {isa = PBXBuildFile; fileRef = 639497B82D883028005C10AE /* settings.c59da232.html */; };
-		639497C12D883028005C10AE /* icon.02ba31d5.svg in Resources */ = {isa = PBXBuildFile; fileRef = 639497AD2D883028005C10AE /* icon.02ba31d5.svg */; };
-		639497C22D883028005C10AE /* icon48.8b87e7bf.png in Resources */ = {isa = PBXBuildFile; fileRef = 639497AF2D883028005C10AE /* icon48.8b87e7bf.png */; };
-		639497C32D883028005C10AE /* background.00fcaf03.js in Resources */ = {isa = PBXBuildFile; fileRef = 639497A92D883028005C10AE /* background.00fcaf03.js */; };
-		639497C42D883028005C10AE /* settings.0ee73341.js in Resources */ = {isa = PBXBuildFile; fileRef = 639497B62D883028005C10AE /* settings.0ee73341.js */; };
-		639497C52D883028005C10AE /* tippy.eca8578e.css in Resources */ = {isa = PBXBuildFile; fileRef = 639497B92D883028005C10AE /* tippy.eca8578e.css */; };
-		639497C62D883028005C10AE /* offscreen.b5d86ea6.js in Resources */ = {isa = PBXBuildFile; fileRef = 639497B22D883028005C10AE /* offscreen.b5d86ea6.js */; };
-		639497C72D883028005C10AE /* whatsNew.0d33d102.css in Resources */ = {isa = PBXBuildFile; fileRef = 639497BA2D883028005C10AE /* whatsNew.0d33d102.css */; };
-		639497C82D883028005C10AE /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 639497B12D883028005C10AE /* manifest.json */; };
-		639497C92D883028005C10AE /* icon-keyboard-clicking48.31bba446.png in Resources */ = {isa = PBXBuildFile; fileRef = 639497AC2D883028005C10AE /* icon-keyboard-clicking48.31bba446.png */; };
-		639497CA2D883028005C10AE /* clipboardWriteInterceptor.53e6838b.js in Resources */ = {isa = PBXBuildFile; fileRef = 639497AA2D883028005C10AE /* clipboardWriteInterceptor.53e6838b.js */; };
-		639497CB2D883028005C10AE /* icon.c07b2847.svg in Resources */ = {isa = PBXBuildFile; fileRef = 639497AE2D883028005C10AE /* icon.c07b2847.svg */; };
-		639497CC2D883028005C10AE /* icon128.81d104e4.png in Resources */ = {isa = PBXBuildFile; fileRef = 639497B02D883028005C10AE /* icon128.81d104e4.png */; };
-		639497CD2D883028005C10AE /* offscreen.cfb49709.html in Resources */ = {isa = PBXBuildFile; fileRef = 639497B32D883028005C10AE /* offscreen.cfb49709.html */; };
-		639497CE2D883028005C10AE /* onboarding.1ded5707.html in Resources */ = {isa = PBXBuildFile; fileRef = 639497B42D883028005C10AE /* onboarding.1ded5707.html */; };
-		639497CF2D883028005C10AE /* whatsNew.25c3d9be.js in Resources */ = {isa = PBXBuildFile; fileRef = 639497BB2D883028005C10AE /* whatsNew.25c3d9be.js */; };
-		639497D02D883028005C10AE /* content.f0253ca6.js in Resources */ = {isa = PBXBuildFile; fileRef = 639497AB2D883028005C10AE /* content.f0253ca6.js */; };
-		639497D12D883028005C10AE /* settings.6acb4bbc.css in Resources */ = {isa = PBXBuildFile; fileRef = 639497B72D883028005C10AE /* settings.6acb4bbc.css */; };
-		639497D22D883028005C10AE /* whatsNew.55bef2a2.html in Resources */ = {isa = PBXBuildFile; fileRef = 639497BC2D883028005C10AE /* whatsNew.55bef2a2.html */; };
+		632915662DC3648200A80D73 /* whatsNew.0d33d102.css in Resources */ = {isa = PBXBuildFile; fileRef = 632915622DC3648200A80D73 /* whatsNew.0d33d102.css */; };
+		632915672DC3648200A80D73 /* settings.c59da232.html in Resources */ = {isa = PBXBuildFile; fileRef = 632915602DC3648200A80D73 /* settings.c59da232.html */; };
+		632915682DC3648200A80D73 /* onboarding.d13c229b.css in Resources */ = {isa = PBXBuildFile; fileRef = 6329155D2DC3648200A80D73 /* onboarding.d13c229b.css */; };
+		632915692DC3648200A80D73 /* whatsNew.55bef2a2.html in Resources */ = {isa = PBXBuildFile; fileRef = 632915642DC3648200A80D73 /* whatsNew.55bef2a2.html */; };
+		6329156A2DC3648200A80D73 /* whatsNew.dd18e522.js in Resources */ = {isa = PBXBuildFile; fileRef = 632915652DC3648200A80D73 /* whatsNew.dd18e522.js */; };
+		6329156B2DC3648200A80D73 /* clipboardWriteInterceptor.53e6838b.js in Resources */ = {isa = PBXBuildFile; fileRef = 632915522DC3648200A80D73 /* clipboardWriteInterceptor.53e6838b.js */; };
+		6329156C2DC3648200A80D73 /* settings.0ee73341.js in Resources */ = {isa = PBXBuildFile; fileRef = 6329155E2DC3648200A80D73 /* settings.0ee73341.js */; };
+		6329156D2DC3648200A80D73 /* whatsNew.25c3d9be.js in Resources */ = {isa = PBXBuildFile; fileRef = 632915632DC3648200A80D73 /* whatsNew.25c3d9be.js */; };
+		6329156E2DC3648200A80D73 /* icon.02ba31d5.svg in Resources */ = {isa = PBXBuildFile; fileRef = 632915552DC3648200A80D73 /* icon.02ba31d5.svg */; };
+		6329156F2DC3648200A80D73 /* icon48.8b87e7bf.png in Resources */ = {isa = PBXBuildFile; fileRef = 632915572DC3648200A80D73 /* icon48.8b87e7bf.png */; };
+		632915702DC3648200A80D73 /* icon128.81d104e4.png in Resources */ = {isa = PBXBuildFile; fileRef = 632915582DC3648200A80D73 /* icon128.81d104e4.png */; };
+		632915712DC3648200A80D73 /* icon-keyboard-clicking48.31bba446.png in Resources */ = {isa = PBXBuildFile; fileRef = 632915542DC3648200A80D73 /* icon-keyboard-clicking48.31bba446.png */; };
+		632915722DC3648200A80D73 /* background.00fcaf03.js in Resources */ = {isa = PBXBuildFile; fileRef = 632915512DC3648200A80D73 /* background.00fcaf03.js */; };
+		632915732DC3648200A80D73 /* onboarding.1ded5707.html in Resources */ = {isa = PBXBuildFile; fileRef = 6329155C2DC3648200A80D73 /* onboarding.1ded5707.html */; };
+		632915742DC3648200A80D73 /* offscreen.b5d86ea6.js in Resources */ = {isa = PBXBuildFile; fileRef = 6329155A2DC3648200A80D73 /* offscreen.b5d86ea6.js */; };
+		632915752DC3648200A80D73 /* offscreen.cfb49709.html in Resources */ = {isa = PBXBuildFile; fileRef = 6329155B2DC3648200A80D73 /* offscreen.cfb49709.html */; };
+		632915762DC3648200A80D73 /* tippy.eca8578e.css in Resources */ = {isa = PBXBuildFile; fileRef = 632915612DC3648200A80D73 /* tippy.eca8578e.css */; };
+		632915772DC3648200A80D73 /* content.f0253ca6.js in Resources */ = {isa = PBXBuildFile; fileRef = 632915532DC3648200A80D73 /* content.f0253ca6.js */; };
+		632915782DC3648200A80D73 /* icon.c07b2847.svg in Resources */ = {isa = PBXBuildFile; fileRef = 632915562DC3648200A80D73 /* icon.c07b2847.svg */; };
+		632915792DC3648200A80D73 /* manifest.json in Resources */ = {isa = PBXBuildFile; fileRef = 632915592DC3648200A80D73 /* manifest.json */; };
+		6329157A2DC3648200A80D73 /* settings.6acb4bbc.css in Resources */ = {isa = PBXBuildFile; fileRef = 6329155F2DC3648200A80D73 /* settings.6acb4bbc.css */; };
 		E17BC8F8285E2315007EB9C6 /* Application.swift in Sources */ = {isa = PBXBuildFile; fileRef = E17BC8F7285E2315007EB9C6 /* Application.swift */; };
 		E1AEB977284D1D7800154974 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = E1AEB976284D1D7800154974 /* AppDelegate.swift */; };
 		E1AEB97A284D1D7800154974 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = E1AEB978284D1D7800154974 /* Main.storyboard */; };
@@ -66,27 +66,27 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
-		639497A92D883028005C10AE /* background.00fcaf03.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = background.00fcaf03.js; path = ../dist/safari/background.00fcaf03.js; sourceTree = SOURCE_ROOT; };
-		639497AA2D883028005C10AE /* clipboardWriteInterceptor.53e6838b.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = clipboardWriteInterceptor.53e6838b.js; path = ../dist/safari/clipboardWriteInterceptor.53e6838b.js; sourceTree = SOURCE_ROOT; };
-		639497AB2D883028005C10AE /* content.f0253ca6.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = content.f0253ca6.js; path = ../dist/safari/content.f0253ca6.js; sourceTree = SOURCE_ROOT; };
-		639497AC2D883028005C10AE /* icon-keyboard-clicking48.31bba446.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-keyboard-clicking48.31bba446.png"; path = "../dist/safari/icon-keyboard-clicking48.31bba446.png"; sourceTree = SOURCE_ROOT; };
-		639497AD2D883028005C10AE /* icon.02ba31d5.svg */ = {isa = PBXFileReference; lastKnownFileType = text; name = icon.02ba31d5.svg; path = ../dist/safari/icon.02ba31d5.svg; sourceTree = SOURCE_ROOT; };
-		639497AE2D883028005C10AE /* icon.c07b2847.svg */ = {isa = PBXFileReference; lastKnownFileType = text; name = icon.c07b2847.svg; path = ../dist/safari/icon.c07b2847.svg; sourceTree = SOURCE_ROOT; };
-		639497AF2D883028005C10AE /* icon48.8b87e7bf.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon48.8b87e7bf.png; path = ../dist/safari/icon48.8b87e7bf.png; sourceTree = SOURCE_ROOT; };
-		639497B02D883028005C10AE /* icon128.81d104e4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon128.81d104e4.png; path = ../dist/safari/icon128.81d104e4.png; sourceTree = SOURCE_ROOT; };
-		639497B12D883028005C10AE /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = manifest.json; path = ../dist/safari/manifest.json; sourceTree = SOURCE_ROOT; };
-		639497B22D883028005C10AE /* offscreen.b5d86ea6.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = offscreen.b5d86ea6.js; path = ../dist/safari/offscreen.b5d86ea6.js; sourceTree = SOURCE_ROOT; };
-		639497B32D883028005C10AE /* offscreen.cfb49709.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = offscreen.cfb49709.html; path = ../dist/safari/offscreen.cfb49709.html; sourceTree = SOURCE_ROOT; };
-		639497B42D883028005C10AE /* onboarding.1ded5707.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = onboarding.1ded5707.html; path = ../dist/safari/onboarding.1ded5707.html; sourceTree = SOURCE_ROOT; };
-		639497B52D883028005C10AE /* onboarding.d13c229b.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = onboarding.d13c229b.css; path = ../dist/safari/onboarding.d13c229b.css; sourceTree = SOURCE_ROOT; };
-		639497B62D883028005C10AE /* settings.0ee73341.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = settings.0ee73341.js; path = ../dist/safari/settings.0ee73341.js; sourceTree = SOURCE_ROOT; };
-		639497B72D883028005C10AE /* settings.6acb4bbc.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = settings.6acb4bbc.css; path = ../dist/safari/settings.6acb4bbc.css; sourceTree = SOURCE_ROOT; };
-		639497B82D883028005C10AE /* settings.c59da232.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = settings.c59da232.html; path = ../dist/safari/settings.c59da232.html; sourceTree = SOURCE_ROOT; };
-		639497B92D883028005C10AE /* tippy.eca8578e.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = tippy.eca8578e.css; path = ../dist/safari/tippy.eca8578e.css; sourceTree = SOURCE_ROOT; };
-		639497BA2D883028005C10AE /* whatsNew.0d33d102.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = whatsNew.0d33d102.css; path = ../dist/safari/whatsNew.0d33d102.css; sourceTree = SOURCE_ROOT; };
-		639497BB2D883028005C10AE /* whatsNew.25c3d9be.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = whatsNew.25c3d9be.js; path = ../dist/safari/whatsNew.25c3d9be.js; sourceTree = SOURCE_ROOT; };
-		639497BC2D883028005C10AE /* whatsNew.55bef2a2.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = whatsNew.55bef2a2.html; path = ../dist/safari/whatsNew.55bef2a2.html; sourceTree = SOURCE_ROOT; };
-		639497BD2D883028005C10AE /* whatsNew.8590a0cf.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = whatsNew.8590a0cf.js; path = ../dist/safari/whatsNew.8590a0cf.js; sourceTree = SOURCE_ROOT; };
+		632915512DC3648200A80D73 /* background.00fcaf03.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = background.00fcaf03.js; path = ../dist/safari/background.00fcaf03.js; sourceTree = SOURCE_ROOT; };
+		632915522DC3648200A80D73 /* clipboardWriteInterceptor.53e6838b.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = clipboardWriteInterceptor.53e6838b.js; path = ../dist/safari/clipboardWriteInterceptor.53e6838b.js; sourceTree = SOURCE_ROOT; };
+		632915532DC3648200A80D73 /* content.f0253ca6.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = content.f0253ca6.js; path = ../dist/safari/content.f0253ca6.js; sourceTree = SOURCE_ROOT; };
+		632915542DC3648200A80D73 /* icon-keyboard-clicking48.31bba446.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = "icon-keyboard-clicking48.31bba446.png"; path = "../dist/safari/icon-keyboard-clicking48.31bba446.png"; sourceTree = SOURCE_ROOT; };
+		632915552DC3648200A80D73 /* icon.02ba31d5.svg */ = {isa = PBXFileReference; lastKnownFileType = text; name = icon.02ba31d5.svg; path = ../dist/safari/icon.02ba31d5.svg; sourceTree = SOURCE_ROOT; };
+		632915562DC3648200A80D73 /* icon.c07b2847.svg */ = {isa = PBXFileReference; lastKnownFileType = text; name = icon.c07b2847.svg; path = ../dist/safari/icon.c07b2847.svg; sourceTree = SOURCE_ROOT; };
+		632915572DC3648200A80D73 /* icon48.8b87e7bf.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon48.8b87e7bf.png; path = ../dist/safari/icon48.8b87e7bf.png; sourceTree = SOURCE_ROOT; };
+		632915582DC3648200A80D73 /* icon128.81d104e4.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; name = icon128.81d104e4.png; path = ../dist/safari/icon128.81d104e4.png; sourceTree = SOURCE_ROOT; };
+		632915592DC3648200A80D73 /* manifest.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; name = manifest.json; path = ../dist/safari/manifest.json; sourceTree = SOURCE_ROOT; };
+		6329155A2DC3648200A80D73 /* offscreen.b5d86ea6.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = offscreen.b5d86ea6.js; path = ../dist/safari/offscreen.b5d86ea6.js; sourceTree = SOURCE_ROOT; };
+		6329155B2DC3648200A80D73 /* offscreen.cfb49709.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = offscreen.cfb49709.html; path = ../dist/safari/offscreen.cfb49709.html; sourceTree = SOURCE_ROOT; };
+		6329155C2DC3648200A80D73 /* onboarding.1ded5707.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = onboarding.1ded5707.html; path = ../dist/safari/onboarding.1ded5707.html; sourceTree = SOURCE_ROOT; };
+		6329155D2DC3648200A80D73 /* onboarding.d13c229b.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = onboarding.d13c229b.css; path = ../dist/safari/onboarding.d13c229b.css; sourceTree = SOURCE_ROOT; };
+		6329155E2DC3648200A80D73 /* settings.0ee73341.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = settings.0ee73341.js; path = ../dist/safari/settings.0ee73341.js; sourceTree = SOURCE_ROOT; };
+		6329155F2DC3648200A80D73 /* settings.6acb4bbc.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = settings.6acb4bbc.css; path = ../dist/safari/settings.6acb4bbc.css; sourceTree = SOURCE_ROOT; };
+		632915602DC3648200A80D73 /* settings.c59da232.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = settings.c59da232.html; path = ../dist/safari/settings.c59da232.html; sourceTree = SOURCE_ROOT; };
+		632915612DC3648200A80D73 /* tippy.eca8578e.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = tippy.eca8578e.css; path = ../dist/safari/tippy.eca8578e.css; sourceTree = SOURCE_ROOT; };
+		632915622DC3648200A80D73 /* whatsNew.0d33d102.css */ = {isa = PBXFileReference; lastKnownFileType = text.css; name = whatsNew.0d33d102.css; path = ../dist/safari/whatsNew.0d33d102.css; sourceTree = SOURCE_ROOT; };
+		632915632DC3648200A80D73 /* whatsNew.25c3d9be.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = whatsNew.25c3d9be.js; path = ../dist/safari/whatsNew.25c3d9be.js; sourceTree = SOURCE_ROOT; };
+		632915642DC3648200A80D73 /* whatsNew.55bef2a2.html */ = {isa = PBXFileReference; lastKnownFileType = text.html; name = whatsNew.55bef2a2.html; path = ../dist/safari/whatsNew.55bef2a2.html; sourceTree = SOURCE_ROOT; };
+		632915652DC3648200A80D73 /* whatsNew.dd18e522.js */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.javascript; name = whatsNew.dd18e522.js; path = ../dist/safari/whatsNew.dd18e522.js; sourceTree = SOURCE_ROOT; };
 		E17BC8F7285E2315007EB9C6 /* Application.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Application.swift; sourceTree = "<group>"; };
 		E18784B1298EEFB50028A679 /* UserSpecific.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = UserSpecific.xcconfig; sourceTree = "<group>"; };
 		E18784B2298EEFB50028A679 /* RangoVersion.xcconfig */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.xcconfig; path = RangoVersion.xcconfig; sourceTree = "<group>"; };
@@ -139,27 +139,27 @@
 		E18A7D4A298ED9B7000801AD /* Resources */ = {
 			isa = PBXGroup;
 			children = (
-				639497A92D883028005C10AE /* background.00fcaf03.js */,
-				639497AA2D883028005C10AE /* clipboardWriteInterceptor.53e6838b.js */,
-				639497AB2D883028005C10AE /* content.f0253ca6.js */,
-				639497AC2D883028005C10AE /* icon-keyboard-clicking48.31bba446.png */,
-				639497AD2D883028005C10AE /* icon.02ba31d5.svg */,
-				639497AE2D883028005C10AE /* icon.c07b2847.svg */,
-				639497AF2D883028005C10AE /* icon48.8b87e7bf.png */,
-				639497B02D883028005C10AE /* icon128.81d104e4.png */,
-				639497B12D883028005C10AE /* manifest.json */,
-				639497B22D883028005C10AE /* offscreen.b5d86ea6.js */,
-				639497B32D883028005C10AE /* offscreen.cfb49709.html */,
-				639497B42D883028005C10AE /* onboarding.1ded5707.html */,
-				639497B52D883028005C10AE /* onboarding.d13c229b.css */,
-				639497B62D883028005C10AE /* settings.0ee73341.js */,
-				639497B72D883028005C10AE /* settings.6acb4bbc.css */,
-				639497B82D883028005C10AE /* settings.c59da232.html */,
-				639497B92D883028005C10AE /* tippy.eca8578e.css */,
-				639497BA2D883028005C10AE /* whatsNew.0d33d102.css */,
-				639497BB2D883028005C10AE /* whatsNew.25c3d9be.js */,
-				639497BC2D883028005C10AE /* whatsNew.55bef2a2.html */,
-				639497BD2D883028005C10AE /* whatsNew.8590a0cf.js */,
+				632915512DC3648200A80D73 /* background.00fcaf03.js */,
+				632915522DC3648200A80D73 /* clipboardWriteInterceptor.53e6838b.js */,
+				632915532DC3648200A80D73 /* content.f0253ca6.js */,
+				632915542DC3648200A80D73 /* icon-keyboard-clicking48.31bba446.png */,
+				632915552DC3648200A80D73 /* icon.02ba31d5.svg */,
+				632915562DC3648200A80D73 /* icon.c07b2847.svg */,
+				632915572DC3648200A80D73 /* icon48.8b87e7bf.png */,
+				632915582DC3648200A80D73 /* icon128.81d104e4.png */,
+				632915592DC3648200A80D73 /* manifest.json */,
+				6329155A2DC3648200A80D73 /* offscreen.b5d86ea6.js */,
+				6329155B2DC3648200A80D73 /* offscreen.cfb49709.html */,
+				6329155C2DC3648200A80D73 /* onboarding.1ded5707.html */,
+				6329155D2DC3648200A80D73 /* onboarding.d13c229b.css */,
+				6329155E2DC3648200A80D73 /* settings.0ee73341.js */,
+				6329155F2DC3648200A80D73 /* settings.6acb4bbc.css */,
+				632915602DC3648200A80D73 /* settings.c59da232.html */,
+				632915612DC3648200A80D73 /* tippy.eca8578e.css */,
+				632915622DC3648200A80D73 /* whatsNew.0d33d102.css */,
+				632915632DC3648200A80D73 /* whatsNew.25c3d9be.js */,
+				632915642DC3648200A80D73 /* whatsNew.55bef2a2.html */,
+				632915652DC3648200A80D73 /* whatsNew.dd18e522.js */,
 			);
 			name = Resources;
 			path = "../../dist-mv2-safari";
@@ -331,27 +331,27 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				639497BE2D883028005C10AE /* whatsNew.8590a0cf.js in Resources */,
-				639497BF2D883028005C10AE /* onboarding.d13c229b.css in Resources */,
-				639497C02D883028005C10AE /* settings.c59da232.html in Resources */,
-				639497C12D883028005C10AE /* icon.02ba31d5.svg in Resources */,
-				639497C22D883028005C10AE /* icon48.8b87e7bf.png in Resources */,
-				639497C32D883028005C10AE /* background.00fcaf03.js in Resources */,
-				639497C42D883028005C10AE /* settings.0ee73341.js in Resources */,
-				639497C52D883028005C10AE /* tippy.eca8578e.css in Resources */,
-				639497C62D883028005C10AE /* offscreen.b5d86ea6.js in Resources */,
-				639497C72D883028005C10AE /* whatsNew.0d33d102.css in Resources */,
-				639497C82D883028005C10AE /* manifest.json in Resources */,
-				639497C92D883028005C10AE /* icon-keyboard-clicking48.31bba446.png in Resources */,
-				639497CA2D883028005C10AE /* clipboardWriteInterceptor.53e6838b.js in Resources */,
-				639497CB2D883028005C10AE /* icon.c07b2847.svg in Resources */,
-				639497CC2D883028005C10AE /* icon128.81d104e4.png in Resources */,
-				639497CD2D883028005C10AE /* offscreen.cfb49709.html in Resources */,
-				639497CE2D883028005C10AE /* onboarding.1ded5707.html in Resources */,
-				639497CF2D883028005C10AE /* whatsNew.25c3d9be.js in Resources */,
-				639497D02D883028005C10AE /* content.f0253ca6.js in Resources */,
-				639497D12D883028005C10AE /* settings.6acb4bbc.css in Resources */,
-				639497D22D883028005C10AE /* whatsNew.55bef2a2.html in Resources */,
+				632915662DC3648200A80D73 /* whatsNew.0d33d102.css in Resources */,
+				632915672DC3648200A80D73 /* settings.c59da232.html in Resources */,
+				632915682DC3648200A80D73 /* onboarding.d13c229b.css in Resources */,
+				632915692DC3648200A80D73 /* whatsNew.55bef2a2.html in Resources */,
+				6329156A2DC3648200A80D73 /* whatsNew.dd18e522.js in Resources */,
+				6329156B2DC3648200A80D73 /* clipboardWriteInterceptor.53e6838b.js in Resources */,
+				6329156C2DC3648200A80D73 /* settings.0ee73341.js in Resources */,
+				6329156D2DC3648200A80D73 /* whatsNew.25c3d9be.js in Resources */,
+				6329156E2DC3648200A80D73 /* icon.02ba31d5.svg in Resources */,
+				6329156F2DC3648200A80D73 /* icon48.8b87e7bf.png in Resources */,
+				632915702DC3648200A80D73 /* icon128.81d104e4.png in Resources */,
+				632915712DC3648200A80D73 /* icon-keyboard-clicking48.31bba446.png in Resources */,
+				632915722DC3648200A80D73 /* background.00fcaf03.js in Resources */,
+				632915732DC3648200A80D73 /* onboarding.1ded5707.html in Resources */,
+				632915742DC3648200A80D73 /* offscreen.b5d86ea6.js in Resources */,
+				632915752DC3648200A80D73 /* offscreen.cfb49709.html in Resources */,
+				632915762DC3648200A80D73 /* tippy.eca8578e.css in Resources */,
+				632915772DC3648200A80D73 /* content.f0253ca6.js in Resources */,
+				632915782DC3648200A80D73 /* icon.c07b2847.svg in Resources */,
+				632915792DC3648200A80D73 /* manifest.json in Resources */,
+				6329157A2DC3648200A80D73 /* settings.6acb4bbc.css in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -532,7 +532,7 @@
 			buildSettings = {
 				CODE_SIGN_ENTITLEMENTS = "macOS (Extension)/Rango.entitlements";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 15;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -563,7 +563,7 @@
 				CODE_SIGN_ENTITLEMENTS = "macOS (Extension)/Rango.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 15;
 				DEAD_CODE_STRIPPING = YES;
 				DEVELOPMENT_TEAM = 2UHNBGS7B8;
 				ENABLE_HARDENED_RUNTIME = YES;
@@ -597,7 +597,7 @@
 				CODE_SIGN_ENTITLEMENTS = "macOS (App)/Rango.entitlements";
 				"CODE_SIGN_IDENTITY[sdk=macosx*]" = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 15;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;
@@ -632,7 +632,7 @@
 				CODE_SIGN_ENTITLEMENTS = "macOS (App)/Rango.entitlements";
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 14;
+				CURRENT_PROJECT_VERSION = 15;
 				DEAD_CODE_STRIPPING = YES;
 				ENABLE_HARDENED_RUNTIME = YES;
 				GENERATE_INFOPLIST_FILE = YES;

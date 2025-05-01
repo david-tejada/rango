@@ -79,6 +79,52 @@
 			</section>
 
 			<section>
+				<h2>Changelog for v0.8.3</h2>
+				<h3>Changed</h3>
+				<ul>
+					<li>
+						Many improvements related to accessibility of settings page and
+						toast notifications. Thanks to
+						<a
+							href="https://github.com/david-tejada/rango/pull/581"
+							target="_blank"
+							>@bacall213</a
+						>.
+					</li>
+					<li>
+						Remove setting "Hint Minimum Contrast Ratio" in favor of "Enhanced
+						Contrast" that provides better contrast while better matching the
+						page colors.
+					</li>
+					<li>
+						Use APCA contrast algorithm for more consistent contrasting of
+						colors.
+					</li>
+					<li>
+						Change setting "Hint Weight" to "Hint Font Bold" and make it enabled
+						by default. Remove the option "auto" that changed the font weight
+						depending on the contrast.
+					</li>
+					<li>Change the default font size to 12px.</li>
+				</ul>
+				<h3>Fixed</h3>
+				<ul>
+					<li>
+						Fix missing hints in some pages that use colors from CSS Color
+						Module Level 4.
+					</li>
+					<li>
+						Fix hints not matching page colors when the page uses colors from
+						CSS Color Module Level 4.
+					</li>
+					<li>
+						Fix flipped hints in some pages that use
+						<code>transform: scaleY(-1)</code> to reverse the order of elements.
+					</li>
+				</ul>
+			</section>
+
+			<section>
 				<h2>Changelog for v0.8.2</h2>
 				<h3>Changed</h3>
 				<ul>
@@ -273,7 +319,10 @@
 		<footer>
 			<p>
 				You can find the changelog for previous releases in the
-				<a href="https://github.com/david-tejada/rango/releases" target="_blank"
+				<a
+					class="squiggle"
+					href="https://github.com/david-tejada/rango/releases"
+					target="_blank"
 					>releases page</a
 				>.
 			</p>

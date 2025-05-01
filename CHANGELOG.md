@@ -2,6 +2,28 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.8.3](https://github.com/david-tejada/rango/releases/tag/v0.8.3) - 2025-05-01
+
+### Changed
+
+- Many improvements related to accessibility of settings page and toast
+  notifications. Thanks to @bacall213.
+- Remove setting "Hint Minimum Contrast Ratio" in favor of "Enhanced Contrast"
+  that provides better contrast while better matching the page colors.
+- Use APCA contrast algorithm for more consistent contrasting of colors.
+- Change setting "Hint Weight" to "Hint Font Bold" and make it enabled by
+  default. Remove the option "auto" that changed the font weight depending on
+  the contrast.
+- Change the default font size to 12px.
+
+### Fixed
+
+- Fix missing hints in some pages that use colors from CSS Color Module Level 4.
+- Fix hints not matching page colors when the page uses colors from CSS Color
+  Module Level 4.
+- Fix flipped hints in some pages that use `transform: scaleY(-1)` to reverse
+  the order of elements.
+
 ## [0.8.2](https://github.com/david-tejada/rango/releases/tag/v0.8.2) - 2025-03-17
 
 ### Changed
