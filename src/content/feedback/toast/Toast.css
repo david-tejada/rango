@@ -24,7 +24,7 @@
 		Oxygen,
 		Cantarell,
 		sans-serif !important;
-	color: var(--toastify-text-color-light) !important;
+	color: var(--toastify-color-dark) !important;
 }
 
 .Toastify__toast-body h2,
@@ -80,4 +80,14 @@
 	align-self: start !important;
 	height: 1.2em !important;
 	width: 1.2em !important;
+}
+
+@media screen and (forced-colors: active) {
+	.Toastify__toast {
+		border: 2px solid ButtonText;
+	}
+
+	.Toastify__toast-body footer code {
+		border: 1px solid Buttontext;
+	}
 }

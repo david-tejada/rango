@@ -26,3 +26,9 @@
 .Alert p {
 	margin: 0;
 }
+
+@media screen and (forced-colors: active) {
+	.Alert {
+		border: 2px solid ButtonText;
+	}
+}

@@ -1,3 +1,4 @@
+import { useRef } from "react";
 import { faPlus, faTrash } from "@fortawesome/free-solid-svg-icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import "./ExcludeKeysSetting.css";
@@ -11,6 +12,8 @@ export function ExcludeKeysSetting({
 	value,
 	onChange,
 }: ExcludeKeysSettingProps) {
+	const addExcludeKeyButtonRef = useRef<HTMLButtonElement>(null);
+
 	function handleChange(
 		event: React.ChangeEvent<HTMLInputElement>,
 		index: number
@@ -37,11 +40,20 @@ export function ExcludeKeysSetting({
 
 	function handleDeletion(index: number) {
 		onChange(value.filter((_, i) => i !== index));
+		addExcludeKeyButtonRef.current?.focus();
 	}
 
 	return (
 		<div className="ExcludeKeysSetting">
 			<p>Exclude keys</p>
+
+			<p className="explanation">
+				Exclude keys for certain patterns. Patterns are regular expression that
+				will be used to match against the URL of the page. You can easily add a
+				pattern for the current URL by right clicking on the extension icon and
+				selecting <code>Add Keys to Exclude</code>
+			</p>
+
 			{value.length > 0 && (
 				<div className="row header">
 					<p>Pattern</p>
@@ -73,16 +85,33 @@ export function ExcludeKeysSetting({
 					/>
 					<button
 						type="button"
-						aria-label="delete"
+						aria-label={
+							entry[0] === ""
+								? "Delete blank pattern on row " +
+									(index + 1) +
+									" of " +
+									value.length
+								: "Delete pattern '" +
+									entry[0] +
+									"' on row " +
+									(index + 1) +
+									" of " +
+									value.length
+						}
 						onClick={() => {
 							handleDeletion(index);
 						}}
 					>
-						<FontAwesomeIcon icon={faTrash} style={{ color: "#ef4444" }} />
+						<FontAwesomeIcon
+							icon={faTrash}
+							size="lg"
+							style={{ color: "var(--red-500)" }}
+						/>
 					</button>
 				</div>
 			))}
 			<button
+				ref={addExcludeKeyButtonRef}
 				className="button-add"
 				type="button"
 				onClick={() => {
@@ -92,17 +121,10 @@ export function ExcludeKeysSetting({
 				<FontAwesomeIcon
 					icon={faPlus}
 					size="lg"
-					style={{ color: "#22c55e", marginRight: "0.25em" }}
+					style={{ color: "var(--green-500)", marginRight: "0.25em" }}
 				/>
-				Add
+				Add keys to exclude
 			</button>
-
-			<p className="explanation">
-				Exclude keys for certain patterns. Patterns are regular expression that
-				will be used to match against the URL of the page. You can easily add a
-				pattern for the current URL by right clicking on the extension icon and
-				selecting <code>Add Keys to Exclude</code>
-			</p>
 		</div>
 	);
 }

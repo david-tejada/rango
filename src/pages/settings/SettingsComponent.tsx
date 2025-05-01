@@ -3,7 +3,6 @@ import { debounce } from "lodash";
 import { useCallback, useEffect, useState } from "react";
 import { settings } from "../../common/settings/settings";
 import { type Settings } from "../../common/settings/settingsSchema";
-import { Alert } from "./Alert";
 import { CustomHintsSetting } from "./CustomHintsSetting";
 import { ExcludeKeysSetting } from "./ExcludeKeysSetting";
 import { NumberInput } from "./NumberInput";
@@ -13,6 +12,7 @@ import { SettingRow } from "./SettingRow";
 import { SettingsGroup } from "./SettingsGroup";
 import { TextInput } from "./TextInput";
 import { Toggle } from "./Toggle";
+import { ExternalLink } from "./ExternalLink";
 
 let justSaved = false;
 
@@ -58,7 +58,7 @@ export function SettingsComponent() {
 			[key]: value,
 		}));
 
-		if (settings.isValid(key, value)) {
+		if (settings.checkValidity(key, value).valid) {
 			setStoredSettings((previousSettings) => ({
 				...previousSettings,
 				[key]: value,
@@ -92,7 +92,7 @@ export function SettingsComponent() {
 							);
 						}}
 					>
-						<p className="explanation">
+						<p className="explanation" id="alwaysComputeHintablesDescription">
 							Always compute what elements should be hinted even if the hints
 							are toggled off. This makes switching hints on quicker.
 						</p>
@@ -249,7 +249,14 @@ export function SettingsComponent() {
 								!dirtySettings.uppercaseTabMarkers
 							);
 						}}
-					/>
+					>
+						{!dirtySettings.includeTabMarkers && (
+							<p className="explanation">
+								This setting is disabled while tab markers in title are
+								disabled.
+							</p>
+						)}
+					</Toggle>
 				</SettingRow>
 			</SettingsGroup>
 
@@ -258,6 +265,18 @@ export function SettingsComponent() {
 					<TextInput
 						label="Hints to exclude"
 						defaultValue={dirtySettings.hintsToExclude}
+						isValid={
+							settings.checkValidity(
+								"hintsToExclude",
+								dirtySettings.hintsToExclude
+							).valid
+						}
+						validationMessage={
+							settings.checkValidity(
+								"hintsToExclude",
+								dirtySettings.hintsToExclude
+							).message
+						}
 						onChange={(value) => {
 							handleChange("hintsToExclude", value);
 						}}
@@ -334,10 +353,18 @@ export function SettingsComponent() {
 						defaultValue={dirtySettings.viewportMargin}
 						min={0}
 						max={2000}
-						isValid={settings.isValid(
-							"viewportMargin",
-							dirtySettings.viewportMargin
-						)}
+						isValid={
+							settings.checkValidity(
+								"viewportMargin",
+								dirtySettings.viewportMargin
+							).valid
+						}
+						validationMessage={
+							settings.checkValidity(
+								"viewportMargin",
+								dirtySettings.viewportMargin
+							).message
+						}
 						onChange={(value) => {
 							handleChange("viewportMargin", value);
 						}}
@@ -354,6 +381,18 @@ export function SettingsComponent() {
 					<TextInput
 						label="Font family"
 						defaultValue={dirtySettings.hintFontFamily}
+						isValid={
+							settings.checkValidity(
+								"hintFontFamily",
+								dirtySettings.hintFontFamily
+							).valid
+						}
+						validationMessage={
+							settings.checkValidity(
+								"hintFontFamily",
+								dirtySettings.hintFontFamily
+							).message
+						}
 						onChange={(value) => {
 							handleChange("hintFontFamily", value);
 						}}
@@ -367,10 +406,14 @@ export function SettingsComponent() {
 						defaultValue={dirtySettings.hintFontSize}
 						min={1}
 						max={72}
-						isValid={settings.isValid(
-							"hintFontSize",
-							dirtySettings.hintFontSize
-						)}
+						isValid={
+							settings.checkValidity("hintFontSize", dirtySettings.hintFontSize)
+								.valid
+						}
+						validationMessage={
+							settings.checkValidity("hintFontSize", dirtySettings.hintFontSize)
+								.message
+						}
 						onChange={(value) => {
 							handleChange("hintFontSize", value);
 						}}
@@ -402,24 +445,28 @@ export function SettingsComponent() {
 					<TextInput
 						label="Background color"
 						defaultValue={dirtySettings.hintBackgroundColor}
-						isValid={settings.isValid(
-							"hintBackgroundColor",
-							dirtySettings.hintBackgroundColor
-						)}
+						isValid={
+							settings.checkValidity(
+								"hintBackgroundColor",
+								dirtySettings.hintBackgroundColor
+							).valid
+						}
+						validationMessage={
+							settings.checkValidity(
+								"hintBackgroundColor",
+								dirtySettings.hintBackgroundColor
+							).message
+						}
 						onChange={(value) => {
 							handleChange("hintBackgroundColor", value);
 						}}
 						onBlur={handleBlur}
 					>
-						<p className="small show-on-focus">
+						<p className="small">
 							Use a{" "}
-							<a
-								href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value"
-								target="_blank"
-								rel="noreferrer"
-							>
+							<ExternalLink href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">
 								CSS color string
-							</a>
+							</ExternalLink>
 							.
 						</p>
 					</TextInput>
@@ -428,30 +475,35 @@ export function SettingsComponent() {
 					<TextInput
 						label="Font/border color"
 						defaultValue={dirtySettings.hintFontColor}
-						isValid={settings.isValid(
-							"hintFontColor",
-							dirtySettings.hintFontColor
-						)}
+						isValid={
+							settings.checkValidity(
+								"hintFontColor",
+								dirtySettings.hintFontColor
+							).valid
+						}
+						validationMessage={
+							settings.checkValidity(
+								"hintFontColor",
+								dirtySettings.hintFontColor
+							).message
+						}
+						isDisabled={!storedSettings.hintBackgroundColor}
 						onChange={(value) => {
 							handleChange("hintFontColor", value);
 						}}
 						onBlur={handleBlur}
 					>
-						{!storedSettings.hintBackgroundColor &&
-							dirtySettings.hintFontColor && (
-								<Alert type="warning">
-									No background color set. This value will be ignored.
-								</Alert>
-							)}
-						<p className="small show-on-focus">
+						{!storedSettings.hintBackgroundColor && (
+							<p className="explanation">
+								Background color needs to be set before font/border color can be
+								set.
+							</p>
+						)}
+						<p className="small">
 							Use a{" "}
-							<a
-								href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value"
-								target="_blank"
-								rel="noreferrer"
-							>
+							<ExternalLink href="https://developer.mozilla.org/en-US/docs/Web/CSS/color_value">
 								CSS color string
-							</a>
+							</ExternalLink>
 							.
 						</p>
 					</TextInput>
@@ -464,10 +516,18 @@ export function SettingsComponent() {
 						min={0}
 						max={1}
 						step={0.05}
-						isValid={settings.isValid(
-							"hintBackgroundOpacity",
-							dirtySettings.hintBackgroundOpacity
-						)}
+						isValid={
+							settings.checkValidity(
+								"hintBackgroundOpacity",
+								dirtySettings.hintBackgroundOpacity
+							).valid
+						}
+						validationMessage={
+							settings.checkValidity(
+								"hintBackgroundOpacity",
+								dirtySettings.hintBackgroundOpacity
+							).message
+						}
 						isDisabled={
 							Boolean(storedSettings.hintBackgroundColor) &&
 							new Color(storedSettings.hintBackgroundColor).alpha.valueOf() !==
@@ -478,7 +538,7 @@ export function SettingsComponent() {
 						}}
 						onBlur={handleBlur}
 					>
-						<p className="small show-on-focus">
+						<p className="small">
 							Choose a value between 0 (fully transparent) and 1 (fully opaque).
 						</p>
 						{storedSettings.hintBackgroundColor &&
@@ -497,10 +557,18 @@ export function SettingsComponent() {
 						defaultValue={dirtySettings.hintBorderWidth}
 						min={0}
 						max={72}
-						isValid={settings.isValid(
-							"hintBorderWidth",
-							dirtySettings.hintBorderWidth
-						)}
+						isValid={
+							settings.checkValidity(
+								"hintBorderWidth",
+								dirtySettings.hintBorderWidth
+							).valid
+						}
+						validationMessage={
+							settings.checkValidity(
+								"hintBorderWidth",
+								dirtySettings.hintBorderWidth
+							).message
+						}
 						onChange={(value) => {
 							handleChange("hintBorderWidth", value);
 						}}
@@ -513,10 +581,18 @@ export function SettingsComponent() {
 						defaultValue={dirtySettings.hintBorderRadius}
 						min={0}
 						max={72}
-						isValid={settings.isValid(
-							"hintBorderRadius",
-							dirtySettings.hintBorderRadius
-						)}
+						isValid={
+							settings.checkValidity(
+								"hintBorderRadius",
+								dirtySettings.hintBorderRadius
+							).valid
+						}
+						validationMessage={
+							settings.checkValidity(
+								"hintBorderRadius",
+								dirtySettings.hintBorderRadius
+							).message
+						}
 						onChange={(value) => {
 							handleChange("hintBorderRadius", value);
 						}}
@@ -555,13 +631,10 @@ export function SettingsComponent() {
 							auto
 							<p className="small">
 								Follows the{" "}
-								<a
-									href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion#user_preferences"
-									target="_blank"
-									rel="noreferrer"
-								>
-									OS setting for reduced motion.
-								</a>{" "}
+								<ExternalLink href="https://developer.mozilla.org/en-US/docs/Web/CSS/@media/prefers-reduced-motion#user_preferences">
+									OS setting for reduced motion
+								</ExternalLink>
+								.{" "}
 							</p>
 						</Radio>
 						<Radio value="smooth">smooth</Radio>
@@ -616,11 +689,20 @@ export function SettingsComponent() {
 				<SettingRow>
 					<NumberInput
 						label="Duration (ms)"
+						min={500}
 						defaultValue={dirtySettings.toastDuration}
-						isValid={settings.isValid(
-							"toastDuration",
-							dirtySettings.toastDuration
-						)}
+						isValid={
+							settings.checkValidity(
+								"toastDuration",
+								dirtySettings.toastDuration
+							).valid
+						}
+						validationMessage={
+							settings.checkValidity(
+								"toastDuration",
+								dirtySettings.toastDuration
+							).message
+						}
 						onChange={(value) => {
 							handleChange("toastDuration", value);
 						}}

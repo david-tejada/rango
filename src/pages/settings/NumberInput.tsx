@@ -15,6 +15,7 @@ type InputProps = {
 	readonly max?: number;
 	readonly isDisabled?: boolean;
 	readonly isValid?: boolean;
+	readonly validationMessage?: string;
 	readonly children?: React.ReactNode;
 	onChange(value: number): void;
 	onBlur(): void;
@@ -28,6 +29,7 @@ export function NumberInput({
 	max,
 	isDisabled,
 	isValid,
+	validationMessage,
 	onChange,
 	onBlur,
 	children,
@@ -59,8 +61,8 @@ export function NumberInput({
 					}}
 				/>
 				{!isValid && (
-					<Alert type="error">
-						Select a value between {min} and {max}
+					<Alert type="error" elementId={id}>
+						{validationMessage}
 					</Alert>
 				)}
 				{children}

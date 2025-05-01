@@ -1,10 +1,13 @@
 import { useId } from "react";
 import "./Input.css";
+import { Alert } from "./Alert";
 
 type InputProps = {
 	readonly label: string;
 	readonly defaultValue: string | number;
 	readonly isValid?: boolean;
+	readonly validationMessage?: string;
+	readonly isDisabled?: boolean;
 	readonly children?: React.ReactNode;
 	onChange(value: string): void;
 	onBlur?(): void;
@@ -13,7 +16,9 @@ type InputProps = {
 export function TextInput({
 	label,
 	defaultValue,
-	isValid: valid,
+	isValid,
+	validationMessage,
+	isDisabled,
 	onChange,
 	onBlur,
 	children,
@@ -28,7 +33,8 @@ export function TextInput({
 					value={defaultValue}
 					id={id}
 					type="text"
-					data-is-valid={valid}
+					data-is-valid={isValid}
+					disabled={isDisabled}
 					onChange={(event) => {
 						onChange(event.target.value);
 					}}
@@ -37,6 +43,11 @@ export function TextInput({
 						if (onBlur) onBlur();
 					}}
 				/>
+				{!isValid && !isDisabled && (
+					<Alert type="error" elementId={id}>
+						{validationMessage}
+					</Alert>
+				)}
 				{children}
 			</div>
 		</div>

@@ -69,8 +69,15 @@ async function withLock<T extends keyof Settings, U>(
 	);
 }
 
-function isValid<T extends keyof Settings>(key: T, value: Settings[T]) {
-	return settingsSchema.shape[key].safeParse(value).success;
+function checkValidity<T extends keyof Settings>(key: T, value: Settings[T]) {
+	const parsed = settingsSchema.shape[key].safeParse(value);
+
+	return {
+		valid: parsed.success,
+		message: parsed.error
+			? parsed.error.issues.map((issue) => issue.message).join(" ")
+			: undefined,
+	};
 }
 
 /**
@@ -213,7 +220,7 @@ export const settings = {
 	set,
 	withLock,
 	remove,
-	isValid,
+	checkValidity,
 	defaults,
 	upgrade,
 	onChange: emitter.on.bind(emitter),

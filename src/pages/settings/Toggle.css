@@ -8,7 +8,7 @@
 }
 
 .Toggle button {
-	--width: 2.5rem;
+	--width: 2.7rem;
 	--height: calc(var(--width) / 2);
 	--border-width: 2px;
 
@@ -16,8 +16,8 @@
 	position: relative;
 	width: var(--width);
 	height: var(--height);
-	background-color: var(--slate-300);
-	color: var(--slate-300);
+	background-color: var(--slate-350);
+	color: var(--slate-350);
 	border: var(--border-width) solid;
 	border-radius: var(--height);
 	transition: all 400ms ease-in-out;
@@ -29,8 +29,8 @@
 }
 
 .Toggle.disabled button[aria-pressed="true"] {
-	background-color: var(--slate-300);
-	color: var(--slate-300);
+	background-color: var(--slate-350);
+	color: var(--slate-350);
 }
 
 .Toggle:focus-within {
@@ -51,7 +51,7 @@
 	display: grid;
 	place-items: center;
 	font-size: 0.75em;
-	color: var(--color-slate-300);
+	color: var(--color-slate-350);
 	width: calc(var(--height) - var(--border-width) * 2);
 	height: calc(var(--height) - var(--border-width) * 2);
 	border-radius: 50%;
@@ -85,7 +85,20 @@
 		background-color: Canvas;
 	}
 
-	.Toggle.disabled button {
+	.Toggle.disabled button,
+	.Toggle.disabled button[aria-pressed="true"] {
 		--border-width: 1px;
+
+		background-color: GrayText;
+	}
+}
+
+@media screen and (prefers-reduced-motion) {
+	.Toggle button {
+		transition: unset;
+	}
+
+	.Toggle button::after {
+		transition: unset;
 	}
 }

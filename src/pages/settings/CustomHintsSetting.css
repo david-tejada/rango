@@ -34,6 +34,10 @@
 	margin-top: 0.25rem;
 }
 
+.CustomHintsSetting .wrapper > .row {
+	margin-top: 0.25rem;
+}
+
 .CustomHintsSetting p {
 	margin: 0;
 }
@@ -74,6 +78,12 @@
 
 .CustomHintsSetting input[data-is-valid="true"]:focus {
 	border: 2px solid var(--green-500);
+}
+
+.CustomHintsSetting .Alert {
+	margin-bottom: 0.5em;
+	text-wrap: wrap;
+	word-break: break-all;
 }
 
 @media screen and (forced-colors: active) {
