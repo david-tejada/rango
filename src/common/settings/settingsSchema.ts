@@ -18,9 +18,6 @@ const errors = {
 	hintBackgroundOpacity: {
 		invalidType: "Opacity must be between 0 and 1. Default value is 1.",
 	},
-	hintMinimumContrastRatio: {
-		invalidType: "Contrast must be between 2.5 and 21. Default value is 4.",
-	},
 	hintBorderWidth: {
 		invalidType: "Border width must be between 0 and 72. Default value is 1.",
 	},
@@ -79,13 +76,7 @@ export const settingsSchema = z.object({
 		.default("")
 		.refine(isValidColor, errors.invalidColorString.invalidColor),
 	// Deprecated in favour of hintEnhancedContrast. 2025-03-27
-	hintMinimumContrastRatio: z
-		.number({ message: errors.hintMinimumContrastRatio.invalidType })
-		.default(4)
-		.refine(
-			(value) => isWithinRange(value, 2.5, 21),
-			errors.hintMinimumContrastRatio.invalidType
-		),
+	hintMinimumContrastRatio: z.number().default(4),
 	hintEnhancedContrast: z.boolean().default(false),
 	hintBorderWidth: z
 		.number({ message: errors.hintBorderWidth.invalidType })
