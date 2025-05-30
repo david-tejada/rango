@@ -390,6 +390,7 @@ export class ElementWrapper {
 		const root =
 			this.userScrollableContainer === document.documentElement ||
 			this.userScrollableContainer === document.body ||
+			this.userScrollableContainer === this.element ||
 			!this.userScrollableContainer
 				? null
 				: this.userScrollableContainer;
