@@ -1,4 +1,4 @@
-import browser from "webextension-polyfill";
+import browser, { type Runtime } from "webextension-polyfill";
 import { getHostPattern } from "../common/getHostPattern";
 import { settings } from "../common/settings/settings";
 import { store } from "../common/storage/store";
@@ -49,8 +49,9 @@ if (process.env["NODE_ENV"] === "test") {
 // =============================================================================
 // MESSAGE HANDLING
 // =============================================================================
-browser.runtime.onMessage.addListener(async (message, sender) =>
-	handleIncomingMessage(message, sender)
+browser.runtime.onMessage.addListener(
+	async (message: unknown, sender: Runtime.MessageSender) =>
+		handleIncomingMessage(message, sender)
 );
 
 // =============================================================================
