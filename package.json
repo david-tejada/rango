@@ -12,7 +12,6 @@
 		"watch:safari": "rimraf dist/safari && cross-env BROWSER=safari npm run _watch",
 		"_package": "web-ext build --source-dir=dist/$BROWSER --artifacts-dir=web-ext-artifacts/$BROWSER",
 		"package:firefox": "cross-env BROWSER=firefox npm run _package",
-		"package:safari": "cross-env BROWSER=safari npm run _package",
 		"package:chrome": "cross-env BROWSER=chrome npm run _package",
 		"package": "run-p package:*",
 		"start:firefox": "web-ext run --source-dir dist/firefox",
