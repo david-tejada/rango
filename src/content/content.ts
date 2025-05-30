@@ -4,7 +4,7 @@ import { handleIncomingMessage } from "./messaging/messageHandler";
 import { addMessageListeners } from "./messaging/messageListeners";
 import { initContentScript } from "./setup/initContentScript";
 
-browser.runtime.onMessage.addListener(async (message) => {
+browser.runtime.onMessage.addListener(async (message: unknown) => {
 	return handleIncomingMessage(message);
 });
 
