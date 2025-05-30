@@ -2,6 +2,13 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.8.4](https://github.com/david-tejada/rango/releases/tag/v0.8.4) - 2025-05-30
+
+### Fixed
+
+- Fix tooltip styles affecting appearance of pages that use tippy.js
+- Fix no hints shown for hintable with `positioned: fixed`
+
 ## [0.8.3](https://github.com/david-tejada/rango/releases/tag/v0.8.3) - 2025-05-01
 
 ### Changed
