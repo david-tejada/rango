@@ -82,7 +82,7 @@ async function readClipboardManifestV3(): Promise<string | undefined> {
 async function writeClipboardSafari(text: string) {
 	await browser.runtime.sendNativeMessage("", {
 		request: "setClipboardText",
-		textForClipboard: text
+		textForClipboard: text,
 	});
 }
 
