@@ -80,17 +80,10 @@ async function readClipboardManifestV3(): Promise<string | undefined> {
 }
 
 async function writeClipboardSafari(text: string) {
-	const copyPasteArea =
-		document.querySelector("#copy-paste-area") ??
-		document.createElement("textarea");
-	copyPasteArea.id = "copy-paste-area";
-	document.body.append(copyPasteArea);
-	if (copyPasteArea instanceof HTMLTextAreaElement) {
-		copyPasteArea.value = text;
-		copyPasteArea.select();
-		document.execCommand("copy");
-		copyPasteArea.value = "";
-	}
+	await browser.runtime.sendNativeMessage("", {
+		request: "setClipboardText",
+		textForClipboard: text,
+	});
 }
 
 async function writeClipboardManifestV3(text: string) {
