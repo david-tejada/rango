@@ -62,7 +62,7 @@
 		"@types/color": "^4.0.0",
 		"@types/combinations": "^1.0.0",
 		"@types/intersect": "^1.0.0",
-		"@types/jest": "^29.4.0",
+		"@types/jest": "^30.0.0",
 		"@types/jest-environment-puppeteer": "^5.0.3",
 		"@types/lodash": "^4.14.195",
 		"@types/react-dom": "^19.0.0",
