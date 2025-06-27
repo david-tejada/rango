@@ -1,6 +1,6 @@
 {
 	"name": "Rango",
-	"version": "0.8.4",
+	"version": "0.8.5",
 	"description": "Extension that allows you to interact with webpages using only your keyboard or your voice and talon",
 	"homepage_url": "https://github.com/david-tejada/rango",
 	"manifest_version": 2,

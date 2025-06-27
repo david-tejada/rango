@@ -2,6 +2,12 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.8.5](https://github.com/david-tejada/rango/releases/tag/v0.8.5) - 2025-06-27
+
+### Changed
+
+- Copy text to pasteboard in Safari app extension to improve reliability.
+
 ## [0.8.4](https://github.com/david-tejada/rango/releases/tag/v0.8.4) - 2025-05-30
 
 ### Fixed
