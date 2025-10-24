@@ -1,6 +1,3 @@
-import * as toastCSS from "bundle-text:./toast/Toast.css";
-import * as toastifyCSS from "bundle-text:./toast/toastify.css";
-import * as toastTogglesCSS from "bundle-text:./toast/ToastTogglesMessage.css";
 import { createRoot, type Root } from "react-dom/client";
 import { toast } from "react-toastify";
 import {
@@ -11,8 +8,11 @@ import { createElement } from "../dom/utils";
 import { settingsSync } from "../settings/settingsSync";
 import { isCurrentTab, isMainFrame } from "../setup/contentScriptContext";
 import { Toast } from "./toast/Toast";
+import toastCSS from "./toast/toastCss";
 import { ToastIcon } from "./toast/ToastIcon";
+import toastifyCSS from "./toast/toastifyCss";
 import { ToastMessage } from "./toast/ToastMessage";
+import toastTogglesCSS from "./toast/toastTogglesCss";
 import { TogglesStatusMessage } from "./toast/ToastTogglesMessage";
 
 /**

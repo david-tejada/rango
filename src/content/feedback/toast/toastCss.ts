@@ -1,4 +1,10 @@
-/* stylelint-disable selector-class-pattern */
+// Ideally this would be a css file that I then import as text from other file.
+// The way to do that in Parcel is to use `bundle-text`
+// (https://parceljs.org/features/bundle-inlining/). The problem is that if I
+// use that some unexisting assets are included in "web_accessible_resources"
+// in the manifest, which I then have to manually delete (issue #519).
+
+const css = `
 :host {
 	font-size: 16px;
 }
@@ -90,4 +96,6 @@
 	.Toastify__toast-body footer code {
 		border: 1px solid Buttontext;
 	}
-}
+}`;
+
+export default css;
