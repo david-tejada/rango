@@ -60,12 +60,16 @@ export type ActionMap = {
 	muteNextTabWithSound: void;
 	muteTab: { target: Target<TabMarkerMark> };
 	openPageInNewTab: { url: string };
+	pinCurrentTab: void;
+	pinTab: { target: Target<TabMarkerMark> };
 	refreshTabMarkers: void;
 	toggleTabMarkers: void;
 	unmuteAllMutedTabs: void;
 	unmuteCurrentTab: void;
 	unmuteNextMutedTab: void;
 	unmuteTab: { target: Target<TabMarkerMark> };
+	unpinCurrentTab: void;
+	unpinTab: { target: Target<TabMarkerMark> };
 
 	// Keyboard Clicking
 	toggleKeyboardClicking: void;

@@ -35,6 +35,7 @@ import {
 	unmuteAllMutedTabs,
 	unmuteNextMutedTab,
 } from "../tabs/muteTabs";
+import { pinTab } from "../tabs/pinTabs";
 import { refreshTabMarkers } from "../tabs/tabMarkers";
 import { assertReferenceInCurrentTab } from "../target/references";
 import { getTabIdsFromTarget } from "../target/tabMarkers";
@@ -252,6 +253,22 @@ export function addCommandListeners() {
 	});
 	onCommand("toggleTabMarkers", async () => {
 		await toggleTabMarkers();
+	});
+
+	onCommand("pinCurrentTab", async () => {
+		await pinTab();
+	});
+
+	onCommand("unpinCurrentTab", async () => {
+		await pinTab(undefined, false);
+	});
+
+	onCommand("pinTab", async ({ target }) => {
+		await pinTab(target);
+	});
+
+	onCommand("unpinTab", async ({ target }) => {
+		await pinTab(target, false);
 	});
 
 	// ===========================================================================
