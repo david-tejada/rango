@@ -6,6 +6,24 @@
 // doesn't matter. I am going to leave this code as it is to avoid breaking the
 // extension for older versions of Safari.
 
+// Synchronizing labels is necessary in order to match the labels in use when
+// navigating in history. Since the content script is restored from memory there
+// is a mismatch between the label stack in the background (brand new) and the
+// actual labels in use in the content script. We send a message to the
+// appropriate frame which in turns sends a message to the background script
+// with the labels it has in use in order for this to synchronize the labels in
+// the stack.
+//
+// We do it when either onDOMContentLoaded or onCompleted are triggered.
+// Whichever comes first. This is because when navigating in history not all
+// browsers trigger all the web navigation events. Chrome sometimes triggers
+// both but other times only onCompleted, Firefox only triggers onCompleted and
+// Safari sometimes triggers both but sometimes only onDOMContentLoaded. The
+// important thing is that at least one of those is always triggered and that
+// when navigating in history both seemed to be triggered at approximately the
+// same time so I don't think we need to worry that when onDOMContentLoaded is
+// triggered the content script might not be ready.
+
 import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
 import { sendMessage } from "../../messaging/sendMessage";
@@ -13,6 +31,13 @@ import { UnreachableContentScriptError } from "../../messaging/UnreachableConten
 import { getRequiredCurrentTabId } from "../../tabs/getCurrentTab";
 import { getAllFrames } from "../../utils/getAllFrames";
 import { initStack } from "./labelStack";
+
+type TabId = number;
+type FrameId = number;
+type SyncKey = `${TabId}-${FrameId}`;
+
+const pendingLabelsSync = new Set<SyncKey>();
+const tabMutexes = new Map<TabId, Mutex>();
 
 async function preloadTabOnCompletedHandler() {
 	await preloadTabCompleted();
@@ -27,27 +52,17 @@ async function preloadTabOnCompletedHandler() {
  * events so that we can initialize label stacks when necessary.
  */
 export function addWebNavigationListeners() {
-	const mutexes = new Map<number, Mutex>();
-
-	function getMutex(tabId: number) {
-		let mutex = mutexes.get(tabId);
-		if (!mutex) {
-			mutex = new Mutex();
-			mutexes.set(tabId, mutex);
-		}
-
-		return mutex;
-	}
-
 	browser.webNavigation.onCommitted.addListener(
 		async ({ tabId, frameId, url }) => {
+			pendingLabelsSync.add(`${tabId}-${frameId}`);
+
 			// Frame 0 comes before any of the subframes.
 			if (frameId !== 0) return;
 
 			// We need to use a mutex here because even if onCommitted always comes
 			// before onCompleted it is not guaranteed that it will finish before
 			// onCompleted is called.
-			await getMutex(tabId).runExclusive(async () => {
+			await getTabMutex(tabId).runExclusive(async () => {
 				// We could simply check if the tabId is 0 since I don't think Firefox or
 				// Chrome use that id, but I think this is safer.
 				const isPreloadTab = !(await browser.tabs.get(tabId));
@@ -74,23 +89,49 @@ export function addWebNavigationListeners() {
 		}
 	);
 
-	browser.webNavigation.onCompleted.addListener(async ({ tabId, frameId }) => {
-		await getMutex(tabId).runExclusive(async () => {
-			const isPreloadTab = !(await browser.tabs.get(tabId));
-			if (isPreloadTab) return;
+	browser.webNavigation.onDOMContentLoaded.addListener(
+		async ({ tabId, frameId }) => {
+			await synchronizeLabels(tabId, frameId);
+		}
+	);
 
-			try {
-				await sendMessage("synchronizeLabels", undefined, { tabId, frameId });
-			} catch (error: unknown) {
-				// At this point the content script might not have yet loaded. This is ok
-				// and expected. This command is only used for synchronizing labels when
-				// navigating back and forward in history and the content script being
-				// restored.
-				if (!(error instanceof UnreachableContentScriptError)) {
-					throw error;
-				}
+	browser.webNavigation.onCompleted.addListener(async ({ tabId, frameId }) => {
+		await synchronizeLabels(tabId, frameId);
+	});
+}
+
+function getTabMutex(tabId: number) {
+	let mutex = tabMutexes.get(tabId);
+	if (!mutex) {
+		mutex = new Mutex();
+		tabMutexes.set(tabId, mutex);
+	}
+
+	return mutex;
+}
+
+async function synchronizeLabels(tabId: number, frameId: number) {
+	const syncKey: SyncKey = `${tabId}-${frameId}`;
+	const isPendingSync = pendingLabelsSync.has(syncKey);
+	if (!isPendingSync) return;
+
+	pendingLabelsSync.delete(syncKey);
+
+	await getTabMutex(tabId).runExclusive(async () => {
+		const isPreloadTab = !(await browser.tabs.get(tabId));
+		if (isPreloadTab) return;
+
+		try {
+			await sendMessage("synchronizeLabels", undefined, { tabId, frameId });
+		} catch (error: unknown) {
+			// At this point the content script might not have yet loaded. This is ok
+			// and expected. This command is only used for synchronizing labels when
+			// navigating back and forward in history and the content script being
+			// restored.
+			if (!(error instanceof UnreachableContentScriptError)) {
+				throw error;
 			}
-		});
+		}
 	});
 }
 
