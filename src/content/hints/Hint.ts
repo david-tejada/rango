@@ -352,6 +352,7 @@ export class Hint {
 			"overflow-wrap": "normal",
 			"letter-spacing": "normal",
 			"text-indent": "0",
+			"font-variant": "initial",
 		});
 
 		this.outer.append(this.inner);
