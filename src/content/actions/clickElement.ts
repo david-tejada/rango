@@ -214,7 +214,7 @@ async function injectClipboardWriteInterceptor() {
 
 		document.head.append(script);
 
-		await new Promise<void>((resolve) => {
+		await new Promise<void>((resolve, reject) => {
 			window.addEventListener("message", (event) => {
 				if (event.origin !== globalThis.location.origin) return;
 
@@ -227,6 +227,18 @@ async function injectClipboardWriteInterceptor() {
 				{ type: "RANGO_CHECK_INTERCEPTOR_LOADED" },
 				globalThis.location.origin
 			);
+
+			// In my tests this promise takes around 1ms to 6ms to resolve when the
+			// interceptor loads. I set the timeout at 50ms here to be safe. The delay
+			// won't be noticeable and in the vast majority of cases the interceptor
+			// will be able to load.
+			setTimeout(() => {
+				reject(
+					new Error(
+						"Clipboard write interceptor not loaded. Clipboard write interception disabled"
+					)
+				);
+			}, 50);
 		});
 	} catch (error: unknown) {
 		console.error(error);
