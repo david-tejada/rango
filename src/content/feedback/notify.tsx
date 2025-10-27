@@ -49,17 +49,16 @@ export const notify = createNotifier(
 );
 
 let toastRoot: Root | undefined;
+let shadowRoot: ShadowRoot | undefined;
 
 function renderToast() {
-	let shadowHost = document.querySelector("#rango-toast");
-
-	if (shadowHost && toastRoot) {
+	if (shadowRoot && toastRoot) {
 		return;
 	}
 
-	if (!shadowHost) {
-		shadowHost = createElement("div", { id: "rango-toast" });
-		const shadowRoot = shadowHost.attachShadow({ mode: "open" });
+	if (!shadowRoot) {
+		const shadowHost = createElement("div", { id: "rango-toast" });
+		shadowRoot = shadowHost.attachShadow({ mode: "closed" });
 
 		shadowRoot.append(
 			createElement("style", {
@@ -79,7 +78,6 @@ function renderToast() {
 		document.body.append(shadowHost);
 	}
 
-	const shadowRoot = shadowHost.shadowRoot;
 	if (shadowRoot) {
 		toastRoot = createRoot(shadowRoot);
 		toastRoot.render(<Toast />);

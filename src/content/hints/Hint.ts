@@ -311,7 +311,12 @@ export class Hint {
 		});
 
 		shadowHostMutationObserver.observe(this.shadowHost, { attributes: true });
-		const shadow = this.shadowHost.attachShadow({ mode: "open" });
+
+		// We need to keep the shadow DOM open when testing as some tests rely on
+		// it. In production we keep it closed to avoid the possibility of the
+		// shadowRoot being accessed by the page and causing issues (#679).
+		const mode = process.env["NODE_ENV"] === "production" ? "closed" : "open";
+		const shadow = this.shadowHost.attachShadow({ mode });
 
 		// Don't display the hints when printing.
 		const style = document.createElement("style");
