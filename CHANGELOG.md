@@ -2,6 +2,22 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.8.6](https://github.com/david-tejada/rango/releases/tag/v0.8.6) - 2025-10-28
+
+### Added
+
+- Add ability to export, import and reset settings.
+- Add commands for pinning and unpinning tabs.
+
+### Fixed
+
+- Use closed shadow DOM for hints and toast messages to prevent external
+  manipulation.
+- Fix hints commands not working in Safari after going back or forward in
+  history.
+- Fix inability to click on some elements when the clipboard interceptor fails
+  to load.
+
 ## [0.8.5](https://github.com/david-tejada/rango/releases/tag/v0.8.5) - 2025-06-27
 
 ### Changed
