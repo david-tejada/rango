@@ -1,0 +1,77 @@
+.ImportSettingsDialog {
+	position: fixed;
+	inset: 0;
+	background-color: rgb(0 0 0 / 50%);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+}
+
+.ImportSettingsDialog .content {
+	background-color: white;
+	padding: 20px;
+	border-radius: 8px;
+	max-width: 600px;
+	width: 90%;
+	max-height: 90vh;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.ImportSettingsDialog h3 {
+	margin-top: 0;
+	margin-bottom: 16px;
+}
+
+.ImportSettingsDialog p {
+	margin-bottom: 16px;
+	color: #666;
+}
+
+.ImportSettingsDialog textarea {
+	width: 100%;
+	flex: 1;
+	min-height: 50vh;
+	font-family: monospace;
+	font-size: 12px;
+	padding: 8px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	resize: vertical;
+	overflow: auto;
+	field-sizing: content;
+}
+
+.ImportSettingsDialog .buttons {
+	display: flex;
+	gap: 10px;
+	margin-top: 16px;
+	justify-content: flex-end;
+	flex-shrink: 0;
+}
+
+.ImportSettingsDialog .buttons button.import {
+	background-color: #007acc;
+	color: white;
+}
+
+.ImportSettingsDialog .buttons button.import:disabled {
+	background-color: #a0c4e8;
+	cursor: not-allowed;
+}
+
+.ImportSettingsDialog .cancel {
+	background-color: #6c757d;
+}
+
+.ImportSettingsDialog .error-message {
+	color: #eb1414;
+	background-color: #fef2f2;
+	border: 1px solid #fecaca;
+	border-radius: 4px;
+	padding: 8px 12px;
+	margin-top: 8px;
+	font-size: 14px;
+}

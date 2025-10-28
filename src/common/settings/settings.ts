@@ -145,6 +145,15 @@ async function resetSettingToDefault<T extends keyof Settings>(
 	return settingsSchema.shape[key].parse(undefined) as Settings[T];
 }
 
+async function resetAll() {
+	const defaultSettings = defaults();
+	await Promise.all(
+		Object.keys(defaultSettings).map(async (key) => {
+			await resetSettingToDefault(key as keyof Settings);
+		})
+	);
+}
+
 /**
  * Parses a legacy setting value. Returns `undefined` if the parsing fails.
  */
@@ -223,6 +232,7 @@ export const settings = {
 	checkValidity,
 	defaults,
 	upgrade,
+	resetAll,
 	onChange: emitter.on.bind(emitter),
 	onAnyChange: emitter.onAny.bind(emitter),
 };

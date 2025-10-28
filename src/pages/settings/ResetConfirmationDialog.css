@@ -1,0 +1,46 @@
+.ResetConfirmationDialog {
+	position: fixed;
+	inset: 0;
+	background-color: rgb(0 0 0 / 50%);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+}
+
+.ResetConfirmationDialog .content {
+	background-color: white;
+	padding: 20px;
+	border-radius: 8px;
+	max-width: 400px;
+	width: 90%;
+}
+
+.ResetConfirmationDialog h3 {
+	margin-top: 0;
+	margin-bottom: 16px;
+}
+
+.ResetConfirmationDialog p {
+	margin-bottom: 20px;
+	color: #666;
+}
+
+.ResetConfirmationDialog .buttons {
+	display: flex;
+	gap: 10px;
+	justify-content: flex-end;
+}
+
+.ResetConfirmationDialog .buttons button.confirm {
+	background-color: #dc3545;
+	color: white;
+}
+
+.ResetConfirmationDialog .buttons button.confirm:hover {
+	background-color: #c82333;
+}
+
+.ResetConfirmationDialog .cancel {
+	background-color: #6c757d;
+}
