@@ -490,6 +490,13 @@ You can also focus tabs by searching their title or URL.
 - <kbd>mute all</kbd>: Mutes all tabs with sound.
 - <kbd>unmute all</kbd>: Unmutes all muted tabs.
 
+### Pin/Unpin Tabs
+
+- <kbd>pin tab this</kbd>: Pins the current tab.
+- <kbd>unpin tab this</kbd>: Unpins the current tab.
+- <kbd>pin tab &lt;tab_target&gt;</kbd>: Pins the targeted tab or tabs.
+- <kbd>unpin tab &lt;tab_target&gt;</kbd>: Unpins the targeted tab or tabs.
+
 ## Opening Rango Related Pages
 
 - The command <kbd>rango open {page}</kbd> opens a Rango related page in a new
@@ -706,6 +713,14 @@ There are several settings you can adjust to change the appearance of the hints
 and the overall behavior of the extension. To open the settings page you just
 need to use the command <kbd>rango settings</kbd>. You can also open them by
 right clicking the extension icon and clicking the menu item `Settings`.
+
+### Export, Import and Reset Settings
+
+At the bottom of the settings page there are buttons to export, import and reset
+the settings to the default values. If you want to bring your current settings
+to another browser all you have to do is to click the "Export Settings" button,
+copy the content to the clipboard and paste it in the dialog that appears after
+clicking the "Import Settings" button in the other browser.
 
 ### Modify Hints Size
 
