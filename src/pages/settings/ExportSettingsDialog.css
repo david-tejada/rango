@@ -1,0 +1,63 @@
+.ExportSettingsDialog {
+	position: fixed;
+	inset: 0;
+	background-color: rgb(0 0 0 / 50%);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	z-index: 1000;
+}
+
+.ExportSettingsDialog .content {
+	background-color: white;
+	padding: 20px;
+	border-radius: 8px;
+	max-width: 600px;
+	width: 90%;
+	max-height: 90vh;
+	overflow: hidden;
+	display: flex;
+	flex-direction: column;
+}
+
+.ExportSettingsDialog h3 {
+	margin-top: 0;
+	margin-bottom: 16px;
+}
+
+.ExportSettingsDialog textarea {
+	width: 100%;
+	flex: 1;
+	min-height: 50vh;
+	font-family: monospace;
+	font-size: 12px;
+	padding: 8px;
+	border: 1px solid #ccc;
+	border-radius: 4px;
+	resize: vertical;
+	overflow: auto;
+	field-sizing: content;
+}
+
+.ExportSettingsDialog .buttons {
+	display: flex;
+	gap: 10px;
+	margin-top: 16px;
+	justify-content: flex-end;
+	flex-shrink: 0;
+}
+
+.ExportSettingsDialog .buttons button.copy {
+	background-color: #007acc;
+	color: white;
+	min-width: 150px;
+}
+
+.ExportSettingsDialog .buttons button.copy.copied {
+	background-color: #28a745;
+	color: white;
+}
+
+.ExportSettingsDialog .close {
+	background-color: #6c757d;
+}

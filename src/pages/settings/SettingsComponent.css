@@ -1,0 +1,29 @@
+.Settings .buttons {
+	display: flex;
+	gap: 10px;
+	margin-top: 20px;
+}
+
+.Settings .buttons button {
+	padding: 0.3em 1em;
+	border: 1px solid var(--slate-500);
+	border-radius: 0.3em;
+	outline: none;
+	background-color: white;
+}
+
+.Settings button:focus {
+	border: 2px solid var(--blue-600);
+	margin: -1px;
+}
+
+.Settings .buttons .reset {
+	background-color: #dc3545;
+	border-color: #dc3545;
+	color: white;
+}
+
+.Settings .buttons .reset:focus {
+	border: 2px solid var(--blue-600);
+	margin: -1px;
+}

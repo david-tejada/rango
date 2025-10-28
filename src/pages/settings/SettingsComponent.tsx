@@ -5,14 +5,18 @@ import { settings } from "../../common/settings/settings";
 import { type Settings } from "../../common/settings/settingsSchema";
 import { CustomHintsSetting } from "./CustomHintsSetting";
 import { ExcludeKeysSetting } from "./ExcludeKeysSetting";
+import { ExportSettingsDialog } from "./ExportSettingsDialog";
+import { ExternalLink } from "./ExternalLink";
+import { ImportSettingsDialog } from "./ImportSettingsDialog";
 import { NumberInput } from "./NumberInput";
 import { Radio, RadioGroup } from "./RadioGroup";
+import { ResetConfirmationDialog } from "./ResetConfirmationDialog";
 import { Option, Select } from "./Select";
 import { SettingRow } from "./SettingRow";
+import "./SettingsComponent.css";
 import { SettingsGroup } from "./SettingsGroup";
 import { TextInput } from "./TextInput";
 import { Toggle } from "./Toggle";
-import { ExternalLink } from "./ExternalLink";
 
 let justSaved = false;
 
@@ -22,6 +26,9 @@ export function SettingsComponent() {
 	const [storedSettings, setStoredSettings] = useState(defaultSettings);
 	const [dirtySettings, setDirtySettings] = useState(defaultSettings);
 	const [loading, setLoading] = useState(true);
+	const [showExportDialog, setShowExportDialog] = useState(false);
+	const [showImportDialog, setShowImportDialog] = useState(false);
+	const [showResetDialog, setShowResetDialog] = useState(false);
 
 	const debounceUpdateSettings = useCallback(() => {
 		const update = debounce(() => {
@@ -727,6 +734,62 @@ export function SettingsComponent() {
 					</RadioGroup>
 				</SettingRow>
 			</SettingsGroup>
+
+			<SettingsGroup label="Settings Management">
+				<SettingRow>
+					<div className="buttons">
+						<button
+							type="button"
+							className="export"
+							onClick={() => {
+								setShowExportDialog(true);
+							}}
+						>
+							Export Settings
+						</button>
+						<button
+							type="button"
+							className="import"
+							onClick={() => {
+								setShowImportDialog(true);
+							}}
+						>
+							Import Settings
+						</button>
+						<button
+							type="button"
+							className="reset"
+							onClick={() => {
+								setShowResetDialog(true);
+							}}
+						>
+							Reset to Default
+						</button>
+					</div>
+				</SettingRow>
+			</SettingsGroup>
+
+			<ExportSettingsDialog
+				isOpen={showExportDialog}
+				settings={storedSettings}
+				onClose={() => {
+					setShowExportDialog(false);
+				}}
+			/>
+
+			<ImportSettingsDialog
+				isOpen={showImportDialog}
+				onClose={() => {
+					setShowImportDialog(false);
+				}}
+			/>
+
+			<ResetConfirmationDialog
+				isOpen={showResetDialog}
+				onClose={() => {
+					setShowResetDialog(false);
+				}}
+			/>
 		</div>
 	);
 }
