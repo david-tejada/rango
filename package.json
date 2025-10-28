@@ -68,7 +68,7 @@
 		"@types/react-dom": "^19.0.0",
 		"@types/webextension-polyfill": "^0.12.1",
 		"cross-env": "^7.0.3",
-		"eslint-config-xo-react": "^0.27.0",
+		"eslint-config-xo-react": "^0.29.0",
 		"eslint-plugin-react": "^7.36.1",
 		"eslint-plugin-react-hooks": "^5.0.0",
 		"jest": "^30.0.0",
