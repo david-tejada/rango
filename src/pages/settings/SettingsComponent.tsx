@@ -265,6 +265,31 @@ export function SettingsComponent() {
 						)}
 					</Toggle>
 				</SettingRow>
+
+				<SettingRow>
+					<Toggle
+						label="Use compact tab marker delimiter"
+						isPressed={dirtySettings.useCompactTabMarkerDelimiter}
+						isDisabled={!dirtySettings.includeTabMarkers}
+						onClick={() => {
+							handleChange(
+								"useCompactTabMarkerDelimiter",
+								!dirtySettings.useCompactTabMarkerDelimiter
+							);
+						}}
+					>
+						{dirtySettings.includeTabMarkers ? (
+							<p className="explanation">
+								Use &quot;|&quot; instead of &quot; | &quot; as the delimiter.
+							</p>
+						) : (
+							<p className="explanation">
+								This setting is disabled while tab markers in title are
+								disabled.
+							</p>
+						)}
+					</Toggle>
+				</SettingRow>
 			</SettingsGroup>
 
 			<SettingsGroup label="Hints appearance">

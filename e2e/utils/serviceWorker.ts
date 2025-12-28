@@ -39,3 +39,13 @@ export async function runTestRequest(request: string) {
 		dispatchEvent(new CustomEvent("handle-test-request"));
 	}, request);
 }
+
+export async function setSetting<T>(key: string, value: T) {
+	const worker = await getServiceWorker();
+	await worker.evaluate(
+		async ({ key, value }) => {
+			await chrome.storage.sync.set({ [key]: value });
+		},
+		{ key, value }
+	);
+}

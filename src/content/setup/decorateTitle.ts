@@ -76,9 +76,8 @@ async function removeDecorations(title: string) {
 		title = title.slice(0, -possibleSuffix.length);
 	}
 
-	// If document.title is empty, the space after the "|" might have been removed
-	// when removing the suffix. That's why it's optional.
-	return title.replace(/^[a-z]{1,2} \| ?/i, "");
+	// Remove tab marker prefix (matches both "A|" and "A | " formats)
+	return title.replace(/^[a-z]{1,2} ?\| ?/i, "");
 }
 
 async function getTitlePrefix() {
@@ -91,7 +90,10 @@ async function getTitlePrefix() {
 		? tabMarker.toUpperCase()
 		: tabMarker;
 
-	return `${marker} | `;
+	const delimiter = settingsSync.get("useCompactTabMarkerDelimiter")
+		? "|"
+		: " | ";
+	return `${marker}${delimiter}`;
 }
 
 function getTitleSuffix() {
@@ -136,6 +138,7 @@ settingsSync.onChange(
 		"includeTabMarkers",
 		"uppercaseTabMarkers",
 		"hideTabMarkersWithGlobalHintsOff",
+		"useCompactTabMarkerDelimiter",
 	],
 	updateTitleDecorations
 );
