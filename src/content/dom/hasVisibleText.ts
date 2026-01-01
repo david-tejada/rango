@@ -3,6 +3,8 @@
  * Used to determine if elements should be hinted based on their text content.
  */
 
+import { getCachedStyle } from "../hints/layoutCache";
+
 /**
  * CSS selector for detecting icons, images, and visual-only elements.
  * Used both for direct element detection and for filtering out icon text content.
@@ -27,11 +29,16 @@ function isIconOrImage(element: Element): boolean {
 }
 
 /**
- * Checks if an element is hidden via CSS (display: none or visibility: hidden).
+ * Checks if an element is hidden via CSS.
+ * Uses getCachedStyle to prevent layout thrashing.
  */
 function isElementHidden(element: Element): boolean {
-	const style = getComputedStyle(element);
-	return style.display === "none" || style.visibility === "hidden";
+	const style = getCachedStyle(element);
+	return (
+		style.display === "none" ||
+		style.visibility === "hidden" ||
+		style.opacity === "0"
+	);
 }
 
 /**
@@ -42,58 +49,48 @@ function isElementHidden(element: Element): boolean {
 function getTextExcludingIconDescendants(element: Element): string {
 	const texts: string[] = [];
 
-	function collectVisibleText(node: Node) {
-		if (node.nodeType === Node.TEXT_NODE) {
-			texts.push(node.textContent ?? "");
-			return;
-		}
+	const walker = document.createTreeWalker(element, NodeFilter.SHOW_ALL, {
+		acceptNode(node: Node) {
+			if (node.nodeType === Node.ELEMENT_NODE) {
+				const el = node as Element;
+				// FILTER_REJECT skips the element and all its descendants
+				if (el.matches(iconAndVisualElementsSelector) || isElementHidden(el)) {
+					return NodeFilter.FILTER_REJECT;
+				}
 
-		if (node.nodeType === Node.ELEMENT_NODE) {
-			const el = node as Element;
-
-			// Skip icon elements
-			if (el.matches(iconAndVisualElementsSelector)) {
-				return;
+				// FILTER_SKIP continues into children without accepting this node
+				return NodeFilter.FILTER_SKIP;
 			}
 
-			// Skip hidden elements
-			if (isElementHidden(el)) {
-				return;
+			if (node.nodeType === Node.TEXT_NODE) {
+				return NodeFilter.FILTER_ACCEPT;
 			}
 
-			// Recurse into children
-			for (const child of node.childNodes) {
-				collectVisibleText(child);
-			}
-		}
-	}
+			return NodeFilter.FILTER_SKIP;
+		},
+	});
 
-	// Iterate through children to collect visible text, skipping hidden descendants
-	for (const child of element.childNodes) {
-		collectVisibleText(child);
+	let current = walker.nextNode();
+	while (current) {
+		texts.push(current.textContent ?? "");
+		current = walker.nextNode();
 	}
 
 	return texts.join("").trim();
 }
 
 /**
- * Gets the text content from associated labels for form controls.
- * This helper function extracts label text that can be used for voice targeting.
+ * Gets the text content from associated labels for labelable elements.
  */
 function getAssociatedLabelText(element: Element): string | undefined {
-	if (!element.matches("input, select, textarea")) return undefined;
+	if ("labels" in element) {
+		const labels = element.labels as NodeListOf<HTMLLabelElement> | null;
+		if (labels && labels.length > 0) {
+			return labels[0]!.textContent?.trim();
+		}
+	}
 
-	// Check for associated label element
-	const id = element.getAttribute("id");
-	const associatedLabel = id
-		? document.querySelector(`label[for="${id}"]`)
-		: null;
-	const wrappingLabel = element.closest("label");
-
-	// Return the first available label text
-	return (
-		associatedLabel?.textContent?.trim() ?? wrappingLabel?.textContent?.trim()
-	);
+	return undefined;
 }
 
 /**
