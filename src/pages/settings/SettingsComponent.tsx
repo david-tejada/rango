@@ -107,6 +107,25 @@ export function SettingsComponent() {
 				</SettingRow>
 				<SettingRow>
 					<Toggle
+						label="Only hint elements without visible text"
+						isPressed={dirtySettings.onlyHintElementsWithoutText}
+						onClick={() => {
+							handleChange(
+								"onlyHintElementsWithoutText",
+								!dirtySettings.onlyHintElementsWithoutText
+							);
+						}}
+					>
+						<p className="explanation">
+							Only show hints for elements that don&apos;t have visible text
+							labels, such as icons, images, and unlabeled controls. Elements
+							with clear text like &quot;Submit&quot; buttons or
+							&quot;Home&quot; links will not be hinted.
+						</p>
+					</Toggle>
+				</SettingRow>
+				<SettingRow>
+					<Toggle
 						label="Show What's New page after updating"
 						isPressed={dirtySettings.showWhatsNewPageOnUpdate}
 						onClick={() => {

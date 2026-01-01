@@ -121,6 +121,9 @@ export const settingsSchema = z.object({
 	// Always compute hintables
 	alwaysComputeHintables: z.boolean().default(false),
 
+	// Text-aware hinting
+	onlyHintElementsWithoutText: z.boolean().default(false),
+
 	// Notifications
 	enableNotifications: z.boolean().default(true),
 	notifyWhenTogglingHints: z.boolean().default(false),
