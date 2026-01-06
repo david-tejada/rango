@@ -49,26 +49,29 @@ function isElementHidden(element: Element): boolean {
 function getTextExcludingIconDescendants(element: Element): string {
 	const texts: string[] = [];
 
-	const walker = document.createTreeWalker(element, NodeFilter.SHOW_ALL, {
-		acceptNode(node: Node) {
-			if (node.nodeType === Node.ELEMENT_NODE) {
-				const el = node as Element;
-				// FILTER_REJECT skips the element and all its descendants
-				if (el.matches(iconAndVisualElementsSelector) || isElementHidden(el)) {
+	const walker = document.createTreeWalker(
+		element,
+		NodeFilter.SHOW_ELEMENT | NodeFilter.SHOW_TEXT, // eslint-disable-line no-bitwise
+		{
+			acceptNode(node) {
+				if (node instanceof Text) {
+					return NodeFilter.FILTER_ACCEPT;
+				}
+
+				// At this point node is guaranteed to be an Element given our whatToShow
+				if (
+					node instanceof Element &&
+					(node.matches(iconAndVisualElementsSelector) || isElementHidden(node))
+				) {
+					// FILTER_REJECT skips the element and all its descendants
 					return NodeFilter.FILTER_REJECT;
 				}
 
 				// FILTER_SKIP continues into children without accepting this node
 				return NodeFilter.FILTER_SKIP;
-			}
-
-			if (node.nodeType === Node.TEXT_NODE) {
-				return NodeFilter.FILTER_ACCEPT;
-			}
-
-			return NodeFilter.FILTER_SKIP;
-		},
-	});
+			},
+		}
+	);
 
 	let current = walker.nextNode();
 	while (current) {
@@ -85,8 +88,8 @@ function getTextExcludingIconDescendants(element: Element): string {
 function getAssociatedLabelText(element: Element): string | undefined {
 	if ("labels" in element) {
 		const labels = element.labels as NodeListOf<HTMLLabelElement> | null;
-		if (labels && labels.length > 0) {
-			return labels[0]!.textContent?.trim();
+		if (labels?.[0]) {
+			return labels[0].textContent?.trim();
 		}
 	}
 
@@ -102,11 +105,13 @@ function hasActualVisibleText(element: Element): boolean {
 	// Get visible text from element - for inputs, check value/placeholder
 	let elementText: string | undefined;
 
-	if (element.matches("input, textarea")) {
-		const inputElement = element as HTMLInputElement | HTMLTextAreaElement;
+	if (
+		element instanceof HTMLInputElement ||
+		element instanceof HTMLTextAreaElement
+	) {
 		// For input elements, check value first, then placeholder, then text content
-		const value = inputElement.value?.trim();
-		const placeholder = inputElement.placeholder?.trim();
+		const value = element.value?.trim();
+		const placeholder = element.placeholder?.trim();
 		const textContent = getTextExcludingIconDescendants(element);
 
 		elementText =
@@ -115,10 +120,9 @@ function hasActualVisibleText(element: Element): boolean {
 				: placeholder && placeholder.length > 0
 					? placeholder
 					: textContent;
-	} else if (element.matches("select")) {
+	} else if (element instanceof HTMLSelectElement) {
 		// For select elements, check if there are meaningful options
-		const selectElement = element as HTMLSelectElement;
-		const options = Array.from(selectElement.options);
+		const options = Array.from(element.options);
 		const meaningfulOptions = options.filter((option) => {
 			const text = option.textContent?.trim();
 			if (!text) return false;
