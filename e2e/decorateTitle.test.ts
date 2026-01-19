@@ -1,3 +1,4 @@
+import { setSetting } from "./utils/serviceWorker";
 import { sleep } from "./utils/testHelpers";
 
 // There is another tab open before the current one that also gets a marker.
@@ -6,6 +7,11 @@ const tabMarker = "B";
 
 beforeAll(async () => {
 	await page.goto("http://localhost:8080/basic.html");
+});
+
+afterAll(async () => {
+	// Reset setting to default
+	await setSetting("useCompactTabMarkerDelimiter", false);
 });
 
 test("The URL and the tab marker are attached to the title", async () => {
@@ -46,5 +52,17 @@ test("If the hash changes the URL in the title is updated", async () => {
 
 	expect(title).toBe(
 		`${tabMarker} | Document - http://localhost:8080/new.html#first`
+	);
+});
+
+test("Compact delimiter removes spaces around the | separator", async () => {
+	await setSetting("useCompactTabMarkerDelimiter", true);
+	await page.goto("http://localhost:8080/basic.html");
+	await sleep(500);
+
+	const title = await page.title();
+
+	expect(title).toBe(
+		`${tabMarker}|Document - http://localhost:8080/basic.html`
 	);
 });

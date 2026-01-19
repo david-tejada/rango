@@ -147,6 +147,7 @@ export const settingsSchema = z.object({
 	includeTabMarkers: z.boolean().default(true),
 	hideTabMarkersWithGlobalHintsOff: z.boolean().default(false),
 	uppercaseTabMarkers: z.boolean().default(true),
+	useCompactTabMarkerDelimiter: z.boolean().default(false),
 	keyboardClicking: z.boolean().default(false),
 	keysToExclude: z
 		.array(z.tuple([z.string(), z.string()]))
