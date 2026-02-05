@@ -1,14 +1,15 @@
-import { getBoundingClientRect } from "../hints/layoutCache";
+import { getBoundingClientRect, getCachedStyle } from "../hints/layoutCache";
 
 export function isVisible(element: Element): boolean {
-	const { visibility, opacity } = getComputedStyle(element);
+	const { visibility, opacity } = getCachedStyle(element);
 	const { width, height } = getBoundingClientRect(element);
 
 	if (visibility === "hidden" || width < 5 || height < 5 || opacity === "0") {
 		// This handles custom checkboxes or radio buttons where the input element
-		// is hidden and replaced with an stylized sibling.
+		// is hidden and replaced with a stylized sibling.
 		if (
-			element.matches("input:is([type='checkbox'], [type='radio'])") &&
+			element instanceof HTMLInputElement &&
+			(element.type === "checkbox" || element.type === "radio") &&
 			element.parentElement &&
 			isVisible(element.parentElement)
 		) {
@@ -29,7 +30,7 @@ export function isVisible(element: Element): boolean {
 	let counter = 0;
 
 	while (current && counter < 4) {
-		const { opacity } = getComputedStyle(current);
+		const { opacity } = getCachedStyle(current);
 		if (opacity === "0") {
 			return false;
 		}

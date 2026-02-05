@@ -9,6 +9,10 @@ import {
 	matchesExtraSelector,
 	matchesHintableSelector,
 } from "../hints/selectors";
+import { settingsSync } from "../settings/settingsSync";
+import { refresh } from "../wrappers/refresh";
+import { onDocumentVisible } from "./whenVisible";
+import { hasVisibleText } from "./hasVisibleText";
 import { isVisible } from "./isVisible";
 
 /**
@@ -100,8 +104,24 @@ export function isHintable(target: Element): boolean {
 
 	if (matchesCustomExclude(target) && !getShowExcludedToggle()) return false;
 
-	return (
-		(matchesHintableSelector(target) && !isRedundant(target)) ||
-		matchesStagedSelector(target, true)
-	);
+	// Staged selectors override base hintability logic
+	if (matchesStagedSelector(target, true)) return true;
+
+	// Apply text-aware filtering only to base hintability logic
+	const isDefaultHintable =
+		matchesHintableSelector(target) && !isRedundant(target);
+
+	if (isDefaultHintable && settingsSync.get("onlyHintElementsWithoutText")) {
+		return !hasVisibleText(target);
+	}
+
+	return isDefaultHintable;
 }
+
+async function handleTextHintingChange() {
+	await refresh({ isHintable: true });
+}
+
+settingsSync.onChange("onlyHintElementsWithoutText", async () => {
+	onDocumentVisible(handleTextHintingChange);
+});
