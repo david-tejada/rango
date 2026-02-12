@@ -87,7 +87,7 @@
 		"ts-unused-exports": "^11.0.0",
 		"typescript": "^5.6.2",
 		"web-ext": "^8.3.0",
-		"xo": "^0.60.0"
+		"xo": "^1.0.0"
 	},
 	"overrides": {
 		"serve-handler": {
