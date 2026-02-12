@@ -194,10 +194,11 @@ const containerMutationObserver = new MutationObserver((entries) => {
 	for (const entry of entries) {
 		for (const node of entry.removedNodes) {
 			if (node instanceof HTMLDivElement && node.className === "rango-hint") {
-				const inner = node.shadowRoot?.querySelector(".inner");
+				// Avoid node.shadowRoot (closed shadow DOM in production).
+				const label = node.dataset["hint"];
 
-				if (inner?.textContent) {
-					const wrapper = getWrapper(inner.textContent);
+				if (label) {
+					const wrapper = getWrapper(label);
 
 					// eslint-disable-next-line max-depth
 					if (wrapper?.hint?.label) {
