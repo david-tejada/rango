@@ -59,9 +59,14 @@ export function ExportSettingsDialog({
 				}}
 			>
 				<h3>Export Settings</h3>
-				<textarea readOnly value={JSON.stringify(settings, null, 2)} />
+				<textarea
+					readOnly
+					value={JSON.stringify(settings, null, 2)}
+					placeholder="Settings export"
+				/>
 				<div className="buttons">
 					<button
+						autoFocus
 						type="button"
 						className={`copy ${copied ? "copied" : ""}`}
 						onClick={handleCopyToClipboard}
