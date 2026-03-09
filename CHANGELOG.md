@@ -2,6 +2,24 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.8.7](https://github.com/david-tejada/rango/releases/tag/v0.8.7) - 2026-03-09
+
+### Added
+
+- Add compact tab marker delimiter setting.
+- Add option to only show hints for elements without visible text labels.
+
+### Fixed
+
+- Prevent clipboard interceptor re-injection.
+- Fix hint reattach failing in production due to closed shadow DOM.
+
+### Changed
+
+- Use cross-env-shell for Windows build compatibility.
+- Change export settings dialog to focus on the copy to clipboard button after
+  opening.
+
 ## [0.8.6](https://github.com/david-tejada/rango/releases/tag/v0.8.6) - 2025-10-28
 
 ### Added
