@@ -1,0 +1,1 @@
+export { connectNativeHost } from "./connectNativeHost";

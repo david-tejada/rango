@@ -1,0 +1,7 @@
+{
+	"name": "com.rango.daemon",
+	"description": "Rango CLI daemon bridge",
+	"path": "__DAEMON_PATH__",
+	"type": "stdio",
+	"allowed_origins": ["chrome-extension://__EXTENSION_ID__/"]
+}

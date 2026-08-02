@@ -19,7 +19,8 @@
 		"webNavigation",
 		"offscreen",
 		"contextMenus",
-		"bookmarks"
+		"bookmarks",
+		"nativeMessaging"
 	],
 	"content_scripts": [
 		{

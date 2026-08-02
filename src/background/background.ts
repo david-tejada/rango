@@ -11,6 +11,7 @@ import { handleIncomingMessage } from "./messaging/messageHandler";
 import { addMessageListeners } from "./messaging/messageListeners";
 import { sendMessage, sendMessageSafe } from "./messaging/sendMessage";
 import { UnreachableContentScriptError } from "./messaging/UnreachableContentScriptError";
+import { connectNativeHost } from "./nativeMessaging";
 import { toggleKeyboardClicking } from "./settings/keyboardClicking";
 import { trackRecentTabs } from "./tabs/focusPreviousTab";
 import { setTabLastSounded } from "./tabs/focusTabBySound";
@@ -44,6 +45,16 @@ try {
 // =============================================================================
 if (process.env["NODE_ENV"] === "test") {
 	addEventListener("handle-test-request", handleIncomingCommand);
+}
+
+// =============================================================================
+// CLI TRANSPORT (NATIVE MESSAGING)
+// =============================================================================
+// Safari uses a different native-messaging API (NSExtensionRequest, not the
+// stdio host protocol Chrome/Firefox use), so the CLI daemon bridge is
+// Chrome/Firefox only for now.
+if (process.env.NODE_ENV !== "test" && !isSafari()) {
+	connectNativeHost();
 }
 
 // =============================================================================

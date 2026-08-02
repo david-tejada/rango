@@ -23,3 +23,15 @@ jobs:
       - run: npm ci
       - run: npm run check-format
       - run: npm test
+  test-daemon:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: "npm"
+      - run: npm ci
+      - uses: oven-sh/setup-bun@v2
+      - run: npx tsc --noemit -p tsconfig.bun.json
+      - run: bun run test:daemon

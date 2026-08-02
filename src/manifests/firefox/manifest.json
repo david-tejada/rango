@@ -23,7 +23,8 @@
 		"notifications",
 		"webNavigation",
 		"contextMenus",
-		"bookmarks"
+		"bookmarks",
+		"nativeMessaging"
 	],
 	"content_scripts": [
 		{
