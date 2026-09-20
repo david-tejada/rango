@@ -94,6 +94,11 @@ export const settingsSchema = z.object({
 			errors.hintBorderRadius.invalidType
 		),
 
+	// Experimental: render the label of a hint by underlining two characters of
+	// the text of the hinted element, instead of attaching a hint element to it.
+	// Elements without usable text still get a regular hint.
+	underlineHints: z.boolean().default(false),
+
 	// Hint characters
 	includeSingleLetterHints: z.boolean().default(true),
 	useNumberHints: z.boolean().default(false),

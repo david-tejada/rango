@@ -19,7 +19,7 @@ import {
 } from "./color/hintColors";
 import { resolveBackgroundColor } from "./color/resolveBackgroundColor";
 import { matchesStagedSelector } from "./customHints/customSelectorsStaging";
-import { popLabel, pushLabel } from "./labels/labelCache";
+import { type LabelAssignment, popLabel, pushLabel } from "./labels/labelCache";
 import {
 	cacheLayout,
 	clearLayoutCache,
@@ -36,6 +36,9 @@ import {
 } from "./positioning/getContextForHint";
 import { getCustomNudge } from "./positioning/getCustomNudge";
 import { getElementToPositionHint } from "./positioning/getElementToPositionHint";
+import { getUnderlineRange } from "./underline/getUnderlineRange";
+import { getUnderlineOffset } from "./underline/getUnderlineOffset";
+import { hideUnderline, showUnderline } from "./underline/underlineHighlights";
 
 const colorRedString = red.toString();
 const colorGreenString = green.toString();
@@ -302,6 +305,21 @@ export class Hint {
 	freezeColors?: boolean;
 	label?: string;
 
+	/**
+	 * When the label of this hint is rendered by underlining two characters of
+	 * the text of the target, the `Range` covering those two characters.
+	 * Underline hints have no element attached to the page, so most of the
+	 * methods that deal with the hint element are a no-op for them.
+	 */
+	underlineRange?: Range;
+
+	/**
+	 * How far below the text the underline sits, in pixels. It is larger when the
+	 * page already underlines the text, so that ours sits just below the page's
+	 * one instead of merging with it.
+	 */
+	underlineOffset = 3;
+
 	constructor(public target: Element) {
 		this.isActive = false;
 
@@ -438,6 +456,8 @@ export class Hint {
 	}
 
 	updateColors() {
+		if (this.underlineRange) return;
+
 		if (!this.target.isConnected) {
 			return;
 		}
@@ -473,16 +493,35 @@ export class Hint {
 		}
 	}
 
-	claim() {
-		const string = popLabel();
+	/**
+	 * @param assignment - The label reserved for this element in the current
+	 * batch, if its text can be underlined. Without one the hint takes any label
+	 * from the cache and is rendered the usual way.
+	 */
+	claim(assignment?: LabelAssignment) {
+		const label = assignment?.label ?? popLabel();
 
-		if (!string) {
+		if (!label) {
 			console.warn("No more labels available");
 			return;
 		}
 
-		this.inner.textContent = string;
-		this.label = string;
+		const underlineText = assignment?.underlineText;
+		this.label = label;
+
+		// If the label was matched against the text of the target we render it by
+		// underlining the two characters it corresponds to. The range can still
+		// fail to materialize, for example if the characters ended up on different
+		// lines, in which case we fall back to a regular hint with the same label.
+		this.underlineRange = underlineText
+			? getUnderlineRange(this.target, underlineText, label)
+			: undefined;
+
+		if (this.underlineRange) {
+			this.underlineOffset = getUnderlineOffset(
+				this.underlineRange.startContainer as Text
+			);
+		}
 
 		// We need to set the hinted wrapper here and not when the hint is shown in
 		// processHintQueue. This way if the labels are updated this Hint will be
@@ -490,12 +529,49 @@ export class Hint {
 		// visible.
 		setHintedWrapper(this.label, this.target);
 
-		addToHintQueue(this);
+		if (this.underlineRange) {
+			if (getToggles().computed) this.showUnderline();
+			this.isActive = true;
+		} else {
+			this.inner.textContent = label;
+			addToHintQueue(this);
+		}
 
-		return string;
+		if (
+			process.env["NODE_ENV"] !== "production" &&
+			this.underlineRange &&
+			this.target instanceof HTMLElement
+		) {
+			this.target.dataset["hint"] = label;
+		}
+
+		return label;
+	}
+
+	/**
+	 * Displays the underline for this hint with the style that corresponds to
+	 * its current state.
+	 */
+	showUnderline(state: "default" | "emphasis" | "flash" = "default") {
+		if (!this.underlineRange) return;
+		showUnderline(this.underlineRange, this.underlineOffset, state);
+	}
+
+	/**
+	 * The rect the hint occupies on screen, used to anchor tooltips. For
+	 * underline hints it's the two underlined characters.
+	 */
+	getAnchorRect() {
+		return this.underlineRange
+			? this.underlineRange.getBoundingClientRect()
+			: this.inner.getBoundingClientRect();
 	}
 
 	position() {
+		// Underline hints are drawn on the text itself, there is nothing to
+		// position.
+		if (this.underlineRange) return;
+
 		// We avoid repositioning while the key is emphasized to avoid small
 		// movements of the hint when adding the outline.
 		if (this.keyEmphasis) return;
@@ -642,6 +718,17 @@ export class Hint {
 	}
 
 	flash(ms = 300) {
+		if (this.underlineRange) {
+			const range = this.underlineRange;
+			this.showUnderline("flash");
+
+			setTimeout(() => {
+				if (this.underlineRange === range) this.showUnderline();
+			}, ms);
+
+			return;
+		}
+
 		setStyleProperties(this.inner, {
 			"background-color": this.color.toString(),
 			color: this.backgroundColor.toString(),
@@ -656,6 +743,11 @@ export class Hint {
 	}
 
 	clearFlash() {
+		if (this.underlineRange) {
+			this.showUnderline();
+			return;
+		}
+
 		setStyleProperties(this.inner, {
 			"background-color": this.backgroundColor.toString(),
 			color: this.color.toString(),
@@ -673,6 +765,23 @@ export class Hint {
 		if (!this.label) return;
 
 		clearHintedWrapper(this.label);
+
+		if (this.underlineRange) {
+			hideUnderline(this.underlineRange);
+			this.underlineRange = undefined;
+
+			if (returnToStack) pushLabel(this.label);
+			this.label = undefined;
+
+			if (
+				process.env["NODE_ENV"] !== "production" &&
+				this.target instanceof HTMLElement
+			) {
+				delete this.target.dataset["hint"];
+			}
+
+			return;
+		}
 
 		if (removeElement) {
 			setStyleProperties(this.inner, {
@@ -702,6 +811,11 @@ export class Hint {
 	}
 
 	hide() {
+		if (this.underlineRange) {
+			hideUnderline(this.underlineRange);
+			return;
+		}
+
 		setStyleProperties(this.inner, {
 			display: "none",
 			opacity: "0%",
@@ -709,6 +823,11 @@ export class Hint {
 	}
 
 	show() {
+		if (this.underlineRange) {
+			this.showUnderline(this.keyEmphasis ? "emphasis" : "default");
+			return;
+		}
+
 		addToHintQueue(this);
 	}
 
@@ -752,6 +871,10 @@ export class Hint {
 	}
 
 	applyDefaultStyle() {
+		// The style of underline hints comes from the `::highlight()` rules, there
+		// is nothing to apply per hint.
+		if (this.underlineRange) return;
+
 		const hintFontFamily = settingsSync.get("hintFontFamily");
 		const hintFontSize = settingsSync.get("hintFontSize");
 		const hintBorderWidth = settingsSync.get("hintBorderWidth");
@@ -779,11 +902,23 @@ export class Hint {
 
 	keyHighlight() {
 		this.keyEmphasis = true;
+
+		if (this.underlineRange) {
+			this.showUnderline("emphasis");
+			return;
+		}
+
 		this.updateColors();
 	}
 
 	clearKeyHighlight() {
 		this.keyEmphasis = false;
+
+		if (this.underlineRange) {
+			this.showUnderline();
+			return;
+		}
+
 		this.updateColors();
 	}
 }

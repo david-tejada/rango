@@ -13,7 +13,7 @@ import { isVisible } from "../dom/isVisible";
 import { setStyleProperties } from "../dom/setStyleProperties";
 import { getExtraHintsToggle } from "../hints/customHints/customHints";
 import { Hint } from "../hints/Hint";
-import { cacheLabels } from "../hints/labels/labelCache";
+import { cacheLabels, type LabelAssignments } from "../hints/labels/labelCache";
 import { cacheLayout, clearLayoutCache } from "../hints/layoutCache";
 import { matchesCustomExclude, matchesCustomInclude } from "../hints/selectors";
 import { sendMessage } from "../messaging/messageHandler";
@@ -166,21 +166,33 @@ async function intersectionCallback(entries: IntersectionObserverEntry[]) {
 		getOrCreateWrapper(entry.target).intersect(entry.isIntersecting);
 	}
 
-	const amountNotIntersectingViewport = entries.filter(
-		(entry) =>
-			entry.isIntersecting &&
-			getOrCreateWrapper(entry.target).isIntersectingViewport === false
-	).length;
+	// Labels can now be matched against the text of the elements that need them,
+	// so we pass the elements themselves and not just how many we need.
+	const outsideViewport = new Set(
+		entriesIntersecting
+			.filter(
+				(entry) =>
+					getOrCreateWrapper(entry.target).isIntersectingViewport === false
+			)
+			.map((entry) => entry.target)
+	);
+
+	let assignments: LabelAssignments | undefined;
 
 	if (amountIntersecting) {
-		await cacheLabels(
-			amountIntersecting - amountNotIntersectingViewport,
-			amountNotIntersectingViewport
+		const elements = entriesIntersecting.map((entry) => entry.target);
+
+		assignments = await cacheLabels(
+			elements.filter((element) => !outsideViewport.has(element)),
+			[...outsideViewport]
 		);
 	}
 
 	for (const entry of entriesIntersecting) {
-		getOrCreateWrapper(entry.target).intersect(entry.isIntersecting);
+		getOrCreateWrapper(entry.target).intersect(
+			entry.isIntersecting,
+			assignments
+		);
 	}
 }
 
@@ -418,12 +430,12 @@ export class ElementWrapper {
 		this.observingIntersection = false;
 	}
 
-	intersect(isIntersecting: boolean) {
+	intersect(isIntersecting: boolean, assignments?: LabelAssignments) {
 		this.isIntersecting = isIntersecting;
 
 		if (this.isIntersecting && this.shouldBeHinted) {
 			this.hint ??= new Hint(this.element);
-			this.hint.claim();
+			this.hint.claim(assignments?.get(this.element));
 		} else if (this.hint?.label) {
 			this.hint.release();
 		}
@@ -449,7 +461,7 @@ export class ElementWrapper {
 	async click() {
 		const pointerTarget = this.getPointerTarget();
 
-		if (this.hint?.inner.isConnected) {
+		if (this.hint?.underlineRange ?? this.hint?.inner.isConnected) {
 			this.hint.flash();
 		} else {
 			this.flashElement();

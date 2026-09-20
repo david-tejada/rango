@@ -12,7 +12,7 @@ export function showTooltip(
 	const tooltipAnchor = document.createElement("div");
 	tooltipAnchor.className = "rango-tooltip";
 
-	const { x, y, width, height } = wrapper.hint.inner.getBoundingClientRect();
+	const { x, y, width, height } = wrapper.hint.getAnchorRect();
 
 	const scrollLeft =
 		window.pageXOffset ||

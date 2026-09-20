@@ -23,8 +23,8 @@ export function addMessageListeners() {
 		await initStack(tabId);
 	});
 
-	onMessage("claimLabels", async ({ amount }, { tabId, frameId }) => {
-		return claimLabels(tabId, frameId, amount);
+	onMessage("claimLabels", async ({ amount, requests }, { tabId, frameId }) => {
+		return claimLabels(tabId, frameId, amount, requests);
 	});
 
 	onMessage(

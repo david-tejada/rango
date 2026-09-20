@@ -2,6 +2,7 @@ import { type Tabs } from "webextension-polyfill";
 import { type NotificationType } from "../common/createNotifier";
 import { type CustomSelector } from "../common/settings/settingsSchema";
 import { type Direction } from "./Direction";
+import { type ClaimedLabels, type LabelRequest } from "./LabelRequest";
 import { type LabelStack } from "./LabelStack";
 import { type TalonAction } from "./TalonAction";
 import { type ElementMark, type Target } from "./Target/Target";
@@ -30,7 +31,10 @@ export type BackgroundBoundMessageMap = {
 
 	// Hints Allocator
 	initStack: () => void;
-	claimLabels: (data: { amount: number }) => string[];
+	claimLabels: (data: {
+		amount: number;
+		requests?: LabelRequest[];
+	}) => ClaimedLabels;
 	reclaimLabelsFromOtherFrames: (data: { amount: number }) => string[];
 	releaseLabels: (data: { labels: string[] }) => void;
 	storeLabelsInFrame: (data: { labels: string[] }) => void;

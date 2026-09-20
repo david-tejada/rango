@@ -382,6 +382,21 @@ export function SettingsComponent() {
 				</SettingRow>
 				<SettingRow>
 					<Toggle
+						label="Underline hints (experimental)"
+						isPressed={dirtySettings.underlineHints}
+						onClick={() => {
+							handleChange("underlineHints", !dirtySettings.underlineHints);
+						}}
+					>
+						<p className="explanation">
+							Instead of displaying a hint next to the element, underline the
+							two characters of its text that match its label. Elements without
+							visible text still get a regular hint.
+						</p>
+					</Toggle>
+				</SettingRow>
+				<SettingRow>
+					<Toggle
 						label="Use uppercase letters"
 						isPressed={dirtySettings.hintUppercaseLetters}
 						isDisabled={

@@ -3,6 +3,7 @@ import { getHintedWrappers } from "../wrappers/wrappers";
 import { resetExtraHintsToggles } from "./customHints/customHints";
 import { resetStagedSelectors } from "./customHints/customSelectorsStaging";
 import { cacheLabels, clearLabelsCache } from "./labels/labelCache";
+import { clearUnderlines } from "./underline/underlineHighlights";
 
 export async function refreshHints() {
 	resetStagedSelectors();
@@ -40,18 +41,24 @@ async function refreshLabels() {
 	const wrappersToRefresh = getHintedWrappers();
 	for (const wrapper of wrappersToRefresh) wrapper.hint?.release();
 
+	// Safety net in case a hint was released without its underline being removed,
+	// for example if its target was taken out of the dom.
+	clearUnderlines();
+
 	await clearLabelsCache();
 
-	const labelsNecessary = wrappersToRefresh.filter(
-		(wrapper) => wrapper.isIntersectingViewport
-	).length;
-	const labelsAdditional = wrappersToRefresh.filter(
-		(wrapper) => wrapper.isIntersecting && !wrapper.isIntersectingViewport
-	).length;
+	const elementsNecessary = wrappersToRefresh
+		.filter((wrapper) => wrapper.isIntersectingViewport)
+		.map((wrapper) => wrapper.element);
+	const elementsAdditional = wrappersToRefresh
+		.filter(
+			(wrapper) => wrapper.isIntersecting && !wrapper.isIntersectingViewport
+		)
+		.map((wrapper) => wrapper.element);
 
-	await cacheLabels(labelsNecessary, labelsAdditional);
+	const assignments = await cacheLabels(elementsNecessary, elementsAdditional);
 
 	for (const wrapper of wrappersToRefresh) {
-		wrapper.hint?.claim();
+		wrapper.hint?.claim(assignments.get(wrapper.element));
 	}
 }

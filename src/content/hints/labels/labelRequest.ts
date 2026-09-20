@@ -1,4 +1,5 @@
 import { Mutex } from "async-mutex";
+import { type LabelRequest } from "../../../typings/LabelRequest";
 import { sendMessage } from "../../messaging/messageHandler";
 import {
 	addLabelsInFrame,
@@ -25,10 +26,13 @@ export async function synchronizeLabels() {
 	});
 }
 
-export async function claimLabels(amount: number) {
+export async function claimLabels(amount: number, requests?: LabelRequest[]) {
 	return mutex.runExclusive(async () => {
-		const claimed = await sendMessage("claimLabels", { amount });
-		addLabelsInFrame(claimed);
+		const claimed = await sendMessage("claimLabels", { amount, requests });
+		addLabelsInFrame([
+			...Object.values(claimed.assigned),
+			...claimed.unassigned,
+		]);
 
 		return claimed;
 	});

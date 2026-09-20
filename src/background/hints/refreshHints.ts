@@ -43,6 +43,7 @@ settings.onChange(
 		"useNumberHints",
 		"hintsToExclude",
 		"keysToExclude",
+		"underlineHints",
 	],
 	refreshHints
 );
