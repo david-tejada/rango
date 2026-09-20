@@ -6,6 +6,7 @@ import { isEditable } from "../dom/utils";
 import { settingsSync } from "../settings/settingsSync";
 import { getToggles } from "../settings/toggles";
 import { refresh } from "../wrappers/refresh";
+import { rehintPending } from "../wrappers/rehint";
 import {
 	clearHintedWrapper,
 	getWrapper,
@@ -36,7 +37,8 @@ import {
 } from "./positioning/getContextForHint";
 import { getCustomNudge } from "./positioning/getCustomNudge";
 import { getElementToPositionHint } from "./positioning/getElementToPositionHint";
-import { getUnderlineRange } from "./underline/getUnderlineRange";
+import { getUnderlineRange, spellsLabel } from "./underline/getUnderlineRange";
+import { getUnderlineText } from "./underline/getUnderlineText";
 import {
 	getUnderlineStyle,
 	type UnderlineStyle,
@@ -283,6 +285,64 @@ const shadowHostMutationObserver = new MutationObserver((entries) => {
 		}
 	}
 });
+
+/**
+ * An underline hint has no element in the page, so none of the observers above
+ * notice when the page rewrites the text it is drawn on. When that happens the
+ * `Range` collapses, the label silently stops being painted and the element is
+ * left with no hint at all. Frameworks that patch the dom in place, which is
+ * what a live search does as you type, hit this constantly.
+ */
+const underlinedTargets = new Map<Element, Hint>();
+const targetsWithChangedText = new Set<Element>();
+
+const underlineMutationObserver = new MutationObserver((entries) => {
+	for (const entry of entries) {
+		const element =
+			entry.target instanceof Element
+				? entry.target
+				: entry.target.parentElement;
+
+		if (element) targetsWithChangedText.add(element);
+	}
+
+	if (targetsWithChangedText.size > 0) refreshUnderlines();
+});
+
+const refreshUnderlines = debounce(() => {
+	const changed = [...targetsWithChangedText];
+	targetsWithChangedText.clear();
+
+	const hints = new Set<Hint>();
+
+	for (const element of changed) {
+		// The mutation can be on a descendant of the hinted element.
+		let current: Element | null = element;
+		while (current) {
+			const hint = underlinedTargets.get(current);
+			if (hint) {
+				hints.add(hint);
+				break;
+			}
+
+			current = current.parentElement;
+		}
+	}
+
+	// An underline can only carry a label the text spells, so when the text no
+	// longer spells it the hint needs a different label rather than a different
+	// position. We release those in one go and claim again for all of them at
+	// once, which also lets the stack match the new text.
+	let needsRelabelling = false;
+	for (const hint of hints) {
+		if (!hint.refreshUnderline()) {
+			hint.release();
+			needsRelabelling = true;
+		}
+	}
+
+	if (needsRelabelling) void rehintPending();
+}, 100);
 
 // =============================================================================
 // HINT
@@ -533,6 +593,13 @@ export class Hint {
 		setHintedWrapper(this.label, this.target);
 
 		if (this.underlineRange) {
+			underlinedTargets.set(this.target, this);
+			underlineMutationObserver.observe(this.target, {
+				childList: true,
+				subtree: true,
+				characterData: true,
+			});
+
 			if (getToggles().computed) this.showUnderline();
 			this.isActive = true;
 		} else {
@@ -558,6 +625,44 @@ export class Hint {
 	showUnderline(state: "default" | "emphasis" | "flash" = "default") {
 		if (!this.underlineRange) return;
 		showUnderline(this.underlineRange, this.underlineStyle, state);
+	}
+
+	/**
+	 * Rebuilds the underline after the page has changed the text it is drawn on.
+	 *
+	 * @returns `false` when the text can no longer spell this label, so the
+	 * caller can release it and claim one that the new text can.
+	 */
+	refreshUnderline() {
+		const { underlineRange, label } = this;
+		if (!underlineRange || !label) return true;
+
+		// Nothing to do while the range still spells the label.
+		if (
+			!underlineRange.collapsed &&
+			spellsLabel(underlineRange.toString(), label)
+		) {
+			return true;
+		}
+
+		// The same label might still be spelled elsewhere in the element, which
+		// keeps the hint stable when only part of the text changed.
+		const underlineText = this.target.isConnected
+			? getUnderlineText(this.target)
+			: undefined;
+		const range = underlineText
+			? getUnderlineRange(this.target, underlineText, label)
+			: undefined;
+
+		if (range) {
+			hideUnderline(underlineRange);
+			this.underlineRange = range;
+			this.underlineStyle = getUnderlineStyle(range.startContainer as Text);
+			this.showUnderline(this.keyEmphasis ? "emphasis" : "default");
+			return true;
+		}
+
+		return false;
 	}
 
 	/**
@@ -772,6 +877,7 @@ export class Hint {
 		if (this.underlineRange) {
 			hideUnderline(this.underlineRange);
 			this.underlineRange = undefined;
+			underlinedTargets.delete(this.target);
 
 			if (returnToStack) pushLabel(this.label);
 			this.label = undefined;

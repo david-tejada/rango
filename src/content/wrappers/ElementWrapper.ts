@@ -20,11 +20,11 @@ import { isContextInvalidated, sendMessage } from "../messaging/messageHandler";
 import { settingsSync } from "../settings/settingsSync";
 import { BoundedIntersectionObserver } from "./BoundedIntersectionObserver";
 import { refresh } from "./refresh";
+import { scheduleRehint } from "./rehint";
 import {
 	addWrapper,
 	clearHintedWrapper,
 	deleteWrapper,
-	getAllWrappers,
 	getWrapperForElement,
 	getWrappersWithin,
 } from "./wrappers";
@@ -198,7 +198,7 @@ async function intersectionCallback(entries: IntersectionObserverEntry[]) {
 				console.error("Rango: unable to claim labels.", error);
 			}
 
-			scheduleRetry();
+			scheduleRehint();
 		}
 	}
 
@@ -207,60 +207,6 @@ async function intersectionCallback(entries: IntersectionObserverEntry[]) {
 			entry.isIntersecting,
 			assignments
 		);
-	}
-}
-
-// RETRY
-
-const initialRetryDelay = 1000;
-const maximumRetryDelay = 30_000;
-
-let retryDelay = initialRetryDelay;
-let retryTimeout: ReturnType<typeof setTimeout> | undefined;
-
-/**
- * Schedules another attempt at hinting the elements that are intersecting but
- * ended up without a label. Without this a single failed message would leave
- * them unhinted for as long as the page is open, since an Intersection Observer
- * only reports a change in intersection.
- */
-function scheduleRetry() {
-	if (retryTimeout ?? isContextInvalidated()) return;
-
-	retryTimeout = setTimeout(async () => {
-		retryTimeout = undefined;
-		await retryPendingHints();
-	}, retryDelay);
-}
-
-export async function retryPendingHints() {
-	const pending = getAllWrappers().filter(
-		(wrapper) =>
-			wrapper.isIntersecting && wrapper.shouldBeHinted && !wrapper.hint?.label
-	);
-
-	if (pending.length === 0) {
-		retryDelay = initialRetryDelay;
-		return;
-	}
-
-	try {
-		const assignments = await cacheLabels(
-			pending
-				.filter((wrapper) => wrapper.isIntersectingViewport)
-				.map((wrapper) => wrapper.element),
-			pending
-				.filter((wrapper) => !wrapper.isIntersectingViewport)
-				.map((wrapper) => wrapper.element)
-		);
-
-		for (const wrapper of pending) wrapper.intersect(true, assignments);
-		retryDelay = initialRetryDelay;
-	} catch {
-		// Back off so that a background script that stays unreachable doesn't have
-		// us retrying in a tight loop for the lifetime of the page.
-		retryDelay = Math.min(retryDelay * 2, maximumRetryDelay);
-		scheduleRetry();
 	}
 }
 

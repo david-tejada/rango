@@ -1,4 +1,4 @@
-import { retryPendingHints } from "../wrappers/ElementWrapper";
+import { rehintPending } from "../wrappers/rehint";
 import { refresh } from "../wrappers/refresh";
 import { getHintedWrappers } from "../wrappers/wrappers";
 import { resetExtraHintsToggles } from "./customHints/customHints";
@@ -71,6 +71,6 @@ async function refreshLabels() {
 		// is left without any. The intersection retry will pick them back up once
 		// the background script is reachable again.
 		console.error("Rango: unable to refresh labels.", error);
-		await retryPendingHints();
+		await rehintPending();
 	}
 }

@@ -46,6 +46,17 @@ export function getUnderlineRange(
 }
 
 /**
+ * Returns `true` if `text` still spells `label`. Cheap enough to call on every
+ * mutation, since it only looks at two characters and reads no layout.
+ */
+export function spellsLabel(text: string, label: string) {
+	return (
+		text.length === label.length &&
+		[...text].every((character, index) => normalizes(character, label[index]!))
+	);
+}
+
+/**
  * Cheap check that a character still corresponds to the letter of the label.
  * We don't repeat the full normalization, a case insensitive comparison of the
  * base character is enough to detect that the text changed under us.
