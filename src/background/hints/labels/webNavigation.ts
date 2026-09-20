@@ -100,6 +100,22 @@ export function addWebNavigationListeners() {
 	});
 }
 
+/**
+ * `sendMessage` only wraps the error when the whole tab is unreachable. When
+ * the tab is alive but the frame we are messaging has gone away, which is what
+ * happens when a frame is removed mid navigation, the browser throws its own
+ * "Could not establish connection" error instead.
+ */
+function isUnreachableFrameError(error: unknown) {
+	return (
+		error instanceof UnreachableContentScriptError ||
+		(error instanceof Error &&
+			/could not establish connection|receiving end does not exist|message manager disconnected/i.test(
+				error.message
+			))
+	);
+}
+
 function getTabMutex(tabId: number) {
 	let mutex = tabMutexes.get(tabId);
 	if (!mutex) {
@@ -124,13 +140,12 @@ async function synchronizeLabels(tabId: number, frameId: number) {
 		try {
 			await sendMessage("synchronizeLabels", undefined, { tabId, frameId });
 		} catch (error: unknown) {
-			// At this point the content script might not have yet loaded. This is ok
-			// and expected. This command is only used for synchronizing labels when
-			// navigating back and forward in history and the content script being
-			// restored.
-			if (!(error instanceof UnreachableContentScriptError)) {
-				throw error;
-			}
+			// At this point the content script might not have yet loaded, or the
+			// frame might be gone altogether, which happens often with frames that
+			// are removed while the page is still loading. This is ok and expected.
+			// This command is only used for synchronizing labels when navigating back
+			// and forward in history and the content script being restored.
+			if (!isUnreachableFrameError(error)) throw error;
 		}
 	});
 }
