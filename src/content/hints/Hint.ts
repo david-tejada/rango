@@ -37,7 +37,10 @@ import {
 import { getCustomNudge } from "./positioning/getCustomNudge";
 import { getElementToPositionHint } from "./positioning/getElementToPositionHint";
 import { getUnderlineRange } from "./underline/getUnderlineRange";
-import { getUnderlineOffset } from "./underline/getUnderlineOffset";
+import {
+	getUnderlineStyle,
+	type UnderlineStyle,
+} from "./underline/getUnderlineStyle";
 import { hideUnderline, showUnderline } from "./underline/underlineHighlights";
 
 const colorRedString = red.toString();
@@ -314,11 +317,11 @@ export class Hint {
 	underlineRange?: Range;
 
 	/**
-	 * How far below the text the underline sits, in pixels. It is larger when the
-	 * page already underlines the text, so that ours sits just below the page's
-	 * one instead of merging with it.
+	 * How the underline is drawn. When the page already underlines the text it
+	 * follows the offset and color of the page's own line, so that ours sits just
+	 * below it and matches it.
 	 */
-	underlineOffset = 3;
+	underlineStyle: UnderlineStyle = { offset: 3, color: "currentColor" };
 
 	constructor(public target: Element) {
 		this.isActive = false;
@@ -518,7 +521,7 @@ export class Hint {
 			: undefined;
 
 		if (this.underlineRange) {
-			this.underlineOffset = getUnderlineOffset(
+			this.underlineStyle = getUnderlineStyle(
 				this.underlineRange.startContainer as Text
 			);
 		}
@@ -554,7 +557,7 @@ export class Hint {
 	 */
 	showUnderline(state: "default" | "emphasis" | "flash" = "default") {
 		if (!this.underlineRange) return;
-		showUnderline(this.underlineRange, this.underlineOffset, state);
+		showUnderline(this.underlineRange, this.underlineStyle, state);
 	}
 
 	/**

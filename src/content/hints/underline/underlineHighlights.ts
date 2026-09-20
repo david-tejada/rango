@@ -7,10 +7,12 @@
  * positioning and no layout distortion.
  *
  * A highlight can only be styled through its `::highlight()` rule, so anything
- * that varies per hint needs a highlight of its own. The only thing that varies
- * is how far below the text the underline sits, which depends on whether the
- * page already underlines that text, so highlights are keyed by that offset.
+ * that varies per hint needs a highlight of its own. What varies is how far
+ * below the text the line sits and what color it is, both of which follow the
+ * page's own underline when there is one, so highlights are keyed by those.
  */
+
+import { type UnderlineStyle } from "./getUnderlineStyle";
 
 type UnderlineState = "default" | "emphasis" | "flash";
 
@@ -27,31 +29,63 @@ const thickness = { default: "auto", emphasis: "2px", flash: "auto" } as const;
 const states = ["default", "emphasis", "flash"] as const;
 
 const highlights = new Map<string, Highlight>();
-const styledOffsets = new Set<number>();
+const styled = new Set<string>();
 let styleSheet: CSSStyleSheet | undefined;
 
 /**
- * A highlight name has to be a valid CSS identifier, and an offset computed
- * from the page's own underline can be fractional.
+ * A highlight name has to be a valid CSS identifier, and both the offset, which
+ * can be fractional, and the color, which is a `rgb(...)` string, are not.
  */
-function highlightName(offset: number, state: UnderlineState) {
-	return `rango-underline-${String(offset).replace(".", "_")}-${state}`;
+function toIdent(value: string) {
+	return value.replaceAll(/[^a-z\d]+/gi, "_");
 }
 
-function highlightRule(offset: number, state: UnderlineState) {
+function highlightName(style: UnderlineStyle, state: UnderlineState) {
+	return `rango-underline-${toIdent(`${style.offset}-${style.color}`)}-${state}`;
+}
+
+/**
+ * The name of the highlight that redraws the page's own underline over the two
+ * characters our highlight would otherwise blank out.
+ */
+function replicaName(page: UnderlineStyle["pageUnderline"]) {
+	if (!page) return undefined;
+
+	return `rango-underline-page-${toIdent(
+		`${page.offset}-${page.thickness}-${page.color}-${page.skipInk}`
+	)}`;
+}
+
+function highlightRule(style: UnderlineStyle, state: UnderlineState) {
 	const background =
 		state === "flash"
 			? `background-color: ${emphasisColor}; color: ${flashColor};`
 			: "";
-	const color = state === "default" ? "currentColor" : emphasisColor;
 
-	return `::highlight(${highlightName(offset, state)}) {
+	// The emphasis and flash colors are a deliberate signal, so they don't follow
+	// the page.
+	const color = state === "default" ? style.color : emphasisColor;
+
+	return `::highlight(${highlightName(style, state)}) {
 		${background}
 		text-decoration: underline;
 		text-decoration-skip-ink: none;
 		text-decoration-thickness: ${thickness[state]};
 		text-decoration-color: ${color};
-		text-underline-offset: ${offset}px;
+		text-underline-offset: ${style.offset}px;
+	}`;
+}
+
+function replicaRule(
+	name: string,
+	page: NonNullable<UnderlineStyle["pageUnderline"]>
+) {
+	return `::highlight(${name}) {
+		text-decoration: underline;
+		text-decoration-skip-ink: ${page.skipInk};
+		text-decoration-thickness: ${page.thickness}px;
+		text-decoration-color: ${page.color};
+		text-underline-offset: ${page.offset}px;
 	}`;
 }
 
@@ -72,7 +106,7 @@ export function supportsUnderlineHints() {
  * ranges registered but unpainted. Since this runs before showing every
  * underline it needs to stay cheap, which it is once everything is in place.
  */
-function ensureInitialized(offset: number) {
+function ensureInitialized(style: UnderlineStyle) {
 	if (!supportsUnderlineHints()) return;
 
 	// We use a constructed stylesheet rather than a `<style>` element because it
@@ -84,15 +118,22 @@ function ensureInitialized(offset: number) {
 		document.adoptedStyleSheets = [...document.adoptedStyleSheets, styleSheet];
 	}
 
-	if (!styledOffsets.has(offset)) {
-		styledOffsets.add(offset);
-		for (const state of states) {
-			styleSheet.insertRule(highlightRule(offset, state));
+	const names = states.map((state) => highlightName(style, state));
+	const replica = replicaName(style.pageUnderline);
+
+	for (const [index, name] of names.entries()) {
+		if (!styled.has(name)) {
+			styled.add(name);
+			styleSheet.insertRule(highlightRule(style, states[index]!));
 		}
 	}
 
-	for (const state of states) {
-		const name = highlightName(offset, state);
+	if (replica && !styled.has(replica)) {
+		styled.add(replica);
+		styleSheet.insertRule(replicaRule(replica, style.pageUnderline!));
+	}
+
+	for (const name of replica ? [...names, replica] : names) {
 		let highlight = highlights.get(name);
 
 		if (!highlight) {
@@ -110,17 +151,21 @@ function ensureInitialized(offset: number) {
  * Displays the underline for a range, removing it from any other highlight it
  * might currently be displayed in.
  *
- * @param offset - How far below the text the underline sits, in pixels. See
- * `getUnderlineOffset`.
+ * @param style - How the line should be drawn. See `getUnderlineStyle`.
  */
 export function showUnderline(
 	range: Range,
-	offset: number,
+	style: UnderlineStyle,
 	state: UnderlineState = "default"
 ) {
-	ensureInitialized(offset);
+	ensureInitialized(style);
 	hideUnderline(range);
-	highlights.get(highlightName(offset, state))?.add(range);
+
+	// The page's own line goes back first, then ours on top of it.
+	const replica = replicaName(style.pageUnderline);
+	if (replica) highlights.get(replica)?.add(range);
+
+	highlights.get(highlightName(style, state))?.add(range);
 }
 
 export function hideUnderline(range: Range) {

@@ -1,6 +1,32 @@
 import { getCachedStyle } from "../layoutCache";
 
 /**
+ * How the line that spells out the label of a hint should be drawn.
+ */
+export type UnderlineStyle = {
+	/** How far below the text the line sits, in pixels. */
+	offset: number;
+	/** A CSS color, or `currentColor` to follow the text. */
+	color: string;
+	/**
+	 * The underline the page paints over this text, when it paints one.
+	 *
+	 * A highlight that sets `text-decoration` suppresses the underline of the
+	 * element underneath for exactly the characters it covers, which would leave
+	 * a two character gap in the page's own line. We redraw it in a highlight of
+	 * its own so that it stays unbroken.
+	 */
+	pageUnderline?: PageUnderline;
+};
+
+type PageUnderline = {
+	offset: number;
+	thickness: number;
+	color: string;
+	skipInk: string;
+};
+
+/**
  * How far below the text our underline sits when the page doesn't underline it
  * itself.
  */
@@ -26,30 +52,31 @@ const maximumOffset = 10;
 const autoOffset = 1;
 
 /**
- * Returns how far below the text, in pixels, the underline that spells out the
- * label of a hint should sit.
+ * Returns how to draw the underline that spells out the label of a hint.
  *
  * When the page already underlines the text we place ours just below the page's
- * one, so that the label reads as a second short line under exactly its two
- * characters.
+ * one and in the same color, so that the label reads as a second short line
+ * under exactly its two characters rather than as something unrelated. Pages
+ * that give their links a `text-decoration-color` of their own are common
+ * enough that following the text color instead looks out of place.
  */
-export function getUnderlineOffset(node: Text) {
+export function getUnderlineStyle(node: Text): UnderlineStyle {
 	const pageUnderline = getPageUnderline(node);
-	if (!pageUnderline) return defaultOffset;
+	if (!pageUnderline) return { offset: defaultOffset, color: "currentColor" };
 
-	const { offset, thickness } = pageUnderline;
+	const { offset, thickness, color } = pageUnderline;
 
 	// The thickness of an underline grows downwards from its offset, so the
 	// bottom of the page's line is at `offset + thickness`. Both lines are
 	// measured from the same zero position, so we can add the gap to that.
 	const result = Math.round((offset + thickness + gap) * 10) / 10;
 
-	return Math.min(result, maximumOffset);
+	return { offset: Math.min(result, maximumOffset), color, pageUnderline };
 }
 
 /**
- * Returns the offset and thickness, in pixels, of the underline the page paints
- * over this text, or `undefined` if it doesn't paint one.
+ * Returns the offset and thickness, in pixels, and the color of the underline
+ * the page paints over this text, or `undefined` if it doesn't paint one.
  *
  * Text decorations propagate from the element that declares them down to its
  * inline descendants, so we need to look up the tree. They don't propagate into
@@ -57,7 +84,7 @@ export function getUnderlineOffset(node: Text) {
  * elements...), and since all of those compute to a display other than
  * `inline`, that is the only check we need.
  */
-function getPageUnderline(node: Text) {
+function getPageUnderline(node: Text): PageUnderline | undefined {
 	let current = node.parentElement;
 
 	while (current) {
@@ -73,6 +100,10 @@ function getPageUnderline(node: Text) {
 					fontSize,
 					Math.max(1, Math.round(fontSize / 12))
 				),
+				color: style.textDecorationColor,
+				// Copied so that the redrawn segment skips descenders exactly the way
+				// the page's own line does.
+				skipInk: style.textDecorationSkipInk,
 			};
 		}
 
