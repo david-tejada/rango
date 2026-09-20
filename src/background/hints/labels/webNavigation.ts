@@ -27,7 +27,7 @@
 import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
 import { sendMessage } from "../../messaging/sendMessage";
-import { UnreachableContentScriptError } from "../../messaging/UnreachableContentScriptError";
+import { isUnreachableFrameError } from "../../messaging/UnreachableContentScriptError";
 import { getRequiredCurrentTabId } from "../../tabs/getCurrentTab";
 import { getAllFrames } from "../../utils/getAllFrames";
 import { initStack } from "./labelStack";
@@ -98,22 +98,6 @@ export function addWebNavigationListeners() {
 	browser.webNavigation.onCompleted.addListener(async ({ tabId, frameId }) => {
 		await synchronizeLabels(tabId, frameId);
 	});
-}
-
-/**
- * `sendMessage` only wraps the error when the whole tab is unreachable. When
- * the tab is alive but the frame we are messaging has gone away, which is what
- * happens when a frame is removed mid navigation, the browser throws its own
- * "Could not establish connection" error instead.
- */
-function isUnreachableFrameError(error: unknown) {
-	return (
-		error instanceof UnreachableContentScriptError ||
-		(error instanceof Error &&
-			/could not establish connection|receiving end does not exist|message manager disconnected/i.test(
-				error.message
-			))
-	);
 }
 
 function getTabMutex(tabId: number) {
