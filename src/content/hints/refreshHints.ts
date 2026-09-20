@@ -1,3 +1,4 @@
+import { retryPendingHints } from "../wrappers/ElementWrapper";
 import { refresh } from "../wrappers/refresh";
 import { getHintedWrappers } from "../wrappers/wrappers";
 import { resetExtraHintsToggles } from "./customHints/customHints";
@@ -56,9 +57,20 @@ async function refreshLabels() {
 		)
 		.map((wrapper) => wrapper.element);
 
-	const assignments = await cacheLabels(elementsNecessary, elementsAdditional);
+	try {
+		const assignments = await cacheLabels(
+			elementsNecessary,
+			elementsAdditional
+		);
 
-	for (const wrapper of wrappersToRefresh) {
-		wrapper.hint?.claim(assignments.get(wrapper.element));
+		for (const wrapper of wrappersToRefresh) {
+			wrapper.hint?.claim(assignments.get(wrapper.element));
+		}
+	} catch (error: unknown) {
+		// We have already released every hint, so if claiming fails here the page
+		// is left without any. The intersection retry will pick them back up once
+		// the background script is reachable again.
+		console.error("Rango: unable to refresh labels.", error);
+		await retryPendingHints();
 	}
 }

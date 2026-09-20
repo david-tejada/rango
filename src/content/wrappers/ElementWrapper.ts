@@ -16,7 +16,7 @@ import { Hint } from "../hints/Hint";
 import { cacheLabels, type LabelAssignments } from "../hints/labels/labelCache";
 import { cacheLayout, clearLayoutCache } from "../hints/layoutCache";
 import { matchesCustomExclude, matchesCustomInclude } from "../hints/selectors";
-import { sendMessage } from "../messaging/messageHandler";
+import { isContextInvalidated, sendMessage } from "../messaging/messageHandler";
 import { settingsSync } from "../settings/settingsSync";
 import { BoundedIntersectionObserver } from "./BoundedIntersectionObserver";
 import { refresh } from "./refresh";
@@ -24,6 +24,7 @@ import {
 	addWrapper,
 	clearHintedWrapper,
 	deleteWrapper,
+	getAllWrappers,
 	getWrapperForElement,
 	getWrappersWithin,
 } from "./wrappers";
@@ -182,10 +183,23 @@ async function intersectionCallback(entries: IntersectionObserverEntry[]) {
 	if (amountIntersecting) {
 		const elements = entriesIntersecting.map((entry) => entry.target);
 
-		assignments = await cacheLabels(
-			elements.filter((element) => !outsideViewport.has(element)),
-			[...outsideViewport]
-		);
+		try {
+			assignments = await cacheLabels(
+				elements.filter((element) => !outsideViewport.has(element)),
+				[...outsideViewport]
+			);
+		} catch (error: unknown) {
+			// Claiming labels can fail if the background script is unreachable, for
+			// example while the service worker restarts. We still hint what we can
+			// with the labels we already hold, but the elements that don't get one
+			// stay intersecting, and the observer won't fire for them again, so we
+			// have to come back to them ourselves.
+			if (!isContextInvalidated()) {
+				console.error("Rango: unable to claim labels.", error);
+			}
+
+			scheduleRetry();
+		}
 	}
 
 	for (const entry of entriesIntersecting) {
@@ -193,6 +207,60 @@ async function intersectionCallback(entries: IntersectionObserverEntry[]) {
 			entry.isIntersecting,
 			assignments
 		);
+	}
+}
+
+// RETRY
+
+const initialRetryDelay = 1000;
+const maximumRetryDelay = 30_000;
+
+let retryDelay = initialRetryDelay;
+let retryTimeout: ReturnType<typeof setTimeout> | undefined;
+
+/**
+ * Schedules another attempt at hinting the elements that are intersecting but
+ * ended up without a label. Without this a single failed message would leave
+ * them unhinted for as long as the page is open, since an Intersection Observer
+ * only reports a change in intersection.
+ */
+function scheduleRetry() {
+	if (retryTimeout ?? isContextInvalidated()) return;
+
+	retryTimeout = setTimeout(async () => {
+		retryTimeout = undefined;
+		await retryPendingHints();
+	}, retryDelay);
+}
+
+export async function retryPendingHints() {
+	const pending = getAllWrappers().filter(
+		(wrapper) =>
+			wrapper.isIntersecting && wrapper.shouldBeHinted && !wrapper.hint?.label
+	);
+
+	if (pending.length === 0) {
+		retryDelay = initialRetryDelay;
+		return;
+	}
+
+	try {
+		const assignments = await cacheLabels(
+			pending
+				.filter((wrapper) => wrapper.isIntersectingViewport)
+				.map((wrapper) => wrapper.element),
+			pending
+				.filter((wrapper) => !wrapper.isIntersectingViewport)
+				.map((wrapper) => wrapper.element)
+		);
+
+		for (const wrapper of pending) wrapper.intersect(true, assignments);
+		retryDelay = initialRetryDelay;
+	} catch {
+		// Back off so that a background script that stays unreachable doesn't have
+		// us retrying in a tight loop for the lifetime of the page.
+		retryDelay = Math.min(retryDelay * 2, maximumRetryDelay);
+		scheduleRetry();
 	}
 }
 
