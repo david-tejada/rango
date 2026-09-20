@@ -158,11 +158,42 @@ async function cacheLabelsUnsafe(
 		assignFromCache(assignments, elements, underlineTexts);
 	}
 
-	// We hand the assignments to the caller before giving anything back, so that
-	// this batch's labels are safe from whatever runs during the release.
-	void releaseSurplus(totalCount - assignments.size);
+	// Take a label out of the cache for every element that still doesn't have
+	// one, instead of leaving them to pick one up when they claim their hint.
+	// Claiming happens after this function returns, and by then another batch
+	// can have run and given those labels away or released them, since a label
+	// reserved for an element that hasn't claimed yet is indistinguishable from
+	// a spare one while it sits in the cache.
+	reserveFromCache(assignments, necessary, mainCache, additionalCache);
+	reserveFromCache(assignments, additional, additionalCache, mainCache);
+
+	// Whatever is left is genuinely spare. We keep a few for the elements that
+	// need a label outside of a batch and give the rest back.
+	void releaseSurplus(spareLabelReserve);
 
 	return assignments;
+}
+
+/**
+ * The number of spare labels we hold on to. Enough for the odd element that
+ * needs one outside of a batch, few enough that other frames aren't starved.
+ */
+const spareLabelReserve = 10;
+
+function reserveFromCache(
+	assignments: LabelAssignments,
+	elements: Element[],
+	preferred: string[],
+	fallback: string[]
+) {
+	for (const element of elements) {
+		if (assignments.has(element)) continue;
+
+		const label = preferred.pop() ?? fallback.pop();
+		if (!label) return;
+
+		assignments.set(element, { label });
+	}
 }
 
 /**
