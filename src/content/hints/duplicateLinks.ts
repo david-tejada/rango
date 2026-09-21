@@ -1,4 +1,5 @@
 import { type ElementWrapper } from "../wrappers/ElementWrapper";
+import { getWrapperForElement } from "../wrappers/wrappers";
 
 /**
  * Pages often give the same destination more than one link: a thumbnail next to
@@ -58,6 +59,36 @@ export function trackLink(wrapper: ElementWrapper) {
 	// A new link can take the place of one that is already hinted, or be taken
 	// over by it, so the rest of the group has to be looked at again.
 	settle(group, wrapper);
+}
+
+/**
+ * The label already showing on a link to the same place somewhere else on the
+ * page, if there is one.
+ *
+ * Links separated by a landmark keep their own hints, but there is no reason
+ * for them to take a label each: they lead to the same place, so the same label
+ * can answer for all of them. This matters most where a page repeats a link
+ * many times, since identical text has identical candidates and the group runs
+ * the word out of pairs.
+ */
+export function getSharedLabel(element: Element) {
+	const wrapper = getWrapperForElement(element);
+	if (!wrapper) return undefined;
+
+	const key = hrefs.get(wrapper);
+	if (!key) return undefined;
+
+	const group = linksByHref.get(key);
+	if (!group) return undefined;
+
+	const except = wrapper;
+
+	for (const wrapper of group) {
+		if (wrapper === except || !wrapper.element.isConnected) continue;
+		if (wrapper.hint?.label) return wrapper.hint.label;
+	}
+
+	return undefined;
 }
 
 export function untrackLink(wrapper: ElementWrapper) {
@@ -148,7 +179,12 @@ function getHref(element: Element) {
 	if (/^\s*javascript:/i.test(attribute)) return undefined;
 	if (!element.href) return undefined;
 
-	return `${element.href}\n${element.target}`;
+	// A trailing slash is the same page either way, and pages are inconsistent
+	// about it within themselves: Smashing Magazine links an author's avatar
+	// without one and their name with one, right next to each other.
+	const href = element.href.replace(/\/(?=$|[?#])/, "");
+
+	return `${href}\n${element.target}`;
 }
 
 /**

@@ -28,9 +28,9 @@ import { refresh } from "./refresh";
 import { scheduleRehint } from "./rehint";
 import {
 	addWrapper,
-	clearHintedWrapper,
 	deleteWrapper,
 	getWrapperForElement,
+	getWrappersSharingLabel,
 	getWrappersWithin,
 } from "./wrappers";
 
@@ -408,10 +408,10 @@ export class ElementWrapper {
 				// the viewport for label caching
 				viewportIntersectionObserver.observe(this.element);
 			} else {
-				if (this.hint?.label) {
-					clearHintedWrapper(this.hint.label);
-					this.hint.release();
-				}
+				// `release` takes care of clearing the label, which matters when
+				// several elements share one: clearing it here without saying which
+				// element is letting go would take it from all of them.
+				this.hint?.release();
 
 				viewportIntersectionObserver.unobserve(this.element);
 				this.unobserveIntersection();
@@ -486,11 +486,7 @@ export class ElementWrapper {
 	async click() {
 		const pointerTarget = this.getPointerTarget();
 
-		if (this.hint?.underlineRange ?? this.hint?.inner.isConnected) {
-			this.hint.flash();
-		} else {
-			this.flashElement();
-		}
+		this.flashLabel();
 
 		if (
 			this.element instanceof HTMLAnchorElement &&
@@ -519,6 +515,27 @@ export class ElementWrapper {
 		dispatchClick(pointerTarget);
 	}
 
+	/**
+	 * Flashes every element showing this element's label, not just this one, so
+	 * that it's clear which elements a label answers for when more than one
+	 * points at the same place.
+	 */
+	flashLabel() {
+		const wrappers = this.hint?.label
+			? getWrappersSharingLabel(this.hint.label)
+			: [this];
+
+		for (const wrapper of wrappers.length > 0 ? wrappers : [this]) {
+			const { hint } = wrapper;
+
+			if (hint?.underlineRange ?? hint?.inner.isConnected) {
+				hint.flash();
+			} else {
+				wrapper.flashElement();
+			}
+		}
+	}
+
 	flashElement() {
 		const element = this.element;
 
@@ -538,7 +555,7 @@ export class ElementWrapper {
 
 	hover() {
 		const pointerTarget = this.getPointerTarget();
-		this.hint?.flash();
+		this.flashLabel();
 		dispatchHover(pointerTarget);
 	}
 

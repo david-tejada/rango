@@ -112,10 +112,16 @@ export function addMessageListeners() {
 	});
 
 	onMessage("getLabelsInViewport", () => {
-		return getHintedWrappers()
-			.filter((wrapper) => wrapper.isIntersectingViewport)
-			.map((wrapper) => wrapper.hint?.label)
-			.filter((label) => label !== undefined);
+		// Several elements can share a label, so the same one can come up more
+		// than once.
+		return [
+			...new Set(
+				getHintedWrappers()
+					.filter((wrapper) => wrapper.isIntersectingViewport)
+					.map((wrapper) => wrapper.hint?.label)
+					.filter((label) => label !== undefined)
+			),
+		];
 	});
 
 	onMessage("hideHint", async ({ target }) => {

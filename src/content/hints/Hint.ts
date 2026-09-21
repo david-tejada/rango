@@ -20,6 +20,7 @@ import {
 } from "./color/hintColors";
 import { resolveBackgroundColor } from "./color/resolveBackgroundColor";
 import { matchesStagedSelector } from "./customHints/customSelectorsStaging";
+import { getSharedLabel } from "./duplicateLinks";
 import { type LabelAssignment, popLabel, pushLabel } from "./labels/labelCache";
 import {
 	cacheLayout,
@@ -562,7 +563,17 @@ export class Hint {
 	 * from the cache and is rendered the usual way.
 	 */
 	claim(assignment?: LabelAssignment) {
-		const label = assignment?.label ?? popLabel();
+		// A link to the same place elsewhere on the page already has a label, and
+		// there is no reason for this one to take a second: they lead to the same
+		// place, so one label can answer for both. This is looked up here rather
+		// than while labels are being handed out, so that the counting there
+		// doesn't have to know about it.
+		const shared = getSharedLabel(this.target);
+
+		// The label reserved for us is no longer needed, so it goes back.
+		if (shared && assignment) pushLabel(assignment.label);
+
+		const label = shared ?? assignment?.label ?? popLabel();
 
 		if (!label) {
 			console.warn("No more labels available");
@@ -872,14 +883,16 @@ export class Hint {
 		// latter could be removed by a page script
 		if (!this.label) return;
 
-		clearHintedWrapper(this.label);
+		// Several elements can show the same label, so it only goes back to the
+		// stack once the last of them has let go of it.
+		const freed = clearHintedWrapper(this.label, this.target);
 
 		if (this.underlineRange) {
 			hideUnderline(this.underlineRange);
 			this.underlineRange = undefined;
 			underlinedTargets.delete(this.target);
 
-			if (returnToStack) pushLabel(this.label);
+			if (returnToStack && freed) pushLabel(this.label);
 			this.label = undefined;
 
 			if (
@@ -898,7 +911,7 @@ export class Hint {
 			});
 		}
 
-		if (returnToStack) pushLabel(this.label);
+		if (returnToStack && freed) pushLabel(this.label);
 		this.inner.textContent = "";
 		this.label = undefined;
 
