@@ -85,7 +85,10 @@ export function getSharedLabel(element: Element) {
 
 	for (const wrapper of group) {
 		if (wrapper === except || !wrapper.element.isConnected) continue;
-		if (wrapper.hint?.label) return wrapper.hint.label;
+		if (!wrapper.hint?.label) continue;
+		if (!canStandFor(element, wrapper.element)) continue;
+
+		return wrapper.hint.label;
 	}
 
 	return undefined;
@@ -125,6 +128,8 @@ export function isDuplicateOfNearbyLink(wrapper: ElementWrapper) {
 		if (other === wrapper || !other.isHintable) continue;
 		if (!other.element.isConnected) continue;
 		if (getRegion(other.element) !== region) continue;
+
+		if (!canStandFor(wrapper.element, other.element)) continue;
 
 		// Ties keep both. Two links with text of the same size are as likely to be
 		// two offerings as one, and leaving a hint in place costs less than taking
@@ -185,6 +190,45 @@ function getHref(element: Element) {
 	const href = element.href.replace(/\/(?=$|[?#])/, "");
 
 	return `${href}\n${element.target}`;
+}
+
+/**
+ * Whether one of these links can answer for the other without leaving the
+ * reader wondering.
+ *
+ * Pointing at the same place isn't enough. A card's "Subscribe" button and the
+ * heading above it lead to the same page, but they read as separate offerings,
+ * and taking the hint off one of them, or putting a label on it spelled out of
+ * the other's words, only puzzles whoever is looking at it. So they have to
+ * read the same, or one of them has to show nothing at all, as a thumbnail or
+ * an avatar does, or show the destination itself the way a result's url does.
+ */
+function canStandFor(one: Element, other: Element) {
+	const first = getText(one);
+	const second = getText(other);
+
+	if (!first || !second) return true;
+	if (first === second) return true;
+
+	return looksLikeUrl(first) || looksLikeUrl(second);
+}
+
+function getText(element: Element) {
+	return (element.textContent ?? "")
+		.replaceAll(/\s+/g, " ")
+		.trim()
+		.toLowerCase();
+}
+
+/**
+ * Whether the text is the destination written out, which is what a search
+ * result shows above its heading.
+ */
+function looksLikeUrl(text: string) {
+	return (
+		/^(https?:\/\/|www\.)/.test(text) ||
+		/^[a-z\d-]+(\.[a-z\d-]+)+([\s/›]|$)/.test(text)
+	);
 }
 
 /**
