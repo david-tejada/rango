@@ -15,6 +15,12 @@ export type LabelRequest = {
 	 * elements without usable text, which always get a regular hint.
 	 */
 	text?: string;
+
+	/**
+	 * The length of the leading part of `text` a label should come from if one
+	 * is available there. See `UnderlineText`.
+	 */
+	preferredLength?: number;
 };
 
 /**

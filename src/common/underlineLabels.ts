@@ -25,11 +25,18 @@ type LabelCandidate = {
  * preference. Only pairs of contiguous latin letters qualify, so no pair spans
  * a space, a symbol or any other character.
  *
- * Pairs at the start of a word come first since they are easier to spot, and
- * within each group earlier pairs come first. Repeated pairs are only returned
- * once, for their first occurrence.
+ * Pairs within the first `preferredLength` characters come first, then pairs at
+ * the start of a word since they are easier to spot, and within each group
+ * earlier pairs come first. Repeated pairs are only returned once, for their
+ * first occurrence.
+ *
+ * @param preferredLength - The length of the leading part of `text` a label
+ * should come from if it can. See `UnderlineText`.
  */
-export function getLabelCandidates(text: string): LabelCandidate[] {
+export function getLabelCandidates(
+	text: string,
+	preferredLength = text.length
+): LabelCandidate[] {
 	const candidates: LabelCandidate[] = [];
 	const seen = new Set<string>();
 
@@ -42,8 +49,14 @@ export function getLabelCandidates(text: string): LabelCandidate[] {
 		candidates.push({ label, index });
 	}
 
+	// A pair that starts inside the preferred part but runs past its end isn't
+	// in it, since only its first character would be where we want the label.
+	const isPreferred = ({ index }: LabelCandidate) =>
+		index + 2 <= preferredLength;
+
 	return candidates.sort(
 		(a, b) =>
+			Number(isPreferred(b)) - Number(isPreferred(a)) ||
 			Number(isWordStart(text, b.index)) - Number(isWordStart(text, a.index)) ||
 			a.index - b.index
 	);

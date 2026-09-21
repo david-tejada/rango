@@ -9,6 +9,8 @@ type TextPosition = {
 	offset: number;
 };
 
+const headingSelector = "h1, h2, h3, h4, h5, h6, [role='heading']";
+
 export type UnderlineText = {
 	/**
 	 * The visible text of the element, normalized so that it only contains the
@@ -22,6 +24,15 @@ export type UnderlineText = {
 	 * separators we insert between text nodes, which don't exist in the DOM.
 	 */
 	positions: Array<TextPosition | undefined>;
+
+	/**
+	 * The length of the leading part of `text` that a label should come from if
+	 * it can. When the element has a heading inside it, as a search result does,
+	 * that is the heading: it is what the eye goes to, so a label sitting in the
+	 * summary underneath is harder to find. It is the whole length when there is
+	 * nothing to prefer.
+	 */
+	preferredLength: number;
 };
 
 /**
@@ -48,26 +59,64 @@ const skipTextNodesWithin = ".rango-hint, script, style, noscript, select";
  * contiguous latin letters, in which case it needs a regular hint.
  */
 export function getUnderlineText(element: Element): UnderlineText | undefined {
-	const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
-	const positions: Array<TextPosition | undefined> = [];
-	let text = "";
-	let nodesSeen = 0;
+	const collected: Collected = { text: "", positions: [], nodesSeen: 0 };
+	const taken = new Set<Text>();
 
-	while (text.length < maxTextLength && nodesSeen < maxTextNodes) {
+	// The heading first, so that its characters are the ones a label is matched
+	// against before anything else in the element.
+	const heading = element.querySelector(headingSelector);
+	if (heading) collect(heading, element, collected, taken);
+
+	const preferredLength = collected.text.length;
+
+	collect(element, element, collected, taken);
+
+	const { text, positions } = collected;
+
+	return /[a-z]{2}/.test(text)
+		? { text, positions, preferredLength }
+		: undefined;
+}
+
+type Collected = {
+	text: string;
+	positions: Array<TextPosition | undefined>;
+	nodesSeen: number;
+};
+
+/**
+ * Appends the visible text of `root` to `collected`, skipping any text node
+ * already taken by an earlier call.
+ */
+function collect(
+	root: Element,
+	hintable: Element,
+	collected: Collected,
+	taken: Set<Text>
+) {
+	const walker = document.createTreeWalker(root, NodeFilter.SHOW_TEXT);
+
+	while (
+		collected.text.length < maxTextLength &&
+		collected.nodesSeen < maxTextNodes
+	) {
 		const node = walker.nextNode() as Text | null;
 		if (!node) break;
 
+		if (taken.has(node)) continue;
 		if (!node.textContent || !/\S/.test(node.textContent)) continue;
 
-		nodesSeen++;
-		if (!isRendered(node, element)) continue;
+		collected.nodesSeen++;
+		if (!isRendered(node, hintable)) continue;
+
+		taken.add(node);
 
 		// Text nodes that are not contiguous in the DOM might still render next to
 		// each other, but we can't know that cheaply. We separate them so that we
 		// never produce a label whose two characters aren't visibly together.
-		if (text.length > 0) {
-			text += " ";
-			positions.push(undefined);
+		if (collected.text.length > 0) {
+			collected.text += " ";
+			collected.positions.push(undefined);
 		}
 
 		// We iterate by code unit and not by code point because that is what
@@ -75,13 +124,11 @@ export function getUnderlineText(element: Element): UnderlineText | undefined {
 		// (including each half of a surrogate pair) becomes a space.
 		let offset = 0;
 		while (offset < node.length) {
-			text += normalizeCharacter(node.data.charAt(offset));
-			positions.push({ node, offset });
+			collected.text += normalizeCharacter(node.data.charAt(offset));
+			collected.positions.push({ node, offset });
 			offset++;
 		}
 	}
-
-	return /[a-z]{2}/.test(text) ? { text, positions } : undefined;
 }
 
 /**

@@ -67,9 +67,9 @@ function assignLabelsToText(stack: LabelStack, requests?: LabelRequest[]) {
 	// is the order they appear in the viewport.
 	const byFewestOptions = requests
 		.filter(({ text }) => text)
-		.map(({ id, text }) => ({
+		.map(({ id, text, preferredLength }) => ({
 			id,
-			labels: getLabelCandidates(text!)
+			labels: getLabelCandidates(text!, preferredLength)
 				.map(({ label }) => label)
 				.filter((label) => free.has(label)),
 		}))

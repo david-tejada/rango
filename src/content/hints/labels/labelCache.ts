@@ -257,7 +257,11 @@ function buildRequests(
 	for (const [index, element] of elements.entries()) {
 		const underlineText = underlineTexts.get(element);
 		if (underlineText && !assignments.has(element)) {
-			requests.push({ id: String(index), text: underlineText.text });
+			requests.push({
+				id: String(index),
+				text: underlineText.text,
+				preferredLength: underlineText.preferredLength,
+			});
 		}
 	}
 
@@ -288,7 +292,10 @@ function assignFromCache(
 		)
 		.map((element) => ({
 			element,
-			labels: getLabelCandidates(underlineTexts.get(element)!.text)
+			labels: getLabelCandidates(
+				underlineTexts.get(element)!.text,
+				underlineTexts.get(element)!.preferredLength
+			)
 				.map(({ label }) => label)
 				.filter((label) => available.has(label)),
 		}))
