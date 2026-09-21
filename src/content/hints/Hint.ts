@@ -44,7 +44,11 @@ import {
 	getUnderlineStyle,
 	type UnderlineStyle,
 } from "./underline/getUnderlineStyle";
-import { hideUnderline, showUnderline } from "./underline/underlineHighlights";
+import {
+	hideUnderline,
+	showUnderline,
+	supportsUnderlineHints,
+} from "./underline/underlineHighlights";
 
 const colorRedString = red.toString();
 const colorGreenString = green.toString();
@@ -580,7 +584,16 @@ export class Hint {
 			return;
 		}
 
-		const underlineText = assignment?.underlineText;
+		// A hint that wasn't given a label in a batch has no text read for it
+		// either, and one taking another link's label was never going to be given
+		// one. Reading it here costs a walk over the text of a single element and
+		// is what keeps those from falling back to a regular hint.
+		const underlineText =
+			assignment?.underlineText ??
+			(settingsSync.get("underlineHints") && supportsUnderlineHints()
+				? getUnderlineText(this.target)
+				: undefined);
+
 		this.label = label;
 
 		// If the label was matched against the text of the target we render it by
