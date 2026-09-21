@@ -12,6 +12,11 @@ import { isHintable } from "../dom/isHintable";
 import { isVisible } from "../dom/isVisible";
 import { setStyleProperties } from "../dom/setStyleProperties";
 import { getExtraHintsToggle } from "../hints/customHints/customHints";
+import {
+	isDuplicateOfNearbyLink,
+	trackLink,
+	untrackLink,
+} from "../hints/duplicateLinks";
 import { Hint } from "../hints/Hint";
 import { cacheLabels, type LabelAssignments } from "../hints/labels/labelCache";
 import { cacheLayout, clearLayoutCache } from "../hints/layoutCache";
@@ -376,7 +381,12 @@ export class ElementWrapper {
 	updateIsHintable() {
 		this.isHintable = isHintable(this.element);
 
-		if (this.isHintable) hintablesResizeObserver.observe(this.element);
+		if (this.isHintable) {
+			hintablesResizeObserver.observe(this.element);
+			trackLink(this);
+		} else {
+			untrackLink(this);
+		}
 
 		this.updateShouldBeHinted();
 	}
@@ -388,7 +398,8 @@ export class ElementWrapper {
 				(matchesCustomInclude(this.element) &&
 					!matchesCustomExclude(this.element)) ||
 				getExtraHintsToggle()) &&
-			!isDisabled(this.element);
+			!isDisabled(this.element) &&
+			!isDuplicateOfNearbyLink(this);
 
 		if (newShouldBeHinted !== this.shouldBeHinted) {
 			if (newShouldBeHinted) {
@@ -541,6 +552,7 @@ export class ElementWrapper {
 	}
 
 	suspend() {
+		untrackLink(this);
 		this.unobserveIntersection();
 		viewportIntersectionObserver.unobserve(this.element);
 		hintablesResizeObserver.unobserve(this.element);
