@@ -120,9 +120,13 @@ function isRendered(node: Text, hintable: Element) {
 		current = current.parentElement;
 	}
 
-	const { visibility, opacity, width, height } =
+	const { visibility, opacity, width, height, textIndent } =
 		getComputedStyle(parentElement);
 	if (visibility === "hidden" || opacity === "0") return false;
+
+	// A large negative text indent is another way of hiding text while leaving
+	// it in the layout. Same threshold as in `getElementToPositionHint`.
+	if (Math.abs(Number.parseInt(textIndent, 10)) > 100) return false;
 
 	// This catches text hidden with the .sr-only/.visually-hidden technique. The
 	// rect of the text itself doesn't help here: `clip` and `overflow` only

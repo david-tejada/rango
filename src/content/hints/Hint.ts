@@ -577,7 +577,7 @@ export class Hint {
 		// fail to materialize, for example if the characters ended up on different
 		// lines, in which case we fall back to a regular hint with the same label.
 		this.underlineRange = underlineText
-			? getUnderlineRange(this.target, underlineText, label)
+			? getUnderlineRange(underlineText, label)
 			: undefined;
 
 		if (this.underlineRange) {
@@ -651,7 +651,7 @@ export class Hint {
 			? getUnderlineText(this.target)
 			: undefined;
 		const range = underlineText
-			? getUnderlineRange(this.target, underlineText, label)
+			? getUnderlineRange(underlineText, label)
 			: undefined;
 
 		if (range) {

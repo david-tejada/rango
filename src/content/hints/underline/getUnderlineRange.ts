@@ -1,4 +1,3 @@
-import { getBoundingClientRect } from "../layoutCache";
 import { type UnderlineText } from "./getUnderlineText";
 
 /**
@@ -11,7 +10,6 @@ import { type UnderlineText } from "./getUnderlineText";
  * falls back to a regular hint using the same label.
  */
 export function getUnderlineRange(
-	target: Element,
 	underlineText: UnderlineText,
 	label: string
 ): Range | undefined {
@@ -42,7 +40,7 @@ export function getUnderlineRange(
 	range.setStart(start.node, start.offset);
 	range.setEnd(end.node, end.offset + 1);
 
-	return isUnderlineVisible(range, target) ? range : undefined;
+	return isUnderlineVisible(range) ? range : undefined;
 }
 
 /**
@@ -70,7 +68,7 @@ function normalizes(character: string, letter: string) {
 	);
 }
 
-function isUnderlineVisible(range: Range, target: Element) {
+function isUnderlineVisible(range: Range) {
 	const rects = range.getClientRects();
 
 	// More than one rect means the two characters were split across lines, which
@@ -78,19 +76,6 @@ function isUnderlineVisible(range: Range, target: Element) {
 	if (rects.length !== 1) return false;
 
 	const rect = rects[0]!;
-	if (rect.width === 0 || rect.height === 0) return false;
 
-	// Make sure the characters are painted where the element is. Text can be
-	// pushed out of view with techniques like a large negative `text-indent` or
-	// be clipped by an ancestor with `overflow: hidden`.
-	const targetRect = getBoundingClientRect(target);
-	const x = rect.x + rect.width / 2;
-	const y = rect.y + rect.height / 2;
-
-	return (
-		x >= targetRect.left &&
-		x <= targetRect.right &&
-		y >= targetRect.top &&
-		y <= targetRect.bottom
-	);
+	return rect.width > 0 && rect.height > 0;
 }
