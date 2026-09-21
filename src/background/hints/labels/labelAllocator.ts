@@ -29,7 +29,7 @@ export async function claimLabels(
 			// matches the text of an element covers one of those, and the frame
 			// gives back whatever it ends up holding in excess.
 			const remaining = Math.max(amount - Object.keys(assigned).length, 0);
-			const unassigned = stack.free.splice(-remaining, remaining);
+			const unassigned = takeAnyLabels(stack, remaining);
 
 			for (const label of [...Object.values(assigned), ...unassigned]) {
 				stack.assigned[label] = frameId;
@@ -39,6 +39,35 @@ export async function claimLabels(
 		},
 		async () => createStack(tabId)
 	);
+}
+
+/**
+ * Takes labels for the elements that will show them the usual way, leaving the
+ * single letters alone while anything longer is free.
+ *
+ * A single letter is the only label a short piece of text can spell, so it is
+ * worth more to an element that can underline it than to one that will put it
+ * in a box either way. They still go out when nothing else is left, which is
+ * better than running out of labels altogether.
+ */
+function takeAnyLabels(stack: LabelStack, amount: number) {
+	if (amount <= 0) return [];
+
+	// The stack is kept longest first, so the single letters are the tail of it.
+	const firstSingle = stack.free.findIndex((label) => isSingleLetter(label));
+	const end = firstSingle === -1 ? stack.free.length : firstSingle;
+
+	const taken = stack.free.splice(Math.max(end - amount, 0), amount);
+
+	if (taken.length < amount) {
+		taken.push(...stack.free.splice(-(amount - taken.length)));
+	}
+
+	return taken;
+}
+
+function isSingleLetter(label: string) {
+	return label.length === 1 && label >= "a" && label <= "z";
 }
 
 /**

@@ -1,11 +1,11 @@
 import { type UnderlineText } from "./getUnderlineText";
 
 /**
- * Builds the `Range` covering the two characters of `underlineText` that spell
+ * Builds the `Range` covering the characters of `underlineText` that spell
  * `label`.
  *
  * Returns `undefined` when the label can't be underlined after all, for example
- * because its two characters ended up on different lines or because the text
+ * because its characters ended up on different lines or because the text
  * turned out not to be painted where the element is. In that case the caller
  * falls back to a regular hint using the same label.
  */
@@ -21,19 +21,21 @@ export function getUnderlineRange(
 	if (index === -1) return;
 
 	const start = positions[index];
-	const end = positions[index + 1];
+	const end = positions[index + label.length - 1];
 	if (!start || !end || !start.node.isConnected || !end.node.isConnected) {
 		return;
 	}
 
 	// The text nodes could have changed since we read them.
-	if (
-		start.node.length <= start.offset ||
-		end.node.length <= end.offset ||
-		!normalizes(start.node.data[start.offset]!, label[0]!) ||
-		!normalizes(end.node.data[end.offset]!, label[1]!)
-	) {
-		return;
+	for (const [offset, letter] of [...label].entries()) {
+		const position = positions[index + offset];
+		if (
+			!position ||
+			position.node.length <= position.offset ||
+			!normalizes(position.node.data[position.offset]!, letter)
+		) {
+			return;
+		}
 	}
 
 	const range = document.createRange();
@@ -45,7 +47,7 @@ export function getUnderlineRange(
 
 /**
  * Returns `true` if `text` still spells `label`. Cheap enough to call on every
- * mutation, since it only looks at two characters and reads no layout.
+ * mutation, since it only looks at a character or two and reads no layout.
  */
 export function spellsLabel(text: string, label: string) {
 	return (
@@ -76,7 +78,7 @@ function isUnderlineVisible(range: Range) {
 	const [first] = rects;
 	if (!first) return false;
 
-	// What we need to know is that the two characters are on the same line,
+	// What we need to know is that the characters are on the same line,
 	// since underlining a pair split across lines would draw two separate marks.
 	// We can't just count the rects: the browser reports the same rect more than
 	// once often enough, and rejecting those would cost us a lot of underlines.
