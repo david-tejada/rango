@@ -67,11 +67,15 @@ export function getUnderlineText(element: Element): UnderlineText | undefined {
 	const heading = element.querySelector(headingSelector);
 	if (heading) collect(heading, element, collected, taken);
 
-	const preferredLength = collected.text.length;
+	const headingLength = collected.text.length;
 
 	collect(element, element, collected, taken);
 
 	const { text, positions } = collected;
+
+	// With no heading there is nothing to prefer, which is the same as preferring
+	// all of it.
+	const preferredLength = heading ? headingLength : text.length;
 
 	return /[a-z]{2}/.test(text)
 		? { text, positions, preferredLength }

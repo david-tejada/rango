@@ -69,13 +69,20 @@ function normalizes(character: string, letter: string) {
 }
 
 function isUnderlineVisible(range: Range) {
-	const rects = range.getClientRects();
+	const rects = [...range.getClientRects()].filter(
+		(rect) => rect.width > 0 && rect.height > 0
+	);
 
-	// More than one rect means the two characters were split across lines, which
-	// would render as two separate underlines.
-	if (rects.length !== 1) return false;
+	const [first] = rects;
+	if (!first) return false;
 
-	const rect = rects[0]!;
-
-	return rect.width > 0 && rect.height > 0;
+	// What we need to know is that the two characters are on the same line,
+	// since underlining a pair split across lines would draw two separate marks.
+	// We can't just count the rects: the browser reports the same rect more than
+	// once often enough, and rejecting those would cost us a lot of underlines.
+	return rects.every(
+		(rect) =>
+			Math.abs(rect.top - first.top) < 1 &&
+			Math.abs(rect.bottom - first.bottom) < 1
+	);
 }
