@@ -2,6 +2,7 @@ import { Mutex } from "async-mutex";
 import { getLabelCandidates } from "../../../common/underlineLabels";
 import { type LabelRequest } from "../../../typings/LabelRequest";
 import { settingsSync } from "../../settings/settingsSync";
+import { getTextBearingSibling } from "../duplicateLinks";
 import { isMainFrame } from "../../setup/contentScriptContext";
 import { reclaimLabels } from "../../wrappers/wrappers";
 import {
@@ -244,8 +245,13 @@ function getUnderlineTexts(elements: Element[]) {
 /**
  * Builds the requests to send to the background script, for the elements that
  * don't have a label yet. We use the index of the element within the batch as
- * its id. Elements without underlinable text are left out, they just need any
- * label.
+ * its id.
+ *
+ * A link with no text of its own asks with the text of a link beside it going
+ * to the same place, so the label that comes back is one they can both use: it
+ * will show the label in a box either way, and its neighbour will be able to
+ * underline it. Elements with nothing to ask with are left out, they just need
+ * any label.
  */
 function buildRequests(
 	assignments: LabelAssignments,
@@ -255,17 +261,35 @@ function buildRequests(
 	const requests: LabelRequest[] = [];
 
 	for (const [index, element] of elements.entries()) {
-		const underlineText = underlineTexts.get(element);
-		if (underlineText && !assignments.has(element)) {
-			requests.push({
-				id: String(index),
-				text: underlineText.text,
-				preferredLength: underlineText.preferredLength,
-			});
-		}
+		if (assignments.has(element)) continue;
+
+		const underlineText = underlineTexts.get(element) ?? borrowText(element);
+		if (!underlineText) continue;
+
+		requests.push({
+			id: String(index),
+			text: underlineText.text,
+			preferredLength: underlineText.preferredLength,
+		});
 	}
 
 	return requests;
+}
+
+/**
+ * The text of a link beside this one going to the same place. Only used to ask
+ * for a label: the positions in it belong to that link, not this one, so it
+ * can't be used to underline anything here.
+ */
+function borrowText(element: Element) {
+	const sibling = getTextBearingSibling(element);
+	if (!sibling) return undefined;
+
+	try {
+		return getUnderlineText(sibling);
+	} catch {
+		return undefined;
+	}
 }
 
 /**

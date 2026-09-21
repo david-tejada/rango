@@ -94,6 +94,29 @@ export function getSharedLabel(element: Element) {
 	return undefined;
 }
 
+/**
+ * Another link in the same group that shows text, if there is one.
+ *
+ * A link showing only a thumbnail has no text to spell a label out of, so on
+ * its own it can only be given whatever label is going, and that label is then
+ * one nothing in the group can underline. Asking for one spelled out of the
+ * text its neighbours show leaves them able to use it.
+ */
+export function getTextBearingSibling(element: Element) {
+	const wrapper = getWrapperForElement(element);
+	if (!wrapper) return undefined;
+
+	const key = hrefs.get(wrapper);
+	if (!key) return undefined;
+
+	for (const other of linksByHref.get(key) ?? []) {
+		if (other === wrapper || !other.element.isConnected) continue;
+		if (getText(other.element)) return other.element;
+	}
+
+	return undefined;
+}
+
 export function untrackLink(wrapper: ElementWrapper) {
 	const href = hrefs.get(wrapper);
 	if (!href) return;
