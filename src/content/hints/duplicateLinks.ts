@@ -127,8 +127,8 @@ export function untrackLink(wrapper: ElementWrapper) {
 }
 
 /**
- * Returns `true` if another link to the same place, with nothing between them,
- * shows this one's destination more prominently.
+ * Returns `true` if another link to the same place, close by and with nothing
+ * between them, shows this one's destination more prominently.
  *
  * Note that this can't tell that a link has a click handler doing something
  * other than following its href. Requiring the two to sit in the same region
@@ -153,11 +153,64 @@ export function isDuplicateOfNearbyLink(wrapper: ElementWrapper) {
 		if (getRegion(other.element) !== region) continue;
 
 		if (!canStandFor(wrapper.element, other.element)) continue;
+		if (!isWithinReach(wrapper.element, other.element)) continue;
 
 		// Ties keep both. Two links with text of the same size are as likely to be
 		// two offerings as one, and leaving a hint in place costs less than taking
 		// away the only way to reach something.
 		if (getTextSize(other.element) > size) return true;
+	}
+
+	return false;
+}
+
+/**
+ * How far apart two links can sit in the DOM and still be the same offering,
+ * counted as the steps from one up to their closest common ancestor and back
+ * down to the other.
+ *
+ * An author's avatar and their name on Smashing Magazine are six steps apart,
+ * which is the furthest we have measured two links that really are one
+ * offering. This leaves room above that, since a page that wraps its cards in
+ * another layer or two is doing nothing unusual.
+ *
+ * Links that merely share a landmark are much further apart than anything this
+ * is meant to catch: on a GitHub organization page the same repository is
+ * linked from a pinned card and from the list below, twenty steps apart, and
+ * suppressing the pinned one leaves that card with no hint at all.
+ */
+const maxNodeDistance = 10;
+
+/**
+ * Whether two elements are close enough in the DOM to belong to the same thing.
+ *
+ * Only the first few ancestors of each are looked at, so this stays cheap no
+ * matter how deep the page nests: anything further apart than we care about is
+ * rejected without ever reaching the common ancestor.
+ */
+function isWithinReach(one: Element, other: Element) {
+	const ancestors = new Map<Element, number>();
+
+	let current: Element | null = one;
+	let steps = 0;
+
+	while (current && steps <= maxNodeDistance) {
+		ancestors.set(current, steps);
+		current = current.parentElement;
+		steps++;
+	}
+
+	current = other;
+	steps = 0;
+
+	while (current && steps <= maxNodeDistance) {
+		const fromOne = ancestors.get(current);
+		if (fromOne !== undefined && fromOne + steps <= maxNodeDistance) {
+			return true;
+		}
+
+		current = current.parentElement;
+		steps++;
 	}
 
 	return false;
