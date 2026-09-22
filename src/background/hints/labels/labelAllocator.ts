@@ -6,6 +6,7 @@ import {
 } from "../../../typings/LabelRequest";
 import { type LabelStack } from "../../../typings/LabelStack";
 import { sendMessage } from "../../messaging/sendMessage";
+import { isUnreachableFrameError } from "../../messaging/UnreachableContentScriptError";
 import { getAllFrames } from "../../utils/getAllFrames";
 import { createStack } from "./labelStack";
 import { navigationOccurred } from "./webNavigation";
@@ -197,18 +198,28 @@ export async function reclaimLabelsFromOtherFrames(
 		const reclaimed: string[] = [];
 
 		for (const frameId of otherFramesIds) {
-			// eslint-disable-next-line no-await-in-loop
-			const reclaimedFromFrame = await sendMessage(
-				"reclaimLabels",
-				{ amount: amount - reclaimed.length },
-				{ tabId, frameId }
-			);
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				const reclaimedFromFrame = await sendMessage(
+					"reclaimLabels",
+					{ amount: amount - reclaimed.length },
+					{ tabId, frameId }
+				);
 
-			reclaimed.push(...reclaimedFromFrame);
+				reclaimed.push(...reclaimedFromFrame);
+			} catch (error: unknown) {
+				// `getAllFrames` lists the frames that existed when we asked, and a
+				// page that rotates ads removes them constantly, so by now this one
+				// might be gone. A frame we can't reach has no labels to give, but it
+				// must not take down the claim for the frame that asked: that would
+				// leave a whole batch of elements with no label at all.
+				if (!isUnreachableFrameError(error)) throw error;
+				continue;
+			}
 
 			// Once we have enough labels we don't need to continue sending messages to
 			// other frames
-			if (reclaimed.length === amount) break;
+			if (reclaimed.length >= amount) break;
 		}
 
 		for (const label of reclaimed) {
