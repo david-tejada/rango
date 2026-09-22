@@ -64,6 +64,10 @@ const returnedLabels: string[] = [];
  */
 const mutex = new Mutex();
 
+function isLetter(character: string | undefined) {
+	return character !== undefined && character >= "a" && character <= "z";
+}
+
 function labelsHeld() {
 	return mainCache.length + additionalCache.length;
 }
@@ -102,8 +106,12 @@ async function cacheLabelsUnsafe(
 	saveLabelsToCache([...returnedLabels]);
 	returnedLabels.length = 0;
 
-	// Serve what we can with the labels this frame already holds.
-	assignFromCache(assignments, elements, underlineTexts);
+	// Serve what we can with the labels this frame already holds, but only where
+	// one of them lands at the start of a word. The cache is a handful of
+	// arbitrary labels, and taking a late one from it would settle for an
+	// underline in the middle of a word while the stack still has the label for
+	// the beginning of it.
+	assignFromCache(assignments, elements, underlineTexts, true);
 
 	const pendingCount = totalCount - assignments.size;
 	const necessaryPending = necessary.filter(
@@ -154,8 +162,8 @@ async function cacheLabelsUnsafe(
 
 		saveLabelsToCache(labelsClaimed, necessaryPending);
 
-		// Some of the labels we just claimed might match the text of an element
-		// that the stack couldn't assign a label to.
+		// The stack has had its say, so anything the cache can still spell is
+		// better than no underline at all.
 		assignFromCache(assignments, elements, underlineTexts);
 	}
 
@@ -304,7 +312,8 @@ function borrowText(element: Element) {
 function assignFromCache(
 	assignments: LabelAssignments,
 	elements: Element[],
-	underlineTexts: Map<Element, UnderlineText>
+	underlineTexts: Map<Element, UnderlineText>,
+	atWordStartOnly = false
 ) {
 	if (underlineTexts.size === 0 || labelsHeld() === 0) return;
 
@@ -314,15 +323,19 @@ function assignFromCache(
 		.filter(
 			(element) => !assignments.has(element) && underlineTexts.has(element)
 		)
-		.map((element) => ({
-			element,
-			labels: getLabelCandidates(
-				underlineTexts.get(element)!.text,
-				underlineTexts.get(element)!.preferredLength
-			)
-				.map(({ label }) => label)
-				.filter((label) => available.has(label)),
-		}))
+		.map((element) => {
+			const { text, preferredLength } = underlineTexts.get(element)!;
+			const startsWord = (index: number) =>
+				index === 0 || !isLetter(text[index - 1]);
+
+			return {
+				element,
+				labels: getLabelCandidates(text, preferredLength)
+					.filter(({ index }) => !atWordStartOnly || startsWord(index))
+					.map(({ label }) => label)
+					.filter((label) => available.has(label)),
+			};
+		})
 		.filter(({ labels }) => labels.length > 0)
 		.sort((a, b) => a.labels.length - b.labels.length);
 
