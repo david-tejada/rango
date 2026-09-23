@@ -1,14 +1,17 @@
 import { getBoundingClientRect, getCachedStyle } from "../hints/layoutCache";
 
 export function isVisible(element: Element): boolean {
-	const { visibility, opacity } = getCachedStyle(element);
+	const { visibility, opacity, display } = getCachedStyle(element);
 	const { width, height } = getBoundingClientRect(element);
 
 	if (visibility === "hidden" || width < 5 || height < 5 || opacity === "0") {
 		// This handles custom checkboxes or radio buttons where the input element
-		// is hidden and replaced with a stylized sibling.
+		// is hidden and replaced with a stylized sibling. An input with `display:
+		// none` has no box to place a hint next to, so it doesn't count. That way
+		// its label gets the hint instead.
 		if (
 			element instanceof HTMLInputElement &&
+			display !== "none" &&
 			(element.type === "checkbox" || element.type === "radio") &&
 			element.parentElement &&
 			isVisible(element.parentElement)
