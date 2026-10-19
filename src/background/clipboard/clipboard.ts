@@ -31,11 +31,12 @@ export async function readClipboard(): Promise<string | undefined> {
 		return readClipboardSafari();
 	}
 
-	if (navigator.clipboard) {
-		return navigator.clipboard.readText();
+	// Chrome exposes navigator.clipboard in MV3 workers, but cannot read there.
+	if (browser.runtime.getManifest().manifest_version === 3) {
+		return readClipboardManifestV3();
 	}
 
-	return readClipboardManifestV3();
+	return navigator.clipboard.readText();
 }
 
 export async function writeClipboard(text: string) {
@@ -47,11 +48,12 @@ export async function writeClipboard(text: string) {
 		return writeClipboardSafari(text);
 	}
 
-	if (navigator.clipboard) {
-		return navigator.clipboard.writeText(text);
+	// Keep MV3 clipboard operations in the offscreen document.
+	if (browser.runtime.getManifest().manifest_version === 3) {
+		return writeClipboardManifestV3(text);
 	}
 
-	return writeClipboardManifestV3(text);
+	return navigator.clipboard.writeText(text);
 }
 
 async function readClipboardSafari() {
