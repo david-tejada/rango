@@ -6,7 +6,7 @@ export function getElementTextContent(wrappers: ElementWrapper[]) {
 
 	for (const wrapper of wrappers) {
 		const textContent =
-			wrapper.element.textContent || // eslint-disable-line @typescript-eslint/prefer-nullish-coalescing
+			wrapper.element.textContent ||
 			("value" in wrapper.element
 				? typeof wrapper.element.value === "string"
 					? wrapper.element.value

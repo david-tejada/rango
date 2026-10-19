@@ -24,11 +24,11 @@ export async function sendMessage<K extends MessageWithoutTarget>(
 	await pingContentScript(tabId);
 
 	try {
-		const messagePromise = browser.tabs.sendMessage(
+		const messagePromise: Promise<MessageReturn<K>> = browser.tabs.sendMessage(
 			tabId,
 			{ messageId, data },
 			{ frameId: options?.frameId ?? 0 }
-		) as Promise<MessageReturn<K>>;
+		);
 
 		if (!options?.maxWait) return await messagePromise;
 
