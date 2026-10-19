@@ -26,10 +26,23 @@ chrome.runtime.onMessage.addListener(
 			}
 
 			case "read-clipboard": {
-				textarea.select();
-				document.execCommand("paste");
-				sendResponse(textarea.value);
-				return true;
+				let text: string | undefined;
+				const onPaste = (event: ClipboardEvent) => {
+					text = event.clipboardData?.getData("text/plain");
+					// Chrome can deliver the request without replacing the textarea,
+					// so read the event payload rather than a previous response.
+					event.preventDefault();
+				};
+
+				textarea.addEventListener("paste", onPaste);
+				try {
+					textarea.select();
+					document.execCommand("paste");
+					sendResponse(text);
+					return true;
+				} finally {
+					textarea.removeEventListener("paste", onPaste);
+				}
 			}
 		}
 
