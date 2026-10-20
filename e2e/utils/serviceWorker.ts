@@ -1,8 +1,8 @@
-import { TargetType } from "puppeteer";
+import type { TargetType } from "puppeteer";
 
 async function getServiceWorker() {
 	const workerTarget = await browser.waitForTarget(
-		(target) => target.type() === TargetType.SERVICE_WORKER
+		(target) => target.type() === ("service_worker" as TargetType)
 	);
 
 	return (await workerTarget.worker())!;

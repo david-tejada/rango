@@ -1,4 +1,4 @@
-import { type Frame } from "puppeteer";
+import type { Frame } from "puppeteer";
 import { rangoCommandWithoutTarget } from "./utils/rangoCommands";
 import { sleep } from "./utils/testHelpers";
 
