@@ -19,8 +19,8 @@ export function compositeColors(colors: Color[]) {
 	for (let i = 1; i < filtered.length; i++) {
 		const foreground = filtered[i];
 		const alpha = foreground!.alpha;
-		const coords = result.to("srgb").coords;
-		const fcoords = foreground!.to("srgb").coords;
+		const coords = srgbCoords(result);
+		const fcoords = srgbCoords(foreground!);
 
 		// Apply the "over" compositing formula
 		const r = fcoords[0] * alpha + coords[0] * (1 - alpha);
@@ -31,4 +31,13 @@ export function compositeColors(colors: Color[]) {
 	}
 
 	return result;
+}
+
+/**
+ * Returns the sRGB coordinates of a color, treating missing ("none")
+ * components as 0, as CSS does.
+ */
+function srgbCoords(color: Color): [number, number, number] {
+	const [r, g, b] = color.to("srgb").coords;
+	return [r ?? 0, g ?? 0, b ?? 0];
 }
