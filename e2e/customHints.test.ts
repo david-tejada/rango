@@ -1,4 +1,4 @@
-import { type ElementHandle, type Frame } from "puppeteer";
+import type { ElementHandle, Frame } from "puppeteer";
 import { getHintForElement } from "./utils/getHintForElement";
 import {
 	rangoCommandWithTarget,

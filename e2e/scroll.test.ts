@@ -1,5 +1,5 @@
 /* eslint-disable max-nested-callbacks */
-import { type ElementHandle } from "puppeteer";
+import type { ElementHandle } from "puppeteer";
 import { getHintForElement } from "./utils/getHintForElement";
 import {
 	rangoCommandWithoutTarget,
