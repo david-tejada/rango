@@ -4,6 +4,7 @@ import { getRequiredCurrentTabId } from "../tabs/getCurrentTab";
 import { getAllFrames } from "../utils/getAllFrames";
 import { promiseAllSettledGrouped } from "../utils/promises";
 import type { HasRequiredData, MessageWithoutTarget } from "./messaging.types";
+import { isUnreachableFrameError } from "./UnreachableContentScriptError";
 
 /**
  * Send a message to all frames of the tab.
@@ -42,10 +43,7 @@ export async function sendMessageToAllFrames<K extends MessageWithoutTarget>(
 		// messages to child frames might be unsuccessful. For example, the URL of a
 		// frame might be `about:blank`, where content scripts are not allowed. We
 		// are not worried about those errors, so we ignore them.
-		if (
-			reason.message !==
-			"Could not establish connection. Receiving end does not exist."
-		) {
+		if (!isUnreachableFrameError(reason)) {
 			// In most cases we don't care about errors when sending messages to all
 			// frames, but if we don't log them here they get silently swallowed.
 			console.error("Content Script Error:", reason.message);

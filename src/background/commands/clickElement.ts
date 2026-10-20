@@ -1,3 +1,4 @@
+import browser, { type WebNavigation } from "webextension-polyfill";
 import { settings } from "../../common/settings/settings";
 import { isTargetError } from "../../common/target/TargetError";
 import { type TalonAction } from "../../typings/TalonAction";
@@ -5,7 +6,11 @@ import { type ElementMark, type Target } from "../../typings/Target/Target";
 import { sendMessage } from "../messaging/sendMessage";
 import { sendMessageToAllFrames } from "../messaging/sendMessageToAllFrames";
 import { sendMessageToTargetFrames } from "../messaging/sendMessageToTargetFrames";
-import { UnreachableContentScriptError } from "../messaging/UnreachableContentScriptError";
+import {
+	isUnreachableFrameError,
+	UnreachableContentScriptError,
+} from "../messaging/UnreachableContentScriptError";
+import { getRequiredCurrentTabId } from "../tabs/getCurrentTab";
 import { promiseWrap } from "../utils/promises";
 
 export async function clickElement(target: Target<ElementMark>) {
@@ -80,20 +85,53 @@ async function sendClickToTargetFrames(
 	target: Target<ElementMark>,
 	isSingleTarget: boolean
 ) {
+	const tabId = await getRequiredCurrentTabId();
+	const navigation = waitForMainFrameNavigation(tabId);
+
+	// A click that navigates can leave the page before its content script
+	// replies. The click already happened and there is nothing left to do on a
+	// page we have left, so it isn't a failure. Chrome and Firefox reject the
+	// message, but Safari never settles it, so we also stop waiting once the tab
+	// commits a new page.
 	try {
-		const { results } = await sendMessageToTargetFrames("clickElement", {
-			target,
-			isSingleTarget,
-		});
-		return results;
+		return await Promise.race([
+			sendMessageToTargetFrames(
+				"clickElement",
+				{ target, isSingleTarget },
+				tabId
+			).then(({ results }) => results),
+			navigation.committed.then(() => []),
+		]);
 	} catch (error: unknown) {
-		// A click that navigates can leave the page before its content script
-		// replies. The click already happened and there is nothing left to do on
-		// a page we have left, so it isn't a failure.
 		if (isPageLeftError(error)) return [];
 
 		throw error;
+	} finally {
+		navigation.stopWaiting();
 	}
+}
+
+/**
+ * Returns a promise that resolves when the main frame of the tab commits a new
+ * page, and a function to stop listening for it.
+ */
+function waitForMainFrameNavigation(tabId: number) {
+	let listener: (details: WebNavigation.OnCommittedDetailsType) => void;
+
+	const committed = new Promise<void>((resolve) => {
+		listener = (details) => {
+			if (details.tabId === tabId && details.frameId === 0) resolve();
+		};
+
+		browser.webNavigation.onCommitted.addListener(listener);
+	});
+
+	return {
+		committed,
+		stopWaiting() {
+			browser.webNavigation.onCommitted.removeListener(listener);
+		},
+	};
 }
 
 /**
@@ -101,16 +139,14 @@ async function sendClickToTargetFrames(
  * before its content script could reply.
  */
 function isPageLeftError(error: unknown) {
-	if (!(error instanceof Error)) return false;
-
 	// Chrome closes the message channel when the page moves into the
 	// back/forward cache. Firefox drops the listener, which reads as if the frame
-	// had never been there. That message is also what we get when the frame was
-	// removed before the click arrived, but that is rare enough that doing
-	// nothing beats an error for every click that navigates.
+	// had never been there. That is also what we get when the frame was removed
+	// before the click arrived, but that is rare enough that doing nothing beats
+	// an error for every click that navigates.
 	return (
-		error.message.includes("moved into back/forward cache") ||
-		error.message ===
-			"Could not establish connection. Receiving end does not exist."
+		(error instanceof Error &&
+			error.message.includes("moved into back/forward cache")) ||
+		isUnreachableFrameError(error)
 	);
 }
