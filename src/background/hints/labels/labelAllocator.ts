@@ -1,4 +1,5 @@
 import { store } from "../../../common/storage/store";
+import { type LabelStack } from "../../../typings/LabelStack";
 import { sendMessage } from "../../messaging/sendMessage";
 import { getAllFrames } from "../../utils/getAllFrames";
 import { createStack } from "./labelStack";
@@ -16,6 +17,10 @@ export async function claimLabels(
 				stack = await createStack(tabId);
 			}
 
+			if (stack.free.length < reconcileThreshold) {
+				await reconcileDeadFrames(tabId, stack);
+			}
+
 			const labelsClaimed = stack.free.splice(-amount, amount);
 			for (const label of labelsClaimed) {
 				stack.assigned[label] = frameId;
@@ -25,6 +30,53 @@ export async function claimLabels(
 		},
 		async () => createStack(tabId)
 	);
+}
+
+/**
+ * The number of free labels below which we check whether the labels in use
+ * still belong to frames that exist.
+ *
+ * Reconciling means an extra call to `getAllFrames`, so we only do it once the
+ * stack is running low, which is late enough that it costs nothing on a normal
+ * page and early enough to recover before we run out.
+ */
+const reconcileThreshold = 100;
+
+/**
+ * Returns to the stack the labels assigned to frames that are no longer in the
+ * tab.
+ *
+ * A frame that is removed from the page takes its labels with it: its content
+ * script dies without a chance to release them, and no event tells us it is
+ * gone. Pages that rotate ads replace their frames every few seconds, so
+ * without this the stack drains for as long as the page is open until there is
+ * nothing left to hand out.
+ */
+async function reconcileDeadFrames(tabId: number, stack: LabelStack) {
+	let frames;
+
+	try {
+		frames = await getAllFrames(tabId);
+	} catch {
+		// The tab might be discarded or gone altogether. Not being able to check
+		// must never stop us from handing out the labels we do have.
+		return;
+	}
+
+	const liveFrameIds = new Set(frames.map(({ frameId }) => frameId));
+
+	const stranded = Object.entries(stack.assigned)
+		.filter(([, frameId]) => !liveFrameIds.has(frameId))
+		.map(([label]) => label);
+
+	if (stranded.length === 0) return;
+
+	for (const label of stranded) {
+		delete stack.assigned[label];
+	}
+
+	stack.free.push(...stranded);
+	stack.free.sort((a, b) => b.length - a.length || b.localeCompare(a));
 }
 
 export async function reclaimLabelsFromOtherFrames(
