@@ -93,18 +93,31 @@ export async function reclaimLabelsFromOtherFrames(
 		const reclaimed: string[] = [];
 
 		for (const frameId of otherFramesIds) {
-			// eslint-disable-next-line no-await-in-loop
-			const reclaimedFromFrame = await sendMessage(
-				"reclaimLabels",
-				{ amount: amount - reclaimed.length },
-				{ tabId, frameId }
-			);
+			try {
+				// eslint-disable-next-line no-await-in-loop
+				const reclaimedFromFrame = await sendMessage(
+					"reclaimLabels",
+					{ amount: amount - reclaimed.length },
+					{ tabId, frameId }
+				);
 
-			reclaimed.push(...reclaimedFromFrame);
+				reclaimed.push(...reclaimedFromFrame);
+			} catch {
+				// `getAllFrames` lists the frames that existed when we asked, and a
+				// page that rotates ads removes them constantly, so by now this one
+				// might be gone, or go while we wait for its answer. A frame that
+				// fails has no labels to give, but it must not take down the claim for
+				// the frame that asked: that would leave a whole batch of elements with
+				// no label at all, and lose the labels the frames before it already
+				// gave up, since they no longer hold them and the stack would still
+				// have them down as theirs. `sendMessage` already logs the errors worth
+				// seeing.
+				continue;
+			}
 
 			// Once we have enough labels we don't need to continue sending messages to
 			// other frames
-			if (reclaimed.length === amount) break;
+			if (reclaimed.length >= amount) break;
 		}
 
 		for (const label of reclaimed) {

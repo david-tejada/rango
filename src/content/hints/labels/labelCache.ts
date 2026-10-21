@@ -67,10 +67,19 @@ export async function cacheLabels(
 	// If after that there're still not enough labels available we reclaim
 	// labels that are outside of the viewport from others frames
 	if (labelsClaimed.length < minimumCount) {
-		const reclaimedLabels = await reclaimLabelsFromOtherFrames(
-			necessaryCount - labelsClaimed.length
-		);
-		labelsClaimed.push(...reclaimedLabels);
+		try {
+			const reclaimedLabels = await reclaimLabelsFromOtherFrames(
+				necessaryCount - labelsClaimed.length
+			);
+			labelsClaimed.push(...reclaimedLabels);
+		} catch (error: unknown) {
+			// Reclaiming is a last resort for when labels are scarce, so failing at
+			// it only means we hint fewer elements than we hoped. Letting it throw
+			// would abandon the batch along with the labels we already claimed for
+			// it, which are lost to this frame while the background still has them
+			// down as ours.
+			console.error("Rango: unable to reclaim labels.", error);
+		}
 	}
 
 	saveLabelsToCache(labelsClaimed, necessaryCount);
