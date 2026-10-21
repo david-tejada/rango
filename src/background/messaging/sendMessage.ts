@@ -6,6 +6,7 @@ import {
 	type MessageWithoutTarget,
 } from "./messaging.types";
 import { pingContentScript } from "./pingContentScript";
+import { isUnreachableFrameError } from "./UnreachableContentScriptError";
 
 type MessageOptions = {
 	tabId?: number;
@@ -42,8 +43,13 @@ export async function sendMessage<K extends MessageWithoutTarget>(
 
 		return await Promise.race([messagePromise, timeoutPromise]);
 	} catch (error: unknown) {
-		if (error instanceof Error) {
-			console.error("Content Script Error:", error.message);
+		// Frames are added and removed all the time, and there are frames the
+		// content script never runs in, so failing to reach one is expected rather
+		// than a fault. The callers that care about it handle it, and
+		// `sendMessageSafe` exists precisely to ignore it, so logging here would
+		// only be noise.
+		if (error instanceof Error && !isUnreachableFrameError(error)) {
+			console.error(`Content Script Error (${messageId}):`, error.message);
 		}
 
 		throw error;

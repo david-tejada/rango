@@ -27,7 +27,10 @@
 import { Mutex } from "async-mutex";
 import browser from "webextension-polyfill";
 import { sendMessage } from "../../messaging/sendMessage";
-import { UnreachableContentScriptError } from "../../messaging/UnreachableContentScriptError";
+import {
+	isUnreachableFrameError,
+	UnreachableContentScriptError,
+} from "../../messaging/UnreachableContentScriptError";
 import { getRequiredCurrentTabId } from "../../tabs/getCurrentTab";
 import { getAllFrames } from "../../utils/getAllFrames";
 import { initStack } from "./labelStack";
@@ -124,11 +127,15 @@ async function synchronizeLabels(tabId: number, frameId: number) {
 		try {
 			await sendMessage("synchronizeLabels", undefined, { tabId, frameId });
 		} catch (error: unknown) {
-			// At this point the content script might not have yet loaded. This is ok
-			// and expected. This command is only used for synchronizing labels when
-			// navigating back and forward in history and the content script being
-			// restored.
-			if (!(error instanceof UnreachableContentScriptError)) {
+			// At this point the content script might not have yet loaded, or the
+			// frame might be gone altogether, which happens often with frames that
+			// are removed while the page is still loading. This is ok and expected.
+			// This command is only used for synchronizing labels when navigating back
+			// and forward in history and the content script being restored.
+			if (
+				!(error instanceof UnreachableContentScriptError) &&
+				!isUnreachableFrameError(error)
+			) {
 				throw error;
 			}
 		}
