@@ -1,3 +1,4 @@
+import { isContextInvalidated } from "../../messaging/messageHandler";
 import { isMainFrame } from "../../setup/contentScriptContext";
 import { reclaimLabels } from "../../wrappers/wrappers";
 import {
@@ -78,7 +79,9 @@ export async function cacheLabels(
 			// would abandon the batch along with the labels we already claimed for
 			// it, which are lost to this frame while the background still has them
 			// down as ours.
-			console.error("Rango: unable to reclaim labels.", error);
+			if (!isContextInvalidated()) {
+				console.error("Rango: unable to reclaim labels.", error);
+			}
 		}
 	}
 

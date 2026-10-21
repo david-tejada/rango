@@ -16,7 +16,7 @@ import { Hint } from "../hints/Hint";
 import { cacheLabels } from "../hints/labels/labelCache";
 import { cacheLayout, clearLayoutCache } from "../hints/layoutCache";
 import { matchesCustomExclude, matchesCustomInclude } from "../hints/selectors";
-import { sendMessage } from "../messaging/messageHandler";
+import { isContextInvalidated, sendMessage } from "../messaging/messageHandler";
 import { settingsSync } from "../settings/settingsSync";
 import { BoundedIntersectionObserver } from "./BoundedIntersectionObserver";
 import { refresh } from "./refresh";
@@ -172,16 +172,125 @@ async function intersectionCallback(entries: IntersectionObserverEntry[]) {
 			getOrCreateWrapper(entry.target).isIntersectingViewport === false
 	).length;
 
+	let claimFailed = false;
+
 	if (amountIntersecting) {
-		await cacheLabels(
-			amountIntersecting - amountNotIntersectingViewport,
-			amountNotIntersectingViewport
-		);
+		try {
+			await cacheLabels(
+				amountIntersecting - amountNotIntersectingViewport,
+				amountNotIntersectingViewport
+			);
+		} catch (error: unknown) {
+			// Claiming labels can fail if the background script is unreachable, for
+			// example while the service worker restarts. We still hint what we can
+			// with the labels we already hold, but the elements that don't get one
+			// stay intersecting, and the observer won't fire for them again, so we
+			// have to come back to them ourselves.
+			if (!isContextInvalidated()) {
+				console.error("Rango: unable to claim labels.", error);
+			}
+
+			claimFailed = true;
+		}
 	}
 
-	for (const entry of entriesIntersecting) {
-		getOrCreateWrapper(entry.target).intersect(entry.isIntersecting);
+	const wrappersIntersecting = entriesIntersecting.map((entry) =>
+		getOrCreateWrapper(entry.target)
+	);
+
+	for (const wrapper of wrappersIntersecting) wrapper.intersect(true);
+
+	if (claimFailed) retryHintsLater(wrappersIntersecting);
+}
+
+// RETRY
+
+const initialRetryDelay = 1000;
+const maximumRetryDelay = 30_000;
+
+let retryDelay = initialRetryDelay;
+let retryTimeout: ReturnType<typeof setTimeout> | undefined;
+
+/**
+ * Wrappers that a failed claim left without a label. We keep track of them
+ * instead of looking for intersecting wrappers without a label, because some
+ * of those are meant to stay that way: another frame reclaimed their label, or
+ * their hint couldn't be reattached.
+ */
+const pendingWrappers = new Set<ElementWrapper>();
+
+/**
+ * Hints later the wrappers that a failed claim left without a label. Without
+ * this a single failed message would leave them unhinted for as long as the
+ * page is open, since an Intersection Observer only reports a change in
+ * intersection.
+ */
+export function retryHintsLater(wrappers: ElementWrapper[]) {
+	for (const wrapper of wrappers) {
+		if (isPending(wrapper)) pendingWrappers.add(wrapper);
 	}
+
+	scheduleRetry();
+}
+
+function scheduleRetry() {
+	if (retryTimeout ?? isContextInvalidated()) return;
+
+	retryTimeout = setTimeout(async () => {
+		retryTimeout = undefined;
+		await retryPendingHints();
+	}, retryDelay);
+}
+
+async function retryPendingHints() {
+	// Those that scrolled away or got a label some other way since are no
+	// longer ours to hint.
+	for (const wrapper of pendingWrappers) {
+		if (!isPending(wrapper)) pendingWrappers.delete(wrapper);
+	}
+
+	const pending = [...pendingWrappers];
+
+	if (pending.length === 0) {
+		retryDelay = initialRetryDelay;
+		return;
+	}
+
+	const amountNotIntersectingViewport = pending.filter(
+		(wrapper) => !wrapper.isIntersectingViewport
+	).length;
+
+	try {
+		await cacheLabels(
+			pending.length - amountNotIntersectingViewport,
+			amountNotIntersectingViewport
+		);
+
+		// The same can happen while we wait for the labels, and claiming one for
+		// those would lose it: an element that's no longer intersecting would be
+		// marked as intersecting again, and claiming over an existing label
+		// overwrites it without returning it.
+		for (const wrapper of pending) {
+			if (isPending(wrapper)) wrapper.intersect(true);
+			pendingWrappers.delete(wrapper);
+		}
+
+		retryDelay = initialRetryDelay;
+	} catch {
+		// Back off so that a background script that stays unreachable doesn't have
+		// us retrying in a tight loop for the lifetime of the page.
+		retryDelay = Math.min(retryDelay * 2, maximumRetryDelay);
+		scheduleRetry();
+	}
+}
+
+/**
+ * Returns `true` if the wrapper should show a hint but doesn't have a label.
+ */
+function isPending(wrapper: ElementWrapper) {
+	return (
+		wrapper.isIntersecting && wrapper.shouldBeHinted && !wrapper.hint?.label
+	);
 }
 
 const viewportIntersectionObserver = new IntersectionObserver(

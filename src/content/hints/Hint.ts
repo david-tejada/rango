@@ -474,6 +474,11 @@ export class Hint {
 	}
 
 	claim() {
+		// Claiming over an existing label would overwrite it without returning
+		// it, and the label would be lost to this frame for as long as the page is
+		// open.
+		if (this.label) return this.label;
+
 		const string = popLabel();
 
 		if (!string) {

@@ -8,6 +8,9 @@ jest.mock("./labelRequest", () => ({
 	releaseLabels: jest.fn(),
 }));
 
+jest.mock("../../messaging/messageHandler", () => ({
+	isContextInvalidated: () => false,
+}));
 jest.mock("../../wrappers/wrappers", () => ({ reclaimLabels: () => [] }));
 jest.mock("../../setup/contentScriptContext", () => ({
 	isMainFrame: () => true,
