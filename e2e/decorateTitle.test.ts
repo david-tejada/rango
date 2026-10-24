@@ -1,4 +1,6 @@
-import { setSetting } from "./utils/serviceWorker";
+import { type TalonAction } from "../src/typings/TalonAction";
+import { rangoCommandWithoutTarget } from "./utils/rangoCommands";
+import { setSetting, storageClipboard } from "./utils/serviceWorker";
 import { sleep } from "./utils/testHelpers";
 
 // There is another tab open before the current one that also gets a marker.
@@ -121,4 +123,41 @@ test("A title the page sets after being untitled gets decorated", async () => {
 	expect(await page.title()).toBe(
 		`${tabMarker} | Inbox - http://localhost:8080/untitled.html`
 	);
+});
+
+test("A title the page sets after its fallback title was cleared gets decorated", async () => {
+	await page.goto("http://localhost:8080/untitled.html");
+	const newPage = await browser.newPage();
+	await sleep(500);
+	expect(await page.title()).toContain(`${tabMarker} | `);
+
+	await newPage.close();
+	await page.bringToFront();
+	await sleep(500);
+	expect(await page.title()).toBe("");
+
+	await page.evaluate(() => {
+		document.title = "Inbox";
+	});
+	await sleep(500);
+
+	expect(await page.title()).toBe(
+		`${tabMarker} | Inbox - http://localhost:8080/untitled.html`
+	);
+});
+
+test("Copying a markdown link on a page without a title doesn't leave the link text empty", async () => {
+	await page.goto("http://localhost:8080/untitled.html");
+	await sleep(500);
+
+	await rangoCommandWithoutTarget("copyCurrentTabMarkdownUrl");
+	const response = JSON.parse(await storageClipboard.readText()) as {
+		actions: TalonAction[];
+	};
+
+	expect(response.actions).toContainEqual({
+		name: "copyToClipboard",
+		textToCopy:
+			"[localhost:8080/untitled.html](http://localhost:8080/untitled.html)",
+	});
 });
