@@ -27,6 +27,7 @@ export type BackgroundBoundMessageMap = {
 		frameId: number;
 	};
 	getTabMarker: () => string | undefined;
+	getTabTitle: () => string | undefined;
 
 	// Hints Allocator
 	initStack: () => void;

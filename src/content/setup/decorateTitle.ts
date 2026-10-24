@@ -17,6 +17,12 @@ let lastUndecoratedTitle = document.title;
 let lastDecoratedTitle = document.title;
 
 /**
+ * Title used in place of an empty `document.title` the last time we decorated
+ * it, and the URL it was used for.
+ */
+let lastFallback: { title: string; url: string } | undefined;
+
+/**
  * Update the title decorations. Add the necessary decorations (tab marker and
  * url) or remove them according to settings.
  */
@@ -32,8 +38,13 @@ export async function updateTitleDecorations() {
 
 	// Remove decorations when the tab becomes the current tab for documents
 	// without title. This is only necessary for PDFs or similar files that have
-	// an empty `document.title`.
-	if (isCurrentTab_ && lastUndecoratedTitle === "") {
+	// an empty `document.title`. If the title is no longer the one we set, the
+	// page has given itself a title and we decorate that one instead.
+	if (
+		isCurrentTab_ &&
+		lastUndecoratedTitle === "" &&
+		document.title === lastDecoratedTitle
+	) {
 		document.title = "";
 		lastDecoratedTitle = "";
 		return;
@@ -42,8 +53,10 @@ export async function updateTitleDecorations() {
 	// Sometimes the `document.title` is modified by the page itself starting from
 	// the previous `document.title`. For example, in Bandcamp when the play
 	// button is clicked, "▶︎ " is added to the front of the title. After the track
-	// is stopped the first three characters of the title are removed.
+	// is stopped the first three characters of the title are removed. Any title
+	// includes an empty title, so that case doesn't count.
 	if (
+		lastDecoratedTitle !== "" &&
 		document.title !== lastDecoratedTitle &&
 		document.title.includes(lastDecoratedTitle)
 	) {
@@ -61,13 +74,64 @@ export async function updateTitleDecorations() {
 	// reproduce situations.
 	lastUndecoratedTitle = await removeDecorations(document.title);
 
+	// A fallback title we added earlier isn't part of the document's own title.
+	// Keeping `lastUndecoratedTitle` empty lets us clear the title again when the
+	// tab becomes the current tab.
+	if (lastUndecoratedTitle === lastFallback?.title) lastUndecoratedTitle = "";
+
+	// Assigning a title to a document without one hides the title the browser
+	// shows in its place (usually the URL). Use that title instead of leaving
+	// only the decorations.
+	let title = lastUndecoratedTitle;
+	if (!title && (prefix || suffix)) {
+		const titleBeforeFallback = document.title;
+		title = await getFallbackTitle();
+
+		// The page might have set its own title while we waited. The
+		// `tabDidUpdate` for that change will decorate it, and assigning here would
+		// overwrite it.
+		if (document.title !== titleBeforeFallback) return;
+
+		lastFallback = { title, url: location.href };
+	}
+
 	// It's important to first assign to `document.title` because this assignment
 	// might perform some changes, like removing excess contiguous space
 	// characters.
-	document.title = prefix + lastUndecoratedTitle + suffix;
+	document.title = prefix + title + suffix;
 	lastDecoratedTitle = document.title;
 
 	if (suffix) lastUrlAdded = location.href;
+}
+
+/**
+ * The title the browser shows for a tab whose document has no title, or the
+ * URL without its scheme if the browser doesn't provide one.
+ */
+async function getFallbackTitle() {
+	const urlWithoutScheme = location.href.replace(/^[a-z]+:\/\//i, "");
+
+	// Once we decorate the title, the tab title is our own decorated title and
+	// no longer the browser's fallback. Reuse the fallback while the URL stays
+	// the same, and use the URL when it changes.
+	if (document.title !== "") {
+		return lastFallback?.url === location.href
+			? lastFallback.title
+			: urlWithoutScheme;
+	}
+
+	try {
+		const tabTitle = await sendMessage("getTabTitle");
+		// The tab title might still include our decorations if the browser hasn't
+		// caught up with us clearing `document.title`.
+		const title = tabTitle ? await removeDecorations(tabTitle) : "";
+		return title || urlWithoutScheme;
+	} catch (error: unknown) {
+		// The title is cosmetic, so a failed message shouldn't stop the content
+		// script from initializing.
+		console.error(error);
+		return urlWithoutScheme;
+	}
 }
 
 async function removeDecorations(title: string) {
