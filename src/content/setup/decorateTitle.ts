@@ -6,6 +6,18 @@ import { isCurrentTab, isMainFrame } from "./contentScriptContext";
 let lastUrlAdded: string | undefined;
 
 /**
+ * Tab marker prefix currently in the title, if any.
+ */
+let lastPrefixAdded: string | undefined;
+
+/**
+ * Number of the most recent call to `updateTitleDecorations`. A call that
+ * awaited while a newer one started stops, so it can't overwrite the newer
+ * result with a stale one.
+ */
+let latestUpdate = 0;
+
+/**
  * Last title before any decorations were added.
  */
 let lastUndecoratedTitle = document.title;
@@ -29,7 +41,9 @@ let lastFallback: { title: string; url: string } | undefined;
 export async function updateTitleDecorations() {
 	if (!isMainFrame()) return;
 
+	const update = ++latestUpdate;
 	const isCurrentTab_ = await isCurrentTab();
+	if (update !== latestUpdate) return;
 
 	// Avoid adding decorations for the current tab if the `document.title` is
 	// empty. This can happen when the page is loading or we are dealing with a
@@ -54,9 +68,12 @@ export async function updateTitleDecorations() {
 	// the previous `document.title`. For example, in Bandcamp when the play
 	// button is clicked, "▶︎ " is added to the front of the title. After the track
 	// is stopped the first three characters of the title are removed. Any title
-	// includes an empty title, so that case doesn't count.
+	// includes an empty title, so that case doesn't count. Neither does a title
+	// we didn't decorate, since the page's new title is then its own title and
+	// `lastUndecoratedTitle` needs to follow it.
 	if (
 		lastDecoratedTitle !== "" &&
+		lastDecoratedTitle !== lastUndecoratedTitle &&
 		document.title !== lastDecoratedTitle &&
 		document.title.includes(lastDecoratedTitle)
 	) {
@@ -64,7 +81,12 @@ export async function updateTitleDecorations() {
 		return;
 	}
 
-	const prefix = await getTitlePrefix();
+	// The current tab doesn't need a tab marker, since tab markers are for
+	// targeting other tabs. Browsers use the current tab's title as the default
+	// filename when saving the page or dragging its URL to create a shortcut, so
+	// a marker there would end up in the filename.
+	const prefix = isCurrentTab_ ? "" : await getTitlePrefix();
+	if (update !== latestUpdate) return;
 	const suffix = getTitleSuffix();
 
 	// Remove decorations. Handle settings having changed and removing any
@@ -86,6 +108,7 @@ export async function updateTitleDecorations() {
 	if (!title && (prefix || suffix)) {
 		const titleBeforeFallback = document.title;
 		title = await getFallbackTitle();
+		if (update !== latestUpdate) return;
 
 		// The page might have set its own title while we waited. The
 		// `tabDidUpdate` for that change will decorate it, and assigning here would
@@ -100,6 +123,7 @@ export async function updateTitleDecorations() {
 	// characters.
 	document.title = prefix + title + suffix;
 	lastDecoratedTitle = document.title;
+	lastPrefixAdded = prefix;
 
 	if (suffix) lastUrlAdded = location.href;
 }
@@ -139,6 +163,10 @@ async function removeDecorations(title: string) {
 	if (title.endsWith(possibleSuffix)) {
 		title = title.slice(0, -possibleSuffix.length);
 	}
+
+	// A page that builds its title from the decorated one, like adding a
+	// notification count in front of it, leaves our tab marker in the middle.
+	if (lastPrefixAdded) title = title.replace(lastPrefixAdded, "");
 
 	// Remove tab marker prefix (matches both "A|" and "A | " formats)
 	return title.replace(/^[a-z]{1,2} ?\| ?/i, "");
