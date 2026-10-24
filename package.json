@@ -48,7 +48,7 @@
 		"lodash": "^4.18.1",
 		"react": "^19.3.1",
 		"react-dom": "^19.3.1",
-		"react-toastify": "^10.0.6",
+		"react-toastify": "^11.0.0",
 		"requestidlecallback-polyfill": "^1.0.2",
 		"specificity": "^0.4.1",
 		"tippy.js": "^6.3.7",
