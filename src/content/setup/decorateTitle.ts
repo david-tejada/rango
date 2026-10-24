@@ -168,8 +168,13 @@ function getTitleSuffix() {
 	return "";
 }
 
-export function getTitleBeforeDecoration() {
-	return lastUndecoratedTitle;
+/**
+ * The document's title without our decorations. For a document without a
+ * title, the title the browser shows in its place, so commands that copy the
+ * title don't end up with an empty one.
+ */
+export async function getTitleBeforeDecoration() {
+	return lastUndecoratedTitle || getFallbackTitle();
 }
 
 async function shouldIncludeTabMarkers() {
