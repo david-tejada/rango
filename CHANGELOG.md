@@ -2,6 +2,30 @@
 
 All notable changes to the Rango extension will be documented in this file.
 
+## [0.8.8](https://github.com/david-tejada/rango/releases/tag/v0.8.8) - 2026-10-24
+
+### Fixed
+
+- Fix clipboard commands in Chrome by running clipboard operations in an
+  offscreen document. Thanks to @wolfmanstout.
+- Fix clicks that navigate away from the page failing, or, in Safari, leaving
+  Talon waiting until it timed out.
+- Fix pages that keep replacing their frames, like pages with rotating ads,
+  running out of hints.
+- Fix elements staying without hints after a failed message to the background
+  script.
+- Fix the label of a checkbox hidden with `display: none` not getting a hint.
+- Fix the tab title losing the browser's fallback title on pages without a
+  title.
+- Fix copying the title of a page without a title producing an empty title.
+- Stop logging errors for frames that were removed while the page loaded.
+
+### Changed
+
+- Hide the tab marker on the current tab, so it no longer ends up in the
+  filename when saving a page or dragging its URL.
+- Update dependencies.
+
 ## [0.8.7](https://github.com/david-tejada/rango/releases/tag/v0.8.7) - 2026-03-09
 
 ### Added
