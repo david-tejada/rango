@@ -99,6 +99,11 @@ export function addMessageListeners() {
 		return getTabMarker(tabId);
 	});
 
+	onMessage("getTabTitle", async (_, { tabId }) => {
+		const tab = await browser.tabs.get(tabId);
+		return tab.title;
+	});
+
 	onMessage("getClipboardWriteInterceptorPath", () => {
 		return new URL(
 			"../../content/actions/clipboardWriteInterceptor.js",
