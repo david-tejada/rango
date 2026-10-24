@@ -90,7 +90,7 @@
 		"ts-unused-exports": "^11.0.1",
 		"typescript": "^5.9.3",
 		"web-ext": "^10.8.0",
-		"xo": "^0.60.0"
+		"xo": "^0.61.0"
 	},
 	"overrides": {
 		"serve-handler": {
