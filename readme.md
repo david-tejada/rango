@@ -144,8 +144,9 @@ click the element on the viewport whose text context better matches the text
 Tab targets are a way to reference tabs by their tab marker. Tab markers are
 letters displayed at the start of a tab title. Rango prepends the tab marker to
 the title of the tab if the setting `Include tab marker in title` is on
-(default). To target a tab you simply have to say the letters of the tab marker.
-For example, <kbd>tab close air</kbd>.
+(default). The current tab doesn't show its marker, so it doesn't end up in the
+filename when you save the page. To target a tab you simply have to say the
+letters of the tab marker. For example, <kbd>tab close air</kbd>.
 
 ### Primitive, List and Range Targets
 
