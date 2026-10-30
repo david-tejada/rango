@@ -8,6 +8,7 @@ const defaultSelector =
 	// Roles
 	"[role='button'], [role='link'], [role='treeitem'], [role='tab'], [role='option'], " +
 	"[role='radio'], [role='checkbox'], [role='menuitem'], [role='menuitemradio'], [role='menuitemcheckbox'], " +
+	"[role='combobox'], " +
 	// Attributes
 	"[contenteditable='true'], [contenteditable='']";
 
